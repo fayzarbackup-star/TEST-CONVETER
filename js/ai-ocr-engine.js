@@ -391,13 +391,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     localStorage.setItem(STORAGE_KEYS.SELECTED_MODEL, 'auto');
   }
 
-  // ===== SUPABASE PROXY CONFIG =====
   const SUPABASE_CONFIG = {
     FUNCTIONS_URL: 'https://pecxaxturmnlqhxuntfw.supabase.co/functions/v1/generate', // Deploy পর বদলান
     ANON_KEY: 'sb_publishable_L6jswzoS9I3QSqi-k9XfdQ_YFlKYWSf', 
     ENABLED: true, 
-    CHUNK_PAGES: 5, 
-    TIMEOUT_MS: 180000 
+    CHUNK_PAGES: 50, // Increased to process up to 50 pages together
+    TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
   };
 
   const state = {
