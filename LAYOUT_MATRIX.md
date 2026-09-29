@@ -4,9 +4,9 @@
 
 | Field | বর্তমান আচরণ (Current) | কাঙ্ক্ষিত আচরণ (Desired) |
 |---|---|---|
-| **EXAM_CQ** (সৃজনশীল) | `w:sectPr` না থাকায় Combined-এর সাথে মিশলে লেআউট ভেঙে যায়। | A4, Landscape, 2 Columns (0.7" gap), Hanging Indent: 432 dxa |
+| **EXAM_CQ** (সৃজনশীল) | Combined exporter-এ একটি final `w:sectPr` আছে; CQ ও MCQ-এর জন্য আলাদা section properties প্রয়োগ হয় না। | A4, Landscape, 2 Columns (0.7" gap), Hanging Indent: 432 dxa |
 | **EXAM_MCQ** (বহুনির্বাচনী) | `EXAM_MCQ`-এর HTML preview ও DOCX-এ পেজ ব্রেক লজিক আলাদা। | A4, Portrait, 2 Columns, 4-Tab Stops, Hanging Indent: 432 dxa |
-| **EXAM_COMBINED** (সম্মিলিত) | `ExportDualEngine`-এ CQ ও MCQ বডি জোড়া লাগে কিন্তু செকশন ব্রেক বাদ যায়। | CQ অংশ Landscape, তারপর Word Section Break, এরপর MCQ Portrait. |
+| **EXAM_COMBINED** (সম্মিলিত) | Combined exporter-এ একটি final `w:sectPr` আছে; CQ ও MCQ-এর জন্য আলাদা section properties প্রয়োগ হয় না। ফলে আলাদা orientation/column layout পাওয়া যায় না। | CQ অংশ Landscape, তারপর Word Section Break, এরপর MCQ Portrait. |
 | **Math / Science** | সমীকরণ মাঝেমধ্যে ভেঙে যায়। | Unicode/MathML এ অবিকৃত থাকবে। |
 | **Indent (Hanging)** | স্পেসিফিকেশনে `432 dxa` ও `234 dxa` মিশ্রিত। | **৪৩২ dxa (21.6 pt)** সর্বত্র ব্যবহার করা হবে। |
 | **Text/Reference** | প্রম্পটে "বোর্ড রেফারেন্স মুছুন" এবং "অবিকল রাখুন" দুটোই আছে। | **Smart Verbatim:** বোর্ড রেফারেন্স মুছে ফেলা হবে (ফ্রেশ প্রশ্নের জন্য), কিন্তু মূল টেক্সট ও নম্বর অক্ষত থাকবে। |
