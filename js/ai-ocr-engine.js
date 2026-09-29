@@ -204,7 +204,7 @@
       * প্রতিটি উপ-ধারা, তালিকা আইটেম বা অনুচ্ছেদ অবশ্যই তার নিজস্ব আলাদা নতুন লাইনে (Enter / newline) থাকবে।
 
 12. ROMAN NUMERALS & MCQ FORMATTING (রোমান সংখ্যা ও বহুনির্বাচনী প্রশ্ন):
-    - CRITICAL: MCQ প্রশ্নের ক্রমিক নম্বর ১।, ২।, ৩।, ... ৩০। সতন্ত্রভাবে ১ থেকে শুরু করতে হবে (সৃজনশীল প্রশ্নের ক্রমিকের সাথে মিলিয়ে নয়)।
+    - Preserve ALL original question numbers, sub-question letters, and option labels exactly as they appear. Do NOT renumber, re-sequence, or change any numbering.
     - CRITICAL: NEVER wrap roman numerals in asterisks (*i.*, *ii.*, *iii.*, *i* ও *ii* etc. are strictly forbidden ❌).
     - বহুনির্বাচনীর ক্ষেত্রে ক্রমিক নম্বরের নিচে রোমান সংখ্যা বা স্টেটমেন্টের (i., ii., iii., iv. অথবা ১., ২., ৩.) প্রতিটি লাইনের শুরুতে অবশ্যই ১টি করে ট্যাব (\t) যুক্ত করবেন:
       \ti. সোডিয়াম
@@ -391,6 +391,15 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     localStorage.setItem(STORAGE_KEYS.SELECTED_MODEL, 'auto');
   }
 
+  // ===== SUPABASE PROXY CONFIG =====
+  const SUPABASE_CONFIG = {
+    FUNCTIONS_URL: 'https://pecxaxturmnlqhxuntfw.supabase.co/functions/v1/generate', // Deploy পর বদলান
+    ANON_KEY: 'sb_publishable_L6jswzoS9I3QSqi-k9XfdQ_YFlKYWSf', 
+    ENABLED: true, 
+    CHUNK_PAGES: 5, 
+    TIMEOUT_MS: 180000 
+  };
+
   const state = {
     freeUsesCount: parseInt(localStorage.getItem(STORAGE_KEYS.FREE_COUNT) || '0', 10),
     byokApiKey: savedKey,
@@ -453,8 +462,13 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     loadConverterDictionary();
     checkDesktopBridgeOnline(true);
     // Silently pre-warm 2-3 healthy keys and models in background (zero token cost)
-    if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.prewarmStandbyPool === 'function') {
-      FayzarOcrConfig.prewarmStandbyPool();
+    if (typeof FayzarOcrConfig !== 'undefined') {
+      if (typeof FayzarOcrConfig.buildValidatedKeysCache === 'function') {
+        FayzarOcrConfig.buildValidatedKeysCache();
+      }
+      if (typeof FayzarOcrConfig.prewarmStandbyPool === 'function') {
+        FayzarOcrConfig.prewarmStandbyPool();
+      }
     }
     // Poll bridge every 2.5s for instant status sync
     setInterval(() => {
@@ -1543,7 +1557,6 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           await sleep(1500);
         }
 
-
         fetch(`${FIREBASE_BRIDGE_URL}/requests/${jobId}.json`, { method: 'DELETE' }).catch(() => {});
         activeBridgeJobId = null;
 
@@ -1557,11 +1570,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           showToast('⚡ প্রো মডেল সাড়া দেয়নি, ক্লাউড এপিআই দিয়ে দ্রুত সম্পন্ন করা হচ্ছে...', 'info');
 
           if (apiKey) {
-            if (onProgress) onProgress('⚡ সরাসরি ক্লাউড API দিয়ে দ্রুত রূপান্তর হচ্ছে...', 50);
-            rawText = await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-              if (onStream) onStream(liveChunk);
-              if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
-            });
+            rawText = await processWithChunking(apiKey, mediaItems, onProgress, onStream);
           } else {
             throw new Error("প্রো মডেল সাড়া দেয়নি এবং কোনো Gemini API Key পাওয়া যায়নি।");
           }
@@ -1573,11 +1582,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         updateProModelStatusUI(false);
         if (apiKey) {
           showToast('⚡ ক্লাউড এপিআই দিয়ে দ্রুত সম্পন্ন করা হচ্ছে...', 'info');
-          if (onProgress) onProgress('⚡ সরাসরি ক্লাউড API দিয়ে দ্রুত রূপান্তর হচ্ছে...', 50);
-          rawText = await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-            if (onStream) onStream(liveChunk);
-            if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
-          });
+          rawText = await processWithChunking(apiKey, mediaItems, onProgress, onStream);
         } else {
           throw bridgeErr;
         }
@@ -1593,10 +1598,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         throw new Error('অনুগ্রহ করে আপনার Gemini API Key প্রদান করুন বা সেটিংস থেকে ডেমো মোড চালু করুন।');
       }
     } else {
-      rawText = await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-        if (onStream) onStream(liveChunk);
-        if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
-      });
+      rawText = await processWithChunking(apiKey, mediaItems, onProgress, onStream);
     }
 
     if (onProgress) onProgress('৪. ওয়েটিং ফর ফাইনাল আউটপুট ও সমীকরণ...', 95, 4);
@@ -1646,6 +1648,41 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     state.isProcessing = false;
   }
 }
+
+  // Helper: Split media items into chunks
+  function splitMediaIntoChunks(mediaItems, chunkSize) {
+    const chunks = [];
+    for (let i = 0; i < mediaItems.length; i += chunkSize) {
+      chunks.push(mediaItems.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }
+
+  async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
+    if (mediaItems.length <= SUPABASE_CONFIG.CHUNK_PAGES) {
+      if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে...', 50);
+      return await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
+        if (onStream) onStream(liveChunk);
+        if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
+      });
+    }
+
+    const chunks = splitMediaIntoChunks(mediaItems, SUPABASE_CONFIG.CHUNK_PAGES);
+    let fullResult = '';
+    
+    for (let i = 0; i < chunks.length; i++) {
+      if (onProgress) onProgress(`খণ্ডিত অংশ প্রসেস হচ্ছে ${toBengaliNumber(i + 1)}/${toBengaliNumber(chunks.length)}...`, 40 + Math.round((i / chunks.length) * 50));
+      
+      const text = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
+        if (onStream) onStream(liveChunk);
+        if (onProgress) onProgress(`অংশ ${toBengaliNumber(i + 1)} স্ট্রিমিং চলছে (${toBengaliNumber(fullResult.length + liveChunk.length)} অক্ষর)...`, 40 + Math.round((i / chunks.length) * 50));
+      });
+      
+      fullResult += text + '\n\n';
+    }
+    
+    return fullResult;
+  }
 
   async function ensureBase64(item) {
     if (item.base64) return item.base64;
@@ -1840,6 +1877,93 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     }
   }
 
+  /**
+   * Supabase Edge Function via Streaming (SSE)
+   * Returns: { text: string, model: string, keyId: string }
+   */
+  async function executeGeminiRequestViaSupabase(payload, model = 'gemini-1.5-flash', onStreamChunk = null) {
+    if (!SUPABASE_CONFIG.ENABLED) throw new Error('Supabase proxy disabled');
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), SUPABASE_CONFIG.TIMEOUT_MS);
+    
+    try {
+      const response = await fetch(SUPABASE_CONFIG.FUNCTIONS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_CONFIG.ANON_KEY}`,
+          'apikey': SUPABASE_CONFIG.ANON_KEY,
+          'Accept': 'text/event-stream' // Request streaming
+        },
+        body: JSON.stringify({ payload, model }), // Send full payload (with images)
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        throw new Error(`Supabase ${response.status}: ${error.error || error.message}`);
+      }
+      
+      // ===== STREAMING HANDLING =====
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      let keyId = '';
+      let buffer = '';
+      
+      if (reader && onStreamChunk) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ') && line.length > 6) {
+              const jsonStr = line.slice(6).trim();
+              if (jsonStr === '[DONE]') continue;
+              try {
+                const data = JSON.parse(jsonStr);
+                // Handle native Gemini SSE format
+                if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                  const chunkText = data.candidates[0].content.parts[0].text;
+                  fullText += chunkText;
+                  onStreamChunk(chunkText);
+                } 
+                // Handle custom proxy format if any
+                else if (data.text) {
+                  fullText += data.text;
+                  onStreamChunk(data.text);
+                }
+                
+                if (data.keyId) keyId = data.keyId;
+                if (data.done) break;
+              } catch (e) {
+                // Ignore incomplete JSON chunks
+              }
+            }
+          }
+        }
+      } else {
+        const data = await response.json();
+        fullText = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        keyId = data.keyId || '';
+      }
+      
+      return { text: fullText, model, keyId };
+      
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') throw new Error('Supabase request timeout (3 min)');
+      throw err;
+    }
+  }
+
   // Gemini Execution Engine: sends media parts with Google's official system_instruction & live SSE Streaming
   async function executeGeminiRequest(apiKey, mediaInput, onStreamChunk = null, customPrompt = null, extraTextContent = null) {
     if (!state.isProcessing) return '';
@@ -1931,10 +2055,28 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       ];
     }
 
-    setLoading(true, `⚡ সরাসরি নির্বাচিত মডেলে [${candidateModels[0]}] রূপান্তর শুরু হচ্ছে...`, 50);
+    // setLoading is handled by the caller (startUnifiedOcr / processWithChunking)
+    // to avoid interrupting the streaming UI between chunks.
 
     let lastError = null;
     let isRateLimited = false;
+
+    // ===== SUPABASE PROXY (FIRST TRY) =====
+    const userCustomKey = localStorage.getItem('fayzar_ai_ocr_custom_byok');
+    const useSupabase = SUPABASE_CONFIG.ENABLED && !userCustomKey;
+    
+    if (useSupabase) {
+      try {
+        const primaryModel = candidateModels[0];
+        const payload = buildModelPayload(primaryModel, false);
+        const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk);
+        console.log(`[Supabase] Success via key: ${keyId}`);
+        return text;
+      } catch (supabaseErr) {
+        console.warn('[Supabase] Failed, falling back to direct API keys:', supabaseErr.message);
+        // Fail silently and fall through to direct Gemini
+      }
+    }
 
     // MODEL & KEY STRATEGY: For each model, try all healthy keys specifically for that model.
     for (let i = 0; i < candidateModels.length; i++) {
@@ -2016,7 +2158,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                 if (typeof FayzarOcrConfig.markKeyInvalid === 'function') FayzarOcrConfig.markKeyInvalid(currentKey);
                 if (typeof FayzarOcrConfig.advanceRoundRobin === 'function') FayzarOcrConfig.advanceRoundRobin();
               }
-              setLoading(true, `⚡ স্বয়ংক্রিয়ভাবে বিকল্প কি-তে সুইচ করে প্রসেসিং চলছে...`, 50 + Math.min(40, (k + 1) * 2));
+              // Use onProgress if available, otherwise fallback to setLoading but only if not streaming
+              if (onStreamChunk) {
+                // Do not interrupt streaming with global loading
+              } else {
+                setLoading(true, `⚡ স্বয়ংক্রিয়ভাবে বিকল্প কি-তে সুইচ করে প্রসেসিং চলছে...`, 50 + Math.min(40, (k + 1) * 2));
+              }
               continue;
             }
 
@@ -2048,7 +2195,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                 }
               }
               // ZERO DELAY FAILOVER: 100-250ms instant handover to next key without model drop
-              setLoading(true, `⚡ কোটা অপ্টিমাইজেশন: সক্রিয় কি-তে তাৎক্ষণিক সুইচ হচ্ছে...`, 50 + Math.min(40, (k + 1) * 2));
+              if (!onStreamChunk) {
+                setLoading(true, `⚡ কোটা অপ্টিমাইজেশন: সক্রিয় কি-তে তাৎক্ষণিক সুইচ হচ্ছে...`, 50 + Math.min(40, (k + 1) * 2));
+              }
               continue;
             } else if (res.status === 503 || errMsg.includes('No capacity') || errMsg.includes('high demand') || errMsg.includes('UNAVAILABLE') || res.status === 404 || errMsg.includes('not found') || errMsg.includes('no longer available')) {
               if (typeof FayzarOcrConfig !== 'undefined') {
@@ -2481,6 +2630,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
   function handleExtractionSuccess(unicodeText, isVerification = false) {
     const auditNote = extractAuditNote(unicodeText);
+    window.lastAuditNote = auditNote;
     const cleaned = cleanOcrResponse(unicodeText);
     state.unicodeText = cleaned;
     if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = cleaned;
@@ -3335,8 +3485,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
         exportText = exportText.replace(auditNoteRegex, '').trim();
       }
       
-      const isStudentCopy = document.getElementById('ai-ocr-settings-student-copy')?.checked;
-
+      const isStudentCopy = document.getElementById('cleanCopyCheckbox')?.checked;
+      
       const processDownload = async (isClean, suffix) => {
         showToast(`মাস্টার ওয়ার্ড (.docx) ফাইল প্রস্তুত হচ্ছে...`, 'info');
         
@@ -3347,7 +3497,7 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             pageSize: pageSizeVal,
             margin: marginVal,
             fontSize: fontSizeVal,
-            columns: parsedDocType === 'question_paper' ? 2 : 1,
+            columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
             auditNote: isClean ? null : auditNote
           });
         } catch (err) {

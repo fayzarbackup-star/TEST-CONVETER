@@ -112,9 +112,10 @@
       let cvScore = 0;
 
       // Stamp patterns (requires deed co-occurrence so questions with "৩০০ টাকা" or "মৌজা" don't trigger stamp)
-      if (/(?:৩০০|তিনশত)\s*টাকার\s*স্ট্যাম্প|স্ট্যাম্প\s*অ্যাক্ট|অঙ্গীকার\s*নামা|বায়নানামা|চুক্তিপত্র|দলিল\s*পত্র/i.test(t)) stampScore += 8;
-      if (/তফসিল|মৌজা|খতিয়ান|দাগ\s*নং/.test(t) && /১ম\s*পক্ষ|২য়\s*পক্ষ|প্রথম\s*পক্ষ|দ্বিতীয়\s*পক্ষ|লিখিতং|চুক্তি/i.test(t)) stampScore += 6;
-      if (/১ম\s*পক্ষ|২য়\s*পক্ষ|প্রথম\s*পক্ষ|দ্বিতীয়\s*পক্ষ|লিখিতং/.test(t) && !/পরীক্ষা|প্রশ্ন|পূর্ণমান/.test(t)) stampScore += 4;
+      let strongStamp = /(?:৩০০|তিনশত)\s*টাকার\s*স্ট্যাম্প|নন.?জুডিশিয়াল.?স্ট্যাম্প|^চুক্তিপত্র/im.test(t);
+      if (strongStamp) stampScore += 10;
+      if (/তফসিল|মৌজা|খতিয়ান|দাগ\s*নং/.test(t) && /১ম\s*পক্ষ|২য়\s*পক্ষ|প্রথম\s*পক্ষ|দ্বিতীয়\s*পক্ষ|লিখিতং|চুক্তি/i.test(t)) stampScore += strongStamp ? 6 : 2;
+      if (/১ম\s*পক্ষ|২য়\s*পক্ষ|প্রথম\s*পক্ষ|দ্বিতীয়\s*পক্ষ|লিখিতং/.test(t) && !/পরীক্ষা|প্রশ্ন|পূর্ণমান/.test(t)) stampScore += strongStamp ? 4 : 1;
 
       // Application patterns (requires formal structural co-occurrence, "জনাব রহমান একজন ব্যবসায়ী" will not trigger)
       if (/বরাবর[,:\s]/.test(t) && /বিষয়[:\s]/.test(t)) appScore += 8;
@@ -183,6 +184,14 @@
       }
       if (/[\u09E7-\u09EF\d]+\s*[+\-xX×=]\s*[\u09E7-\u09EF\d]+/.test(t)) cqScore += 3;
 
+      // 1. CQ Paper - REQUIRED Gate
+      if (!/উদ্দীপক|দৃশ্যকল্প|সৃজনশীল/i.test(t)) {
+        // Only keep cqScore if it has very strong subquestion patterns, else block it
+        if (!/ক\.\s*[^\n]+\s*খ\.\s*[^\n]+\s*গ\./.test(t)) {
+          cqScore = 0;
+        }
+      }
+
       const scores = [
         { type: this.DOC_TYPES.EXAM_COMBINED, score: combinedScore },
         { type: this.DOC_TYPES.EXAM_CQ, score: cqScore },
@@ -200,6 +209,18 @@
       ];
 
       scores.sort((a, b) => b.score - a.score);
+
+      // 3. Priority Order / Tie-breaker
+      if (scores[0].score > 0 && scores.length > 1) {
+        if (scores[0].score - scores[1].score < 4) {
+          // If CQ is close to the top, prefer CQ
+          if (scores[1].type === this.DOC_TYPES.EXAM_CQ) {
+            const temp = scores[0];
+            scores[0] = scores[1];
+            scores[1] = temp;
+          }
+        }
+      }
 
       if (scores[0].score >= 4) {
         return { type: scores[0].type, confidence: scores[0].score, allScores: scores };

@@ -395,22 +395,25 @@
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
 
+      const childOptions = { ...options };
+      delete childOptions.auditNote;
+
       // Generate CQ xml part
-      const cqRes = await this.generateCqExamDocx(parsedCq, { ...options, returnInnerXml: true });
+      const cqRes = await this.generateCqExamDocx(parsedCq, { ...childOptions, returnInnerXml: true });
       
       // Generate MCQ xml part
-      const mcqRes = await this.generateMcqExamDocx(parsedMcq, { ...options, returnInnerXml: true, isCombined: true });
+      const mcqRes = await this.generateMcqExamDocx(parsedMcq, { ...childOptions, returnInnerXml: true, isCombined: true });
 
       // Add a page break between CQ and MCQ so they are on separate sides of the paper
       const pageBreak = `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
-      const combinedBody = cqRes.bodyXml + pageBreak + mcqRes.bodyXml;
+      let combinedBody = cqRes.bodyXml + pageBreak + mcqRes.bodyXml;
       
       if (options.auditNote) {
-        bodyXml += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
+        combinedBody += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+        combinedBody += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
         const lines = options.auditNote.split('\n');
         for (const line of lines) {
-           bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
+           combinedBody += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
         }
       }
 
@@ -1011,15 +1014,15 @@
               const o2 = this.renderDocxRuns(`(${opts[2].label}) ${opts[2].text}`, options, { sz: 24 });
               const o3 = this.renderDocxRuns(`(${opts[3].label}) ${opts[3].text}`, options, { sz: 24 });
 
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
             } else {
               let runs = '';
               for (let oi = 0; oi < opts.length; oi++) {
                 if (oi > 0) runs += '<w:r><w:tab/></w:r>';
                 runs += this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
               }
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
             }
           }
         }

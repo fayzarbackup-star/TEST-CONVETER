@@ -113,6 +113,9 @@
   } catch (e) {}
 
   const FayzarOcrConfig = {
+    _validatedKeysCache: null,
+    _cacheTimestamp: 0,
+
     /**
      * Strict validation for Google AI Studio Gemini API Key format
      * Supports both classic Google AI Studio keys (AIzaSy...) and modern keys (AQ.Ab8RN...)
@@ -121,6 +124,16 @@
       if (!key || typeof key !== 'string') return false;
       const clean = key.trim();
       return (clean.startsWith('AIzaSy') || clean.startsWith('AQ.')) && clean.length >= 35 && /^[A-Za-z0-9_.-]+$/.test(clean);
+    },
+
+    /**
+     * Build the validated keys cache (runs once per session)
+     */
+    buildValidatedKeysCache: function () {
+      this._validatedKeysCache = VAULT.KEYS
+        .map(k => _unpack(k))
+        .filter(k => this.isValidApiKey(k));
+      this._cacheTimestamp = Date.now();
     },
 
     /**
@@ -137,6 +150,7 @@
         until: Date.now() + (seconds * 1000)
       });
       _syncCooldownsToStorage();
+      this._validatedKeysCache = null; // Invalidate cache
       this.logAudit('KEY_MODEL_COOLDOWN', { keyMask: cleanKey.slice(0, 8) + '...', model: cleanModel, cooldownSec: seconds });
     },
 
@@ -157,6 +171,7 @@
         state: 'invalid',
         until: Infinity
       });
+      this._validatedKeysCache = null; // Invalidate cache
       this.logAudit('KEY_INVALID', { keyMask: cleanKey.slice(0, 8) + '...' });
     },
 
@@ -200,7 +215,11 @@
      * Get keys specifically prioritized for a model (active keys at the FRONT, cooling keys at the BACK)
      */
     getKeysForModel: function (model = 'gemini-3-flash-preview', includeCooldown = false) {
-      const all = VAULT.KEYS.map(k => _unpack(k)).filter(k => this.isValidApiKey(k));
+      if (!this._validatedKeysCache) {
+        this.buildValidatedKeysCache();
+      }
+      
+      const all = this._validatedKeysCache;
       const activeForModel = [];
       const coolingForModel = [];
 
