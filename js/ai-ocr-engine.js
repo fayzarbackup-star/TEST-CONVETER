@@ -218,8 +218,8 @@
       * দ্বি-সারি বিকল্পের ক্ষেত্রে দ্বিতীয় লাইনের শুরুতেও ১টি ট্যাব থাকবে (যেমন: \tগ. অপশন ৩\tঘ. অপশন ৪)।
       * OPTIONS DIGITS FIDELITY: বহুনির্বাচনীর বিকল্পে সংখ্যাগুলো যদি ইংরেজি ডিজিটে (যেমন: 1, 2, 9, 10 বা 0, 1, 2, 3 বা 0, 2, 4, 6) লেখা থাকে, তবে বিকল্পের সংখ্যাগুলো অবশ্যই ইংরেজিতেই (\tক. 1\tখ. 2\tগ. 9\tঘ. 10) উপস্থাপন করবেন। কোনো অবস্থাতেই সেগুলোকে বাংলায় (১, ২, ৯, ১০ ❌) অনুবাদ করা সম্পূর্ণ নিষিদ্ধ!
 
-13. CREATIVE QUESTIONS & PLAIN SCORE MARKS (সৃজনশীল প্রশ্নপত্র, ক্রমিক ও ব্র্যাকেটবিহীন নম্বর):
-    - SEQUENTIAL QUESTION NUMBERING (ক্রমিক নম্বর নতুনভাবে পুনর্বিন্যাস): মূল ছবিতে বা পিডিএফে প্রশ্নের ক্রমিক নম্বরে অমিল বা কমবেশি থাকলেও আপনি আউটপুটে প্রতিটি প্রশ্নের ক্রমিক নম্বর নতুনভাবে ১ থেকে শুরু করে ক্রমানুসারে (১।, ২।, ৩।, ৪।, ... ১০।) সাজিয়ে লিখবেন। কোনো ফাঁক বা ভুল ক্রমিক রাখা যাবে না।
+13. CREATIVE QUESTIONS & PLAIN SCORE MARKS (সৃজনশীল প্রশ্নপত্র ও ব্র্যাকেটবিহীন নম্বর):
+    - QUESTION NUMBER PRESERVATION (ক্রমিক নম্বর অক্ষত রাখা): মূল ছবিতে প্রশ্নের ক্রমিক নম্বর ও উপ-প্রশ্ন নম্বর যেভাবে আছে (যেমন: ৪।, ৫।, ৭। বা ক., খ., গ., ঘ.) ঠিক সেভাবেই হুবহু লিখবেন। নিজে থেকে কোনো নম্বর সিরিয়াল (১, ২, ৩) বানাবেন না বা সিরিয়াল ঠিক করবেন না।
     - Format sub-questions (উদ্দীপক, ১।, ক., খ., গ., ঘ.) cleanly and beautifully.
     - PLAIN SCORE MARKS (NO BRACKETS): Do NOT use square brackets [] or parentheses () for question marks/scores! Write ONLY plain numbers (যেমন: ১, ২, ৩, ৪ বা ১০) preceded by a tab (\t) or space e.g. ক. ...\t১, খ. ...\t২, গ. ...\t৩, ঘ. ...\t৪ or \t১০. NEVER use [১], [২], (১), (২) brackets!
 
@@ -284,11 +284,14 @@
     - If there are dotted blank lines (e.g. সূত্র নং- ....., তারিখঃ ....., স্মারক নং, শূন্যস্থান বা স্বাক্ষরের স্থান), output at most 3 to 6 dots (......) or a short dash line, and immediately proceed to the next line or word!
     - DO NOT get trapped in repetitive dot loops. Continue transcribing the rest of the letter/form (বরাবর, বিষয়, জনাব, বিবরণ, আবেদনকারী, স্বাক্ষর ইত্যাদি) completely and faithfully!
 
-16. ACCURATE BENGALI TYPOGRAPHY & INTELLIGENT OCR TYPO CORRECTION (অস্পষ্ট লেখা ও বানান সংশোধন):
-    - Use 100% correct Bengali spelling (যুক্তবর্ণ, ণ-ত্ব/ষ-ত্ব, দাড়ি, কমা, হাইফেন). Keep English terms, units, and symbols (kW, V, A, W, Input, Output, KNO3, H2O) clean in English.
-    - If there are blurred, smudged, broken characters (ভাঙা যুক্তবর্ণ), or obvious printing typos in the source scan, YOU MUST RECOVER AND CORRECT THEM intelligently to proper, grammatically correct Bengali words.
-    - ZERO CHATTER & ZERO NOTES: NEVER output any notes, change logs, audit trails, or [নোট ও পরিবর্তনসমূহ: ...] anywhere in the document! Output ONLY the 100% clean, pure transcribed document text.
-    - OMIT ALL EXAM BOARD CITATIONS & REFERENCES: Completely omit board tags and citations (e.g., [ঢাকা বোর্ড-২০২৩], [কু. বো. ২১], [ক্যাডেট কলেজ], [অধ্যায়-৩], [সহপাঠ: বহিপীর], (দিনাজপুর বোর্ড ২০১৭) ইত্যাদি সম্পূর্ণ বাদ দিন).
+16. ACCURATE BENGALI TYPOGRAPHY, INTELLIGENT OCR TYPO CORRECTION & AUDIT NOTES (অস্পষ্ট লেখা ও এআই নোট):
+    - Use 100% correct Bengali spelling (যুক্তবর্ণ, ণ-ত্ব/ষ-ত্ব, দাড়ি, কমা, হাইফেন). Keep English terms, units, and symbols clean.
+    - BLURRY OR UNCLEAR TEXT: If a word is blurry but guessable from context, you MUST insert the guessed word AND flag it by appending \`⟦অনুমান—যাচাই প্রয়োজন⟧\` next to it. If it is completely unreadable, just write \`⟦অস্পষ্ট: ১ শব্দ⟧\`.
+    - OMIT ALL EXAM BOARD CITATIONS & REFERENCES: Completely omit board tags and citations (e.g., [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩] ইত্যাদি সম্পূর্ণ বাদ দিন).
+    - MANDATORY DETAILED AUDIT NOTE (বাধ্যতামূলক অডিট নোট): At the VERY END of the transcribed document, you MUST include a clean audit note block listing every single guess, blurry word recovery, and removed board reference, including the question/sub-question number and page number.
+      [এআই অডিট নোট ও পরিবর্তনসমূহ:
+      - প্রশ্ন ৪(খ), মূল পৃষ্ঠা ২: শব্দটি ঝাপসা ছিল; খসড়ায় "..." বসানো হয়েছে — অনুমান—যাচাই প্রয়োজন।
+      - প্রশ্ন ১(ক), মূল পৃষ্ঠা ১: বোর্ড রেফারেন্স [ঢাকা বোর্ড-২০২৩] মুছে ফেলা হয়েছে।]
 
 17. ENGLISH LANGUAGE QUESTION PAPERS (ইংরেজি বিষয়ের প্রশ্নপত্র - সম্পূর্ণ স্বাভাবিক কার্যক্রম):
     - CRITICAL EXCEPTION & MANDATE: The formatting rules for Bengali Dari ('।'), Bengali dot options ('ক.', 'খ.', 'গ.', 'ঘ.') with leading tabs, and CQ dot sub-questions apply ONLY to Bengali, Mathematics, Physics, Chemistry, Biology, and other Bengali-medium subjects!
@@ -333,10 +336,11 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
      * সংক্ষিপ্ত ও প্রাথমিক প্রশ্ন (১ম থেকে ৫ম শ্রেণি): সতন্ত্রভাবে ১।, ২।, ৩।, ...। কোনোভাবেই জোর করে সৃজনশীলের মতো 'ক, খ, গ, ঘ' বা উদ্দীপক (>) বানাবেন না; মূল ফাইলের স্বাভাবিক প্রশ্ন ও উপ-প্রশ্ন বজায় রাখুন।
      * রাসায়নিক সংকেত ও সমীকরণ: বিজ্ঞানের সকল রাসায়নিক সংকেত ও যৌগ (যেমন: $KNO_3$, $KOH$, $2H_2O$, $H_2SO_4$, $CO_2$, $N_2 + 3H_2 = 2NH_3$ ইত্যাদি) এবং বৈজ্ঞানিক ঘাত ($6.023 \\times 10^{23}$) সাবস্ক্রিপ্ট ও সুপারস্ক্রিপ্ট সহ বাধ্যতামূলকভাবে LaTeX ($...$) ব্লকে রাখবেন; কোনো অবস্থাতেই এগুলোকে সাধারণ টেক্সটে বা ভাঙা লাইনে রাখবেন না। বিক্রিয়ার তীর চিহ্ন সরাসরি '→' বা '──[...]──>' লিখবেন।
      * সার্বজনীন স্ক্রিপ্ট ও ডিজিট অডিট (Universal Script & Digit Fidelity): সৃজনশীল উদ্দীপক, উপ-প্রশ্ন (ক., খ., গ., ঘ.), বহুনির্বাচনী, সংক্ষিপ্ত প্রশ্ন বা ফর্ম—যেকোনো কাজের ক্ষেত্রে মূল ছবিতে যেখানেই ইংরেজি অক্ষর, প্রতীক বা সংখ্যা (যেমন: A, B, C, Cu, Fe, FeCl3, 20, 4, 6 বা অপশনে 1, 2, 9, 10 বা 0, 1, 2, 3) রয়েছে, খসড়ায় তা ভুলবশত বাংলায় রূপান্তর হয়ে থাকলে অবশ্যই মূল ছবির মতো খাঁটি ইংরেজিতে (ASCII English) সংশোধন করুন। ইংরেজি '8' এবং বাংলা '৮' এর মিশ্রণ (যেমন: 8.8৮ L ❌) দূর করে খাঁটি ইংরেজিতে সংশোধন করুন। বিজ্ঞানের বহুনির্বাচনীতে এককযুক্ত সকল অপশনের সংখ্যা একরূপ খাঁটি ইংরেজিতে রাখবেন।
-   - No exam board tags/references (e.g., omit [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩]).
+   - No exam board tags/references (e.g., omit [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩]). All removed tags MUST be logged in the audit note.
+   - BLURRY TEXT RECOVERY: If you guess a blurry word, add \`⟦অনুমান—যাচাই প্রয়োজন⟧\` next to it and log it in the audit note.
    - PLAIN SCORE MARKS (NO BRACKETS): Keep question scores as plain digits/marks e.g. \t১, \t২, \t৩, \t৪ without any square brackets [] or parentheses ().
    - STIMULUS & QUESTION FULL FIDELITY: Never summarize or shorten stimulus (উদ্দীপক) or question text.
-   - SEQUENTIAL QUESTION NUMBERING: Re-sequence all question numbers starting from 1 (১।, ২।, ৩।, ... ১০। or ১ থেকে ৩০।) in clean ascending order.
+   - QUESTION NUMBER PRESERVATION: Keep original question numbers exactly as they are in the image. DO NOT re-sequence or re-number them!
    - Preserve all legitimate content parentheses e.g. (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল), and retain hyphens in compound words (শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের).
    - Never merge or collapse sub-articles or clause lines (৪.১, ৪.২, ৫.১, ৫.২); ensure each remains on its own separate line.
    - For diagrams/images, simply write: [ছবি আছে-পৃ:০১].
@@ -345,13 +349,13 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
    - Never output long chains of dots. Keep dotted lines to at most 3 to 6 dots (......) and preserve the rest of the letter/form.
 
 5. MANDATORY DETAILED AUDIT NOTE (বাধ্যতামূলক অডিট নোট — সকল প্রশ্নের পর সম্পূর্ণ শেষে):
-   - At the VERY END of the verified document (AFTER all questions and text are finished), you MUST include a clean audit note block listing every single correction made:
-     [নোট ও পরিবর্তনসমূহ:
-     - প্রশ্ন ৩-এর উদ্দীপকে '...' মূল ছবির সাথে হুবহু মিলানো হয়েছে।
-     - বানান সংশোধন: '...' এর স্থলে '...' ঠিক করা হয়েছে।]
+   - At the VERY END of the verified document (AFTER all questions and text are finished), you MUST include a clean audit note block listing every single correction, guessed word, and removed board reference:
+     [এআই অডিট নোট ও পরিবর্তনসমূহ:
+     - প্রশ্ন ৪(খ), মূল পৃষ্ঠা ২: শব্দটি ঝাপসা ছিল; খসড়ায় "..." বসানো হয়েছে — অনুমান—যাচাই প্রয়োজন।
+     - প্রশ্ন ১(ক), মূল পৃষ্ঠা ১: বোর্ড রেফারেন্স [ঢাকা বোর্ড-২০২৩] মুছে ফেলা হয়েছে।]
    - CRITICAL MANDATE: NEVER attach or place this note inside or near any question or question number! It must be strictly on its own lines at the very bottom after all questions are completely finished.
    - If absolutely NO errors were found and the draft was already 100% faithful:
-     [নোট: মূল ফাইলের সাথে সম্পূর্ণ যাচাইকৃত, কোনো পরিবর্তন করা হয়নি।]
+     [এআই অডিট নোট ও পরিবর্তনসমূহ: মূল ফাইলের সাথে সম্পূর্ণ যাচাইকৃত, কোনো পরিবর্তন বা অনুমান করা হয়নি।]
 
 OUTPUT REQUIREMENT:
 Output the COMPLETE, FULL document text from start to finish, ending with the mandatory [নোট... block at the very bottom.`;
@@ -1604,7 +1608,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     if (state.autoVerify && state.lastMediaItems && state.lastMediaItems.length > 0 && !state.demoMode && apiKey) {
       if (onProgress) onProgress('স্বয়ংক্রিয় অডিট ও যাচাই চলছে (বানান, উদ্দীপক ও মিসিং প্রশ্ন)...', 97, 4);
       try {
-        const extraTextContent = `[পূর্বে সংগৃহীত খসড়া টেক্সট (DRAFT TO BE AUDITED & VERIFIED AGAINST ATTACHED IMAGES)]:\n\n${rawText}\n\n[নির্দেশনা: উপরের খসড়া টেক্সটটিকে সংযুক্ত মূল ছবিগুলোর সাথে পুঙ্খানুপুঙ্খ মিলিয়ে বানান ভুল, উদ্দীপকের বিচ্যুতি এবং কোনো প্রশ্ন বা উপ-প্রশ্ন বাদ পড়ে থাকলে তা সংশোধন করে সম্পূর্ণ নির্ভুল প্রশ্নপত্র প্রস্তুত করুন। কোনো প্রকার নোট বা ব্যাখ্যা ছাড়া সরাসরি ১০০% সংশোধিত ও নির্ভুল প্রশ্নপত্র প্রদান করুন।]`;
+        const extraTextContent = `[পূর্বে সংগৃহীত খসড়া টেক্সট (DRAFT TO BE AUDITED & VERIFIED AGAINST ATTACHED IMAGES)]:\n\n${rawText}\n\n[নির্দেশনা: উপরের খসড়া টেক্সটটিকে সংযুক্ত মূল ছবিগুলোর সাথে পুঙ্খানুপুঙ্খ মিলিয়ে বানান ভুল, উদ্দীপকের বিচ্যুতি এবং কোনো প্রশ্ন বা উপ-প্রশ্ন বাদ পড়ে থাকলে তা সংশোধন করে সম্পূর্ণ নির্ভুল প্রশ্নপত্র প্রস্তুত করুন। যদি কোনো অস্পষ্ট শব্দের অনুমান করা হয় বা সোর্স রেফারেন্স বাদ দেওয়া হয়, তবে অবশ্যই ডকুমেন্টের শেষে [এআই অডিট নোট ও পরিবর্তনসমূহ: ...] অংশে তা বিস্তারিত উল্লেখ করবেন।]`;
         const verifiedRaw = await executeGeminiRequest(
           apiKey,
           state.lastMediaItems,
