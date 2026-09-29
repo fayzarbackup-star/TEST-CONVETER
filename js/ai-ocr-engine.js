@@ -116,7 +116,7 @@
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
      ---
-     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_COMBINED | OFFICE_PAD | PROTTOYON_CERT | GOVT_APP | OFFICIAL_NOTICE | LEGAL_DEED>
+     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | OFFICIAL_NOTICE | STAMP_DEED>
      columns: <1 or 2>
      ---
    - SECTOR DETERMINATION RULES (DO NOT RELY ON COLUMNS IN HANDWRITTEN DRAFTS; CLASSIFY BY INTENDED PURPOSE):
@@ -126,10 +126,10 @@
      * Pure Multiple Choice Questions (20-30 MCQs, or source has only MCQs with at least 10-15 questions): doc_type: EXAM_MCQ, columns: 2
      * Combined Exam (both Creative Questions & 20-30 MCQs): doc_type: EXAM_COMBINED, columns: 2
      * Institutional Office Pad / Letterhead Memo: doc_type: OFFICE_PAD, columns: 1
-     * Testimonial / Character Certificate (প্রত্যয়নপত্র ও প্রশংসাপত্র): doc_type: PROTTOYON_CERT, columns: 1
+     * Testimonial / Character Certificate (প্রত্যয়নপত্র ও প্রশংসাপত্র): doc_type: PROTTOYON, columns: 1
      * Government / Job Application (বরাবর, বিষয়, জনাব সংবলিত দরখাস্ত): doc_type: GOVT_APP, columns: 1
      * Official Government / Institutional Notice / Memo: doc_type: OFFICIAL_NOTICE, columns: 1
-     * Legal Deed / 300 Tk Non-Judicial Stamp Contract: doc_type: LEGAL_DEED, columns: 1
+     * Legal Deed / 300 Tk Non-Judicial Stamp Contract: doc_type: STAMP_DEED, columns: 1
    - HEADER PLACEHOLDER MANDATE (FOR EXAM PAPERS):
      * If the source exam paper has no school/institute name, write: institute: "আপনার প্রতিষ্ঠান এর নাম"
      * If address is missing, write address in subtitle or next line: "ঠিকানা লিখুন"
@@ -2124,7 +2124,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                     if (finishReason === 'SAFETY') {
                       throw new Error('Safety Filter: কন্টেন্ট Gemini-র নিরাপত্তা ফিল্টারে আটকে গেছে।');
                     }
-                    if (finishReason && finishReason !== 'STOP' && finishReason !== 'MAX_TOKENS') {
+                    if (finishReason === 'MAX_TOKENS') {
+                      fullStreamedText += `\n\n[অসম্পূর্ণ: MAX_TOKENS - ফাইলটি অনেক বড় হওয়ায় সম্পূর্ণটি কনভার্ট করা সম্ভব হয়নি। দয়া করে ফাইলের পেজ কমিয়ে পুনরায় চেষ্টা করুন।]`;
+                    } else if (finishReason && finishReason !== 'STOP') {
                       fullStreamedText += `\n\n[অসম্পূর্ণ: ${finishReason}]`;
                     }
                     

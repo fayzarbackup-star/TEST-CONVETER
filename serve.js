@@ -5,6 +5,7 @@ const { exec } = require('child_process');
 
 let PORT = 3008;
 const PUBLIC_DIR = __dirname;
+const MAX_PROXY_PAYLOAD_SIZE = 50 * 1024 * 1024; // 50MB limit
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -47,7 +48,12 @@ const server = http.createServer((req, res) => {
     }
 
     let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('data', chunk => { 
+      body += chunk.toString();
+      if (body.length > MAX_PROXY_PAYLOAD_SIZE) {
+        req.destroy();
+      }
+    });
     req.on('end', async () => {
       try {
         const payload = JSON.parse(body);
@@ -62,13 +68,25 @@ const server = http.createServer((req, res) => {
           return res.end(JSON.stringify({ error: 'Server API key not configured. Please set GEMINI_API_KEY environment variable.' }));
         }
 
+        // Strict endpoint validation to prevent SSRF
+        if (!endpoint || !endpoint.startsWith('v1beta/models/')) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: 'Invalid API endpoint format.' }));
+        }
+
         const targetUrl = `https://generativelanguage.googleapis.com/${endpoint}?alt=sse&key=${API_KEY}`;
         
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+
         const apiReq = await fetch(targetUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
 
         res.writeHead(apiReq.status, {
           'Content-Type': apiReq.headers.get('content-type') || 'text/event-stream',
@@ -97,7 +115,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  const safePath = path.normalize(decodeURIComponent(reqUrl)).replace(/^(\.\.[\/\\])+/, '');
+  let safePath = '';
+  try {
+    safePath = path.normalize(decodeURIComponent(reqUrl)).replace(/^(\.\.[\/\\])+/, '');
+  } catch (e) {
+    res.writeHead(400);
+    return res.end('Bad Request');
+  }
+
+  // Prevent accessing hidden files/directories (like .git, .env)
+  if (safePath.split(path.sep).some(segment => segment.startsWith('.'))) {
+    res.writeHead(403);
+    return res.end('Forbidden');
+  }
   const filePath = path.join(PUBLIC_DIR, safePath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
@@ -131,7 +161,7 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '127.0.0.1', () => {
   const url = `http://localhost:${PORT}/`;
   console.log(`=======================================================`);
   console.log(`🚀 ফয়জার কনভার্টার অফলাইন সার্ভার চালু হয়েছে!`);
