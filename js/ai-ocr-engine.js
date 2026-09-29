@@ -286,11 +286,11 @@
 
 16. ACCURATE BENGALI TYPOGRAPHY, INTELLIGENT OCR TYPO CORRECTION & AUDIT NOTES (অস্পষ্ট লেখা ও এআই নোট):
     - Use 100% correct Bengali spelling (যুক্তবর্ণ, ণ-ত্ব/ষ-ত্ব, দাড়ি, কমা, হাইফেন). Keep English terms, units, and symbols clean.
-    - BLURRY OR UNCLEAR TEXT: If a word is blurry but guessable from context, you MUST insert the guessed word AND flag it by appending \`⟦অনুমান—যাচাই প্রয়োজন⟧\` next to it. If it is completely unreadable, just write \`⟦অস্পষ্ট: ১ শব্দ⟧\`.
+    - BLURRY OR UNCLEAR TEXT: If a word is blurry but guessable from context, you MUST silently insert the guessed word in the main text (DO NOT add any inline marker or bracket next to it). Instead, you MUST log the guessed word in the audit note at the very end of the document. If a word is completely unreadable and cannot be guessed, write \`⟦অস্পষ্ট: ১ শব্দ⟧\`.
     - OMIT ALL EXAM BOARD CITATIONS & REFERENCES: Completely omit board tags and citations (e.g., [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩] ইত্যাদি সম্পূর্ণ বাদ দিন).
     - MANDATORY DETAILED AUDIT NOTE (বাধ্যতামূলক অডিট নোট): At the VERY END of the transcribed document, you MUST include a clean audit note block listing every single guess, blurry word recovery, and removed board reference, including the question/sub-question number and page number.
       [এআই অডিট নোট ও পরিবর্তনসমূহ:
-      - প্রশ্ন ৪(খ), মূল পৃষ্ঠা ২: শব্দটি ঝাপসা ছিল; খসড়ায় "..." বসানো হয়েছে — অনুমান—যাচাই প্রয়োজন।
+      - প্রশ্ন ৪(খ), মূল পৃষ্ঠা ২: শব্দটি ঝাপসা ছিল; খসড়ায় "..." বসানো হয়েছে — যাচাই প্রয়োজন।
       - প্রশ্ন ১(ক), মূল পৃষ্ঠা ১: বোর্ড রেফারেন্স [ঢাকা বোর্ড-২০২৩] মুছে ফেলা হয়েছে।]
 
 17. ENGLISH LANGUAGE QUESTION PAPERS (ইংরেজি বিষয়ের প্রশ্নপত্র - সম্পূর্ণ স্বাভাবিক কার্যক্রম):
@@ -337,7 +337,7 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
      * রাসায়নিক সংকেত ও সমীকরণ: বিজ্ঞানের সকল রাসায়নিক সংকেত ও যৌগ (যেমন: $KNO_3$, $KOH$, $2H_2O$, $H_2SO_4$, $CO_2$, $N_2 + 3H_2 = 2NH_3$ ইত্যাদি) এবং বৈজ্ঞানিক ঘাত ($6.023 \\times 10^{23}$) সাবস্ক্রিপ্ট ও সুপারস্ক্রিপ্ট সহ বাধ্যতামূলকভাবে LaTeX ($...$) ব্লকে রাখবেন; কোনো অবস্থাতেই এগুলোকে সাধারণ টেক্সটে বা ভাঙা লাইনে রাখবেন না। বিক্রিয়ার তীর চিহ্ন সরাসরি '→' বা '──[...]──>' লিখবেন।
      * সার্বজনীন স্ক্রিপ্ট ও ডিজিট অডিট (Universal Script & Digit Fidelity): সৃজনশীল উদ্দীপক, উপ-প্রশ্ন (ক., খ., গ., ঘ.), বহুনির্বাচনী, সংক্ষিপ্ত প্রশ্ন বা ফর্ম—যেকোনো কাজের ক্ষেত্রে মূল ছবিতে যেখানেই ইংরেজি অক্ষর, প্রতীক বা সংখ্যা (যেমন: A, B, C, Cu, Fe, FeCl3, 20, 4, 6 বা অপশনে 1, 2, 9, 10 বা 0, 1, 2, 3) রয়েছে, খসড়ায় তা ভুলবশত বাংলায় রূপান্তর হয়ে থাকলে অবশ্যই মূল ছবির মতো খাঁটি ইংরেজিতে (ASCII English) সংশোধন করুন। ইংরেজি '8' এবং বাংলা '৮' এর মিশ্রণ (যেমন: 8.8৮ L ❌) দূর করে খাঁটি ইংরেজিতে সংশোধন করুন। বিজ্ঞানের বহুনির্বাচনীতে এককযুক্ত সকল অপশনের সংখ্যা একরূপ খাঁটি ইংরেজিতে রাখবেন।
    - No exam board tags/references (e.g., omit [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩]). All removed tags MUST be logged in the audit note.
-   - BLURRY TEXT RECOVERY: If you guess a blurry word, add \`⟦অনুমান—যাচাই প্রয়োজন⟧\` next to it and log it in the audit note.
+   - BLURRY TEXT RECOVERY: If you guess a blurry word, silently insert it in the text (no inline markers) and log the details in the audit note at the very end.
    - PLAIN SCORE MARKS (NO BRACKETS): Keep question scores as plain digits/marks e.g. \t১, \t২, \t৩, \t৪ without any square brackets [] or parentheses ().
    - STIMULUS & QUESTION FULL FIDELITY: Never summarize or shorten stimulus (উদ্দীপক) or question text.
    - QUESTION NUMBER PRESERVATION: Keep original question numbers exactly as they are in the image. DO NOT re-sequence or re-number them!
