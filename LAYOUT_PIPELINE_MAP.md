@@ -9,7 +9,7 @@
 | OCR করে `.doc` | master DOCX-এর পরে | `DocxToDocConverter` | হ্যাঁ (সক্রিয়) |
 | Studio preview | Studio preview button | `FayzarPipeline` → `QuestionEngine.renderToHtml()` | হ্যাঁ (সক্রিয়) |
 | Studio থেকে DOCX | Studio download button (DOCX) | `FayzarPipeline` → `ExportDualEngine` | হ্যাঁ (সক্রিয়) |
-| Studio থেকে DOC | Studio download button (DOC) | `FayzarPipeline` → `ExportDualEngine` → `DocxToDocConverter` (বা অনুরূপ) | যাচাই করে লিখুন |
+| Studio থেকে DOC | Studio download button (DOC) | `FayzarPipeline` → `ExportDualEngine` → `DocBinaryEngine` (via `docx-to-doc-engine`) | হ্যাঁ (সক্রিয়) |
 | সরাসরি text converter থেকে export | text converter button | `main.js`-এর export route | হ্যাঁ (সক্রিয়) |
 | `layout-studio.html` (Test Page) | Page load | Archived scripts (`MdLayoutParser`, `DocxLayoutBuilder` ইত্যাদি) | **পুরোনো/বর্তমানে যাচাই করা হয়নি** |
 | `test-layouts.html` (Test Page) | Page load | Archived scripts | **পুরোনো/বর্তমানে যাচাই করা হয়নি** |

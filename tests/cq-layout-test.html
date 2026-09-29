@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>CQ Layout Regression Test</title>
+    <!-- Include required dependencies based on index.html -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="../js/vendor/tailwindcss.js"></script>
+    <!-- We might need jszip, docx depending on the pipeline, assuming they are globally available or handled by the engine -->
+    <script src="../js/jszip.min.js"></script>
+    
+    <!-- Core Engines (ensure paths match your architecture) -->
+    <script type="module">
+        import { FayzarPipeline } from '../js/layout-engine/fayzar-pipeline.js';
+        import { ExportDualEngine } from '../js/engines/export-dual-engine.js';
+
+        async function runTest() {
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = "Loading cq-short fixture...";
+
+            try {
+                // 1. Load Fixture
+                const res = await fetch('./fixtures/cq-short.input.md');
+                if (!res.ok) throw new Error("Could not load fixture: " + res.statusText);
+                const markdown = await res.text();
+
+                statusEl.innerText = "Processing through FayzarPipeline...";
+
+                // 2. Process through pipeline
+                // Initialize pipeline with standard config
+                const pipeline = new FayzarPipeline({
+                    docType: 'EXAM_CQ', // specifically testing EXAM_CQ
+                    preserveMarks: true,
+                    zeroEditMode: true // adhering to the verbatime rules
+                });
+
+                const parsedData = await pipeline.process(markdown);
+
+                statusEl.innerText = "Generating DOCX via ExportDualEngine...";
+
+                // 3. Export via DualEngine (active DOCX generator)
+                // We pass the parsed data.
+                const dualEngine = new ExportDualEngine(parsedData);
+                const docxBlob = await dualEngine.generateDocx();
+
+                // 4. Offer Download
+                const url = URL.createObjectURL(docxBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "cq-short-test-output.docx";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                statusEl.innerText = "✅ Success! DOCX generated and downloaded. Please open in MS Word to visually verify orientation, margins, columns, and 432 dxa indents.";
+                statusEl.className = "text-green-600 font-bold";
+
+            } catch (error) {
+                statusEl.innerText = "❌ Error: " + error.message;
+                statusEl.className = "text-red-600 font-bold";
+                console.error(error);
+            }
+        }
+
+        document.getElementById('run-btn').addEventListener('click', runTest);
+    </script>
+</head>
+<body class="p-8 font-sans">
+    <h1 class="text-2xl font-bold mb-4">Phase 2: EXAM_CQ DOCX Regression Test</h1>
+    <p class="mb-4 text-gray-700">This test loads `tests/fixtures/cq-short.input.md` directly into the `FayzarPipeline` and `ExportDualEngine` to generate the active DOCX output.</p>
+    
+    <div class="mb-4 p-4 border rounded bg-gray-50">
+        <h2 class="font-bold mb-2">Checklist for verification in MS Word:</h2>
+        <ul class="list-disc pl-5">
+            <li>Text and equations (e.g. $CO_2$) are intact.</li>
+            <li>Page is A4, Landscape orientation.</li>
+            <li>2 Columns with 0.7" gap.</li>
+            <li>Main question indent is exactly 432 dxa (21.6 pt).</li>
+            <li>Sub-question indent is exactly 864 dxa (43.2 pt).</li>
+        </ul>
+    </div>
+
+    <button id="run-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Run Test & Download DOCX</button>
+    
+    <div class="mt-4">
+        <p id="status" class="text-gray-600"></p>
+    </div>
+</body>
+</html>
