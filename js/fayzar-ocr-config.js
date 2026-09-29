@@ -14,7 +14,29 @@
   // All 16 verified, active Google AI Studio Gemini API keys (including 2 new high-quota premium keys)
   const VAULT = {
     KEYS: [
-      ""
+      // Primary High-Quota Key 1
+      "a3sEa0gSeGQcYG1AZxJdZ0kaZWh7ZnB8W05tfh5AXhNLXVJTfnJhUnxsRX9CH2JrGm9+GF0=",
+      // Primary High-Quota Key 2
+      "a3sEa0gSeGQcYU8daFkYcl9dE10aTRMYZGgSUGNtcEleblJkWB1HaFpzaUFOXkdcWQdAHXs=",
+      // Verified System Vault Keys (Keys 3-16)
+      "a3sEa0gSeGQcYXBpZ1lMex4HWGJhfW8SHnUdW1pbUk1tYXpmGUZSGXtQb1prQVMSB2BEHU0=",
+      "a2NQS3lTaU9NUElzQ2d1bUleaWl8Xlh8Z2ZAfW9zbEIfZVNae0Zd",
+      "a3sEa0gSeGQcYGN9XUwYSFlMHhxGaQdTextiYklzfn1sRHx9QxNlBxxueWdzcE4fUk1+Wns=",
+      "a3sEa0gSeGQcZkViQ05pRU9QGhpOQmYcZ1MSSGV5SEFNHnJ8ZkAcWm5cTm5MSHBLUBxlGns=",
+      "a3sEa0gSeGQcYWlefEgSGXAbbH5jWl1BWklnXFgcH14fblh4QGh/ZWRLbB1TY01zeG5LWms=",
+      "a3sEa0gSeGQcYF1SGUMSRmx7SHN6QRhBZ1hvckBzU09EW0BMaUlHfhxcXlAfUBNtXHgZf3s=",
+      "a3sEa0gSeGQcYXITeEhYa0hEeWl9El1zaXBzHhxMTmRLXltBe0JEQkcfS35aZlhuSW1wc2s=",
+      "a3sEa0gSeGQcYGVrY2hAfWJgU39/RW1zGnxifxhhY15vSVBtbGlcelMSQVtFXl9gRXlZZl0=",
+      "a3sEa0gSeGQcY0ZtY08SGXJje1AfWUx/XlhBGGNHbXliGkB8R2d4QnlzfHhZXEBQQRpwGXs=",
+      "a3sEa0gSeGQcYGRSbEUeY2xcb2xzSWl+WF1/UgdmX1J5X35NUk5jHHJPTB9Ifm5IdXp4Yk0=",
+      "a3sEa0gSeGQcYxhkE2xBRxNEfnVjWERnWH11Xk5yW3BrWWJGW0hjcxxienBvRE9uHm9QRU0=",
+      "a2NQS3lTaRsdS39edXBfc21ZZllhE2J5a0xIRXtnTxl+XV5+H30e",
+      "a2NQS3lTaFt5XVgefn9QThsdZR5EcxtlSEkdH0QeQGlBZx91aU9F",
+      "a3sEa0gSeGQcYX0aH15SSGlPeHNDX2ZuQ3xQYhp/aWxkfX9zYkcfWn5dHx9QTVpYRVlgcE0=",
+      // New Verified System Vault Keys (Keys 17-19)
+      "a3sEa0gSeGQcYEBbXXl+S2kSWhNZeWRTHXVQbmtwY34fSGZfB2RwT2ddfmJoHklebGgZUGs=",
+      "a3sEa0gSeGQcZkxNU39nZQcTaHt4fnVvek1lbkwSRVNJc2ISQGZLc1NofwdBZkNmXUNSbl0=",
+      "a2NQS3lTaxsSSWt9ekF7GmYfU0F+entwRExJEltHYWJCa2doUFMa"
     ],
     MASK_SALT: 42
   };
