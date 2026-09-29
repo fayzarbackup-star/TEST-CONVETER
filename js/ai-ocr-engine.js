@@ -395,7 +395,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     FUNCTIONS_URL: 'https://pecxaxturmnlqhxuntfw.supabase.co/functions/v1/generate', // Deploy পর বদলান
     ANON_KEY: 'sb_publishable_L6jswzoS9I3QSqi-k9XfdQ_YFlKYWSf', 
     ENABLED: true, 
-    CHUNK_PAGES: 2, // Decreased to process up to 2 pages together (5MB payload limit on Edge Functions)
+    CHUNK_PAGES: 50, // Increased to process up to 50 pages together
     TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
   };
 
@@ -2085,8 +2085,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         console.log(`[Supabase] Success via key: ${keyId}`);
         return text;
       } catch (supabaseErr) {
-        console.warn('[Supabase] Failed, falling back to direct API keys:', supabaseErr.message);
-        // Fail silently and fall through to direct Gemini
+        console.error('[Supabase] Fatal error, throwing directly:', supabaseErr.message);
+        throw new Error(`সার্ভার এরর (Edge Function): ${supabaseErr.message}। পেজ সংখ্যা কমান বা একটু পরে আবার চেষ্টা করুন।`);
       }
     }
 
