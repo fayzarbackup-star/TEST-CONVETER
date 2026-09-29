@@ -1939,6 +1939,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                   fullText += data.text;
                   onStreamChunk(data.text);
                 }
+                // Handle Proxy Stream Error
+                else if (data.error) {
+                  throw new Error(`Proxy Error: ${data.error} - ${data.details || ''}`);
+                }
                 
                 if (data.keyId) keyId = data.keyId;
                 if (data.done) break;
