@@ -330,7 +330,7 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
 
 4. ক্রমিক নম্বর ও ফরম্যাটিং নিয়ম বজায় রাখা:
    - QUESTION NUMBER PRESERVATION (CRITICAL): Keep original question numbers exactly as they are in the image. DO NOT re-sequence or re-number them! (Never start from ১ if the image starts from ৫).
-   - বাংলা, গণিত ও বিজ্ঞান বিষয়ের ক্ষেত্রে প্রশ্নের ক্রমিক নম্বর এর পর অবশ্যই '।' (দাড়ি) ব্যবহার করবেন (যেমন: ১।, ২।, ৩।, ... ১০।)। (তবে ইংরেজি বিষয়ের ক্ষেত্রে স্বাভাবিক ইংরেজি ফরম্যাট '1.', '2.' অপরিবর্তিত রাখবেন)।
+   - বাংলা, গণিত ও বিজ্ঞান বিষয়ের ক্ষেত্রে প্রশ্নের ক্রমিক নম্বর এর পর মূল ছবিতে যেমন আছে (দাড়ি '।', ডট '.' বা ব্রাকেট ')') হুবহু সেভাবেই রাখবেন। কোনোভাবেই জোর করে দাড়ি (।) বসাবেন না। (ইংরেজি বিষয়ের ক্ষেত্রেও ছবির স্বাভাবিক ফরম্যাট অপরিবর্তিত রাখবেন)।
    - সৃজনশীল প্রশ্ন: প্রতিটি উপ-প্রশ্ন ডট ফরম্যাটে ক., খ., গ., ঘ. (বন্ধনী ছাড়া, শুরুতে কোনো ট্যাব থাকবে না)।
    - বহুনির্বাচনী প্রশ্ন: ক্রমিক নম্বরের নিচে রোমান সংখ্যা বা তালিকার শুরুতে \t সহ \ti. ..., \tii. ...। প্রতিটি অপশন লাইনে শুরুতে \t এবং মাঝে \t সহ ডট ফরম্যাট \tক. ...\tখ. ...\tগ. ...\tঘ. ...।
    - সংক্ষিপ্ত ও প্রাথমিক প্রশ্ন (১ম থেকে ৫ম শ্রেণি): কোনোভাবেই জোর করে সৃজনশীলের মতো 'ক, খ, গ, ঘ' বা উদ্দীপক (>) বানাবেন না; মূল ফাইলের স্বাভাবিক প্রশ্ন ও উপ-প্রশ্ন বজায় রাখুন।
@@ -395,7 +395,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     FUNCTIONS_URL: 'https://pecxaxturmnlqhxuntfw.supabase.co/functions/v1/generate', // Deploy পর বদলান
     ANON_KEY: 'sb_publishable_L6jswzoS9I3QSqi-k9XfdQ_YFlKYWSf', 
     ENABLED: true, 
-    CHUNK_PAGES: 50, // Increased to process up to 50 pages together
+    CHUNK_PAGES: 2, // Decreased to process up to 2 pages together (5MB payload limit on Edge Functions)
     TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
   };
 
@@ -405,7 +405,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     gasUrl: savedGas,
     demoMode: isDemo,
     selectedModel: savedModelSetting,
-    autoVerify: localStorage.getItem('ai_ocr_auto_verify') !== 'false',
+    autoVerify: localStorage.getItem('ai_ocr_auto_verify') === 'true',
     proBridgeEnabled: localStorage.getItem('fayzar_pro_bridge_enabled') === 'true',
 
     filesQueue: [],
@@ -1857,8 +1857,14 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       setLoading(false);
       if (text && text.trim()) {
         handleExtractionSuccess(text, false);
+        const _snapshotText = state.unicodeText; // snapshot before verify
         if (state.autoVerify && state.lastMediaItems && state.lastMediaItems.length > 0) {
-          await runVerificationPipeline(true);
+          try { await runVerificationPipeline(true); } catch (ve) { console.warn('Auto-verify skipped:', ve); }
+        }
+        // If verification wiped state somehow, restore snapshot
+        if (!state.unicodeText && _snapshotText) {
+          state.unicodeText = _snapshotText;
+          if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = _snapshotText;
         }
         await downloadWordDocument('bijoy_docx');
         showToast(total > 1 ? `সবগুলো (${toBengaliNumber(total)}টি) পেজ একসাথে সফলভাবে রূপান্তর সম্পন্ন হয়েছে!` : 'AI দিয়ে ডকুমেন্ট রূপান্তর সম্পন্ন হয়েছে!', 'success');
@@ -1947,7 +1953,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                 if (data.keyId) keyId = data.keyId;
                 if (data.done) break;
               } catch (e) {
-                // Ignore incomplete JSON chunks
+                // Only ignore JSON parsing errors for incomplete chunks
+                if (e.name !== 'SyntaxError') {
+                  throw e;
+                }
               }
             }
           }
@@ -2132,7 +2141,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         let fetchPayload = buildFetchPayload(currentPayload);
 
         // 60s timeout: accommodates large image uploads and initial TTFB
-        const CONNECT_TIMEOUT_MS = 60000;
+        // FAST FALLBACK: Reduce connection timeout to 15s so dead keys/network drops fail quickly
+        const CONNECT_TIMEOUT_MS = 15000;
         try {
           const attemptStartTime = Date.now();
           if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.logAudit === 'function') {
@@ -2236,7 +2246,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             let buffer = '';
             let fullStreamedText = '';
             let lastChunkTime = 0;
-            const STREAM_IDLE_TIMEOUT_MS = 60000; // 60s idle keep-alive: accommodates math analysis & complex LaTeX thinking pauses
+            const STREAM_IDLE_TIMEOUT_MS = 15000; // 15s idle keep-alive (fast fail for stuck streams)
             let shouldStopStream = false;
 
             while (true) {
@@ -3449,7 +3459,7 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     isDownloadingDocument = true;
 
     try {
-      const text = (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
+      const text = (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText || state.bijoyText;
       if (!text || !text.trim()) {
         showToast('ডাউনলোড করার মতো কোনো টেক্সট নেই', 'warning');
         return;

@@ -677,7 +677,7 @@
             }
           }
 
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb30\\sa0\\li432\\fi-432\\tx432\\tqr\\tx' + pageWidth + ' ' + this.formatRtfText(q.num + '।', options) + '\\tab ' + this.formatRtfText(firstLineText, options) + '\\par}\n';
+          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb30\\sa0\\li234\\fi-234\\tx234\\tqr\\tx' + pageWidth + ' ' + this.formatRtfText(q.num + '।', options) + '\\tab ' + this.formatRtfText(firstLineText, options) + '\\par}\n';
 
           if (remainingStimLines.length > 0) {
             for (const sLine of remainingStimLines) {
@@ -697,7 +697,7 @@
                 rowRtf += '\\row}\n';
                 rtf += rowRtf;
               } else {
-                rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa20\\li432 ' + this.formatRtfText(sLine, options) + '\\par}\n';
+                rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa20\\li234 ' + this.formatRtfText(sLine, options) + '\\par}\n';
               }
             }
           }
@@ -709,7 +709,7 @@
               // Prevent overlapping by splitting (খ) and (গ) onto new lines if they were merged by OCR
               subTextRtf = subTextRtf.replace(/\s*\(খ\)\s*/g, '\\par (খ) ');
               subTextRtf = subTextRtf.replace(/\s*\(গ\)\s*/g, '\\par (গ) ');
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa15\\li432\\fi-432\\tx432\\tqr\\tx' + pageWidth + ' ' + subTextRtf + '\\tab ' + subMark + '\\par}\n';
+              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa15\\li234\\fi-234\\tx234\\tqr\\tx' + pageWidth + ' ' + subTextRtf + '\\tab ' + subMark + '\\par}\n';
             }
           }
         }
@@ -956,7 +956,7 @@
 
           const qNumRun = `<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(q.num + '।', options)}</w:t></w:r>`;
           const qTextRuns = this.renderDocxRuns(firstLineText, options, { sz: 24 });
-          bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="432" w:hanging="432"/><w:tabs><w:tab w:val="left" w:pos="432"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${qNumRun}<w:r><w:tab/></w:r>${qTextRuns}</w:p>`;
+          bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="234"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${qNumRun}<w:r><w:tab/></w:r>${qTextRuns}</w:p>`;
 
           if (remainingStimLines.length > 0) {
             let inTable = false;
@@ -978,7 +978,7 @@
                 bodyXml += tr;
               } else {
                 if (inTable) { bodyXml += '</w:tbl>'; inTable = false; }
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="432"/></w:pPr>${this.renderDocxRuns(sLine, options, { sz: 24 })}</w:p>`;
+                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/></w:pPr>${this.renderDocxRuns(sLine, options, { sz: 24 })}</w:p>`;
               }
             }
             if (inTable) bodyXml += '</w:tbl>';
@@ -995,14 +995,14 @@
                 // Print the mark on the first line (usually the only line)
                 const isFirst = (i === 0);
                 const subMarkRun = (isFirst && sub.mark) ? `<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(sub.mark, options)}</w:t></w:r>` : '';
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/><w:ind w:left="864" w:hanging="432"/><w:tabs><w:tab w:val="left" w:pos="864"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${subTextRuns}<w:r><w:tab/></w:r>${subMarkRun}</w:p>`;
+                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/><w:ind w:left="864" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="864"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${subTextRuns}<w:r><w:tab/></w:r>${subMarkRun}</w:p>`;
               }
             }
           }
 
           if (q.statements && q.statements.length > 0) {
             for (const stmt of q.statements) {
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="432"/></w:pPr>${this.renderDocxRuns(stmt, options, { sz: 24 })}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/></w:pPr>${this.renderDocxRuns(stmt, options, { sz: 24 })}</w:p>`;
             }
           }
 
