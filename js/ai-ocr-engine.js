@@ -553,9 +553,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       auditStatusBadge: document.getElementById('wizardAuditStatusBadge'),
 
       byokModal: document.getElementById('ai-ocr-byok-modal'),
-      byokInput: document.getElementById('ai-ocr-byok-input'),
-      saveByokBtn: document.getElementById('ai-ocr-save-byok-btn'),
-      cancelByokBtn: document.getElementById('ai-ocr-cancel-byok-btn'),
+      byokInput: document.getElementById('ai-ocr-modal-api-key'),
+      saveByokBtn: document.getElementById('ai-ocr-byok-save-btn'),
+      cancelByokBtn: document.getElementById('ai-ocr-byok-cancel-btn'),
       customDirectiveInput: document.getElementById('ai-custom-directive-input')
     };
   }
