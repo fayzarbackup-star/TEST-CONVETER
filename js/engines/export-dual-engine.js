@@ -405,6 +405,15 @@
       const pageBreak = `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
       const combinedBody = cqRes.bodyXml + pageBreak + mcqRes.bodyXml;
       
+      if (options.auditNote) {
+        bodyXml += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
+        const lines = options.auditNote.split('\n');
+        for (const line of lines) {
+           bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
+        }
+      }
+
       // Landscape 2-column section
       const sectPr = `
         <w:sectPr>
@@ -983,7 +992,7 @@
                 // Print the mark on the first line (usually the only line)
                 const isFirst = (i === 0);
                 const subMarkRun = (isFirst && sub.mark) ? `<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(sub.mark, options)}</w:t></w:r>` : '';
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/><w:ind w:left="432" w:hanging="432"/><w:tabs><w:tab w:val="left" w:pos="432"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${subTextRuns}<w:r><w:tab/></w:r>${subMarkRun}</w:p>`;
+                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/><w:ind w:left="864" w:hanging="432"/><w:tabs><w:tab w:val="left" w:pos="864"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${subTextRuns}<w:r><w:tab/></w:r>${subMarkRun}</w:p>`;
               }
             }
           }
@@ -1002,17 +1011,26 @@
               const o2 = this.renderDocxRuns(`(${opts[2].label}) ${opts[2].text}`, options, { sz: 24 });
               const o3 = this.renderDocxRuns(`(${opts[3].label}) ${opts[3].text}`, options, { sz: 24 });
 
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="432"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="432"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
             } else {
               let runs = '';
               for (let oi = 0; oi < opts.length; oi++) {
                 if (oi > 0) runs += '<w:r><w:tab/></w:r>';
                 runs += this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
               }
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="432"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
+              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
             }
           }
+        }
+      }
+
+      if (options.auditNote) {
+        bodyXml += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
+        const lines = options.auditNote.split('\n');
+        for (const line of lines) {
+           bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
         }
       }
 

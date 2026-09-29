@@ -329,18 +329,17 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
    - ZERO "ERROR!" POLICY: If the previous draft says "Error!", it means the earlier model failed to read the equation. You MUST read the equation from the image and replace "Error!" with the correct LaTeX math. NEVER output "Error!".
 
 4. ক্রমিক নম্বর ও ফরম্যাটিং নিয়ম বজায় রাখা:
-   - Separate sequential numbering starting from ১ for each question category:
-     * বাংলা, গণিত ও বিজ্ঞান বিষয়ের ক্ষেত্রে প্রশ্নের ক্রমিক নম্বর এর পর অবশ্যই '।' (দাড়ি) ব্যবহার করবেন (যেমন: ১।, ২।, ৩।, ... ১০।)। (তবে ইংরেজি বিষয়ের ক্ষেত্রে স্বাভাবিক ইংরেজি ফরম্যাট '1.', '2.' অপরিবর্তিত রাখবেন)।
-     * সৃজনশীল প্রশ্ন: ১।, ২।, ৩।, ... প্রতিটি উপ-প্রশ্ন ডট ফরম্যাটে ক., খ., গ., ঘ. (বন্ধনী ছাড়া, শুরুতে কোনো ট্যাব থাকবে না)।
-     * বহুনির্বাচনী প্রশ্ন: সতন্ত্রভাবে ১।, ২।, ৩।, ... (সৃজনশীলের সাথে মিলিয়ে নয়)। ক্রমিক নম্বরের নিচে রোমান সংখ্যা বা তালিকার শুরুতে \t সহ \ti. ..., \tii. ...। প্রতিটি অপশন লাইনে শুরুতে \t এবং মাঝে \t সহ ডট ফরম্যাট \tক. ...\tখ. ...\tগ. ...\tঘ. ...।
-     * সংক্ষিপ্ত ও প্রাথমিক প্রশ্ন (১ম থেকে ৫ম শ্রেণি): সতন্ত্রভাবে ১।, ২।, ৩।, ...। কোনোভাবেই জোর করে সৃজনশীলের মতো 'ক, খ, গ, ঘ' বা উদ্দীপক (>) বানাবেন না; মূল ফাইলের স্বাভাবিক প্রশ্ন ও উপ-প্রশ্ন বজায় রাখুন।
+   - QUESTION NUMBER PRESERVATION (CRITICAL): Keep original question numbers exactly as they are in the image. DO NOT re-sequence or re-number them! (Never start from ১ if the image starts from ৫).
+   - বাংলা, গণিত ও বিজ্ঞান বিষয়ের ক্ষেত্রে প্রশ্নের ক্রমিক নম্বর এর পর অবশ্যই '।' (দাড়ি) ব্যবহার করবেন (যেমন: ১।, ২।, ৩।, ... ১০।)। (তবে ইংরেজি বিষয়ের ক্ষেত্রে স্বাভাবিক ইংরেজি ফরম্যাট '1.', '2.' অপরিবর্তিত রাখবেন)।
+   - সৃজনশীল প্রশ্ন: প্রতিটি উপ-প্রশ্ন ডট ফরম্যাটে ক., খ., গ., ঘ. (বন্ধনী ছাড়া, শুরুতে কোনো ট্যাব থাকবে না)।
+   - বহুনির্বাচনী প্রশ্ন: ক্রমিক নম্বরের নিচে রোমান সংখ্যা বা তালিকার শুরুতে \t সহ \ti. ..., \tii. ...। প্রতিটি অপশন লাইনে শুরুতে \t এবং মাঝে \t সহ ডট ফরম্যাট \tক. ...\tখ. ...\tগ. ...\tঘ. ...।
+   - সংক্ষিপ্ত ও প্রাথমিক প্রশ্ন (১ম থেকে ৫ম শ্রেণি): কোনোভাবেই জোর করে সৃজনশীলের মতো 'ক, খ, গ, ঘ' বা উদ্দীপক (>) বানাবেন না; মূল ফাইলের স্বাভাবিক প্রশ্ন ও উপ-প্রশ্ন বজায় রাখুন।
      * রাসায়নিক সংকেত ও সমীকরণ: বিজ্ঞানের সকল রাসায়নিক সংকেত ও যৌগ (যেমন: $KNO_3$, $KOH$, $2H_2O$, $H_2SO_4$, $CO_2$, $N_2 + 3H_2 = 2NH_3$ ইত্যাদি) এবং বৈজ্ঞানিক ঘাত ($6.023 \\times 10^{23}$) সাবস্ক্রিপ্ট ও সুপারস্ক্রিপ্ট সহ বাধ্যতামূলকভাবে LaTeX ($...$) ব্লকে রাখবেন; কোনো অবস্থাতেই এগুলোকে সাধারণ টেক্সটে বা ভাঙা লাইনে রাখবেন না। বিক্রিয়ার তীর চিহ্ন সরাসরি '→' বা '──[...]──>' লিখবেন।
      * সার্বজনীন স্ক্রিপ্ট ও ডিজিট অডিট (Universal Script & Digit Fidelity): সৃজনশীল উদ্দীপক, উপ-প্রশ্ন (ক., খ., গ., ঘ.), বহুনির্বাচনী, সংক্ষিপ্ত প্রশ্ন বা ফর্ম—যেকোনো কাজের ক্ষেত্রে মূল ছবিতে যেখানেই ইংরেজি অক্ষর, প্রতীক বা সংখ্যা (যেমন: A, B, C, Cu, Fe, FeCl3, 20, 4, 6 বা অপশনে 1, 2, 9, 10 বা 0, 1, 2, 3) রয়েছে, খসড়ায় তা ভুলবশত বাংলায় রূপান্তর হয়ে থাকলে অবশ্যই মূল ছবির মতো খাঁটি ইংরেজিতে (ASCII English) সংশোধন করুন। ইংরেজি '8' এবং বাংলা '৮' এর মিশ্রণ (যেমন: 8.8৮ L ❌) দূর করে খাঁটি ইংরেজিতে সংশোধন করুন। বিজ্ঞানের বহুনির্বাচনীতে এককযুক্ত সকল অপশনের সংখ্যা একরূপ খাঁটি ইংরেজিতে রাখবেন।
    - No exam board tags/references (e.g., omit [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], [অধ্যায়-৩]). All removed tags MUST be logged in the audit note.
    - BLURRY TEXT RECOVERY: If you guess a blurry word, silently insert it in the text (no inline markers) and log the details in the audit note at the very end.
    - PLAIN SCORE MARKS (NO BRACKETS): Keep question scores as plain digits/marks e.g. \t১, \t২, \t৩, \t৪ without any square brackets [] or parentheses ().
    - STIMULUS & QUESTION FULL FIDELITY: Never summarize or shorten stimulus (উদ্দীপক) or question text.
-   - QUESTION NUMBER PRESERVATION: Keep original question numbers exactly as they are in the image. DO NOT re-sequence or re-number them!
    - Preserve all legitimate content parentheses e.g. (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল), and retain hyphens in compound words (শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের).
    - Never merge or collapse sub-articles or clause lines (৪.১, ৪.২, ৫.১, ৫.২); ensure each remains on its own separate line.
    - For diagrams/images, simply write: [ছবি আছে-পৃ:০১].
@@ -398,7 +397,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     gasUrl: savedGas,
     demoMode: isDemo,
     selectedModel: savedModelSetting,
-    autoVerify: localStorage.getItem('ai_ocr_auto_verify') === 'true',
+    autoVerify: localStorage.getItem('ai_ocr_auto_verify') !== 'false',
     proBridgeEnabled: localStorage.getItem('fayzar_pro_bridge_enabled') === 'true',
 
     filesQueue: [],
@@ -1825,6 +1824,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         if (state.autoVerify && state.lastMediaItems && state.lastMediaItems.length > 0) {
           await runVerificationPipeline(true);
         }
+        await downloadWordDocument('bijoy_docx');
         showToast(total > 1 ? `সবগুলো (${toBengaliNumber(total)}টি) পেজ একসাথে সফলভাবে রূপান্তর সম্পন্ন হয়েছে!` : 'AI দিয়ে ডকুমেন্ট রূপান্তর সম্পন্ন হয়েছে!', 'success');
       } else {
         showToast('কোনো টেক্সট পাওয়া যায়নি।', 'warning');
@@ -3327,110 +3327,125 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
         return;
       }
       
-      showToast(`মাস্টার ওয়ার্ড (.docx) ফাইল প্রস্তুত হচ্ছে...`, 'info');
+      let auditNote = null;
+      const auditNoteRegex = /\[এআই অডিট নোট ও পরিবর্তনসমূহ:[\s\S]*?\]/i;
+      const noteMatch = exportText.match(auditNoteRegex);
+      if (noteMatch) {
+        auditNote = noteMatch[0];
+        exportText = exportText.replace(auditNoteRegex, '').trim();
+      }
       
-      let masterDocxBlob = null;
-      try {
-        masterDocxBlob = await generateMasterDocx(exportText, {
-          docType: parsedDocType,
-          pageSize: pageSizeVal,
-          margin: marginVal,
-          fontSize: fontSizeVal,
-          columns: parsedDocType === 'question_paper' ? 2 : 1
-        });
-      } catch (err) {
-        console.warn('Failed to generate master docx in download process:', err);
-      }
+      const isStudentCopy = document.getElementById('ai-ocr-settings-student-copy')?.checked;
 
-      if (!masterDocxBlob) {
-        showToast('মাস্টার ওয়ার্ড ফাইল তৈরি করা যায়নি', 'error');
-        return;
-      }
-
-      // FORMAT 3: Word 2003 .DOC (Direct Full-Fidelity Word 2003 SutonnyMJ Document via Core Master Pipeline)
-      if (format === 'doc') {
-        showToast(`ওয়ার্ড ২০০৩ (.doc) ফাইল প্রস্তুত হচ্ছে...`, 'info');
-        let docBlob = null;
-
-        // মূল পরীক্ষিত পাইপলাইন:
-        // মাস্টার ইউনিকোড DOCX -> DocxHandler (ইউনিকোড টু বিজয়) -> DocxToDocConverter (.doc)
-        if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
-          // ধাপ ১: মাস্টার ইউনিকোড docx কে DocxHandler ও BanglaConverterEngine দিয়ে সুতন্নিএমজে docx এ কনভার্ট
-          const bijoyDocxRes = await DocxHandler.convertDocx(masterDocxBlob, {
-            direction: 'u2b',
-            targetFont: 'SutonnyMJ'
-          });
-          const intermediateDocxBlob = bijoyDocxRes.convertedBlob || bijoyDocxRes.blob;
-
-          // ধাপ ২: পরীক্ষিত DocxToDocConverter দিয়ে হাই-ফিডেলিটি Word 2003 .doc তৈরি
-          const docxConverter = new DocxToDocConverter();
-          const docResult = await docxConverter.convertDocxToDoc(intermediateDocxBlob, {
+      const processDownload = async (isClean, suffix) => {
+        showToast(`মাস্টার ওয়ার্ড (.docx) ফাইল প্রস্তুত হচ্ছে...`, 'info');
+        
+        let masterDocxBlob = null;
+        try {
+          masterDocxBlob = await generateMasterDocx(exportText, {
+            docType: parsedDocType,
             pageSize: pageSizeVal,
             margin: marginVal,
-            preserveSutonny: true,
-            optimizeForQuestionPaper: true
+            fontSize: fontSizeVal,
+            columns: parsedDocType === 'question_paper' ? 2 : 1,
+            auditNote: isClean ? null : auditNote
           });
-          docBlob = docResult.blob || docResult.convertedBlob;
-        } else if (typeof DocxToDocConverter !== 'undefined' && masterDocxBlob) {
-          const docxConverter = new DocxToDocConverter();
-          const docResult = await docxConverter.convertDocxToDoc(masterDocxBlob, {
-            pageSize: pageSizeVal,
-            margin: marginVal,
-            preserveSutonny: true,
-            optimizeForQuestionPaper: true
-          });
-          docBlob = docResult.blob || docResult.convertedBlob;
-        } else if (typeof MdLayoutParser !== 'undefined' && typeof DocWord2003Builder !== 'undefined') {
-          const detectFn = (t) => {
-            if (typeof MdLayoutParser.detectDocumentProfile === 'function') {
-              const prof = MdLayoutParser.detectDocumentProfile(t);
-              if (prof?.archetypeId) return prof.archetypeId;
-            }
-            return 'question-2col';
-          };
-          const detectedLayout = detectFn(text);
-          const ast = MdLayoutParser.parse(text, { layout: detectedLayout, pageSize: pageSizeVal, margin: marginVal, fontSize: fontSizeVal });
-          docBlob = DocWord2003Builder.build(ast, { font: 'SutonnyMJ' });
-        } else if (typeof DocxHandler !== 'undefined' && typeof DocxHandler.createDocFromText === 'function') {
-          docBlob = DocxHandler.createDocFromText(text, 'SutonnyMJ', true, fontSizePt, {
-            pageSize: pageSizeVal,
-            margin: marginVal,
-            fontSize: fontSizeVal
-          });
+        } catch (err) {
+          console.warn('Failed to generate master docx in download process:', err);
         }
 
-        if (!docBlob) {
-          throw new Error('Word 2003 (.doc) ফাইল প্রস্তুত করা যায়নি');
+        if (!masterDocxBlob) {
+          showToast('মাস্টার ওয়ার্ড ফাইল তৈরি করা যায়নি', 'error');
+          return;
         }
 
-        triggerDownload(docBlob, `${baseName}_Word2003.doc`);
-        showToast(`ওয়ার্ড ২০০৩ (.doc - সুতন্নিএমজে) সফলভাবে ডাউনলোড হয়েছে!`, 'success');
-        return;
-      }
+        // FORMAT 3: Word 2003 .DOC (Direct Full-Fidelity Word 2003 SutonnyMJ Document via Core Master Pipeline)
+        if (format === 'doc') {
+          showToast(`ওয়ার্ড ২০০৩ (.doc) ফাইল প্রস্তুত হচ্ছে...`, 'info');
+          let docBlob = null;
 
-      // FORMAT 1: Modern Word .DOCX (Pure Unicode Master)
-      if (format === 'unicode_docx') {
-        triggerDownload(masterDocxBlob, `${baseName}_Master_Unicode.docx`);
-        showToast(`ইউনিকোড মাস্টার .DOCX ডাউনলোড সম্পন্ন!`, 'success');
-        return;
-      }
+          if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
+            const bijoyDocxRes = await DocxHandler.convertDocx(masterDocxBlob, {
+              direction: 'u2b',
+              targetFont: 'SutonnyMJ'
+            });
+            const intermediateDocxBlob = bijoyDocxRes.convertedBlob || bijoyDocxRes.blob;
 
-      // FORMAT 2: Modern Word .DOCX (Bijoy SutonnyMJ via DocxHandler)
-      if (format === 'bijoy_docx') {
-        showToast(`বিজয় .DOCX তৈরি হচ্ছে...`, 'info');
-        let bijoyBlob = null;
-        if (typeof DocxHandler !== 'undefined' && typeof DocxHandler.convertDocx === 'function') {
-          const res = await DocxHandler.convertDocx(masterDocxBlob, {
-            direction: 'u2b',
-            targetFont: 'SutonnyMJ'
-          });
-          bijoyBlob = res.convertedBlob || res.blob;
-        } else {
-          bijoyBlob = await createDocxBlob(text, true, { pageSize: pageSizeVal, margin: marginVal, fontSize: fontSizeVal });
+            const docxConverter = new DocxToDocConverter();
+            const docResult = await docxConverter.convertDocxToDoc(intermediateDocxBlob, {
+              pageSize: pageSizeVal,
+              margin: marginVal,
+              preserveSutonny: true,
+              optimizeForQuestionPaper: true
+            });
+            docBlob = docResult.blob || docResult.convertedBlob;
+          } else if (typeof DocxToDocConverter !== 'undefined' && masterDocxBlob) {
+            const docxConverter = new DocxToDocConverter();
+            const docResult = await docxConverter.convertDocxToDoc(masterDocxBlob, {
+              pageSize: pageSizeVal,
+              margin: marginVal,
+              preserveSutonny: true,
+              optimizeForQuestionPaper: true
+            });
+            docBlob = docResult.blob || docResult.convertedBlob;
+          } else if (typeof MdLayoutParser !== 'undefined' && typeof DocWord2003Builder !== 'undefined') {
+            const detectFn = (t) => {
+              if (typeof MdLayoutParser.detectDocumentProfile === 'function') {
+                const prof = MdLayoutParser.detectDocumentProfile(t);
+                if (prof?.archetypeId) return prof.archetypeId;
+              }
+              return 'question-2col';
+            };
+            const detectedLayout = detectFn(exportText);
+            const ast = MdLayoutParser.parse(exportText, { layout: detectedLayout, pageSize: pageSizeVal, margin: marginVal, fontSize: fontSizeVal });
+            docBlob = DocWord2003Builder.build(ast, { font: 'SutonnyMJ' });
+          } else if (typeof DocxHandler !== 'undefined' && typeof DocxHandler.createDocFromText === 'function') {
+            docBlob = DocxHandler.createDocFromText(exportText, 'SutonnyMJ', true, fontSizePt, {
+              pageSize: pageSizeVal,
+              margin: marginVal,
+              fontSize: fontSizeVal
+            });
+          }
+
+          if (!docBlob) {
+            throw new Error('Word 2003 (.doc) ফাইল প্রস্তুত করা যায়নি');
+          }
+
+          triggerDownload(docBlob, `${baseName}${suffix}_Word2003.doc`);
+          showToast(`ওয়ার্ড ২০০৩ (.doc - সুতন্নিএমজে) সফলভাবে ডাউনলোড হয়েছে!`, 'success');
+          return;
         }
-        triggerDownload(bijoyBlob, `${baseName}_Bijoy.docx`);
-        showToast(`বিজয় .DOCX ডাউনলোড সম্পন্ন!`, 'success');
-        return;
+
+        // FORMAT 1: Modern Word .DOCX (Pure Unicode Master)
+        if (format === 'unicode_docx') {
+          triggerDownload(masterDocxBlob, `${baseName}${suffix}_Master_Unicode.docx`);
+          showToast(`ইউনিকোড মাস্টার .DOCX ডাউনলোড সম্পন্ন!`, 'success');
+          return;
+        }
+
+        // FORMAT 2: Modern Word .DOCX (Bijoy SutonnyMJ via DocxHandler)
+        if (format === 'bijoy_docx') {
+          showToast(`বিজয় .DOCX তৈরি হচ্ছে...`, 'info');
+          let bijoyBlob = null;
+          if (typeof DocxHandler !== 'undefined' && typeof DocxHandler.convertDocx === 'function') {
+            const res = await DocxHandler.convertDocx(masterDocxBlob, {
+              direction: 'u2b',
+              targetFont: 'SutonnyMJ'
+            });
+            bijoyBlob = res.convertedBlob || res.blob;
+          } else {
+            bijoyBlob = await createDocxBlob(exportText, true, { pageSize: pageSizeVal, margin: marginVal, fontSize: fontSizeVal });
+          }
+          triggerDownload(bijoyBlob, `${baseName}${suffix}_Bijoy.docx`);
+          showToast(`বিজয় .DOCX ডাউনলোড সম্পন্ন!`, 'success');
+          return;
+        }
+      };
+
+      await processDownload(false, '_Teacher');
+      if (isStudentCopy) {
+        await new Promise(res => setTimeout(res, 1000));
+        await processDownload(true, '_Student');
       }
 
     } catch (err) {
