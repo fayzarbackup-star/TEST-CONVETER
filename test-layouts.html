@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layout Engine Tester</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; background: #f0f4f8; }
+    h1 { color: #333; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #2563eb; }
+    .status { margin-top: 10px; color: #16a34a; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Layout Architecture Tester (Step 1)</h1>
+  
+  <div class="card">
+    <h2>1. Creative Question (CQ) Test</h2>
+    <p>Downloads a `.docx` file using the new <b>CqBuilder</b>.</p>
+    <button onclick="testCq()">Download CQ DOCX</button>
+    <button onclick="testCqDoc()">Download CQ DOC</button>
+    <div id="cqStatus" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Multiple Choice (MCQ) Test</h2>
+    <p>Downloads a `.docx` file using the new <b>McqBuilder</b>.</p>
+    <button onclick="testMcq()">Download MCQ DOCX</button>
+    <button onclick="testMcqDoc()">Download MCQ DOC</button>
+    <div id="mcqStatus" class="status"></div>
+  </div>
+
+  <!-- Dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  
+  <script src="js/bangla-converter-engine.js?v=3"></script>
+  <script src="js/equation-converter.js?v=3"></script>
+  <script src="js/docx-to-doc-engine.js?v=3"></script>
+  <script src="js/layout-engine/md-layout-parser.js?v=4"></script>
+  
+  <!-- New Builders -->
+  <script src="js/layout-engine/builders/base-builder.js?v=5"></script>
+  <script src="js/layout-engine/builders/cq-builder.js?v=5"></script>
+  <script src="js/layout-engine/builders/mcq-builder.js?v=5"></script>
+  <script src="js/layout-engine/docx-layout-builder.js?v=4"></script>
+
+  <script>
+    function triggerDownload(buffer, filename) {
+      const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+    }
+
+    const cqMarkdown = `---
+institute: "ঢাকা মডেল কলেজ"
+exam: "অর্ধ-বার্ষিক পরীক্ষা - ২০২৬"
+grade: "শ্রেণিঃ দ্বাদশ"
+subject: "বিষয়ঃ পদার্থবিজ্ঞান ১ম পত্র"
+time: "২ ঘণ্টা ৩০ মিনিট"
+fullMarks: "৫০"
+subjectCode: "১৭৪"
+note: "[দ্রষ্টব্য: ডান পাশের সংখ্যা প্রশ্নের পূর্ণমান জ্ঞাপক]"
+layout:
+  templateId: "creative-cq"
+  orientation: "portrait"
+  columns: 2
+---
+
+১। একটি স্প্রিং ধ্রুবক $k = 500 N/m$। একটি ভর $m = 2 kg$ স্প্রিংটির সাথে যুক্ত করা হলো।
+(ক) স্প্রিং ধ্রুবক কী?
+(খ) সরল ছন্দিত স্পন্দনের বৈশিষ্ট্য লিখ।
+(গ) স্প্রিংটির দোলনকাল নির্ণয় কর।
+(ঘ) ভরটিকে দ্বিগুণ করা হলে দোলনকালের কী রূপ পরিবর্তন হবে— গাণিতিকভাবে বিশ্লেষণ কর।
+
+২। উদ্দীপক ছাড়া সরাসরি একটি প্রশ্ন। English Word Test in Times New Roman.
+(ক) কাজ কাকে বলে?
+(খ) শক্তির সংরক্ষণশীলতা নীতিটি ব্যাখ্যা কর।
+(গ) $\\frac{1}{2}mv^2$ সমীকরণটি প্রতিপাদন কর।
+(ঘ) কাজ-শক্তি উপপাদ্যটি বিশ্লেষণ কর।
+`;
+
+    const mcqMarkdown = `---
+institute: "ঢাকা মডেল কলেজ"
+exam: "অর্ধ-বার্ষিক পরীক্ষা - ২০২৬"
+grade: "শ্রেণিঃ দ্বাদশ"
+subject: "বিষয়ঃ পদার্থবিজ্ঞান ১ম পত্র (বহুনির্বাচনী)"
+time: "২৫ মিনিট"
+fullMarks: "২৫"
+subjectCode: "১৭৪"
+layout:
+  templateId: "mcq-grid"
+  orientation: "portrait"
+  columns: 2
+---
+
+১. আলোর বেগ কত?
+(ক) $3 \\times 10^8 m/s$
+(খ) $3 \\times 10^7 m/s$
+(গ) $3 \\times 10^6 m/s$
+(ঘ) $3 \\times 10^5 m/s$
+
+২. নিউটনের দ্বিতীয় সূত্রটি হলো-
+i. $F = ma$
+ii. $p = mv$
+iii. $W = Fd$
+নিচের কোনটি সঠিক?
+(ক) i ও ii
+(খ) i ও iii
+(গ) ii ও iii
+(ঘ) i, ii ও iii
+
+৩. অভিকর্ষজ ত্বরণ $g$-এর মান কোথায় সবচেয়ে বেশি?
+(ক) মেরু অঞ্চলে
+(খ) বিষুবীয় অঞ্চলে
+(গ) পৃথিবীর কেন্দ্রে
+(ঘ) পাহাড়ে
+`;
+
+    async function testCq() {
+      try {
+        const ast = MdLayoutParser.parse(cqMarkdown);
+        const buffer = await DocxLayoutBuilder.build(ast);
+        triggerDownload(buffer, "CQ_Test_Result.docx");
+        document.getElementById('cqStatus').innerText = "✓ Success! Check your downloads.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById('cqStatus').innerText = "✗ Error: " + err.message;
+      }
+    }
+
+    async function testMcq() {
+      try {
+        const ast = MdLayoutParser.parse(mcqMarkdown);
+        const buffer = await DocxLayoutBuilder.build(ast);
+        triggerDownload(buffer, "MCQ_Test_Result.docx");
+        document.getElementById('mcqStatus').innerText = "✓ Success! Check your downloads.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById('mcqStatus').innerText = "✗ Error: " + err.message;
+      }
+    }
+    async function testMcqDoc() {
+      try {
+        const ast = MdLayoutParser.parse(mcqMarkdown);
+        const buffer = await DocxLayoutBuilder.build(ast);
+        const blob = new Blob([buffer]);
+        const converter = new DocxToDocConverter();
+        const result = await converter.convertDocxToDoc(blob, {
+          onProgress: (p, msg) => { document.getElementById('mcqStatus').innerText = `Converting: ${msg} (${p}%)`; }
+        });
+        triggerDownload(result.blob, "MCQ_Test_Result.doc");
+        document.getElementById('mcqStatus').innerText = "✓ DOC Success! Check your downloads.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById('mcqStatus').innerText = "✗ Error: " + err.message;
+      }
+    }
+
+    async function testCqDoc() {
+      try {
+        const ast = MdLayoutParser.parse(cqMarkdown);
+        const buffer = await DocxLayoutBuilder.build(ast);
+        const blob = new Blob([buffer]);
+        const converter = new DocxToDocConverter();
+        const result = await converter.convertDocxToDoc(blob, {
+          onProgress: (p, msg) => { document.getElementById('cqStatus').innerText = `Converting: ${msg} (${p}%)`; }
+        });
+        triggerDownload(result.blob, "CQ_Test_Result.doc");
+        document.getElementById('cqStatus').innerText = "✓ DOC Success! Check your downloads.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById('cqStatus').innerText = "✗ Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>

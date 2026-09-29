@@ -1,0 +1,17 @@
+# System and OS Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Logs and scratch
+*.log
+scratch/
+temp/
+__pycache__/
+
+# Editor directories
+.vscode/
+.idea/
+.antigravity/

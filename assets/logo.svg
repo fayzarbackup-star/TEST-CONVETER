@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="100%" height="100%">
+  <defs>
+    <linearGradient id="gradGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#065f46" />
+    </linearGradient>
+    <linearGradient id="gradGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <!-- Icon Emblem -->
+  <g transform="translate(10, 10)">
+    <rect x="0" y="0" width="80" height="80" rx="20" fill="url(#gradGreen)" filter="url(#shadow)" />
+    <!-- Computer Monitor & Land Emblem -->
+    <rect x="18" y="18" width="44" height="32" rx="4" fill="#ffffff" />
+    <rect x="22" y="22" width="36" height="24" rx="2" fill="#065f46" />
+    <!-- Land sprout / digital icon inside screen -->
+    <path d="M40 28 C35 34, 30 38, 40 43 C50 38, 45 34, 40 28 Z" fill="#f59e0b" />
+    <circle cx="40" cy="34" r="2.5" fill="#ffffff" />
+    <!-- Stand -->
+    <rect x="36" y="50" width="8" height="8" fill="#ffffff" />
+    <rect x="28" y="58" width="24" height="4" rx="2" fill="#ffffff" />
+    
+    <!-- Verified Badge Mini -->
+    <circle cx="66" cy="66" r="12" fill="url(#gradGold)" stroke="#ffffff" stroke-width="2.5" />
+    <path d="M61 66 L64 69 L71 62" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </g>
+
+  <!-- Typography -->
+  <g transform="translate(105, 20)">
+    <text x="0" y="32" font-family="'Hind Siliguri', 'Noto Sans Bengali', sans-serif" font-weight="800" font-size="30" fill="#1d4ed8">
+      ফয়জার <tspan fill="#047857">কম্পিউটার</tspan>
+    </text>
+    <text x="2" y="54" font-family="'Hind Siliguri', 'Noto Sans Bengali', sans-serif" font-weight="700" font-size="14" fill="#d97706" letter-spacing="0.5">
+      এন্ড ফটোস্ট্যাট | ভূমিসেবা সহায়তা কেন্দ্র
+    </text>
+    <text x="2" y="70" font-family="'Hind Siliguri', 'Noto Sans Bengali', sans-serif" font-weight="500" font-size="11" fill="#64748b">
+      অনুমোদন নং: দিনাজ/ফুল/এলএসএসএফসি-০৭/২০২৫
+    </text>
+  </g>
+</svg>

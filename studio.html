@@ -1,0 +1,1057 @@
+﻿<!DOCTYPE html>
+<html lang="bn" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>মাইক্রোসফট ওয়ার্ড স্টুডিও | ফয়জার প্রফেশনাল পাবলিশিং ও ২-কলাম প্রশ্নপত্র</title>
+  
+  <!-- Local Offline Assets -->
+  <script src="js/vendor/tailwindcss.js"></script>
+  <link rel="stylesheet" href="css/studio.css">
+  
+  <style>
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #e1dfdd; }
+    ::-webkit-scrollbar-thumb { background: #a19f9d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #605e5c; }
+    .theme-office-dark ::-webkit-scrollbar-track { background: #1f1f1f; }
+    .theme-office-dark ::-webkit-scrollbar-thumb { background: #484848; }
+
+    /* ── Font Awesome 6 Complete Icon Map (Offline Fix) ── */
+    .fas, .fa-solid, .far, .fa-regular, .fab, .fa-brands {
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-font-smoothing: antialiased;
+      display: inline-block;
+      font-style: normal;
+      font-variant: normal;
+      line-height: 1;
+      text-rendering: auto;
+    }
+    .fas, .fa-solid { font-family: 'Font Awesome 6 Free'; font-weight: 900; }
+    .far, .fa-regular { font-family: 'Font Awesome 6 Free'; font-weight: 400; }
+    .fab, .fa-brands { font-family: 'Font Awesome 6 Brands'; font-weight: 400; }
+
+    /* Core Icons Used in Studio */
+    .fa-floppy-disk::before { content: "\f0c7"; }
+    .fa-print::before { content: "\f02f"; }
+    .fa-download::before { content: "\f019"; }
+    .fa-caret-down::before { content: "\f0d7"; }
+    .fa-arrow-rotate-left::before { content: "\f0e2"; }
+    .fa-arrow-rotate-right::before { content: "\f01e"; }
+    .fa-bullseye::before { content: "\f140"; }
+    .fa-file-word::before { content: "\f1c2"; }
+    .fa-sun::before { content: "\f185"; }
+    .fa-table-columns::before { content: "\f0db"; }
+    .fa-window-maximize::before { content: "\f2d0"; }
+    .fa-times::before { content: "\f00d"; }
+    .fa-paste::before { content: "\f0ea"; }
+    .fa-copy::before { content: "\f0c5"; }
+    .fa-scissors::before { content: "\f0c4"; }
+    .fa-minus::before { content: "\f068"; }
+    .fa-plus::before { content: "\f067"; }
+    .fa-remove-format::before { content: "\f87d"; }
+    .fa-align-left::before { content: "\f036"; }
+    .fa-align-center::before { content: "\f037"; }
+    .fa-align-right::before { content: "\f038"; }
+    .fa-align-justify::before { content: "\f039"; }
+    .fa-list-ul::before { content: "\f0ca"; }
+    .fa-list-ol::before { content: "\f0cb"; }
+    .fa-outdent::before { content: "\f03b"; }
+    .fa-indent::before { content: "\f03c"; }
+    .fa-arrows-up-down::before { content: "\f338"; }
+    .fa-table::before { content: "\f0ce"; }
+    .fa-image::before { content: "\f03e"; }
+    .fa-magnifying-glass::before { content: "\f002"; }
+    .fa-check-double::before { content: "\f560"; }
+    .fa-undo::before { content: "\f0e2"; }
+    .fa-pen-to-square::before { content: "\f044"; }
+    .fa-expand-arrows-alt::before { content: "\f31e"; }
+    .fa-file-lines::before { content: "\f15c"; }
+    .fa-list-ol::before { content: "\f0cb"; }
+    .fa-pen::before { content: "\f304"; }
+    .fa-globe::before { content: "\f0ac"; }
+    .fa-circle::before { content: "\f111"; }
+    .fa-book-open::before { content: "\f518"; }
+    .fa-file-invoice::before { content: "\f570"; }
+    .fa-compress::before { content: "\f066"; }
+    .fa-arrows-left-right-to-line::before { content: "\e4b9"; }
+    .fa-keyboard::before { content: "\f11c"; }
+    .fa-folder-open::before { content: "\f07c"; }
+    .fa-highlighter::before { content: "\f591"; }
+    .fa-cloud-arrow-up::before { content: "\f0ee"; }
+    .fa-check-circle::before { content: "\f058"; }
+    .fa-triangle-exclamation::before { content: "\f071"; }
+    .fa-circle-xmark::before { content: "\f057"; }
+    .fa-circle-info::before { content: "\f05a"; }
+    .fa-columns::before { content: "\f0db"; }
+    .fa-desktop::before { content: "\f108"; }
+    .fa-pencil::before { content: "\f303"; }
+    .fa-bars::before { content: "\f0c9"; }
+    .fa-xmark::before { content: "\f00d"; }
+    .fa-eye::before { content: "\f06e"; }
+    .fa-eye-slash::before { content: "\f070"; }
+    .fa-maximize::before { content: "\f31e"; }
+    .fa-minimize::before { content: "\f78c"; }
+    .fa-arrows-to-dot::before { content: "\e4be"; }
+    /* New icon additions */
+    .fa-paintbrush::before { content: "\f1fc"; }
+    .fa-text-height::before { content: "\f034"; }
+    .fa-heading::before { content: "\f1dc"; }
+    .fa-paragraph::before { content: "\f1dd"; }
+    .fa-border-all::before { content: "\f84c"; }
+    .fa-page-break::before { content: "\f877"; }
+    .fa-file-circle-plus::before { content: "\e494"; }
+    .fa-angles-right::before { content: "\f101"; }
+    .fa-fill-drip::before { content: "\f576"; }
+    .fa-ruler-horizontal::before { content: "\f547"; }
+    .fa-ruler-vertical::before { content: "\f548"; }
+    .fa-text-slash::before { content: "\f87d"; }
+    .fa-font::before { content: "\f031"; }
+    .fa-object-group::before { content: "\f247"; }
+    .fa-layer-group::before { content: "\f5fd"; }
+    .fa-square-caret-right::before { content: "\f152"; }
+    .fa-down-left-and-up-right-to-center::before { content: "\f422"; }
+    .fa-up-right-and-down-left-from-center::before { content: "\f424"; }
+    .fa-moon::before { content: "\f186"; }
+    .fa-star::before { content: "\f005"; }
+    .fa-palette::before { content: "\f53f"; }
+    .fa-rotate::before { content: "\f2f1"; }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-hidden font-kalpurush theme-office-light">
+
+  <!-- 1. Microsoft Word Window Titlebar & Quick Access Toolbar -->
+  <header id="word-titlebar" class="word-titlebar no-print">
+    <!-- Left: Word Icon & Quick Access Toolbar -->
+    <div class="flex items-center gap-1">
+      <a href="index.html" class="quick-access-btn text-white hover:bg-white/30 flex items-center justify-center gap-1 px-2.5 rounded text-xs font-bold transition mr-1 bg-white/10" title="ফয়জার কনভার্টার হোমে ফিরুন">
+        <i class="fas fa-arrow-left"></i>
+        <span>কনভার্টার</span>
+      </a>
+      <div class="word-app-icon" title="Microsoft Word">W</div>
+      
+      <!-- Save Primary -->
+      <button id="qa-btn-save" class="quick-access-btn" title="ডকুমেন্ট দ্রুত সংরক্ষণ (Ctrl+S)">
+        <i class="fas fa-floppy-disk"></i>
+      </button>
+
+      <!-- Vector Print / PDF -->
+      <button id="qa-btn-print" class="quick-access-btn" title="প্রিন্ট প্রিভিউ ও প্রিন্ট (Ctrl+P)">
+        <i class="fas fa-print"></i>
+      </button>
+
+      <!-- Quick Download Menu Dropdown Trigger -->
+      <div class="relative inline-block">
+        <button id="qa-btn-download-menu" class="quick-access-btn w-auto px-2 text-xs flex items-center gap-1.5 font-bold bg-white/20 hover:bg-white/30 text-white rounded cursor-pointer" title="ডকুমেন্ট ডাউনলোড ও এক্সপোর্ট অপশন">
+          <i class="fas fa-download text-amber-300 text-[11px]"></i>
+          <span>ডাউনলোড</span>
+          <i class="fas fa-caret-down text-[9px]"></i>
+        </button>
+
+        <!-- Dropdown Popup -->
+        <div id="qa-download-dropdown" class="hidden absolute left-0 top-full mt-1.5 w-72 bg-white dark:bg-slate-800 rounded-md shadow-2xl border border-slate-300 dark:border-slate-700 py-1 z-50 text-slate-800 dark:text-slate-100 font-sans text-xs">
+          <div class="px-3 py-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+            ডাউনলোড ফরম্যাট নির্বাচন করুন
+          </div>
+          <button id="menu-export-doc-bijoy" class="w-full px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2.5 transition">
+            <i class="fas fa-file-word text-blue-600 text-sm"></i>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs">Word 2003 (.doc) - বিজয়</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">SutonnyMJ ফন্ট (বিজয় ৫০ ANSI)</span>
+            </div>
+          </button>
+          <button id="menu-export-doc-unicode" class="w-full px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2.5 transition">
+            <i class="fas fa-file-word text-emerald-600 text-sm"></i>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs">Word 2003 (.doc) - ইউনিকোড</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Kalpurush ফন্ট (ইউনিকোড RTF)</span>
+            </div>
+          </button>
+          <div class="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+          <button id="menu-export-docx-unicode" class="w-full px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2.5 transition">
+            <i class="fas fa-file-word text-indigo-600 text-sm"></i>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs">আধুনিক Word (.docx) - ইউনিকোড</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Word 2007-2024 / Office 365 OpenXML</span>
+            </div>
+          </button>
+          <button id="menu-export-docx-bijoy" class="w-full px-3 py-2 text-left hover:bg-blue-50 dark:hover:bg-slate-700 flex items-center gap-2.5 transition">
+            <i class="fas fa-file-word text-amber-600 text-sm"></i>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs">আধুনিক Word (.docx) - বিজয়</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Word 2007-2024 / SutonnyMJ ফন্টসহ</span>
+            </div>
+          </button>
+          <div class="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+          <button id="menu-export-pdf" class="w-full px-3 py-2 text-left hover:bg-emerald-50 dark:hover:bg-slate-700 flex items-center gap-2.5 transition">
+            <i class="fas fa-print text-emerald-600 text-sm"></i>
+            <div class="flex flex-col">
+              <span class="font-bold text-xs">ভেক্টর প্রিন্ট / PDF</span>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">হাই-রেজ্যুলিউশন প্রিন্ট ও সেভ PDF</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <span class="text-white/30 text-xs px-0.5">|</span>
+
+      <!-- Undo / Redo UI -->
+      <button id="qa-btn-undo" class="quick-access-btn" title="পূর্বাবস্থায় ফিরুন (Undo Ctrl+Z)">
+        <i class="fas fa-arrow-rotate-left"></i>
+      </button>
+      <button id="qa-btn-redo" class="quick-access-btn" title="পুনরায় করুন (Redo Ctrl+Y)">
+        <i class="fas fa-arrow-rotate-right"></i>
+      </button>
+
+      <!-- Blank OMR Sheet -->
+      <button id="btn-make-omr" class="quick-access-btn text-amber-300 ml-1" title="ব্ল্যাঙ্ক OMR শিট তৈরি করুন">
+        <i class="fas fa-bullseye"></i>
+      </button>
+    </div>
+
+    <!-- Center: Word Document Title -->
+    <div class="titlebar-doc-name">
+      <i class="fas fa-file-word text-blue-200"></i>
+      <span id="word-doc-title">ডকুমেন্ট ১ - Microsoft Word</span>
+      <span class="text-[10px] font-normal px-2 py-0.5 rounded bg-white/10 text-white/90">ফয়জার স্টুডিও v3.0</span>
+    </div>
+
+    <!-- Right: Theme Switcher & Window Control Buttons -->
+    <div class="flex items-center gap-1">
+      <!-- Theme Toggle (Classic Office Light vs Modern Dark) -->
+      <button id="btn-toggle-theme" class="quick-access-btn w-auto px-2 text-xs flex items-center gap-1 font-semibold" title="অফিস থিম পরিবর্তন করুন">
+        <i class="fas fa-sun text-amber-300"></i>
+        <span id="lbl-theme-name">ক্লাসিক অফিস</span>
+      </button>
+
+      <span class="text-white/30 text-xs px-0.5">|</span>
+
+      <!-- Collapse / Toggle Source Editor Pane -->
+      <button id="btn-toggle-editor-pane" class="window-ctrl-btn" title="সোর্স এডিটর প্যানেল লুকান / দেখান">
+        <i class="fas fa-table-columns"></i>
+      </button>
+
+      <!-- Maximize Word (Full Preview) -->
+      <button id="btn-window-maximize" class="window-ctrl-btn" title="ওয়ার্ড ফুলস্ক্রিন প্রিভিউ">
+        <i class="fas fa-window-maximize"></i>
+      </button>
+
+      <!-- Close / Reset -->
+      <button id="btn-window-reset" class="window-ctrl-btn btn-close" title="নতুন ডকুমেন্ট / রিসেট">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Microsoft Word Multi-Tab Ribbon -->
+  <div class="flex flex-col shrink-0 no-print">
+    <!-- Ribbon Tabs Row -->
+    <nav class="word-ribbon-tabs">
+      <button class="word-tab-btn file-tab" data-tab="tab-file">ফাইল (File)</button>
+      <button class="word-tab-btn active" data-tab="tab-home">হোম (Home)</button>
+      <button class="word-tab-btn" data-tab="tab-layout">পেজ লেআউট (Layout)</button>
+      <button class="word-tab-btn" data-tab="tab-insert">ইনসার্ট ও টেমপ্লেট (Insert)</button>
+      <button class="word-tab-btn" data-tab="tab-view">ভিউ (View)</button>
+    </nav>
+
+    <!-- Ribbon Content Panels -->
+    <div id="word-ribbon-panels" class="word-ribbon-panel">
+
+      <!-- TAB 1: HOME (Active by default) -->
+      <div id="tab-panel-home" class="flex items-stretch gap-2 w-full flex-wrap xl:flex-nowrap">
+        <!-- Group: Clipboard -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-ribbon-paste" class="word-btn-large" title="পেস্ট করুন (Ctrl+V)">
+              <i class="fas fa-paste text-blue-600"></i>
+              <span>পেস্ট</span>
+            </button>
+            <div class="flex flex-col gap-1">
+              <button id="btn-ribbon-copy" class="word-btn-sm" title="কপি করুন (Ctrl+C)"><i class="fas fa-copy text-xs"></i></button>
+              <button id="btn-ribbon-cut" class="word-btn-sm" title="কাট করুন (Ctrl+X)"><i class="fas fa-scissors text-xs"></i></button>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">ক্লিপবোর্ড</div>
+        </div>
+
+        <!-- Group: Font -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content flex-col items-start gap-1">
+            <!-- Row 1: Font Family & Size Dropdown & Steps -->
+            <div class="flex items-center gap-1">
+              <select id="font-select" class="word-select font-semibold w-36" title="ফন্ট স্টাইল">
+                <option value="kalpurush">কালপুরুষ (ইউনিকোড)</option>
+                <option value="bijoy">সুতন্নিএমজে (বিজয়)</option>
+              </select>
+
+              <select id="select-font-size" class="word-select font-semibold w-16" title="ফন্ট সাইজ নির্বাচন">
+                <option value="9">9pt</option>
+                <option value="10">10pt</option>
+                <option value="11">11pt</option>
+                <option value="12" selected>12pt</option>
+                <option value="14">14pt</option>
+                <option value="16">16pt</option>
+                <option value="18">18pt</option>
+                <option value="20">20pt</option>
+                <option value="24">24pt</option>
+                <option value="28">28pt</option>
+                <option value="32">32pt</option>
+                <option value="36">36pt</option>
+              </select>
+
+              <div class="flex items-center">
+                <button id="btn-font-dec" class="word-btn-sm rounded-r-none" title="ফন্ট ছোট করুন"><i class="fas fa-minus text-[9px]"></i></button>
+                <span id="lbl-font-size" class="px-1.5 h-[25px] flex items-center justify-center text-xs font-bold bg-white dark:bg-slate-800 border-y border-slate-300 dark:border-slate-600 min-w-[32px]">12pt</span>
+                <button id="btn-font-inc" class="word-btn-sm rounded-l-none" title="ফন্ট বড় করুন"><i class="fas fa-plus text-[9px]"></i></button>
+              </div>
+
+              <button id="btn-format-clear" class="word-btn-sm ml-0.5 text-slate-600 dark:text-slate-300" title="ফরম্যাটিং ক্লিয়ার করুন">
+                <i class="fas fa-remove-format text-[10px]"></i>
+              </button>
+            </div>
+
+            <!-- Row 2: Formatting Toggles (B, I, U, Strike, Sub, Super, Colors) -->
+            <div class="flex items-center gap-1">
+              <button id="btn-format-bold" class="word-btn-sm font-black" title="বোল্ড (Bold Ctrl+B)">B</button>
+              <button id="btn-format-italic" class="word-btn-sm italic font-serif" title="ইটালিক (Italic Ctrl+I)">I</button>
+              <button id="btn-format-underline" class="word-btn-sm underline font-bold" title="আন্ডারলাইন (Underline Ctrl+U)">U</button>
+              <button id="btn-format-strike" class="word-btn-sm line-through text-[11px]" title="স্ট্রাইকথ্রু">abc</button>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <button id="btn-format-sub" class="word-btn-sm text-[10px] font-bold" title="সাবস্ক্রিপ্ট (Subscript x₂)">X<sub>2</sub></button>
+              <button id="btn-format-super" class="word-btn-sm text-[10px] font-bold" title="সুপারস্ক্রিপ্ট (Superscript x²)">X<sup>2</sup></button>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              
+              <!-- Text Foreground Color Picker -->
+              <label id="lbl-fore-color" class="word-btn-sm relative cursor-pointer" title="টেক্সট কালার পরিবর্তন">
+                <span class="font-black text-[11px] leading-none">A</span>
+                <span id="fore-color-indicator" class="absolute bottom-0.5 left-1 right-1 h-0.5 bg-red-600 rounded-sm"></span>
+                <input type="color" id="input-fore-color" value="#d83b01" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+              </label>
+
+              <!-- Text Highlight Color Picker -->
+              <label id="lbl-hilite-color" class="word-btn-sm relative cursor-pointer" title="টেক্সট হাইলাইট কালার">
+                <i class="fas fa-highlighter text-[10px] text-amber-500"></i>
+                <span id="hilite-color-indicator" class="absolute bottom-0.5 left-1 right-1 h-0.5 bg-yellow-300 rounded-sm"></span>
+                <input type="color" id="input-hilite-color" value="#fef08a" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+              </label>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <!-- Format Painter -->
+              <button id="btn-format-painter" class="word-btn-sm" title="ফরম্যাট কপি ও প্রয়োগ">
+                <i class="fas fa-paintbrush text-[10px] text-purple-600"></i>
+              </button>
+              <!-- Case Change -->
+              <div class="relative inline-block">
+                <button id="btn-case-change" class="word-btn-sm" title="কেস পরিবর্তন">
+                  <span class="text-[10px] font-bold">Aa</span><i class="fas fa-caret-down text-[8px] ml-0.5"></i>
+                </button>
+                <div id="case-menu" class="hidden absolute top-full left-0 z-50 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-lg text-xs w-32 py-1 mt-0.5">
+                  <button class="case-opt block w-full text-left px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700" data-case="sentence">Sentence case</button>
+                  <button class="case-opt block w-full text-left px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700" data-case="lower">lowercase</button>
+                  <button class="case-opt block w-full text-left px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700" data-case="upper">UPPERCASE</button>
+                  <button class="case-opt block w-full text-left px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700" data-case="title">Title Case</button>
+                  <button class="case-opt block w-full text-left px-3 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-700" data-case="toggle">tOGGLE cASE</button>
+                </div>
+              </div>
+              <!-- Letter Spacing -->
+              <i class="fas fa-text-height text-[10px] text-slate-500" title="অক্ষর-ফাঁক"></i>
+              <select id="select-letter-spacing" class="word-select text-[10px] w-20" title="Letter Spacing">
+                <option value="-0.5px">আঁটো</option>
+                <option value="0px" selected>স্বাভাবিক</option>
+                <option value="0.5px">প্রশস্ত</option>
+                <option value="1px">বেশি</option>
+                <option value="2px">প্রচুর</option>
+              </select>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">ফন্ট</div>
+        </div>
+
+        <!-- Group: Paragraph -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content flex-col items-start gap-1">
+            <!-- Row 1: Alignment & Lists -->
+            <div class="flex items-center gap-1">
+              <button id="btn-align-left" class="word-btn-sm" title="বাম প্রান্তিক"><i class="fas fa-align-left text-xs"></i></button>
+              <button id="btn-align-center" class="word-btn-sm" title="মাঝখানে"><i class="fas fa-align-center text-xs"></i></button>
+              <button id="btn-align-right" class="word-btn-sm" title="ডান প্রান্তিক"><i class="fas fa-align-right text-xs"></i></button>
+              <button id="btn-align-justify" class="word-btn-sm active" title="উভয় প্রান্তিক (Justify)"><i class="fas fa-align-justify text-xs"></i></button>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <button id="btn-list-ul" class="word-btn-sm" title="বুলেট লিস্ট"><i class="fas fa-list-ul text-xs"></i></button>
+              <button id="btn-list-ol" class="word-btn-sm" title="নম্বরযুক্ত লিস্ট"><i class="fas fa-list-ol text-xs"></i></button>
+              <button id="btn-outdent" class="word-btn-sm" title="ইনডেন্ট কমান"><i class="fas fa-outdent text-xs"></i></button>
+              <button id="btn-indent" class="word-btn-sm" title="ইনডেন্ট বাড়ান"><i class="fas fa-indent text-xs"></i></button>
+            </div>
+
+            <!-- Row 2: Line Spacing + Para Spacing + Breaks + Border -->
+            <div class="flex items-center gap-1 flex-wrap">
+              <i class="fas fa-arrows-up-down text-[10px] text-slate-500"></i>
+              <select id="select-line-spacing" class="word-select text-xs font-semibold w-32">
+                <option value="1.0">1.0x (একক)</option>
+                <option value="1.15">1.15x (টাইট)</option>
+                <option value="1.25">1.25x (কম্প্যাক্ট)</option>
+                <option value="1.35" selected>1.35x (বোর্ড স্ট্যান্ডার্ড)</option>
+                <option value="1.45">1.45x (ভরাট)</option>
+                <option value="1.6">1.6x (প্রশস্ত)</option>
+                <option value="2.0">2.0x (দ্বিগুণ)</option>
+              </select>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <!-- Paragraph Spacing -->
+              <i class="fas fa-paragraph text-[10px] text-slate-500" title="প্যারা ফাঁক"></i>
+              <select id="select-para-spacing" class="word-select text-[10px] w-20" title="প্যারাগ্রাফ ফাঁক">
+                <option value="0px">ফাঁক: ০</option>
+                <option value="4px">ফাঁক: ৪px</option>
+                <option value="8px" selected>ফাঁক: ৮px</option>
+                <option value="12px">ফাঁক: ১২px</option>
+                <option value="16px">ফাঁক: ১৬px</option>
+              </select>
+              <span class="text-slate-300 dark:text-slate-600">|</span>
+              <!-- Page Break -->
+              <button id="btn-insert-page-break" class="word-btn-sm" title="পেজ ব্রেক">
+                <i class="fas fa-file-circle-plus text-[10px] text-blue-500"></i>
+                <span class="text-[9px]">পেজ ব্রেক</span>
+              </button>
+              <!-- Column Break -->
+              <button id="btn-insert-col-break" class="word-btn-sm" title="কলাম ব্রেক">
+                <i class="fas fa-columns text-[10px] text-indigo-500"></i>
+                <span class="text-[9px]">কলাম ব্রেক</span>
+              </button>
+              <!-- Para Border -->
+              <button id="btn-para-border" class="word-btn-sm" title="প্যারা বর্ডার">
+                <i class="fas fa-border-all text-[10px] text-slate-600"></i>
+                <span class="text-[9px]">বর্ডার</span>
+              </button>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">প্যারাগ্রাফ</div>
+        </div>
+
+        <!-- Group: Direct Insert (Table, Image, Line) -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-1">
+            <button id="btn-quick-insert-table" class="word-btn-large" title="ডকুমেন্টে সরাসরি ছক / টেবিল যুক্ত করুন">
+              <i class="fas fa-table text-blue-600"></i>
+              <span>টেবিল</span>
+            </button>
+            <button id="btn-quick-insert-image" class="word-btn-large" title="সরাসরি ছবি, সিল বা স্বাক্ষর যুক্ত করুন">
+              <i class="fas fa-image text-emerald-600"></i>
+              <span>ছবি/সিল</span>
+            </button>
+            <button id="btn-quick-insert-hr" class="word-btn-large" title="অনুভূমিক বিভাজক রেখা টানুন">
+              <i class="fas fa-minus text-slate-600"></i>
+              <span>ডিভাইডার</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ইনসার্ট টুলস</div>
+        </div>
+
+        <!-- Group: Search & Editing -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-quick-find-replace" class="word-btn-large" title="ডকুমেন্টে শব্দ খুঁজুন ও পরিবর্তন করুন">
+              <i class="fas fa-magnifying-glass text-indigo-600"></i>
+              <span>খুঁজুন/বদলান</span>
+            </button>
+            <div class="flex flex-col gap-1">
+              <button id="btn-quick-select-all" class="word-btn-sm" title="সব সিলেক্ট করুন (Ctrl+A)"><i class="fas fa-check-double text-[10px]"></i></button>
+              <button id="btn-quick-undo" class="word-btn-sm" title="পূর্বাবস্থা (Ctrl+Z)"><i class="fas fa-undo text-[10px]"></i></button>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">এডিটিং</div>
+        </div>
+
+        <!-- Group: Live Direct Editing (Word WYSIWYG) -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-toggle-edit" class="word-btn-large" title="সরাসরি প্রিন্ট পেজে ক্লিক করে ওয়ার্ডের মত টাইপ করুন">
+              <i class="fas fa-pen-to-square text-amber-500"></i>
+              <span id="txt-edit-mode">সরাসরি পেজে এডিট</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ওয়ার্ড লাইভ এডিট</div>
+        </div>
+
+        <!-- Group: Quick Full Preview -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-toggle-fullscreen" class="word-btn-large" title="ফুলস্ক্রিন ওয়ার্ড প্রিভিউ মোড">
+              <i class="fas fa-expand-arrows-alt text-emerald-600"></i>
+              <span id="txt-fullscreen">ফুল প্রিভিউ</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">প্রিভিউ মোড</div>
+        </div>
+
+        <!-- Group: Focus Mode -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-focus-mode" class="word-btn-large" title="ফোকাস মোড — সব UI লুকিয়ে শুধু ডকুমেন্ট (F11)">
+              <i class="fas fa-moon text-violet-600"></i>
+              <span id="txt-focus-mode">ফোকাস মোড</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ফোকাস</div>
+        </div>
+
+        <!-- Right Notice -->
+        <div class="ml-auto flex items-center">
+          <span id="live-edit-notice" class="hidden text-xs text-amber-700 dark:text-amber-300 font-bold animate-pulse flex items-center gap-1.5 bg-amber-100 dark:bg-amber-950/80 px-2.5 py-1 rounded border border-amber-300 dark:border-amber-700">
+            <i class="fas fa-pencil"></i> পেজের যেকোনো লেখার উপর ক্লিক করে ওয়ার্ডের মত সরাসরি টাইপ করুন
+          </span>
+        </div>
+      </div>
+
+      <!-- TAB 2: PAGE LAYOUT (Hidden by default) -->
+      <div id="tab-panel-layout" class="hidden flex items-stretch gap-3 w-full">
+        <!-- Group: Page Setup -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content flex-wrap gap-2">
+            <!-- Margin -->
+            <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">মার্জিন (Margins):</span>
+              <select id="select-margin" class="word-select font-semibold">
+                <option value="margin-narrow">০.৪" (ন্যরো / সর্বনিম্ন)</option>
+                <option value="margin-standard" selected>০.৫" (বোর্ড স্ট্যান্ডার্ড)</option>
+                <option value="margin-normal">০.৭৫" (সাধারণ)</option>
+                <option value="margin-wide">১.০" (প্রশস্ত)</option>
+              </select>
+            </div>
+
+            <!-- Orientation & Size -->
+            <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400">সাইজ ও অরিয়েন্টেশন:</span>
+              <select id="paper-size-select" class="word-select font-semibold">
+                <option value="a4-landscape">A4 ল্যান্ডস্কেপ (২-কলাম)</option>
+                <option value="a4-portrait">A4 পোর্ট্রেট</option>
+                <option value="legal-portrait">লিগ্যাল সাইজ (স্ট্যাম্প)</option>
+              </select>
+            </div>
+
+            <!-- Booklet Checkbox -->
+            <div class="flex items-center pt-3">
+              <label class="flex items-center gap-1.5 text-xs font-bold cursor-pointer text-slate-800 dark:text-slate-200">
+                <input type="checkbox" id="chk-skip-col1" class="rounded text-blue-600 focus:ring-0 cursor-pointer">
+                <span><i class="fas fa-book-open text-amber-500"></i> বুকলেট (১ম কলাম স্কিপ)</span>
+              </label>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">পেজ সেটাপ</div>
+        </div>
+
+        <!-- Group: MCQ Question Split Controller -->
+        <div id="group-split-ctrl" class="word-ribbon-group">
+          <div class="ribbon-group-content items-center gap-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">১ম পেজে প্রশ্নের সংখ্যা:</span>
+            <div class="flex items-center">
+              <button id="btn-split-dec" class="word-btn-sm rounded-r-none" title="১ম পেজের প্রশ্ন সংখ্যা কমান"><i class="fas fa-minus text-[9px]"></i></button>
+              <span id="lbl-split-count" class="px-2 h-[25px] flex items-center justify-center text-xs font-bold bg-white dark:bg-slate-800 border-y border-slate-300 dark:border-slate-600 text-blue-600 dark:text-blue-400 min-w-[38px]">২০টি</span>
+              <button id="btn-split-inc" class="word-btn-sm rounded-l-none" title="১ম পেজের প্রশ্ন সংখ্যা বাড়ান"><i class="fas fa-plus text-[9px]"></i></button>
+            </div>
+          </div>
+          <div class="ribbon-group-footer">বহুনির্বাচনী পৃষ্ঠা বণ্টন</div>
+        </div>
+      </div>
+
+      <!-- TAB 3: INSERT & TEMPLATES (Hidden by default) -->
+      <div id="tab-panel-insert" class="hidden flex items-stretch gap-3 w-full">
+        <!-- Group: Ready-made Templates -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content items-center gap-2">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">টেমপ্লেট নির্বাচন:</span>
+            <select id="template-select" class="word-select font-bold text-xs w-64">
+              <option value="">-- রেডিমেড টেমপ্লেট নির্বাচন করুন --</option>
+              <optgroup label="📝 শিক্ষা ও পরীক্ষা">
+                <option value="CQ_EXAM" selected>সৃজনশীল প্রশ্নপত্র (বিজ্ঞান ২-কলাম)</option>
+                <option value="MCQ_EXAM">বহুনির্বাচনী প্রশ্নপত্র (গণিত ৩০টি)</option>
+                <option value="PROTTOYON">অভিজ্ঞতার সনদ / প্রত্যয়নপত্র</option>
+                <option value="ADMIT_CARD">প্রবেশপত্র (Admit Card — ২×২ গ্রিড)</option>
+                <option value="SALARY_SLIP">বেতন স্লিপ (Pay Slip)</option>
+                <option value="CLASS_ROUTINE">ক্লাস রুটিন (Class Routine)</option>
+                <option value="NOTICE_BOARD">নোটিশ বোর্ড / বিজ্ঞপ্তি</option>
+              </optgroup>
+              <optgroup label="⚖️ স্ট্যাম্প ও চুক্তিপত্র">
+                <option value="STAMP_BOND">৩০০ টাকার স্ট্যাম্প অঙ্গীকারনামা (কর্জ ও বন্ধক)</option>
+                <option value="TENANCY">বাসা / দোকান ভাড়া চুক্তিপত্র</option>
+              </optgroup>
+              <optgroup label="🏛️ সরকারি ও ভূমি সেবা">
+                <option value="LAND_RECT">খতিয়ান নাম সংশোধন আবেদন (ছকসহ)</option>
+                <option value="POLICE_GD">হারানো সার্টিফিকেটের পুলিশ জিডি (GD)</option>
+                <option value="FAIR_PERM">মেলা ও পূজার নিরাপত্তা সহযোগিতা আবেদন</option>
+                <option value="DARKHAST">সাধারণ দরখাস্ত / আবেদনপত্র</option>
+                <option value="OFFICE_MEMO">অফিস মেমো / নোটশিট</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="ribbon-group-footer">রেডিমেড টেমপ্লেট</div>
+        </div>
+
+        <!-- Group: OMR Sheet Insert -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content">
+            <button id="btn-insert-omr" class="word-btn-large" title="ব্ল্যাঙ্ক ওএমআর শিট পেজে সংযুক্ত করুন">
+              <i class="fas fa-bullseye text-amber-500"></i>
+              <span>ব্ল্যাঙ্ক OMR</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ওএমআর ও ছক</div>
+        </div>
+
+        <!-- Group: File Import -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-1">
+            <button id="btn-import-file" class="word-btn-large" title=".txt বা .docx ফাইল থেকে টেক্সট ইমপোর্ট করুন">
+              <i class="fas fa-folder-open text-blue-500"></i>
+              <span>ফাইল খুলুন</span>
+            </button>
+            <button id="btn-import-md" class="word-btn-large" title="Gemini .md ফাইল সরাসরি এডিটরে লোড করুন (OCR ছাড়া)">
+              <i class="fas fa-file-lines text-emerald-600"></i>
+              <span>.md লোড</span>
+            </button>
+            <button id="btn-help-shortcuts" class="word-btn-large" title="সকল কীবোর্ড শর্টকাট দেখুন (F1)">
+              <i class="fas fa-keyboard text-indigo-500"></i>
+              <span>শর্টকাট</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ইমপোর্ট ও সাহায্য</div>
+        </div>
+        <!-- Hidden MD file input -->
+        <input type="file" id="md-file-input" accept=".md,.txt" class="hidden">
+      </div>
+
+      <!-- TAB 4: VIEW (Hidden by default) -->
+      <div id="tab-panel-view" class="hidden flex items-stretch gap-3 w-full">
+        <!-- Group: Views -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-2">
+            <button id="btn-view-fullscreen" class="word-btn-large">
+              <i class="fas fa-desktop text-blue-600"></i>
+              <span>ফুলস্ক্রিন</span>
+            </button>
+            <button id="btn-view-split" class="word-btn-large active">
+              <i class="fas fa-columns text-emerald-600"></i>
+              <span>স্প্লিট ভিউ</span>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">ডকুমেন্ট ভিউ</div>
+        </div>
+
+        <!-- Group: Show / Hide Rulers & Guides -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content flex-col items-start gap-1">
+            <label class="flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+              <input type="checkbox" id="chk-toggle-ruler" checked class="rounded text-blue-600 cursor-pointer">
+              <span>রুলার বার (Rulers)</span>
+            </label>
+            <label class="flex items-center gap-1.5 text-xs font-semibold cursor-pointer">
+              <input type="checkbox" id="chk-toggle-crop" checked class="rounded text-blue-600 cursor-pointer">
+              <span>মার্জিন কর্নার গাইড (Crop Marks)</span>
+            </label>
+          </div>
+          <div class="ribbon-group-footer">শো / হাইড</div>
+        </div>
+
+        <!-- Group: Zoom Presets -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-1">
+            <button id="btn-zoom-preset-100" class="word-btn-sm font-bold w-12">100%</button>
+            <button id="btn-zoom-fit-page-ribbon" class="word-btn-sm font-bold w-16">পেজ ফিট</button>
+            <button id="btn-zoom-fit-width-ribbon" class="word-btn-sm font-bold w-16">উইডথ</button>
+          </div>
+          <div class="ribbon-group-footer">জুম প্রিসেট</div>
+        </div>
+      </div>
+
+      <!-- TAB 5: FILE (Hidden by default) -->
+      <div id="tab-panel-file" class="hidden flex items-stretch gap-3 w-full flex-wrap">
+        <!-- Group: Word 2003 (.doc) Export -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-2">
+            <button id="btn-file-doc-bijoy" class="export-hub-card" title="Word 2003 (.doc) বিজয় ৫০ ফন্টে ডাউনলোড">
+              <i class="fas fa-file-word text-blue-600 text-2xl"></i>
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-xs">Word 2003 (.doc)</span>
+                <span class="text-[10px] text-blue-700 dark:text-blue-400 font-semibold">বিজয় ৫০ (SutonnyMJ)</span>
+              </div>
+            </button>
+            <button id="btn-file-doc-unicode" class="export-hub-card" title="Word 2003 (.doc) কালপুরুষ ইউনিকোডে ডাউনলোড">
+              <i class="fas fa-file-word text-emerald-600 text-2xl"></i>
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-xs">Word 2003 (.doc)</span>
+                <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">ইউনিকোড (Kalpurush)</span>
+              </div>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">Word 2003 (.doc) ডাউনলোড</div>
+        </div>
+
+        <!-- Group: Modern Word (.docx) Export -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-2">
+            <button id="btn-file-docx-unicode" class="export-hub-card" title="আধুনিক Word (.docx) ইউনিকোডে ডাউনলোড (Word 2007-2024 / 365)">
+              <i class="fas fa-file-word text-indigo-600 text-2xl"></i>
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-xs">আধুনিক Word (.docx)</span>
+                <span class="text-[10px] text-indigo-700 dark:text-indigo-400 font-semibold">ইউনিকোড (Kalpurush)</span>
+              </div>
+            </button>
+            <button id="btn-file-docx-bijoy" class="export-hub-card" title="আধুনিক Word (.docx) বিজয় ৫০ ফন্টে ডাউনলোড (Word 2007-2024 / 365)">
+              <i class="fas fa-file-word text-amber-600 text-2xl"></i>
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-xs">আধুনিক Word (.docx)</span>
+                <span class="text-[10px] text-amber-700 dark:text-amber-400 font-semibold">বিজয় ৫০ (SutonnyMJ)</span>
+              </div>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">আধুনিক Word (.docx) ডাউনলোড</div>
+        </div>
+
+        <!-- Group: PDF & Print -->
+        <div class="word-ribbon-group">
+          <div class="ribbon-group-content gap-2">
+            <button id="btn-file-pdf" class="export-hub-card" title="ব্রাউজার প্রিন্ট অথবা হাই-রেজ্যুলিউশন PDF সংরক্ষণ">
+              <i class="fas fa-print text-emerald-600 text-2xl"></i>
+              <div class="flex flex-col text-left">
+                <span class="font-bold text-xs">ভেক্টর প্রিন্ট / PDF</span>
+                <span class="text-[10px] text-emerald-700 dark:text-emerald-400 font-semibold">হাই-রেজ্যুলিউশন ভেক্টর</span>
+              </div>
+            </button>
+          </div>
+          <div class="ribbon-group-footer">প্রিন্ট ও PDF সংরক্ষণ</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3. Main Workspace: Split Pane (Editor + Office Canvas) -->
+  <main class="flex-1 flex overflow-hidden">
+    
+    <!-- Left Pane: Input Editor (Word Navigation & Source Pane) -->
+    <section id="editor-pane" class="w-full md:w-5/12 lg:w-4/12 border-r border-slate-300 dark:border-slate-800 flex flex-col bg-slate-50 dark:bg-slate-900 shrink-0">
+      
+      <!-- Editor Header -->
+      <div class="editor-header p-2.5 border-b border-slate-300 dark:border-slate-800 flex items-center justify-between bg-slate-100 dark:bg-slate-950">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-keyboard text-blue-600 text-xs"></i>
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-200">সোর্স টেক্সট ইনপুট</span>
+          <span id="detected-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            স্বয়ংক্রিয় সনাক্ত
+          </span>
+        </div>
+        <div>
+          <select id="mode-select" class="word-select text-[11px] font-semibold">
+            <option value="AUTO">অটো ডিটেকশন</option>
+            <option value="EXAM_CQ">সৃজনশীল প্রশ্নপত্র (CQ)</option>
+            <option value="EXAM_MCQ">বহুনির্বাচনী প্রশ্ন (MCQ)</option>
+            <option value="STAMP_DEED">৩০০ টাকার স্ট্যাম্প দলিল</option>
+            <option value="GOVT_APP">সরকারি আবেদনপত্র</option>
+            <option value="PROTTOYON">প্রত্যয়ন ও সনদপত্র</option>
+          </select>
+        </div>
+      </div>      <!-- Textarea -->
+      <div class="flex-1 p-2.5 flex flex-col gap-1.5">
+        <!-- MD Drop Zone Bar -->
+        <div id="md-dropzone-bar"
+          class="flex items-center justify-center gap-2 w-full px-3 py-1.5 rounded-lg border-2 border-dashed border-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-700 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 cursor-pointer select-none shrink-0 transition hover:bg-emerald-100 dark:hover:bg-emerald-900/40"
+          title=".md ফাইল এখানে ড্র্যাগ করুন অথবা ক্লিক করুন">
+          <i class="fas fa-file-lines text-base"></i>
+          <span>.md ফাইল ড্র্যাগ করুন বা <u>ক্লিক করুন</u> &mdash; OCR ছাড়াই সরাসরি লোড</span>
+        </div>
+        <textarea 
+          id="input-text" 
+          placeholder="এখানে কোনো প্রশ্নপত্র, দলিল বা আবেদনের লেখা পেস্ট করুন... সফটওয়্যার নিজে থেকেই সঠিক ফরম্যাট তৈরি করে দেবে।"
+          class="w-full flex-1 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-xs text-slate-900 dark:text-slate-100 focus:border-blue-600 focus:outline-none resize-none font-mono leading-relaxed"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Editor Footer -->
+      <div class="editor-footer p-2 bg-slate-100 dark:bg-slate-950 border-t border-slate-300 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400 flex items-center justify-between">
+        <div class="flex items-center gap-1">
+          <i class="fas fa-check-circle text-emerald-600"></i>
+          <span>স্বয়ংক্রিয় ২-কলাম ও বোর্ড স্ট্যান্ডার্ড বিন্যাস</span>
+        </div>
+        <span>ফয়জার কম্পিউটার দিনাজপুর</span>
+      </div>
+    </section>
+
+    <!-- Right Pane: Authentic Microsoft Word Canvas & Workspace -->
+    <section id="preview-section" class="flex-1 flex flex-col overflow-hidden relative">
+      
+      <!-- Word Dual Rulers Container -->
+      <div id="word-ruler-wrapper" class="w-full flex flex-col no-print shrink-0">
+        <!-- Horizontal Ruler Bar -->
+        <div class="flex items-center w-full">
+          <div class="word-ruler-corner" title="রুলার ইন্টারসেকশন"></div>
+          <div class="word-ruler-h-bar">
+            <div id="ruler-h-track" class="ruler-h-track">
+              <!-- Margin Gray Zones -->
+              <div id="ruler-h-margin-left" class="ruler-h-margin-left"></div>
+              <div id="ruler-h-margin-right" class="ruler-h-margin-right"></div>
+              
+              <!-- Indent Sliders -->
+              <div class="ruler-indent-first" title="প্রথম লাইন ইন্ডেন্ট"></div>
+              <div class="ruler-indent-hanging" title="হ্যাঙ্গিং ইন্ডেন্ট"></div>
+              <div class="ruler-indent-box" title="বাম ইন্ডেন্ট"></div>
+              <div class="ruler-indent-right" title="ডান ইন্ডেন্ট"></div>
+
+              <!-- Inch Markers -->
+              <span class="z-10 pl-2">1</span>
+              <span class="z-10">2</span>
+              <span class="z-10">3</span>
+              <span class="z-10">4</span>
+              <span class="z-10">5</span>
+              <span class="z-10">6</span>
+              <span class="z-10 pr-2">7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas Area with Vertical Ruler -->
+      <div class="word-canvas-wrapper">
+        <!-- Vertical Ruler Bar -->
+        <div id="word-ruler-v" class="word-ruler-v-bar no-print">
+          <div class="ruler-v-track">
+            <div id="ruler-v-margin-top" class="ruler-v-margin-top"></div>
+            <div id="ruler-v-margin-bottom" class="ruler-v-margin-bottom"></div>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
+          </div>
+        </div>
+
+        <!-- Microsoft Word Desktop Canvas -->
+        <div id="office-canvas" class="office-canvas">
+          <div id="zoom-container">
+            <div id="preview-container" class="w-full flex flex-col items-center">
+              <!-- Dynamic Formatted Sheets Injected Here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Selection Mini-Toolbar -->
+      <div id="word-mini-toolbar">
+        <button id="mini-bold" class="word-btn-sm font-bold" title="বোল্ড (Ctrl+B)">B</button>
+        <button id="mini-italic" class="word-btn-sm italic font-serif" title="ইটালিক (Ctrl+I)">I</button>
+        <button id="mini-underline" class="word-btn-sm underline font-bold" title="আন্ডারলাইন (Ctrl+U)">U</button>
+        <button id="mini-strike" class="word-btn-sm line-through text-[10px]" title="স্ট্রাইকথ্রু">abc</button>
+        <span class="text-slate-300 dark:text-slate-600">|</span>
+        <button id="mini-sub" class="word-btn-sm text-[10px] font-bold" title="সাবস্ক্রিপ্ট">X<sub>2</sub></button>
+        <button id="mini-super" class="word-btn-sm text-[10px] font-bold" title="সুপারস্ক্রিপ্ট">X<sup>2</sup></button>
+        <span class="text-slate-300 dark:text-slate-600">|</span>
+        <button id="mini-font-dec" class="word-btn-sm" title="ফন্ট ছোট করুন">A-</button>
+        <button id="mini-font-inc" class="word-btn-sm" title="ফন্ট বড় করুন">A+</button>
+        <label id="mini-fore-color-lbl" class="word-btn-sm relative cursor-pointer" title="টেক্সট কালার">
+          <span class="font-black text-[11px] leading-none text-red-600">A</span>
+          <input type="color" id="mini-fore-color" value="#d83b01" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+        </label>
+        <label id="mini-hilite-color-lbl" class="word-btn-sm relative cursor-pointer" title="হাইলাইট">
+          <i class="fas fa-highlighter text-xs text-amber-500"></i>
+          <input type="color" id="mini-hilite-color" value="#fef08a" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer">
+        </label>
+        <button id="mini-clear" class="word-btn-sm text-slate-500" title="ক্লিয়ার ফরম্যাট"><i class="fas fa-remove-format text-[10px]"></i></button>
+      </div>
+
+      <!-- 4. Microsoft Word Status Bar -->
+      <footer class="office-status-bar no-print">
+        <!-- Left Metrics -->
+        <div class="flex items-center gap-3">
+          <span><i class="fas fa-file-lines"></i> পৃষ্ঠা <b id="stat-current-page">১</b> / <b id="stat-total-pages">২</b></span>
+          <span class="text-white/40">|</span>
+          <span><i class="fas fa-list-ol"></i> প্রশ্ন: <b id="stat-q-count">৩০</b>টি</span>
+          <span class="text-white/40">|</span>
+          <span><i class="fas fa-pen"></i> শব্দ: <b id="stat-word-count">০</b></span>
+          <span class="text-white/40">|</span>
+          <span><i class="fas fa-globe"></i> বাংলা (বাংলাদেশ)</span>
+          <span id="stat-edit-indicator" class="hidden text-amber-300 font-bold ml-2">
+            <i class="fas fa-circle text-[8px] animate-pulse"></i> লাইভ এডিট অন
+          </span>
+        </div>
+
+        <!-- Right Zoom & View Controls -->
+        <div class="flex items-center gap-2">
+          <!-- View Modes -->
+          <div class="flex items-center gap-1 mr-2 text-xs">
+            <button id="btn-status-read" class="status-btn" title="রিডিং ভিউ"><i class="fas fa-book-open"></i></button>
+            <button id="btn-status-print" class="status-btn" title="প্রিন্ট লেআউট"><i class="fas fa-file-invoice"></i></button>
+            <button id="btn-status-web" class="status-btn" title="ওয়েব লেআউট"><i class="fas fa-globe"></i></button>
+          </div>
+
+          <span class="text-white/40">|</span>
+
+          <!-- Zoom Slider -->
+          <button id="btn-zoom-out" class="status-btn" title="জুম আউট"><i class="fas fa-minus text-[9px]"></i></button>
+          <input type="range" id="zoom-range" min="50" max="150" value="100" class="w-20 accent-blue-400 cursor-pointer h-1.5 bg-white/30 rounded-lg">
+          <button id="btn-zoom-in" class="status-btn" title="জুম ইন"><i class="fas fa-plus text-[9px]"></i></button>
+          <span id="lbl-zoom-val" class="w-10 text-center font-bold text-white text-xs">100%</span>
+          <button id="btn-zoom-fit-page" class="status-btn" title="সম্পূর্ণ পেজ স্ক্রিনে ফিট করুন"><i class="fas fa-compress"></i> পেজ ফিট</button>
+          <button id="btn-zoom-fit-width" class="status-btn" title="পেজের প্রস্থ অনুযায়ী ফিট করুন"><i class="fas fa-arrows-left-right-to-line"></i> উইডথ</button>
+        </div>
+      </footer>
+
+    </section>
+
+  </main>
+
+  <!-- Hidden Image File Input for Direct Insert -->
+  <input type="file" id="input-file-image" accept="image/*" class="hidden">
+
+  <!-- MODAL 1: Find & Replace Dialog -->
+  <div id="modal-find-replace" class="word-modal-backdrop hidden">
+    <div class="word-modal-card">
+      <div class="word-modal-header">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-magnifying-glass"></i>
+          <span>খুঁজুন ও পরিবর্তন করুন (Find and Replace)</span>
+        </div>
+        <button id="btn-find-close" class="text-white hover:text-red-300 text-sm font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="word-modal-body">
+        <div>
+          <label class="block text-xs font-bold mb-1 text-slate-700 dark:text-slate-300">কী খুঁজবেন (Find what):</label>
+          <input type="text" id="find-input-text" placeholder="শব্দ লিখুন..." class="word-input">
+        </div>
+        <div>
+          <label class="block text-xs font-bold mb-1 text-slate-700 dark:text-slate-300">কী দিয়ে পরিবর্তন করবেন (Replace with):</label>
+          <input type="text" id="replace-input-text" placeholder="নতুন শব্দ লিখুন..." class="word-input">
+        </div>
+        <div id="find-status-msg" class="text-xs font-semibold text-blue-600 dark:text-blue-400 min-h-[18px]"></div>
+      </div>
+      <div class="word-modal-footer">
+        <button id="btn-find-next" class="word-btn-secondary">পরবর্তীটি খুঁজুন</button>
+        <button id="btn-replace-one" class="word-btn-primary">পরিবর্তন করুন</button>
+        <button id="btn-replace-all" class="word-btn-primary bg-indigo-600 border-indigo-700 hover:bg-indigo-700">সব পরিবর্তন করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Insert Table Dialog -->
+  <div id="modal-insert-table" class="word-modal-backdrop hidden">
+    <div class="word-modal-card">
+      <div class="word-modal-header">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-table"></i>
+          <span>ছক / টেবিল যুক্ত করুন (Insert Table)</span>
+        </div>
+        <button id="btn-table-close" class="text-white hover:text-red-300 text-sm font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="word-modal-body">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold mb-1 text-slate-700 dark:text-slate-300">সারি সংখ্যা (Rows):</label>
+            <input type="number" id="input-table-rows" value="3" min="1" max="30" class="word-input font-bold">
+          </div>
+          <div>
+            <label class="block text-xs font-bold mb-1 text-slate-700 dark:text-slate-300">কলাম সংখ্যা (Columns):</label>
+            <input type="number" id="input-table-cols" value="3" min="1" max="10" class="word-input font-bold">
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400">
+          * ডকুমেন্টে বর্তমান কার্সরের স্থানে টেবিলটি যুক্ত হবে। টেবিলের যেকোনো ঘরে ক্লিক করে সরাসরি তথ্য টাইপ করতে পারবেন।
+        </p>
+      </div>
+      <div class="word-modal-footer">
+        <button id="btn-table-cancel" class="word-btn-secondary">বাতিল</button>
+        <button id="btn-table-insert-confirm" class="word-btn-primary">টেবিল তৈরি করুন</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Import File Input -->
+  <input type="file" id="input-file-import-hidden" accept=".txt,.docx" class="hidden">
+
+  <!-- Toast Notification -->
+  <div id="studio-toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-sm font-semibold border" style="min-width: 220px; background: #1a1a2e; color: #fff; border-color: #3730a3; pointer-events: none;">
+    <i id="toast-icon" class="fas fa-check-circle text-emerald-400"></i>
+    <span id="toast-msg">সংরক্ষণ সম্পন্ন!</span>
+  </div>
+
+  <!-- MODAL 3: Help / Keyboard Shortcuts -->
+  <div id="modal-help" class="word-modal-backdrop hidden">
+    <div class="word-modal-card" style="max-width: 560px; width: 95%;">
+      <div class="word-modal-header">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-keyboard"></i>
+          <span>কীবোর্ড শর্টকাট ও সাহায্য (Keyboard Shortcuts)</span>
+        </div>
+        <button id="btn-help-close" class="text-white hover:text-red-300 text-sm font-bold cursor-pointer">✕</button>
+      </div>
+      <div class="word-modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
+          <div class="font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider col-span-2 mt-2 mb-1 border-b pb-1">ফাইল ও সেশন</div>
+          <div class="flex justify-between"><span>স্বয়ংক্রিয় সংরক্ষণ</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+S</kbd></div>
+          <div class="flex justify-between"><span>প্রিন্ট / PDF</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+P</kbd></div>
+          <div class="flex justify-between"><span>ফাইল খুলুন / ইমপোর্ট</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+O</kbd></div>
+          <div class="flex justify-between"><span>সাহায্য (এই উইন্ডো)</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">F1</kbd></div>
+
+          <div class="font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider col-span-2 mt-3 mb-1 border-b pb-1">ইতিহাস (Undo/Redo)</div>
+          <div class="flex justify-between"><span>পূর্বাবস্থা (Undo)</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+Z</kbd></div>
+          <div class="flex justify-between"><span>পুনরায় করুন (Redo)</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+Y</kbd></div>
+
+          <div class="font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider col-span-2 mt-3 mb-1 border-b pb-1">ফরম্যাটিং (Live Edit মোডে)</div>
+          <div class="flex justify-between"><span>বোল্ড</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+B</kbd></div>
+          <div class="flex justify-between"><span>ইটালিক</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+I</kbd></div>
+          <div class="flex justify-between"><span>আন্ডারলাইন</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+U</kbd></div>
+          <div class="flex justify-between"><span>সব নির্বাচন</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+A</kbd></div>
+
+          <div class="font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider col-span-2 mt-3 mb-1 border-b pb-1">দ্রুত অ্যাক্সেস</div>
+          <div class="flex justify-between"><span>খুঁজুন ও বদলান</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+F</kbd></div>
+          <div class="flex justify-between"><span>ফুলস্ক্রিন প্রিভিউ</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+Shift+F</kbd></div>
+          <div class="flex justify-between"><span>থিম পরিবর্তন</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+Shift+T</kbd></div>
+          <div class="flex justify-between"><span>এডিটর প্যানেল লুকান</span><kbd class="bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded font-mono">Ctrl+\</kbd></div>
+        </div>
+
+        <div class="mt-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-xs text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+          <i class="fas fa-circle-info mr-1"></i>
+          <strong>ফাইল ইমপোর্ট:</strong> .txt এবং .docx ফাইল সরাসরি এডিটরে লোড করা যায়। বিজয় এনকোডিং স্বয়ংক্রিয়ভাবে ইউনিকোডে রূপান্তরিত হবে।
+        </div>
+        <div class="mt-2 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-xs text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <i class="fas fa-cloud-arrow-up mr-1"></i>
+          <strong>অটো-সেভ:</strong> প্রতি ৩০ সেকেন্ডে আপনার কাজ স্বয়ংক্রিয়ভাবে ব্রাউজারে সংরক্ষিত হয়। পেজ রিফ্রেশ করলেও কাজ হারাবে না।
+        </div>
+      </div>
+      <div class="word-modal-footer">
+        <button id="btn-help-ok" class="word-btn-primary">বুঝেছি, ধন্যবাদ!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Engines & Scripts (100% Offline Local Assets) -->
+  <script src="js/jszip.min.js"></script>
+  <script src="js/bangla-converter-engine.js"></script>
+  <script src="js/equation-converter.js"></script>
+  <script src="js/engines/doc-classifier.js"></script>
+  <script src="js/engines/question-engine.js"></script>
+  <script src="js/engines/stamp-engine.js"></script>
+  <script src="js/engines/application-engine.js"></script>
+  <script src="js/engines/certificate-engine.js"></script>
+  <script src="js/engines/omr-engine.js"></script>
+  <script src="js/engines/export-dual-engine.js"></script>
+  <script src="js/engines/import-engine.js"></script>
+  <script src="js/engines/converter-studio-bridge.js"></script>
+  <script src="js/engines/admit-card-engine.js"></script>
+  <script src="js/engines/salary-slip-engine.js"></script>
+  <script src="js/engines/routine-engine.js"></script>
+  <script src="js/engines/cv-engine.js"></script>
+  
+  <!-- Templates -->
+  <script src="js/templates/academic-templates.js"></script>
+  <script src="js/templates/legal-templates.js"></script>
+  <!-- Layout Suite & Gateway -->
+  <script src="js/layout-engine/text-run-processor.js"></script>
+  <script src="js/layout-engine/archetype-map.js"></script>
+  <script src="js/layout-engine/fayzar-pipeline.js"></script>
+
+  <!-- Main Controller -->
+  <script src="js/studio-controller.js"></script>
+</body>
+</html>

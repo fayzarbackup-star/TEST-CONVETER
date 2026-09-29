@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOCX to DOC (Word 2003) কনভার্টার | ফয়জার কম্পিউটার</title>
+  <meta name="description" content="মাইক্রোসফট ওয়ার্ড (.docx) ফাইলকে অফিস ২০০৩ উপযোগী (.doc) ফরম্যাটে রূপান্তর করুন। প্রশ্নপত্র, টেবিল, মার্জিন ও বাংলা সুতন্নী ফন্ট ১০০% অক্ষুণ্ণ থাকে।">
+  <meta name="keywords" content="docx to doc converter, word 2003 converter, প্রশ্নপত্র কনভার্টার, docx to doc bangla, SutonnyMJ word 2003">
+  <meta name="author" content="ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট">
+
+  <!-- Google Fonts: Hind Siliguri, Noto Sans Bengali & Outfit -->
+  <link rel="stylesheet" href="css/google-fonts.css">
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="css/font-awesome/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="js/vendor/tailwindcss.js"></script>
+  <script src="js/offline-data.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandBlue: '#1d4ed8',
+            brandBlueDark: '#1e3a8a',
+            brandBlueLight: '#eff6ff',
+            brandGreen: '#047857',
+            brandGold: '#d97706'
+          },
+          fontFamily: {
+            sans: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'sans-serif'],
+            outfit: ['"Outfit"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles & Webfonts -->
+  <style>
+    @font-face {
+      font-family: 'SutonnyMJ';
+      src: url('fonts/SutonnyMJ-Regular.ttf') format('truetype'),
+           local('SutonnyMJ'), 
+           local('SutonnyMJ-Regular'), 
+           local('SutonnyOMJ'),
+           local('Sutonny');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    .font-sutonny {
+      font-family: 'SutonnyMJ', 'SutonnyOMJ', sans-serif !important;
+      font-size: 1.125rem;
+      line-height: 1.65;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .dropzone-active {
+      border-color: #2563eb !important;
+      background-color: #eff6ff !important;
+      transform: scale(1.01);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+
+  <!-- JSZip & Engine -->
+  <script src="js/jszip.min.js"></script>
+  <script src="js/docx-to-doc-engine.js"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col">
+
+  <!-- ==========================================
+       ১. হেডার ও নেভিগেশন বার
+       ========================================== -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 py-3 flex items-center justify-between">
+      <!-- Logo & Brand -->
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-file-lines text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg text-slate-900 tracking-tight">DOCX ➔ DOC কনভার্টার</span>
+            <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-300">Office 2003 উপযোগী</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="doc-converter.html" class="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-slate-600 hover:text-emerald-700 bg-slate-100 hover:bg-emerald-50 px-3 py-2 rounded-xl transition border border-slate-200 hover:border-emerald-300">
+          <i class="fa-solid fa-language text-emerald-600"></i> ইউনিকোড ⇄ বিজয় কনভার্টার
+        </a>
+        <a href="index.html" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-blue-700 bg-slate-100 hover:bg-blue-50 px-3 py-2 rounded-xl transition border border-slate-200 hover:border-blue-300">
+          <i class="fa-solid fa-house"></i> হোম পেজ
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       ২. মেইন কনটেইনার ও হিরো সেকশন
+       ========================================== -->
+  <main class="flex-grow container mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+    <!-- Hero Title & Badges -->
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold shadow-sm">
+        <i class="fa-solid fa-graduation-cap text-blue-600"></i> স্কুল ও মাদ্রাসার প্রশ্নপত্র তৈরিতে বিশেষ উপযোগী
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-snug">
+        ওয়ার্ড <span class="bg-gradient-to-r from-blue-700 to-indigo-600 bg-clip-text text-transparent">DOCX ➔ DOC (Word 2003)</span> কনভার্টার
+      </h1>
+      <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+        নতুন মাইক্রোসফট ওয়ার্ড (.docx) ফাইলকে সরাসরি অফিস ২০০৩ উপযোগী (.doc) ফরম্যাটে রূপান্তর করুন। প্রশ্নপত্রের টেবিল, মার্জিন ও বাংলা সুতন্নী (SutonnyMJ) ফন্ট ১০০% অক্ষুণ্ণ থাকবে।
+      </p>
+    </div>
+
+    <!-- Main Converter Workspace -->
+    <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/50 border border-slate-200/80 space-y-6">
+
+      <!-- ==========================================
+           কাস্টমাইজেশন ও অপশনস প্যানেল
+           ========================================== -->
+      <div class="bg-slate-50/90 rounded-2xl p-5 border border-slate-200/90 space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-blue-600"></i> প্রশ্নপত্র ও ডকুমেন্ট কনভার্শন সেটিংস
+          </span>
+          <span class="text-[11px] text-blue-700 font-bold bg-blue-100 px-2.5 py-0.5 rounded-full border border-blue-200">
+            Word 97-2003 (.doc) Format
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+          <!-- Page Size Selector -->
+          <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-1.5">
+            <label for="pageSizeSelect" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-file text-blue-500"></i> পেপার সাইজ (Page Size):
+            </label>
+            <select id="pageSizeSelect" class="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+              <option value="a4" selected>A4 (8.27" x 11.69" - প্রশ্নপত্রের আদর্শ)</option>
+              <option value="legal">Legal (8.5" x 14.0" - বড় প্রশ্নপত্র/দলিল)</option>
+              <option value="letter">Letter (8.5" x 11.0")</option>
+            </select>
+          </div>
+
+          <!-- Question Paper Optimization Mode -->
+          <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <span class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-table-cells text-emerald-500"></i> প্রশ্নপত্র টেবিল অপটিমাইজেশন:
+            </span>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-600 font-medium">
+              <input type="checkbox" id="chkTableBorders" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+              <span>টেবিল বর্ডার ও সেল মার্জিন ফিক্স</span>
+            </label>
+          </div>
+
+          <!-- SutonnyMJ Bengali Font Preservation -->
+          <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <span class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-font text-indigo-500"></i> ফন্ট প্রিজারভেশন:
+            </span>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-600 font-medium">
+              <input type="checkbox" id="chkPreserveFonts" checked class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+              <span>SutonnyMJ ও বাংলা ফন্ট এনকোডিং রক্ষা</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           ড্র্যাগ অ্যান্ড ড্রপ ফাইল জোন
+           ========================================== -->
+      <div id="dropZone" class="relative group border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/30 rounded-3xl p-8 sm:p-12 text-center transition-all duration-300 cursor-pointer shadow-inner">
+        <input type="file" id="fileInput" accept=".docx" multiple class="hidden">
+        
+        <div class="max-w-md mx-auto space-y-4 pointer-events-none">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-3xl bg-blue-100 text-blue-600 flex items-center justify-center text-3xl sm:text-4xl shadow-lg shadow-blue-500/10 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-800 group-hover:text-blue-700 transition">
+              ওয়ার্ড (.docx) ফাইল এখানে ড্র্যাগ করে ছাড়ুন
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+              অথবা আপনার কম্পিউটার থেকে সিলেক্ট করতে <span class="text-blue-600 font-bold underline decoration-2">ব্রাউজ করুন</span>
+            </p>
+          </div>
+          <div class="flex items-center justify-center gap-3 text-[11px] text-slate-400 font-semibold">
+            <span><i class="fa-solid fa-file-word text-blue-500"></i> একক বা একাধিক (.docx) ফাইল</span>
+            <span>•</span>
+            <span><i class="fa-solid fa-shield-halved text-emerald-500"></i> ১০০% নিরাপদ ও ক্লায়েন্ট-সাইড</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           প্রোগ্রেস বার (কনভার্সন চলাকালীন দৃশ্যমান)
+           ========================================== -->
+      <div id="progressCard" class="hidden bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span id="progressTitle" class="font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-spinner fa-spin text-blue-600"></i> ফাইল প্রসেসিং চলছে...
+          </span>
+          <span id="progressPctText" class="font-bold text-blue-700 font-outfit">0%</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200">
+          <div id="progressBar" class="bg-gradient-to-r from-blue-600 to-indigo-600 h-full rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+        </div>
+        <p id="progressStatus" class="text-[11px] text-slate-500 italic">প্রস্তুতি চলছে...</p>
+      </div>
+
+      <!-- ==========================================
+           কনভার্ট হওয়া ফাইল লিস্ট ও ডাউনলোড
+           ========================================== -->
+      <div id="convertedFilesSection" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i> সফলভাবে কনভার্ট হওয়া ফাইলসমূহ:
+          </h3>
+          <button id="downloadAllBtn" class="hidden inline-flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">
+            <i class="fa-solid fa-download"></i> সবগুলো .doc ডাউনলোড করুন
+          </button>
+        </div>
+
+        <div id="fileItemsContainer" class="space-y-3">
+          <!-- File cards injected via JS -->
+        </div>
+
+        <!-- Before & After Live Sample Preview -->
+        <div id="previewBox" class="hidden glass-card rounded-2xl p-5 shadow-sm border-slate-200">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h4 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-eye text-blue-600"></i> প্রশ্নপত্র / ডকুমেন্টের নমুনা প্রিভিউ
+            </h4>
+            <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-blue-800 bg-blue-100 px-3 py-1 rounded-lg border border-blue-300 shadow-sm">
+              <i class="fa-solid fa-check text-blue-600"></i> Office 2003 Compatible (.doc)
+            </div>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
+            <div id="previewContentText" class="text-slate-900 leading-relaxed font-sutonny text-base max-h-48 overflow-y-auto custom-scrollbar"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==========================================
+         ৩. ফিচার ও প্রশ্নপত্র নির্দেশিকা সেকশন
+         ========================================== -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <!-- Feature 1 -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-2">
+        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-file-circle-check"></i>
+        </div>
+        <h4 class="text-sm font-bold text-slate-800">অফিস ২০০৩ শতভাগ সামঞ্জস্যপূর্ণ</h4>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Word 97-2003 (.doc) বাইনারি ও MSO কাঠামোতে ফাইল তৈরি হয়, যা Office 2003-এ কোনো ওয়ার্নিং ছাড়াই নির্বিঘ্নে ওপেন হবে।
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-2">
+        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-table-columns"></i>
+        </div>
+        <h4 class="text-sm font-bold text-slate-800">প্রশ্নপত্রের টেবিল ও মার্জিন সুরক্ষা</h4>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          প্রশ্নপত্রের জটিল টেবিল, কলাম, বন্ধনী (ব্র্যাকেট), প্রশ্ন নম্বর ও মার্জিন হুবহু অপরিবর্তিত থাকে।
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="glass-card rounded-2xl p-5 border border-slate-200/90 shadow-sm space-y-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-font"></i>
+        </div>
+        <h4 class="text-sm font-bold text-slate-800">সুতন্নী (SutonnyMJ) ফন্ট নিখুঁত</h4>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          বিজয় কীবোর্ডে টাইপ করা সুতন্নী-এমজে ফন্টের প্রতিটি যুক্তবর্ণ ও ফন্ট সাইজ অফিস ২০০৩-এ ঠিক থাকবে।
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==========================================
+       ৪. ফুটার সেকশন
+       ========================================== -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+    <div class="container mx-auto max-w-7xl px-4 space-y-2">
+      <p class="font-bold text-slate-700">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট — ডিজিটাল ডকুমেন্ট প্রসেসিং সল্যুশন</p>
+      <p>সকল প্রকার ওয়ার্ড ডকুমেন্ট, প্রশ্নপত্র কম্পোজ, প্রিন্ট ও কনভার্সন সেবা ১০০% বিশ্বস্ততার সাথে প্রদান করা হয়।</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==========================================
+       ৫. জাভাস্ক্রিপ্ট কন্ট্রোলার
+       ========================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('fileInput');
+      const pageSizeSelect = document.getElementById('pageSizeSelect');
+      const chkTableBorders = document.getElementById('chkTableBorders');
+      const chkPreserveFonts = document.getElementById('chkPreserveFonts');
+      
+      const progressCard = document.getElementById('progressCard');
+      const progressBar = document.getElementById('progressBar');
+      const progressPctText = document.getElementById('progressPctText');
+      const progressTitle = document.getElementById('progressTitle');
+      const progressStatus = document.getElementById('progressStatus');
+
+      const convertedFilesSection = document.getElementById('convertedFilesSection');
+      const fileItemsContainer = document.getElementById('fileItemsContainer');
+      const downloadAllBtn = document.getElementById('downloadAllBtn');
+      const previewBox = document.getElementById('previewBox');
+      const previewContentText = document.getElementById('previewContentText');
+
+      let convertedFilesCache = [];
+
+      // Drag & Drop Listeners
+      ['dragenter', 'dragover'].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('dropzone-active');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evt => {
+        dropZone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('dropzone-active');
+        });
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.docx'));
+        if (files.length > 0) {
+          processDocxFiles(files);
+        } else {
+          showToast("অনুগ্রহ করে সঠিক ওয়ার্ড (.docx) ফাইল আপলোড করুন।", "warning");
+        }
+      });
+
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files).filter(f => f.name.toLowerCase().endsWith('.docx'));
+        if (files.length > 0) {
+          processDocxFiles(files);
+        }
+        fileInput.value = '';
+      });
+
+      async function processDocxFiles(files) {
+        convertedFilesCache = [];
+        fileItemsContainer.innerHTML = '';
+        convertedFilesSection.classList.remove('hidden');
+        progressCard.classList.remove('hidden');
+
+        const totalCount = files.length;
+
+        for (let i = 0; i < totalCount; i++) {
+          const file = files[i];
+          const fileNum = i + 1;
+
+          try {
+            const result = await docxToDocEngine.convertDocxToDoc(file, {
+              pageSize: pageSizeSelect.value,
+              optimizeForQuestionPaper: chkTableBorders.checked,
+              preserveSutonny: chkPreserveFonts.checked,
+              includeImages: true,
+              onProgress: (percent, msg) => {
+                const totalProgress = Math.floor(((i + (percent / 100)) / totalCount) * 100);
+                progressBar.style.width = totalProgress + '%';
+                progressPctText.textContent = totalProgress + '%';
+                progressTitle.textContent = `ফাইল রূপান্তর হচ্ছে (${fileNum}/${totalCount}): ${file.name}`;
+                progressStatus.textContent = msg;
+              }
+            });
+
+            convertedFilesCache.push(result);
+            renderConvertedFileItem(result);
+
+            if (i === 0 && result.preview.length > 0) {
+              previewContentText.innerHTML = result.preview.map(p => `<p class="mb-1.5">${escapeHtml(p)}</p>`).join('');
+              previewBox.classList.remove('hidden');
+            }
+
+          } catch (err) {
+            console.error("Conversion error:", err);
+            showToast(`ত্রুটি: ${file.name} কনভার্ট করা যায়নি। (${err.message})`, "error");
+          }
+        }
+
+        progressCard.classList.add('hidden');
+        showToast(`${files.length} টি ফাইল সফলভাবে Word 2003 (.doc) এ কনভার্ট হয়েছে!`, "success");
+
+        if (files.length > 1) {
+          downloadAllBtn.classList.remove('hidden');
+        } else {
+          downloadAllBtn.classList.add('hidden');
+        }
+      }
+
+      function renderConvertedFileItem(res) {
+        const item = document.createElement('div');
+        item.className = "glass-card rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-slate-200 hover:border-blue-300 transition shadow-sm";
+        
+        const fileSizeKB = (res.convertedBlob.size / 1024).toFixed(1);
+
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-lg shadow-sm">
+              <i class="fa-solid fa-file-word"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-800 break-all">${escapeHtml(res.outputFileName)}</h4>
+              <p class="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+                <span><i class="fa-solid fa-file-lines text-slate-400"></i> মূল: ${escapeHtml(res.originalName)}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-hard-drive text-slate-400"></i> ${fileSizeKB} KB</span>
+                <span>•</span>
+                <span class="text-emerald-700 font-semibold"><i class="fa-solid fa-check text-emerald-500"></i> ${res.stats.paragraphs} প্যারাগ্রাফ, ${res.stats.tables} টেবিল</span>
+              </p>
+            </div>
+          </div>
+          <button class="download-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition">
+            <i class="fa-solid fa-download"></i> .DOC ডাউনলোড করুন
+          </button>
+        `;
+
+        item.querySelector('.download-btn').addEventListener('click', () => {
+          downloadBlob(res.convertedBlob, res.outputFileName);
+          showToast(`ডাউনলোড শুরু হয়েছে: ${res.outputFileName}`, "info");
+        });
+
+        fileItemsContainer.appendChild(item);
+      }
+
+      downloadAllBtn.addEventListener('click', () => {
+        convertedFilesCache.forEach(res => {
+          downloadBlob(res.convertedBlob, res.outputFileName);
+        });
+        showToast("সবগুলো ফাইল ডাউনলোড শুরু হয়েছে!", "success");
+      });
+
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+
+      function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+      }
+
+      function showToast(message, type = "info") {
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-xs font-bold border transition-all duration-300 transform translate-y-2 opacity-0 ${
+          type === 'success' ? 'bg-emerald-800 text-white border-emerald-700 shadow-emerald-900/20' :
+          type === 'error' ? 'bg-rose-800 text-white border-rose-700 shadow-rose-900/20' :
+          type === 'warning' ? 'bg-amber-700 text-white border-amber-600 shadow-amber-900/20' :
+          'bg-slate-800 text-white border-slate-700 shadow-slate-900/20'
+        }`;
+
+        const icon = type === 'success' ? 'fa-circle-check' :
+                     type === 'error' ? 'fa-circle-exclamation' :
+                     type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-info';
+
+        toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+        const toastContainer = document.getElementById('toastContainer');
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        }, 10);
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+    });
+  </script>
+</body>
+</html>

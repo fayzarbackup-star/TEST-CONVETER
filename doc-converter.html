@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ওয়ার্ড ডকুমেন্ট ইউনিকোড ➔ বিজয় কনভার্টার | ফয়জার কম্পিউটার</title>
+  <meta name="description" content="মাইক্রোসফট ওয়ার্ড (.docx) ডকুমেন্টের সকল ফরমেট, টেবিল, স্টাইল ঠিক রেখে ইউনিকোড থেকে বিজয় (SutonnyMJ) এবং বিজয় থেকে ইউনিকোডে শতভাগ নির্ভুল কনভার্টার।">
+  <meta name="keywords" content="Word docx Unicode to Bijoy converter, ইউনিকোড টু বিজয় কনভার্টার, SutonnyMJ converter, docx format preserve bangla converter">
+  <meta name="author" content="ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট">
+
+  <!-- Google Fonts: Hind Siliguri, Noto Sans Bengali & Outfit -->
+  <link rel="stylesheet" href="css/google-fonts.css">
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="css/font-awesome/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="js/vendor/tailwindcss.js"></script>
+  <script src="js/offline-data.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brandGreen: '#047857',
+            brandGreenDark: '#065f46',
+            brandGreenLight: '#ecfdf5',
+            brandBlue: '#1d4ed8',
+            brandBlueDark: '#1e3a8a',
+            brandGold: '#d97706',
+            brandGoldLight: '#fef3c7'
+          },
+          fontFamily: {
+            sans: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'sans-serif'],
+            outfit: ['"Outfit"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Prevent Theme Flash -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('fayzar_theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        const hour = new Date().getHours();
+        if (hour >= 18 || hour < 6) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    })();
+  </script>
+
+  <!-- Custom Styles & Webfonts -->
+  <style>
+    @font-face {
+      font-family: 'SutonnyMJ';
+      src: url('fonts/SutonnyMJ-Regular.ttf') format('truetype'),
+           local('SutonnyMJ'), 
+           local('SutonnyMJ-Regular'), 
+           local('SutonnyMJ Regular'),
+           local('SutonnyOMJ'),
+           local('Sutonny');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'SutonnyOMJ';
+      src: url('fonts/SutonnyOMJ.ttf') format('truetype'),
+           local('SutonnyOMJ');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    .font-sutonny {
+      font-family: 'SutonnyMJ', 'SutonnyOMJ', 'SutonnyMJ Regular', 'Sutonny', sans-serif !important;
+      font-size: 1.125rem;
+      line-height: 1.65;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    html.dark .glass-card {
+      background: rgba(19, 28, 46, 0.95);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .dropzone-active {
+      border-color: #059669 !important;
+      background-color: #ecfdf5 !important;
+      transform: scale(1.01);
+    }
+    html.dark .dropzone-active {
+      background-color: rgba(6, 78, 59, 0.3) !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    html.dark .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+
+  <!-- JSZip & Engines -->
+  <script src="js/jszip.min.js"></script>
+  <script src="js/bangla-converter-engine.js"></script>
+  <script src="js/docx-handler.js"></script>
+  <script src="js/docx-to-doc-engine.js"></script>
+  <script src="js/doc-binary-engine.js"></script>
+</head>
+
+<body class="bg-slate-50 dark:bg-[#111a2e] text-slate-800 dark:text-slate-100 font-sans antialiased selection:bg-emerald-200 selection:text-emerald-900 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- ==========================================
+       ১. হেডার ও নেভিগেশন বার
+       ========================================== -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-[#111a2e]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
+      <!-- Logo & Brand -->
+      <a href="index.html" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-file-word text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white tracking-tight">ওয়ার্ড ডকুমেন্ট কনভার্টার</span>
+            <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">১০০% ফরমেট ফিক্সড</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট | ফুলবাড়ী, দিনাজপুর</p>
+        </div>
+      </a>
+
+      <!-- Quick Nav -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Theme Toggle Button -->
+        <button id="doc-theme-toggle-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 transition flex items-center justify-center" title="ডে / নাইট মোড পরিবর্তন করুন">
+          <i class="fa-solid fa-moon text-sm dark:hidden"></i>
+          <i class="fa-solid fa-sun text-sm hidden dark:inline-block text-amber-400"></i>
+        </button>
+
+        <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 transition border border-slate-200 dark:border-slate-700">
+          <i class="fa-solid fa-house"></i> হোম পেজ
+        </a>
+        <a href="index.html#tools" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition">
+          <i class="fa-solid fa-toolbox"></i> সব টুলস
+        </a>
+        <a href="tel:01717101919" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">
+          <i class="fa-solid fa-phone"></i> ০১৭১৭-১০১৯১৯
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================
+       ২. ব্যানার ও পরিচিতি সেকশন
+       ========================================== -->
+  <section class="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white py-10 px-4 sm:px-6 overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="container mx-auto max-w-5xl text-center relative z-10">
+      <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full mb-4">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> মাইক্রোসফট ওয়ার্ড স্পেশাল বাংলা কনভার্টার
+      </div>
+      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3">
+        ওয়ার্ড ডকুমেন্ট <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">ইউনিকোড ➔ বিজয়</span> কনভার্টার
+      </h1>
+      <p class="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
+        ডকুমেন্টের টেবিল, ছবি, হেডার-ফুটার, বোল্ড, ইটালিক, আন্ডারলাইন ও ফন্ট সাইজ সহ <strong>সকল ফরমেট ১০০% অক্ষুণ্ণ রেখে</strong> নিমেষেই পুরো ওয়ার্ড ফাইল কনভার্ট করুন। 
+      </p>
+      
+      <div class="mt-4 mb-2 inline-block bg-emerald-500/15 border border-emerald-500/30 text-emerald-50 text-sm px-5 py-2.5 rounded-xl font-medium shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+        <i class="fa-solid fa-file-export text-emerald-400 mr-1.5"></i> কনভার্ট শেষে আপনি <strong class="text-emerald-300 font-bold tracking-wide">.DOCX</strong> এবং <strong class="text-emerald-300 font-bold tracking-wide">.DOC (2003)</strong> দুটি ফরম্যাটেই ফাইল ডাউনলোড করতে পারবেন!
+      </div>
+
+      <!-- Key Highlights Pills -->
+      <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 text-xs text-slate-300">
+        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i> ১০০% গোপনীয় (ব্রাউজারে প্রসেস)
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-table text-cyan-400"></i> সকল টেবিল ও বক্স অক্ষুণ্ণ
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-font text-amber-400"></i> অটোমেটিক SutonnyMJ ফন্ট সেট
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
+          <i class="fa-solid fa-layer-group text-purple-400"></i> ব্যাচ কনভার্সন সাপোর্ট
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       ৩. মূল কনভার্টার অ্যাপ (ট্যাব ভিত্তিক)
+       ========================================== -->
+  <main class="flex-grow container mx-auto max-w-5xl px-4 sm:px-6 -mt-6 mb-12 relative z-20">
+    
+    <!-- Tab Controls -->
+    <div class="flex items-center justify-center gap-2 p-1.5 bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-slate-200 max-w-md mx-auto mb-6">
+      <button id="tabBtnDocx" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all shadow-sm bg-emerald-600 text-white">
+        <i class="fa-solid fa-file-word"></i> ওয়ার্ড ফাইল (.docx)
+      </button>
+      <button id="tabBtnText" class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+        <i class="fa-solid fa-keyboard"></i> সরাসরি টেক্সট
+      </button>
+    </div>
+
+    <!-- ==========================================
+         ট্যাব ১: ওয়ার্ড ফাইল কনভার্টার
+         ========================================== -->
+    <div id="docxTabContent" class="space-y-6">
+
+      <!-- Settings & Direction Bar -->
+      <div class="glass-card rounded-2xl p-5 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+          
+          <!-- Conversion Direction -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> কনভার্শন (Auto)
+            </label>
+            <div class="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-emerald-800 flex items-center justify-between">
+              <span>অটো ডিটেক্ট (ইউনিকোড <i class="fa-solid fa-arrows-left-right mx-1 text-[10px]"></i> বিজয়)</span>
+              <span class="bg-emerald-500 text-white px-2 py-0.5 rounded text-[10px]">সক্রিয়</span>
+            </div>
+            <input type="hidden" id="convDirection" value="auto">
+          </div>
+
+          <!-- Target Font -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-font text-blue-600"></i> ইউনিকোড ফন্ট (বিজয় থেকে রূপান্তরের জন্য)
+            </label>
+            <select id="targetFontSelect" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+              <option value="Kalpurush" selected>Kalpurush</option>
+              <option value="Nikosh">Nikosh</option>
+              <option value="SolaimanLipi">SolaimanLipi</option>
+            </select>
+          </div>
+
+          <!-- Number Option -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-hashtag text-amber-600"></i> সংখ্যার ফরমেট (Numbers)
+            </label>
+            <select id="numberOption" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+              <option value="keep" selected>ইংরেজি/বাংলা সংখ্যা যেমন আছে তেমনই রাখুন</option>
+              <option value="toBangla">সকল সংখ্যাকে বাংলায় রূপান্তর করুন (০-৯)</option>
+              <option value="toEnglish">সকল সংখ্যাকে ইংরেজিতে রূপান্তর করুন (0-9)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-4 text-xs font-medium text-slate-600">
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="chkHeaders" checked class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <span>হেডার ও ফুটার কনভার্ট করুন</span>
+          </label>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="chkFootnotes" checked class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <span>পাদটীকা (Footnotes/Endnotes) কনভার্ট করুন</span>
+          </label>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="chkComments" checked class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+            <span>মন্তব্য (Comments) কনভার্ট করুন</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Upload Zone -->
+      <div id="dropZone" class="glass-card rounded-2xl p-8 sm:p-12 text-center border-2 border-dashed border-slate-300 hover:border-emerald-500 transition-all cursor-pointer group shadow-sm">
+        <input type="file" id="docxFileInput" accept=".docx" multiple class="hidden">
+        
+        <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:bg-emerald-100 transition-transform shadow-inner">
+          <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+        </div>
+
+        <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 mb-2">
+          ওয়ার্ড ফাইল (.docx) এখানে ড্র্যাগ করে ছেড়ে দিন অথবা ব্রাউজ করুন
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-5 leading-relaxed">
+          একটি বা একাধিক <span class="font-bold text-emerald-700">.docx</span> ফাইল সিলেক্ট করুন। সব ধরনের টেবিল, ছবি ও স্টাইল ১০০% অবিকৃত রেখে রূপান্তর করা হবে।
+        </p>
+
+        <button type="button" id="browseBtn" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
+          <i class="fa-solid fa-folder-open"></i> ফাইল নির্বাচন করুন
+        </button>
+
+        <p class="text-[11px] text-slate-400 mt-4">
+          <i class="fa-solid fa-lock"></i> ফাইল কোনো সার্ভারে আপলোড হয় না, সম্পূর্ণ ব্রাউজারে ইন-মেমরিতে কনভার্ট হয়।
+        </p>
+      </div>
+
+      <!-- Processing Progress Card (Hidden by default) -->
+      <div id="progressCard" class="hidden glass-card rounded-2xl p-6 shadow-md border-emerald-200">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center animate-spin">
+              <i class="fa-solid fa-circle-notch"></i>
+            </div>
+            <div>
+              <h3 id="progressTitle" class="text-sm font-bold text-slate-800">ডকুমেন্ট প্রসেস হচ্ছে...</h3>
+              <p id="progressStatus" class="text-xs text-slate-500">অনুগ্রহ করে অপেক্ষা করুন</p>
+            </div>
+          </div>
+          <span id="progressPctText" class="text-sm font-extrabold text-emerald-600 font-outfit">0%</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Converted Files List & Download Section -->
+      <div id="resultsCard" class="hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i> কনভার্ট করা ফাইলসমূহ (DOCX ও DOC 2003 প্রস্তুত) <span id="convertedFilesCount" class="bg-emerald-100 text-emerald-800 text-[11px] px-2 py-0.5 rounded-full ml-1 font-bold">০ টি</span>
+          </h3>
+          <div id="bulkDownloadGroup" class="hidden flex flex-wrap items-center gap-2">
+            <button id="downloadAllDocxBtn" class="inline-flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
+              <i class="fa-solid fa-file-word"></i> সব .DOCX ডাউনলোড
+            </button>
+            <button id="downloadAllDocBtn" class="inline-flex items-center gap-1.5 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
+              <i class="fa-solid fa-file-lines"></i> সব .DOC (2003) ডাউনলোড
+            </button>
+          </div>
+        </div>
+
+        <div id="fileItemsContainer" class="space-y-3">
+          <!-- File cards injected via JS -->
+        </div>
+
+        <!-- Before & After Live Sample Preview -->
+        <div id="previewBox" class="hidden glass-card rounded-2xl p-5 shadow-sm border-slate-200">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h4 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-eye text-emerald-600"></i> লেখার নমুনা প্রিভিউ (Preview Sample)
+            </h4>
+            <div class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-lg border border-emerald-300 shadow-sm">
+              <i class="fa-solid fa-font text-emerald-600"></i> SutonnyMJ ফন্ট লাইভ রেন্ডারিং
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
+              <span id="previewOriginalLabel" class="font-bold text-slate-600 block mb-2 text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-file-lines text-slate-400"></i> মূল ফাইল (Original):
+              </span>
+              <div id="previewOriginalText" class="text-slate-800 leading-relaxed max-h-40 overflow-y-auto custom-scrollbar"></div>
+            </div>
+            <div class="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 shadow-inner">
+              <span id="previewConvertedLabel" class="font-bold text-emerald-700 block mb-2 text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check text-emerald-600"></i> কনভার্ট হওয়া ফাইল (Converted):
+              </span>
+              <div id="previewConvertedText" class="text-slate-900 leading-relaxed max-h-40 overflow-y-auto custom-scrollbar"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ==========================================
+         ট্যাব ২: সরাসরি লাইভ টেক্সট কনভার্টার
+         ========================================== -->
+    <div id="textTabContent" class="hidden space-y-6">
+      
+      <!-- Text Converter Controls -->
+      <div class="glass-card rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <label class="text-xs font-bold text-slate-700">কনভার্সন মোড:</label>
+          <div class="inline-flex rounded-lg bg-emerald-50 border border-emerald-200 p-1 text-xs font-bold text-emerald-700 items-center gap-2 px-3 py-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> অটো ডিটেক্ট (ইউনিকোড <i class="fa-solid fa-arrows-left-right text-[10px]"></i> বিজয়)
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="clearTextBtn" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-trash-can text-red-500"></i> ক্লিয়ার
+          </button>
+          <button id="copyConvertedTextBtn" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-copy"></i> কপি টেক্সট
+          </button>
+        </div>
+      </div>
+
+      <!-- Side by Side Textboxes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Source Input Box -->
+        <div class="glass-card rounded-2xl p-4 shadow-sm flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span id="sourceLabel" class="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-pen text-emerald-600"></i> ইউনিকোড টেক্সট পেস্ট বা টাইপ করুন:
+            </span>
+            <span id="sourceStats" class="text-[11px] font-semibold text-slate-400">০ শব্দ | ০ বর্ণ</span>
+          </div>
+          <textarea id="sourceTextArea" rows="12" placeholder="এখানে বাংলা লেখা পেস্ট করুন..." class="w-full flex-grow p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none resize-none transition custom-scrollbar"></textarea>
+        </div>
+
+        <!-- Converted Output Box -->
+        <div class="glass-card rounded-2xl p-4 shadow-sm flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <span id="targetLabel" class="text-xs font-extrabold text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-check-double text-blue-600"></i> বিজয় (SutonnyMJ) আউটপুট:
+            </span>
+            <span id="targetStats" class="text-[11px] font-semibold text-slate-400">০ শব্দ | ০ বর্ণ</span>
+          </div>
+          <textarea id="targetTextArea" rows="12" readonly placeholder="স্বয়ংক্রিয়ভাবে কনভার্ট হওয়া লেখা এখানে প্রদর্শিত হবে..." class="w-full flex-grow p-3 bg-emerald-50/40 border border-emerald-200 rounded-xl text-sm text-slate-900 font-sutonny outline-none resize-none transition custom-scrollbar"></textarea>
+          
+          <!-- Direct File Download Options for Converted Text -->
+          <div class="mt-3 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[11px] font-bold text-slate-500 flex items-center gap-1">
+              <i class="fa-solid fa-floppy-disk text-emerald-600"></i> সরাসরি ফাইল ডাউনলোড:
+            </span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="downloadTextDocxBtn" class="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
+                <i class="fa-solid fa-file-word"></i> ডাউনলোড .DOCX
+              </button>
+              <button id="downloadTextDocBtn" class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition">
+                <i class="fa-solid fa-file-lines"></i> ডাউনলোড .DOC (2003)
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Live Statistics Badge (Moved from Hero) -->
+    <div class="flex justify-center mt-2 mb-8 relative z-20">
+      <div class="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm sm:text-base font-bold px-6 py-2.5 rounded-full shadow-sm">
+        <i class="fa-solid fa-chart-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+        <span id="global-stats-text">এ পর্যন্ত <strong class="text-emerald-600 dark:text-emerald-400 font-black text-lg sm:text-xl mx-1.5">১,০৫০</strong>টি ফাইল সফলভাবে কনভার্ট সম্পন্ন হয়েছে</span>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ৪. ব্যবহার নির্দেশিকা ও প্রশ্নোত্তর (FAQ)
+         ========================================== -->
+    <div class="glass-card rounded-2xl p-6 sm:p-8 mt-8 shadow-sm">
+      <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-circle-question text-emerald-600"></i> ওয়ার্ড ডকুমেন্ট কনভার্ট করার পর কী করবেন?
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="w-7 h-7 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center font-bold font-outfit mb-2">1</div>
+          <h4 class="font-extrabold text-slate-800 mb-1">ডাউনলোড করুন</h4>
+          <p class="text-slate-600 leading-relaxed">কনভার্ট সম্পন্ন হলে <span class="font-bold text-emerald-700">"ডাউনলোড করুন"</span> বাটনে ক্লিক করে নতুন ওয়ার্ড ফাইলটি সেভ করুন।</p>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="w-7 h-7 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center font-bold font-outfit mb-2">2</div>
+          <h4 class="font-extrabold text-slate-800 mb-1">ওয়ার্ডে ওপেন করুন</h4>
+          <p class="text-slate-600 leading-relaxed">মাইক্রোসফট ওয়ার্ডে ফাইলটি ওপেন করুন। ফন্ট স্বয়ংক্রিয়ভাবে <span class="font-bold text-slate-800">SutonnyMJ</span> তে সেট থাকবে।</p>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="w-7 h-7 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center font-bold font-outfit mb-2">3</div>
+          <h4 class="font-extrabold text-slate-800 mb-1">ফন্ট মিসিং থাকলে</h4>
+          <p class="text-slate-600 leading-relaxed">কম্পিউটারে SutonnyMJ ফন্ট ইনস্টল না থাকলে লেখা ভেঙে যেতে পারে। কম্পিউটারে SutonnyMJ ফন্ট ইনস্টল করে নিন।</p>
+        </div>
+      </div>
+
+      <!-- Accordion FAQ -->
+      <div class="mt-6 space-y-3 pt-6 border-t border-slate-200">
+        <details class="group bg-slate-50 rounded-xl p-3.5 text-xs cursor-pointer border border-slate-200">
+          <summary class="font-bold text-slate-800 flex items-center justify-between">
+            <span>ডকুমেন্টের টেবিল ও কালার কি ঠিক থাকবে?</span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-2 text-slate-600 leading-relaxed pl-2 border-l-2 border-emerald-500">
+            হ্যাঁ, ১০০% ঠিক থাকবে। আমাদের কনভার্টার শুধুমাত্র ওয়ার্ড ফাইলের টেক্সট নোডগুলো কনভার্ট করে। ডকুমেন্টের টেবিল, বর্ডার, শেডিং, ফন্ট সাইজ, বোল্ড, ইটালিক ও ছবি একদম অবিকৃত থাকে।
+          </p>
+        </details>
+
+        <details class="group bg-slate-50 rounded-xl p-3.5 text-xs cursor-pointer border border-slate-200">
+          <summary class="font-bold text-slate-800 flex items-center justify-between">
+            <span>ফাইল কি ইন্টারনেটে আপলোড হয়? এটি কি নিরাপদ?</span>
+            <i class="fa-solid fa-chevron-down text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-2 text-slate-600 leading-relaxed pl-2 border-l-2 border-emerald-500">
+            সম্পূর্ণ নিরাপদ। এটি ক্লায়েন্ট-সাইড প্রযুক্তি (JSZip) ব্যবহার করে আপনার ব্রাউজারের ভেতর মেমরিতে প্রসেস হয়। কোনো ফাইল কোনো সার্ভারে আপলোড হয় না।
+          </p>
+        </details>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ==========================================
+       ৫. ফুটার সেকশন
+       ========================================== -->
+  <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 text-xs">
+    <div class="container mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      <div>
+        <p class="font-bold text-slate-200">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট | ফুলবাড়ী সরকারি কলেজ গেট, দিনাজপুর</p>
+        <p class="text-slate-400 text-[11px]">স্মার্ট অনলাইন সেবা, ডিজিটাল চাকরি আবেদন ও ভূমিসেবা কেন্দ্র</p>
+      </div>
+      <div class="text-slate-400 text-[11px]">
+        &copy; <span id="currentYear"></span> সর্বস্বত্ব সংরক্ষিত | হেল্পলাইন: ০১৭১৭-১০১৯১৯
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Core Conversion Engines -->
+  <script src="js/jszip.min.js"></script>
+  <script src="js/bangla-converter-engine.js"></script>
+  <script src="js/docx-to-doc-engine.js"></script>
+  <script src="js/doc-binary-engine.js"></script>
+  <script src="js/docx-handler.js"></script>
+
+  <!-- App Controller Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+      // Tab Switcher
+      const tabBtnDocx = document.getElementById('tabBtnDocx');
+      const tabBtnText = document.getElementById('tabBtnText');
+      const docxTabContent = document.getElementById('docxTabContent');
+      const textTabContent = document.getElementById('textTabContent');
+
+      tabBtnDocx.addEventListener('click', () => {
+        tabBtnDocx.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all shadow-sm bg-emerald-600 text-white";
+        tabBtnText.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        docxTabContent.classList.remove('hidden');
+        textTabContent.classList.add('hidden');
+      });
+
+      tabBtnText.addEventListener('click', () => {
+        tabBtnText.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all shadow-sm bg-emerald-600 text-white";
+        tabBtnDocx.className = "flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-bold transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        textTabContent.classList.remove('hidden');
+        docxTabContent.classList.add('hidden');
+      });
+
+      // ==========================================
+      // DOCX FILE CONVERSION CONTROLLER
+      // ==========================================
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('docxFileInput');
+      const browseBtn = document.getElementById('browseBtn');
+      const progressCard = document.getElementById('progressCard');
+      const progressTitle = document.getElementById('progressTitle');
+      const progressStatus = document.getElementById('progressStatus');
+      const progressPctText = document.getElementById('progressPctText');
+      const progressBar = document.getElementById('progressBar');
+      const resultsCard = document.getElementById('resultsCard');
+      const fileItemsContainer = document.getElementById('fileItemsContainer');
+      const previewBox = document.getElementById('previewBox');
+      const previewOriginalText = document.getElementById('previewOriginalText');
+      const previewConvertedText = document.getElementById('previewConvertedText');
+      const downloadAllDocxBtn = document.getElementById('downloadAllDocxBtn');
+      const downloadAllDocBtn = document.getElementById('downloadAllDocBtn');
+      const bulkDownloadGroup = document.getElementById('bulkDownloadGroup');
+
+      const convDirection = document.getElementById('convDirection');
+      const targetFontSelect = document.getElementById('targetFontSelect');
+      const numberOption = document.getElementById('numberOption');
+      const chkHeaders = document.getElementById('chkHeaders');
+      const chkFootnotes = document.getElementById('chkFootnotes');
+      const chkComments = document.getElementById('chkComments');
+
+      let convertedFilesCache = [];
+
+      // Update target font default when direction changes
+      convDirection.addEventListener('change', () => {
+        if (convDirection.value === 'u2b') {
+          targetFontSelect.value = 'SutonnyMJ';
+        } else {
+          targetFontSelect.value = 'Kalpurush';
+        }
+      });
+
+      // Global Stats Initialization
+      const globalStatsText = document.getElementById('global-stats-text');
+      function updateGlobalStatsUI(count) {
+        if (!globalStatsText) return;
+        const formattedCount = new Intl.NumberFormat('bn-BD').format(count);
+        globalStatsText.innerHTML = `এ পর্যন্ত <strong class="text-emerald-600 dark:text-emerald-400 font-black text-lg sm:text-xl mx-1.5">${formattedCount}</strong>টি ফাইল সফলভাবে কনভার্ট সম্পন্ন হয়েছে`;
+      }
+      const initialStats = parseInt(localStorage.getItem('fayzar_total_files_converted') || '1050', 10);
+      updateGlobalStatsUI(initialStats);
+
+      // Click to browse
+      browseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.click();
+      });
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      // Drag & drop events
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('dropzone-active');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('dropzone-active');
+        });
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+          processDocxFiles(Array.from(files));
+        }
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+          processDocxFiles(Array.from(files));
+        }
+      });
+
+      async function processDocxFiles(files) {
+        const docxFiles = files.filter(f => f.name.toLowerCase().endsWith('.docx') || f.name.toLowerCase().endsWith('.doc'));
+        if (docxFiles.length === 0) {
+          showToast("দয়া করে .docx অথবা .doc ফাইল নির্বাচন করুন।", "error");
+          return;
+        }
+
+        const handler = new DocxHandler();
+        const direction = convDirection.value;
+        const targetFont = targetFontSelect.value;
+        const numOpt = numberOption.value;
+
+        const convertNumbers = numOpt !== 'keep';
+        const numberFormat = numOpt === 'toBangla' ? 'bengali' : 'english';
+
+        convertedFilesCache = [];
+        fileItemsContainer.innerHTML = '';
+        progressCard.classList.remove('hidden');
+        resultsCard.classList.remove('hidden');
+        previewBox.classList.add('hidden');
+
+        for (let i = 0; i < docxFiles.length; i++) {
+          const file = docxFiles[i];
+          const fileNum = i + 1;
+          const totalCount = docxFiles.length;
+          const isDoc = file.name.toLowerCase().endsWith('.doc');
+
+          try {
+            let result;
+            const progressCallback = (percent, msg) => {
+              const totalProgress = Math.floor(((i + (percent / 100)) / totalCount) * 85);
+              progressBar.style.width = totalProgress + '%';
+              progressPctText.textContent = totalProgress + '%';
+              progressTitle.textContent = `ফাইল প্রসেস হচ্ছে (${fileNum}/${totalCount}): ${file.name}`;
+              progressStatus.textContent = msg;
+            };
+
+            if (isDoc) {
+              if (typeof DocBinaryEngine === 'undefined') {
+                throw new Error('DocBinaryEngine লোড হয়নি');
+              }
+              result = await DocBinaryEngine.convertDocFile(file, {
+                direction: direction,
+                targetFont: targetFont,
+                convertNumbers: convertNumbers,
+                numberFormat: numberFormat,
+                onProgress: progressCallback
+              });
+            } else {
+              result = await handler.convertDocx(file, {
+                direction: direction,
+                targetFont: targetFont,
+                convertHeadersFooters: chkHeaders.checked,
+                convertFootnotes: chkFootnotes.checked,
+                convertComments: chkComments.checked,
+                convertNumbers: convertNumbers,
+                numberFormat: numberFormat,
+                onProgress: progressCallback
+              });
+            }
+
+            // Also generate Word 2003 (.doc) full-fidelity version
+            progressStatus.textContent = "Word 2003 (.doc) প্রশ্নপত্র ফরম্যাট প্রস্তুত হচ্ছে...";
+            let docBlob = null;
+            if (typeof DocxToDocConverter !== 'undefined') {
+              const docConverter = new DocxToDocConverter();
+              const docRes = await docConverter.convertDocxToDoc(result.convertedBlob, {
+                preserveSutonny: true,
+                optimizeForQuestionPaper: true
+              });
+              docBlob = docRes.convertedBlob;
+            } else {
+              docBlob = result.convertedBlob;
+            }
+
+            const baseName = file.name.replace(/\.(docx|doc)$/i, '');
+            result.outputFileNameDocx = `${baseName}_converted.docx`;
+            result.outputFileNameDoc = `${baseName}_Word2003.doc`;
+            result.docBlob = docBlob;
+
+            convertedFilesCache.push(result);
+            renderConvertedFileItem(result);
+
+            // Update Statistics
+            let currentStats = parseInt(localStorage.getItem('fayzar_total_files_converted') || '1050', 10);
+            currentStats++;
+            localStorage.setItem('fayzar_total_files_converted', currentStats);
+            updateGlobalStatsUI(currentStats);
+
+            // Show preview if first file
+            if (i === 0 && result.preview.originalSample.length > 0) {
+              const isU2B = (direction === 'u2b');
+              const origLabelEl = document.getElementById('previewOriginalLabel');
+              const convLabelEl = document.getElementById('previewConvertedLabel');
+
+              if (isU2B) {
+                if (origLabelEl) origLabelEl.innerHTML = `<i class="fa-solid fa-file-lines text-slate-400"></i> মূল ফাইল (ইউনিকোড):`;
+                if (convLabelEl) convLabelEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> কনভার্ট হওয়া ফাইল (বিজয় / SutonnyMJ ফন্ট):`;
+                
+                previewOriginalText.className = "text-slate-800 leading-relaxed font-sans text-sm max-h-40 overflow-y-auto custom-scrollbar";
+                previewConvertedText.className = "text-slate-900 leading-relaxed font-sutonny text-base max-h-40 overflow-y-auto custom-scrollbar";
+              } else {
+                if (origLabelEl) origLabelEl.innerHTML = `<i class="fa-solid fa-file-lines text-amber-500"></i> মূল ফাইল (বিজয় / SutonnyMJ ফন্ট):`;
+                if (convLabelEl) convLabelEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> কনভার্ট হওয়া ফাইল (ইউনিকোড):`;
+
+                previewOriginalText.className = "text-slate-900 leading-relaxed font-sutonny text-base max-h-40 overflow-y-auto custom-scrollbar";
+                previewConvertedText.className = "text-slate-800 leading-relaxed font-sans text-sm max-h-40 overflow-y-auto custom-scrollbar";
+              }
+
+              previewOriginalText.innerHTML = result.preview.originalSample.map(s => `<p class="mb-1.5">${escapeHtml(s)}</p>`).join('');
+              previewConvertedText.innerHTML = result.preview.convertedSample.map(s => `<p class="mb-1.5">${escapeHtml(s)}</p>`).join('');
+              previewBox.classList.remove('hidden');
+            }
+
+          } catch (err) {
+            console.error("Error converting file:", err);
+            showToast(`ত্রুটি: ${file.name} কনভার্ট করা যায়নি। (${err.message})`, "error");
+          }
+        }
+
+        progressBar.style.width = '100%';
+        progressPctText.textContent = '100%';
+        progressCard.classList.add('hidden');
+        showToast(`${docxFiles.length} টি ওয়ার্ড ফাইল সফলভাবে কনভার্ট হয়েছে!`, "success");
+        const countSpan = document.getElementById('convertedFilesCount');
+        if (countSpan) countSpan.textContent = `${docxFiles.length} টি`;
+
+        if (docxFiles.length > 1) {
+          bulkDownloadGroup.classList.remove('hidden');
+        } else {
+          bulkDownloadGroup.classList.add('hidden');
+        }
+      }
+
+      function renderConvertedFileItem(res) {
+        const item = document.createElement('div');
+        item.className = "glass-card rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border border-slate-200 hover:border-emerald-300 transition shadow-sm";
+        
+        const fileSizeKB = (res.convertedBlob.size / 1024).toFixed(1);
+
+        item.innerHTML = `
+          <div class="flex items-start sm:items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-xl shadow-md shadow-emerald-500/20 shrink-0">
+              <i class="fa-solid fa-file-word"></i>
+            </div>
+            <div>
+              <h4 class="text-sm sm:text-base font-extrabold text-slate-900 break-all">${escapeHtml(res.outputFileNameDocx)}</h4>
+              <div class="text-xs text-slate-500 flex flex-wrap items-center gap-2 mt-1">
+                <span><i class="fa-solid fa-file-lines text-slate-400"></i> মূল: ${escapeHtml(res.originalName)}</span>
+                <span>•</span>
+                <span><i class="fa-solid fa-hard-drive text-slate-400"></i> ${fileSizeKB} KB</span>
+                <span>•</span>
+                <span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check text-emerald-500"></i> ${res.stats.convertedRuns} টি অংশ কনভার্ট হয়েছে</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+            <!-- Button 1: Download .DOCX -->
+            <button class="download-docx-btn flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition">
+              <i class="fa-solid fa-file-word"></i> ডাউনলোড .DOCX
+            </button>
+
+            <!-- Button 2: Download .DOC (Word 2003) -->
+            <button class="download-doc-btn flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition" title="অফিস ২০০৩ প্রশ্নপত্র ও ফরমেট শতভাগ অক্ষুণ্ণ">
+              <i class="fa-solid fa-file-lines"></i> ডাউনলোড .DOC (2003)
+            </button>
+          </div>
+        `;
+
+        item.querySelector('.download-docx-btn').addEventListener('click', () => {
+          downloadBlob(res.convertedBlob, res.outputFileNameDocx);
+          showToast(`ডাউনলোড শুরু হয়েছে: ${res.outputFileNameDocx}`, "success");
+        });
+
+        item.querySelector('.download-doc-btn').addEventListener('click', () => {
+          downloadBlob(res.docBlob, res.outputFileNameDoc);
+          showToast(`Word 2003 .doc ডাউনলোড শুরু হয়েছে: ${res.outputFileNameDoc}`, "success");
+        });
+
+        fileItemsContainer.appendChild(item);
+      }
+
+      downloadAllDocxBtn.addEventListener('click', () => {
+        convertedFilesCache.forEach(res => {
+          downloadBlob(res.convertedBlob, res.outputFileNameDocx);
+        });
+        showToast("সবগুলো .DOCX ফাইল ডাউনলোড শুরু হয়েছে!", "success");
+      });
+
+      downloadAllDocBtn.addEventListener('click', () => {
+        convertedFilesCache.forEach(res => {
+          downloadBlob(res.docBlob, res.outputFileNameDoc);
+        });
+        showToast("সবগুলো .DOC (2003) ফাইল ডাউনলোড শুরু হয়েছে!", "success");
+      });
+
+
+      // ==========================================
+      // LIVE TEXT CONVERSION CONTROLLER
+      // ==========================================
+      // Event listeners for tabs removed since we use Auto
+
+      function performTextConversion() {
+        const input = sourceTextArea.value;
+        const output = BanglaConverter.autoConvert(input);
+
+        // Auto update fonts
+        const isU2B = BanglaConverter.hasBengaliText(input);
+        if (input.trim() !== '') {
+          if (isU2B) {
+            sourceTextArea.classList.remove('font-sutonny');
+            targetTextArea.classList.add('font-sutonny');
+            sourceLabel.innerHTML = `<i class="fa-solid fa-pen text-emerald-600"></i> ইউনিকোড টেক্সট পেস্ট বা টাইপ করুন:`;
+            targetLabel.innerHTML = `<i class="fa-solid fa-check-double text-blue-600"></i> বিজয় (SutonnyMJ ফন্ট) আউটপুট:`;
+          } else {
+            sourceTextArea.classList.add('font-sutonny');
+            targetTextArea.classList.remove('font-sutonny');
+            sourceLabel.innerHTML = `<i class="fa-solid fa-pen text-blue-600"></i> বিজয় (SutonnyMJ ফন্ট) পেস্ট বা টাইপ করুন:`;
+            targetLabel.innerHTML = `<i class="fa-solid fa-check-double text-emerald-600"></i> ইউনিকোড আউটপুট:`;
+          }
+        }
+
+        targetTextArea.value = output;
+        updateTextStats();
+      }
+
+      sourceTextArea.addEventListener('input', performTextConversion);
+
+      // End text conversion definition
+
+      function updateTextStats() {
+        const srcVal = sourceTextArea.value;
+        const tgtVal = targetTextArea.value;
+
+        const srcWords = srcVal.trim() ? srcVal.trim().split(/\s+/).length : 0;
+        const srcChars = srcVal.length;
+
+        const tgtWords = tgtVal.trim() ? tgtVal.trim().split(/\s+/).length : 0;
+        const tgtChars = tgtVal.length;
+
+        sourceStats.textContent = `${srcWords} শব্দ | ${srcChars} বর্ণ`;
+        targetStats.textContent = `${tgtWords} শব্দ | ${tgtChars} বর্ণ`;
+      }
+
+      clearTextBtn.addEventListener('click', () => {
+        sourceTextArea.value = '';
+        targetTextArea.value = '';
+        updateTextStats();
+        showToast("টেক্সট বক্স ক্লিয়ার করা হয়েছে।", "info");
+      });
+
+      copyConvertedTextBtn.addEventListener('click', async () => {
+        const val = targetTextArea.value;
+        if (!val) {
+          showToast("কপি করার মতো কোনো লেখা নেই!", "warning");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(val);
+          showToast("কনভার্ট করা টেক্সট সফলভাবে কপি হয়েছে!", "success");
+        } catch (e) {
+          targetTextArea.select();
+          document.execCommand('copy');
+          showToast("কনভার্ট করা টেক্সট সফলভাবে কপি হয়েছে!", "success");
+        }
+      });
+
+      // Text Direct Download Handlers (.docx and .doc 2003)
+      downloadTextDocxBtn.addEventListener('click', async () => {
+        const text = targetTextArea.value;
+        const sourceText = sourceTextArea.value;
+        if (!text.trim()) {
+          showToast("ডাউনলোড করার মতো কোনো লেখা নেই!", "warning");
+          return;
+        }
+
+        const isU2B = BanglaConverter.hasBengaliText(sourceText);
+        const fontName = isU2B ? 'SutonnyMJ' : 'Kalpurush';
+        const isBijoy = isU2B;
+        showToast(".DOCX ফাইল প্রস্তুত হচ্ছে...", "info");
+
+        try {
+          const docxBlob = await DocxHandler.createDocxFromText(text, fontName, isBijoy);
+          const filename = `Text_${isBijoy ? 'Bijoy' : 'Unicode'}_${Date.now()}.docx`;
+          downloadBlob(docxBlob, filename);
+          showToast("DOCX ফাইল সফলভাবে ডাউনলোড হয়েছে!", "success");
+        } catch (err) {
+          console.error(err);
+          showToast("DOCX ফাইল তৈরিতে সমস্যা হয়েছে।", "error");
+        }
+      });
+
+      downloadTextDocBtn.addEventListener('click', () => {
+        const text = targetTextArea.value;
+        const sourceText = sourceTextArea.value;
+        if (!text.trim()) {
+          showToast("ডাউনলোড করার মতো কোনো লেখা নেই!", "warning");
+          return;
+        }
+
+        const isU2B = BanglaConverter.hasBengaliText(sourceText);
+        const fontName = isU2B ? 'SutonnyMJ' : 'Kalpurush';
+        const isBijoy = isU2B;
+        const docBlob = DocxHandler.createDocFromText(text, fontName);
+        const filename = `Text_${isBijoy ? 'SutonnyMJ' : 'Unicode'}_Word2003_${Date.now()}.doc`;
+        downloadBlob(docBlob, filename);
+        showToast("Word 2003 (.doc) ফাইল সফলভাবে ডাউনলোড হয়েছে!", "success");
+      });
+
+      // Utility Helpers
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        const colors = {
+          success: 'bg-emerald-700 text-white border-emerald-500',
+          error: 'bg-red-700 text-white border-red-500',
+          warning: 'bg-amber-600 text-white border-amber-400',
+          info: 'bg-slate-800 text-white border-slate-600'
+        };
+        const icons = {
+          success: 'fa-circle-check text-emerald-300',
+          error: 'fa-triangle-exclamation text-red-300',
+          warning: 'fa-circle-exclamation text-amber-200',
+          info: 'fa-circle-info text-blue-300'
+        };
+
+        toast.className = `${colors[type] || colors.info} border px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 text-xs font-semibold pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300 max-w-sm`;
+        toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i> <span>${escapeHtml(message)}</span>`;
+
+        document.getElementById('toastContainer').appendChild(toast);
+
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        });
+
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+
+      // Day / Night Theme Switcher Handler (Silent)
+      const docThemeToggleBtn = document.getElementById('doc-theme-toggle-btn');
+      if (docThemeToggleBtn) {
+        docThemeToggleBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.contains('dark');
+          if (isDark) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('fayzar_theme', 'light');
+          } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('fayzar_theme', 'dark');
+          }
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+    });
+  </script>
+
+</body>
+</html>
