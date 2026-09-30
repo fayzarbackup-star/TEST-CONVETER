@@ -411,6 +411,38 @@
     /**
      * Generates Board Standard Combined (CQ+MCQ) Word DOCX Document.
      */
+    // Part-9: অডিট-নোট পৃষ্ঠা — মূল কনটেন্টের একদম শেষে, পেজ-ব্রেক দিয়ে আলাদা পৃষ্ঠায়।
+    _auditNoteLines(options = {}) {
+      if (!options || !options.auditNote) return [];
+      const note = String(options.auditNote).replace(/^\s*\[/, '').replace(/\]\s*$/, '').trim();
+      return note ? note.split(/\r?\n/) : [];
+    },
+
+    _auditSectionDocx(options = {}) {
+      const lines = this._auditNoteLines(options);
+      if (!lines.length) return '';
+      let xml = '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+      xml += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t xml:space="preserve">যাচাই প্রতিবেদন (এআই অডিট নোট)</w:t></w:r></w:p>';
+      for (const line of lines) {
+        const t = String(line).trim();
+        if (!t) { xml += '<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr></w:p>'; continue; }
+        xml += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(t, options, { sz: 24 })}</w:p>`;
+      }
+      return xml;
+    },
+
+    _auditSectionRtf(options = {}) {
+      const lines = this._auditNoteLines(options);
+      if (!lines.length) return '';
+      let rtf = '\\page\n';
+      rtf += '{\\qc\\b\\fs32\\f0\\sl240\\slmult1\\sb240\\sa240 ' + this.formatRtfText('যাচাই প্রতিবেদন (এআই অডিট নোট)', options) + '\\par}\n';
+      for (const line of lines) {
+        const t = String(line).trim();
+        rtf += t ? ('{\\ql\\fs24\\f0\\sl240\\slmult1\\sb60\\sa60 ' + this.formatRtfText(t, options) + '\\par}\n') : '\\par\n';
+      }
+      return rtf;
+    },
+
     async generateCombinedExamDocx(parsedCq, parsedMcq, options = {}) {
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
@@ -428,14 +460,7 @@
       const pageBreak = `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
       let combinedBody = cqRes.bodyXml + pageBreak + mcqRes.bodyXml;
       
-      if (options.auditNote) {
-        combinedBody += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
-        combinedBody += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
-        const lines = options.auditNote.split('\n');
-        for (const line of lines) {
-           combinedBody += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
-        }
-      }
+      combinedBody += this._auditSectionDocx(options);
 
       // Landscape 2-column section
       const sectPr = `
@@ -445,6 +470,10 @@
           <w:cols w:num="2" w:space="1008"/>
         </w:sectPr>`;
       
+      if (options.returnInnerXml) {
+        return { bodyXml: combinedBody, sectPr };
+      }
+
       return await this._packageDocx(combinedBody + sectPr, fontName);
     },
 
@@ -736,6 +765,8 @@
         }
       }
 
+      if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
+
       if (!options.returnInnerRtf) {
         rtf += '}\n';
       }
@@ -892,9 +923,11 @@
       if (parsedMcq && parsedMcq.sections && parsedMcq.sections.length > 0) {
         // Page break for MCQ to keep it on a separate page but same landscape layout
         rtf += '\\page\n';
-        const mcqRtf = this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true });
+        const mcqRtf = this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
         rtf += mcqRtf;
       }
+
+      if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
 
       if (!options.returnInnerRtf) {
         rtf += '}\n';
@@ -1049,14 +1082,7 @@
         }
       }
 
-      if (options.auditNote) {
-        bodyXml += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="240" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t>Verification Notes</w:t></w:r></w:p>`;
-        const lines = options.auditNote.split('\n');
-        for (const line of lines) {
-           bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="60"/></w:pPr>${this.renderDocxRuns(line, options, { sz: 24 })}</w:p>`;
-        }
-      }
+      bodyXml += this._auditSectionDocx(options);
 
       // Landscape 2-column section
       const sectPr = `
@@ -1259,6 +1285,8 @@
         rtf += renderQuestionsList(page2Col2);
       }
 
+      if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
+
       if (!options.returnInnerRtf) {
         rtf += '}\n';
       }
@@ -1379,6 +1407,8 @@
         }
         bodyXml += renderDocxQuestion(allQuestions[i]);
       }
+
+      bodyXml += this._auditSectionDocx(options);
 
       // Final 2-column Section Properties
       const sectPr = `
@@ -2583,6 +2613,8 @@
         rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(trimmed, options) + '\\par}\n';
       }
 
+      if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
+
       if (!options.returnInnerRtf) {
         rtf += '}\n';
       }
@@ -2603,6 +2635,8 @@
         }
         bodyXml += `<w:p><w:pPr><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="40"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(trimmed, options)}</w:t></w:r></w:p>`;
       }
+
+      bodyXml += this._auditSectionDocx(options);
 
       const topMarg = docType === 'STAMP_DEED' ? '5040' : '1440';
       const pgW = docType === 'STAMP_DEED' ? '12240' : '11906';

@@ -503,11 +503,45 @@
     },
 
     /**
+     * Part-9: প্রকাশ্য renderToHtml — মূল রেন্ডারের পরে, প্রয়োজনে শেষে অডিট-নোট পৃষ্ঠা যোগ করে।
+     * (preview == download সমতা: Word-এর মতোই আলাদা পৃষ্ঠা, পেজ-ব্রেক সহ।)
+     */
+    renderToHtml(parsedData, options = {}) {
+      let html = this._renderToHtmlCore(parsedData, options);
+      if (options && options.auditNote) html += this.renderAuditSheet(options);
+      return html;
+    },
+
+    _auditNoteLines(options = {}) {
+      if (!options || !options.auditNote) return [];
+      const note = String(options.auditNote).replace(/^\s*\[/, '').replace(/\]\s*$/, '').trim();
+      return note ? note.split(/\r?\n/) : [];
+    },
+
+    renderAuditSheet(options = {}) {
+      const lines = this._auditNoteLines(options);
+      if (!lines.length) return '';
+      const marginClass = options.marginClass || 'margin-standard';
+      const sizeClass = options.orientation === 'landscape' ? 'size-a4-landscape' : 'size-a4-portrait';
+      const render = (t) => (typeof this.richText === 'function' ? this.richText(t) : this.escape(t));
+      let html = `<div class="sheet-label"><i class="fas fa-clipboard-check text-emerald-600"></i> যাচাই প্রতিবেদন (এআই অডিট নোট)</div>`;
+      html += `<div class="paper-sheet ${sizeClass} ${marginClass} mb-8 page-break-indicator">`;
+      html += `<div class="question-paper font-kalpurush dense-zero-gap" style="font-size: 12pt; line-height: 1.5;">`;
+      html += `<div class="text-center font-bold" style="font-size: 16pt; margin-bottom: 0.25in;">যাচাই প্রতিবেদন (এআই অডিট নোট)</div>`;
+      for (const line of lines) {
+        const t = String(line).trim();
+        html += t ? `<div style="margin-bottom: 0.08in;">${render(t)}</div>` : `<div style="height: 0.12in;"></div>`;
+      }
+      html += `</div></div>`;
+      return html;
+    },
+
+    /**
      * Renders entire question paper.
      * In Booklet Mode: generates Sheet 1 (Page 4 Skipped Col 1, Page 1 Header Col 2) + Sheet 2 (Page 2 Col 1, Page 3 Col 2).
      * In Standard Mode: generates a 2-Column continuous flow sheet.
      */
-    renderToHtml(parsedData, options = {}) {
+    _renderToHtmlCore(parsedData, options = {}) {
       const isBijoy = options.font === 'bijoy';
       const fontClass = isBijoy ? 'font-sutonny' : 'font-kalpurush';
       const isLandscape = options.orientation === 'landscape';
