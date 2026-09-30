@@ -1,0 +1,9 @@
+name = "fayzar-ocr-proxy"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+# KV: API_KEYS (JSON array) ও KEY_LEDGER (Worker নিজেই লেখে)
+# id বসানোর নিয়ম README.md-তে দেওয়া আছে।
+[[kv_namespaces]]
+binding = "FAYZAR_OCR_KEYS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"

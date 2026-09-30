@@ -237,6 +237,22 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 
 ---
 
+## 🔑 OCR Key Ledger (`fayzar-ocr-proxy/`)
+
+| ফাইল | কাজ |
+| :--- | :--- |
+| `fayzar-ocr-proxy/index.js` | Cloudflare Worker — `POST /` (কি×মডেল ফেইলওভার, এক আপলোডে) ও `GET /status` (মাস্কড মনিটরিং) |
+| `fayzar-ocr-proxy/ledger.js` | খতিয়ানের পিওর লজিক: ত্রুটি শ্রেণিবিন্যাস, কুলডাউন হিসাব, স্কোরিং, attempt plan |
+| `fayzar-ocr-proxy/wrangler.toml` | ডিপ্লয় কনফিগ (KV binding `FAYZAR_OCR_KEYS`) |
+| `fayzar-ocr-proxy/README.md` | ডিপ্লয় ধাপ, এন্ডপয়েন্ট ও কুলডাউন নীতি |
+| `tests/key-ledger.test.js` | ৩২টি অফলাইন ইউনিট টেস্ট (নকল ঘড়ি) — `npm run test:keys` |
+
+কুলডাউন নীতি: `RPM` = Google-এর `RetryInfo.retryDelay`, `RPD` = Pacific মধ্যরাত,
+`MODEL_NA` = ওই মডেল ৬ ঘণ্টা, `INVALID` = স্থায়ী, `SERVER` = ৩০/৬০/১২০/৩০০s ব্যাকঅফ।
+কি শুধুমাত্র KV-তে থাকে — রিপোতে কোনো কি রাখা হবে না।
+
+---
+
 ## ⚠️ Fix Log (২০২৬-০৯-২৮)
 
 | # | সমস্যা | ফাইল | Status |

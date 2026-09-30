@@ -1907,7 +1907,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
    * Supabase Edge Function via Streaming (SSE)
    * Returns: { text: string, model: string, keyId: string }
    */
-  async function executeGeminiRequestViaSupabase(payload, model = 'gemini-1.5-flash', onStreamChunk = null) {
+  async function executeGeminiRequestViaSupabase(payload, model = 'gemini-3-flash-preview', onStreamChunk = null, modelPriority = null) {
     if (!SUPABASE_CONFIG.ENABLED) throw new Error('Supabase proxy disabled');
     
     const controller = new AbortController();
@@ -1921,7 +1921,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           'Authorization': `Bearer ${SUPABASE_CONFIG.ANON_KEY}`,
           'apikey': SUPABASE_CONFIG.ANON_KEY
         },
-        body: JSON.stringify({ payload, model }), // Send full payload (with images)
+        // models[] পাঠানো হলে Worker একই আপলোড দিয়ে কি ও মডেল — দুই স্তরেই ফেইলওভার করে
+        body: JSON.stringify({ payload, model, models: (modelPriority && modelPriority.length ? modelPriority : [model]) }),
         signal: controller.signal
       });
       
@@ -2134,7 +2135,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       try {
         const primaryModel = candidateModels[0];
         const payload = buildModelPayload(primaryModel, false);
-        const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk);
+        const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk, candidateModels);
         console.log(`[Supabase] Success via key: ${keyId}`);
         return text;
       } catch (supabaseErr) {
