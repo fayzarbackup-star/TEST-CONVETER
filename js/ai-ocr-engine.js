@@ -1658,30 +1658,14 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
-    // Restore chunking (1 page at a time) for speed
-    const CHUNK_SIZE = 1;
-    const chunks = splitMediaIntoChunks(mediaItems, CHUNK_SIZE);
-    let fullResult = '';
-
-    for (let i = 0; i < chunks.length; i++) {
-      if (onProgress) {
-        onProgress(`⚡ পেজ কনভার্ট হচ্ছে (${toBengaliNumber(i + 1)}/${toBengaliNumber(chunks.length)})...`, 30 + Math.floor((i / chunks.length) * 60));
-      }
-
-      const chunkResult = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
-        if (onStream) {
-          // Stream is cumulative, so we need to add the previously accumulated text
-          onStream(fullResult + liveChunk);
-        }
-        if (onProgress) {
-           onProgress(`লাইভ স্ট্রিমিং চলছে (পেজ ${toBengaliNumber(i + 1)})...`, Math.min(95, 45 + Math.round((fullResult.length + liveChunk.length) / 30)));
-        }
-      });
-      
-      fullResult += chunkResult + '\n\n';
-    }
+    // ইউজারের রিকোয়েস্ট অনুযায়ী চাংকিং (Chunking) সম্পূর্ণ বাদ দেওয়া হলো।
+    // এখন সব পেজ একসাথে জেমিনিতে যাবে এবং স্বাভাবিক প্রক্রিয়ার সময় পর্যন্ত অপেক্ষা করবে।
+    if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে (সব পেজ একসাথে)...', 50);
     
-    return fullResult;
+    return await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
+      if (onStream) onStream(liveChunk);
+      if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
+    });
   }
 
   async function ensureBase64(item) {
@@ -2144,9 +2128,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         let currentPayload = buildModelPayload(model, false);
         let fetchPayload = buildFetchPayload(currentPayload);
 
-        // 60s timeout: accommodates large image uploads and initial TTFB
-        // FAST FALLBACK: Restored to 60s because large PDF OCR takes > 15s to start streaming
-        const CONNECT_TIMEOUT_MS = 60000;
+        // 300s (5 minutes) timeout: allows Gemini to take its natural time for large PDFs
+        // NO CHUNKING: Wait patiently for the entire document to process without disconnecting.
+        const CONNECT_TIMEOUT_MS = 300000;
         try {
           const attemptStartTime = Date.now();
           if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.logAudit === 'function') {
@@ -2236,15 +2220,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
               setLoading(true, `⚡ বিকল্প কি-তে চ্যানেল সুইচ হচ্ছে...`, 50 + Math.min(40, (k + 1) * 2));
               continue;
             } else {
-              if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.advanceRoundRobin === 'function') {
-                FayzarOcrConfig.advanceRoundRobin();
-              }
-              if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.logAudit === 'function') {
-                FayzarOcrConfig.logAudit('KEY_UNKNOWN_ERROR', { keyMask: currentKey.slice(0, 8) + '...', model, error: errMsg, attemptDurationMs: Date.now() - attemptStartTime });
-              }
-              lastError = new Error(errMsg);
-              setLoading(true, `⚡ চ্যানেল ব্যালেন্সিং সম্পন্ন, প্রসেসিং অব্যাহত রয়েছে...`, 50 + Math.min(40, (k + 1) * 2));
-              continue;
+              // As per user request: throw error immediately instead of silent fallback.
+              throw new Error(errMsg);
             }
           }
 
@@ -2453,12 +2430,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             throw err;
           }
           lastError = err;
-          if (err.message && (err.message.includes('404') || err.message.includes('not found') || err.message.includes('no longer available') || err.message.includes('503') || err.message.includes('No capacity') || err.message.includes('UNAVAILABLE') || err.message.includes('high demand'))) {
-            setLoading(true, `⚡ বিকল্প সক্রিয় চ্যানেলে নির্বিঘ্নে রূপান্তর অব্যাহত রয়েছে...`, 50 + Math.min(40, (k + 1) * 3));
-            break;
-          }
-          setLoading(true, '⚡ বিকল্প সক্রিয় চ্যানেলে নিরবচ্ছিন্নভাবে রূপান্তর সম্পন্ন হচ্ছে...', 50 + Math.min(40, (k + 1) * 3));
-          continue;
+          // As per user request: if ANY error occurs, immediately notify and cancel the task instead of silent failover.
+          throw err;
         }
       }
     }
