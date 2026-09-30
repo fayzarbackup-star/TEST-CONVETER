@@ -416,6 +416,18 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
   };
 
+  // ক্লাউড প্রক্সি (Cloudflare Worker) দিয়ে লোকাল কি ছাড়াই OCR চালানো সম্ভব কি না —
+  // কি-গুলো সার্ভারে (KV) রাখা হলে ব্রাউজারে কোনো কি না থাকলেও কনভার্সন চলবে।
+  function isCloudProxyAvailable() {
+    try {
+      if (!SUPABASE_CONFIG || !SUPABASE_CONFIG.ENABLED || !SUPABASE_CONFIG.FUNCTIONS_URL) return false;
+      const userCustomKey = (typeof localStorage !== 'undefined')
+        ? localStorage.getItem('fayzar_ai_ocr_custom_byok')
+        : '';
+      return !userCustomKey; // BYOK থাকলে সরাসরি সেই কি ব্যবহার হবে
+    } catch (e) { return false; }
+  }
+
   const state = {
     freeUsesCount: parseInt(localStorage.getItem(STORAGE_KEYS.FREE_COUNT) || '0', 10),
     byokApiKey: savedKey,
@@ -1585,7 +1597,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           updateProModelStatusUI(false);
           showToast('⚡ প্রো মডেল সাড়া দেয়নি, ক্লাউড এপিআই দিয়ে দ্রুত সম্পন্ন করা হচ্ছে...', 'info');
 
-          if (apiKey) {
+          if (apiKey || isCloudProxyAvailable()) {
             rawText = await processWithChunking(apiKey, mediaItems, onProgress, onStream);
           } else {
             throw new Error("প্রো মডেল সাড়া দেয়নি এবং কোনো Gemini API Key পাওয়া যায়নি।");
@@ -1596,14 +1608,14 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         fetch(`${FIREBASE_BRIDGE_URL}/requests/${jobId}.json`, { method: 'DELETE' }).catch(() => {});
         cachedBridgeOnline = false;
         updateProModelStatusUI(false);
-        if (apiKey) {
+        if (apiKey || isCloudProxyAvailable()) {
           showToast('⚡ ক্লাউড এপিআই দিয়ে দ্রুত সম্পন্ন করা হচ্ছে...', 'info');
           rawText = await processWithChunking(apiKey, mediaItems, onProgress, onStream);
         } else {
           throw bridgeErr;
         }
       }
-    } else if (state.demoMode || !apiKey) {
+    } else if (state.demoMode || (!apiKey && !isCloudProxyAvailable())) {
       if (state.demoMode) {
         if (onProgress) onProgress('অফলাইন ডেমো সিমুলেশন চলছে...', 60);
         await sleep(700);
@@ -1622,7 +1634,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     let finalExtractedText = rawText;
 
     // Auto verification pipeline if enabled - run in single continuous flow BEFORE showing final output
-    if (state.autoVerify && state.lastMediaItems && state.lastMediaItems.length > 0 && !state.demoMode && apiKey) {
+    if (state.autoVerify && state.lastMediaItems && state.lastMediaItems.length > 0 && !state.demoMode && (apiKey || isCloudProxyAvailable())) {
       if (onProgress) onProgress('স্বয়ংক্রিয় অডিট ও যাচাই চলছে (বানান, উদ্দীপক ও মিসিং প্রশ্ন)...', 97, 4);
       try {
         const extraTextContent = `[পূর্বে সংগৃহীত খসড়া টেক্সট (DRAFT TO BE AUDITED & VERIFIED AGAINST ATTACHED IMAGES)]:\n\n${rawText}\n\n[নির্দেশনা: উপরের খসড়া টেক্সটটিকে সংযুক্ত মূল ছবিগুলোর সাথে পুঙ্খানুপুঙ্খ মিলিয়ে বানান ভুল, উদ্দীপকের বিচ্যুতি এবং কোনো প্রশ্ন বা উপ-প্রশ্ন বাদ পড়ে থাকলে তা সংশোধন করে সম্পূর্ণ নির্ভুল প্রশ্নপত্র প্রস্তুত করুন। যদি কোনো অস্পষ্ট শব্দের অনুমান করা হয় বা সোর্স রেফারেন্স বাদ দেওয়া হয়, তবে অবশ্যই ডকুমেন্টের শেষে [এআই অডিট নোট ও পরিবর্তনসমূহ: ...] অংশে তা বিস্তারিত উল্লেখ করবেন।]`;
@@ -1868,8 +1880,15 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           state.unicodeText = _snapshotText;
           if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = _snapshotText;
         }
-        await downloadWordDocument('bijoy_docx');
-        showToast(total > 1 ? `সবগুলো (${toBengaliNumber(total)}টি) পেজ একসাথে সফলভাবে রূপান্তর সম্পন্ন হয়েছে!` : 'AI দিয়ে ডকুমেন্ট রূপান্তর সম্পন্ন হয়েছে!', 'success');
+        // আউটপুট অসম্পূর্ণ হলে ফাইল স্বয়ংক্রিয়ভাবে ডাউনলোড হবে না — ব্যবহারকারী যেন
+        // ভুল করে অর্ধেক প্রশ্নপত্র বিতরণ না করেন (১০০% কোয়ালিটি শর্ত)।
+        const _isIncomplete = /\[অসম্পূর্ণ:/.test(state.unicodeText || '');
+        if (_isIncomplete) {
+          showToast('⚠️ আউটপুট অসম্পূর্ণ — ফাইল স্বয়ংক্রিয়ভাবে ডাউনলোড করা হয়নি। টেক্সট যাচাই করে প্রয়োজনে পুনরায় চেষ্টা করুন।', 'warning');
+        } else {
+          await downloadWordDocument('bijoy_docx');
+        }
+        if (!_isIncomplete) showToast(total > 1 ? `সবগুলো (${toBengaliNumber(total)}টি) পেজ একসাথে সফলভাবে রূপান্তর সম্পন্ন হয়েছে!` : 'AI দিয়ে ডকুমেন্ট রূপান্তর সম্পন্ন হয়েছে!', 'success');
       } else {
         showToast('কোনো টেক্সট পাওয়া যায়নি।', 'warning');
       }
@@ -2104,6 +2123,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     // to avoid interrupting the streaming UI between chunks.
 
     let lastError = null;
+    let bestPartialText = '';      // সব কি ব্যর্থ হলে সবচেয়ে দীর্ঘ আংশিক ফলাফল (অটো-ডাউনলোড হবে না)
     let isRateLimited = false;
 
     // ===== SUPABASE PROXY (FIRST TRY) =====
@@ -2287,6 +2307,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             const FIRST_TOKEN_TIMEOUT_MS = 240000; // 240s — একই কলে অভ্যন্তরীণ পুনঃযাচাই হওয়ায় প্রথম টোকেন দেরিতে আসবে
             const STREAM_IDLE_TIMEOUT_MS = 90000;  // 90s — দুই চাঙ্কের মাঝে সর্বোচ্চ বিরতি
             let shouldStopStream = false;
+            let streamIncomplete = false;   // স্ট্রিম অসম্পূর্ণ হলে true → পরের কি-তে ফেইলওভার
+            let incompleteFatal = false;    // MAX_TOKENS-এর মতো: অন্য কি-তেও লাভ নেই
 
             while (true) {
               if (shouldStopStream) break;
@@ -2300,10 +2322,14 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
               try {
                 readResult = await Promise.race([reader.read(), chunkTimeoutPromise]);
               } catch (raceErr) {
-                // If we already received substantial text (>100 chars), treat timeout as stream completion rather than crashing!
+                // আংশিক টেক্সট আর 'সফল' নয় — সংরক্ষণ করে পরের কি/মডেলে ফেইলওভার হবে।
                 if (fullStreamedText.length > 100) {
-                  console.warn('⚠️ স্ট্রিমিং টাইমআউটে সংগৃহীত টেক্সট সুরক্ষিত রাখা হলো:', fullStreamedText.length);
-                  fullStreamedText += '\n\n[অসম্পূর্ণ: নেটওয়ার্ক টাইমআউট বা সার্ভার সংযোগ বিচ্ছিন্ন]';
+                  console.warn('⚠️ স্ট্রিম টাইমআউট — আংশিক টেক্সট সংরক্ষিত, পরের কি-তে চেষ্টা:', fullStreamedText.length);
+                  if (fullStreamedText.length > (bestPartialText || '').length) {
+                    bestPartialText = fullStreamedText + '\n\n[অসম্পূর্ণ: নেটওয়ার্ক টাইমআউট বা সার্ভার সংযোগ বিচ্ছিন্ন]';
+                  }
+                  streamIncomplete = true;
+                  try { reader.cancel(); } catch (e) {}
                   break;
                 }
                 throw raceErr;
@@ -2331,8 +2357,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                       throw new Error('Safety Filter: কন্টেন্ট Gemini-র নিরাপত্তা ফিল্টারে আটকে গেছে।');
                     }
                     if (finishReason === 'MAX_TOKENS') {
+                      streamIncomplete = true; incompleteFatal = true; // আউটপুট সীমা — অন্য কি-তেও একই হবে
                       fullStreamedText += `\n\n[অসম্পূর্ণ: MAX_TOKENS - ফাইলটি অনেক বড় হওয়ায় সম্পূর্ণটি কনভার্ট করা সম্ভব হয়নি। দয়া করে ফাইলের পেজ কমিয়ে পুনরায় চেষ্টা করুন।]`;
                     } else if (finishReason && finishReason !== 'STOP') {
+                      streamIncomplete = true;
                       fullStreamedText += `\n\n[অসম্পূর্ণ: ${finishReason}]`;
                     }
                     
@@ -2353,6 +2381,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                             console.warn('⚠️ রিপিটেশন লুপ শনাক্ত! স্ট্রিমিং সম্পন্ন করা হলো।');
                             shouldStopStream = true;
                             fullStreamedText += '\n\n[অসম্পূর্ণ: রিপিটেশন লুপ শনাক্ত হয়েছে]';
+                          streamIncomplete = true;
                             try { reader.cancel(); } catch(e){}
                             break;
                           }
@@ -2363,6 +2392,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                           console.warn('⚠️ নিরাপদ অক্ষর সীমা (৩,০০,০০০) অতিক্রম! স্ট্রিমিং সম্পন্ন করা হলো।');
                           shouldStopStream = true;
                           fullStreamedText += '\n\n[অসম্পূর্ণ: নিরাপদ অক্ষর সীমা অতিক্রম করেছে]';
+                          streamIncomplete = true;
                           try { reader.cancel(); } catch(e){}
                           break;
                         }
@@ -2402,6 +2432,19 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
               }
             }
 
+            // অসম্পূর্ণ স্ট্রিম কখনোই 'সফল' নয় — সংরক্ষণ করে পরের কি/মডেলে চেষ্টা হবে।
+            if (fullStreamedText.trim() && streamIncomplete) {
+              if (fullStreamedText.length > bestPartialText.length) bestPartialText = fullStreamedText;
+              if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.logAudit === 'function') {
+                FayzarOcrConfig.logAudit('OCR_INCOMPLETE', { keyMask: currentKey.slice(0, 8) + '...', model, length: fullStreamedText.length, fatal: incompleteFatal });
+              }
+              if (incompleteFatal) break;   // MAX_TOKENS — অন্য কি-তেও একই ফল, লুপ থামাও
+              if (!onStreamChunk) {
+                setLoading(true, '⚡ আউটপুট অসম্পূর্ণ — পরের কি দিয়ে পুনরায় চেষ্টা হচ্ছে...', 60);
+              }
+              continue;                     // একই আপলোড, পরের কি
+            }
+
             if (fullStreamedText.trim()) {
               if (typeof FayzarOcrConfig !== 'undefined') {
                 if (typeof FayzarOcrConfig.advanceRoundRobin === 'function') FayzarOcrConfig.advanceRoundRobin();
@@ -2427,45 +2470,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
               }
               return cleanOcrResponse(fullStreamedText);
             }
-            // Empty stream: model returned no text - try fallback format
-            currentPayload = buildModelPayload(model, true);
-            const emptyRetryRes = await fetchWithTimeout(streamEndpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(currentPayload)
-            }, CONNECT_TIMEOUT_MS);
-            if (emptyRetryRes.ok) {
-              res = emptyRetryRes;
-              // Re-read the fallback response
-              if (res.body && typeof res.body.getReader === 'function') {
-                const fbReader = res.body.getReader();
-                const fbDecoder = new TextDecoder('utf-8');
-                let fbBuffer = '';
-                let fbText = '';
-                while (true) {
-                  const { done: fbDone, value: fbVal } = await fbReader.read();
-                  if (fbDone) break;
-                  fbBuffer += fbDecoder.decode(fbVal, { stream: true });
-                  const fbLines = fbBuffer.split('\n');
-                  fbBuffer = fbLines.pop() || '';
-                  for (const fbLine of fbLines) {
-                    const fbTrimmed = fbLine.trim();
-                    if (fbTrimmed.startsWith('data:')) {
-                      const fbJson = fbTrimmed.slice(5).trim();
-                      if (!fbJson || fbJson === '[DONE]') continue;
-                      try {
-                        const fbChunk = JSON.parse(fbJson);
-                        fbText += fbChunk.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                      } catch (_) { /* ignore */ }
-                    }
-                  }
-                }
-                if (fbText.trim()) {
-                  if (onStreamChunk) onStreamChunk(fbText);
-                  return cleanOcrResponse(fbText);
-                }
-              }
-            }
+            // খালি স্ট্রিম: আগে এখানেই একই কি-তে সম্পূর্ণ ফাইল আবার আপলোড হতো (দ্বিগুণ খরচ)।
+            // এখন সরাসরি পরের কি-তে যাওয়া হয় — একই আপলোড ডেটা পুনঃব্যবহার করে।
           }
 
           // If stream produced no text on this key, advance and try next key immediately
@@ -2485,12 +2491,28 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             throw err;
           }
           lastError = err;
-          // As per user request: if ANY error occurs, immediately notify and cancel the task instead of silent failover.
-          throw err;
+
+          // ত্রুটির শ্রেণিবিন্যাস: সাময়িক/নেটওয়ার্ক সমস্যা হলে একই আপলোড ডেটা দিয়ে
+          // সঙ্গে সঙ্গে পরের কি-তে যাওয়া হয়; ইনপুট/নিরাপত্তাজনিত ত্রুটিতে সঙ্গে সঙ্গে থামা হয়।
+          const msg = String(err && err.message || '');
+          const isFatal = /Safety Filter|API_KEY_INVALID|INVALID_ARGUMENT|invalid argument/i.test(msg);
+          if (isFatal) throw err;
+          if (!onStreamChunk) {
+            setLoading(true, '⚡ সংযোগ সমস্যা — পরের কি দিয়ে একই ফাইলে পুনরায় চেষ্টা হচ্ছে...', 60);
+          }
+          continue;   // পরের কি (ফাইল পুনরায় এনকোড হয় না)
         }
       }
     }
 
+      // সব কি/মডেল ব্যর্থ — আংশিক ফল থাকলে তা মার্কারসহ ফেরত যাবে (অটো-ডাউনলোড ব্লক হবে)
+      if (bestPartialText && bestPartialText.trim()) {
+        const marked = bestPartialText.includes('[অসম্পূর্ণ:')
+          ? bestPartialText
+          : bestPartialText + '\n\n[অসম্পূর্ণ: সবগুলো কি ব্যর্থ হয়েছে]';
+        if (onStreamChunk) onStreamChunk(marked);
+        return cleanOcrResponse(marked);
+      }
       throw new Error(lastError?.message || 'Gemini API-র সকল কি ব্যস্ত বা কোটা পূর্ণ। অনুগ্রহ করে কয়েক মুহূর্ত পর পুনরায় চেষ্টা করুন।');
     } finally {
       activeAbortController = null;
