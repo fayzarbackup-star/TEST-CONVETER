@@ -26,6 +26,7 @@ import {
 const MAX_ATTEMPTS = 24;         // সময়-বাজেটের সাথে সমন্বিত (subrequest সীমার নিরাপদ ভেতরে)
 const MAX_TOTAL_MS = 200000;     // মোট চেষ্টার সময়সীমা (~৩ মিনিট ২০s) — ৮-চেষ্টার হার্ড ক্যাপের বদলে
 const SERVER_RETRY_DELAY_MS = 2500; // 503 transient হলে একবার ছোট বিরতি দিয়ে আবার
+const ATTEMPT_TIMEOUT_MS = 150000;  // part-6b: একটি চেষ্টার সর্বোচ্চ সময় — ঝুলে থাকা সংযোগ আটকাতে
 // নির্ভুলতা আগে: 3-flash-preview (বাংলা/টেবিল) → 3.8-flash (গণিত) → 3.6-flash (দ্রুত)
 const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'];
 
@@ -265,6 +266,8 @@ export default {
       const encoder = new TextEncoder();
       const retryMs = Math.max(0, parseInt(env.SERVER_RETRY_MS || String(SERVER_RETRY_DELAY_MS), 10));
       const serverRetry = { used: false };
+      const attemptTimeoutMs = Math.max(1000, parseInt(env.ATTEMPT_TIMEOUT_MS || String(ATTEMPT_TIMEOUT_MS), 10));
+      const waitTickMs = Math.max(1, parseInt(env.WAIT_TICK_MS || '15000', 10));
       const serverFailKeys = Object.create(null);   // model → Set(key) — কয়টি কি ৫০৩ খেয়েছে
 
       // খতিয়ান থেকে "ধরা-পড়া" কি আনা (sticky) — কিন্তু মডেলের ক্রম কখনো বদলায় না।
@@ -308,17 +311,31 @@ export default {
 
               let res = null;
               let verdict = null;
+              // part-6b: চেষ্টা ঝুলে গেলেও UI নীরব থাকবে না — নিয়মিত "অপেক্ষা" হার্টবিট;
+              // সাথে একটি চেষ্টার সর্বোচ্চ সময়, যাতে অসীম অপেক্ষার সুযোগ না থাকে।
+              const attemptAbort = new AbortController();
+              const attemptTimer = setTimeout(() => { try { attemptAbort.abort(); } catch (e) {} }, attemptTimeoutMs);
+              const waitTicker = setInterval(() => {
+                try {
+                  note({ event: 'waiting', attempt: i + 1, total: plan.length, key: maskKey(key), model, elapsedSec: elapsed(), waitingSec: Math.round((Date.now() - started) / 1000) });
+                } catch (e) { /* স্ট্রিম বন্ধ হলে চুপচাপ */ }
+              }, waitTickMs);
               try {
                 res = await fetch(geminiUrl, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload)
+                  body: JSON.stringify(payload),
+                  signal: attemptAbort.signal
                 });
               } catch (netErr) {
                 const entry = ensureEntry(ledger, key, Date.now());
-                verdict = classifyGeminiError(0, { error: { message: netErr.message } }, {
+                const aborted = netErr && (netErr.name === 'AbortError' || /abort/i.test(String(netErr.message || '')));
+                verdict = classifyGeminiError(0, { error: { message: aborted ? `attempt timeout (${Math.round(attemptTimeoutMs / 1000)}s)` : netErr.message } }, {
                   now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
                 });
+              } finally {
+                clearTimeout(attemptTimer);
+                clearInterval(waitTicker);
               }
 
               if (!res || !res.ok) {

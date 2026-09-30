@@ -1935,6 +1935,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         return `⚡ নতুন মডেলে যাচ্ছি…`;
       case 'streaming':
         return `✅ সফল — ${s.model || ''} থেকে আউটপুট আসছে…`;
+      case 'waiting':
+        return `⏳ ${s.model || ''} — ${s.waitingSec || 0} সেকেন্ড ধরে অপেক্ষা করছি…`;
       case 'fatal':
         return '⚠️ ফাইল/পেলোডে সমস্যা — অন্য কি বা মডেলে চেষ্টা করে লাভ নেই।';
       default:

@@ -40,6 +40,15 @@ globalThis.fetch = async (url, opts) => {
   calls.push({ key: key.slice(-4), model });
   const r = script.shift() || { ok: true };
   if (r.throw) throw new Error('network down');
+  if (r.delay) await new Promise(res => setTimeout(res, r.delay));
+  if (r.stall) {                          // ঝুলে-থাকা অনুরোধ — শুধু abort এ কাটে
+    await new Promise((_, rej) => {
+      const sig = opts && opts.signal;
+      const kill = () => rej(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+      if (sig) { if (sig.aborted) return kill(); sig.addEventListener('abort', kill); }
+      setTimeout(() => rej(new Error('stall safeguard (test)')), 5000);
+    });
+  }
   if (r.ok) return new Response('data: {"candidates":[{"content":{"parts":[{"text":"ঠিক আছে"}]}}]}\n\n',
     { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
   return new Response(JSON.stringify(r.body), { status: r.status, headers: { 'Content-Type': 'application/json' } });
@@ -253,6 +262,32 @@ T('Sticky: আগের সফল মডেল পিছনের হলেও �
 T('Sticky: ওই মডেলের ভেতরে ধরা-পড়া কি-টিই সবার আগে (মডেল বদল হয় না)',
   !!calls[3] && calls[3].model === 'gemini-3.6-flash' && calls[3].key === KEYS[2].slice(-4),
   calls);
+
+// ── ২গ. লম্বা চেষ্টায় "অপেক্ষা" হার্টবিট — HTML: UI কখনো নীরব হয় না
+const store5 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env5 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', WAIT_TICK_MS: '5', FAYZAR_OCR_KEYS: {
+  get: async k => store5.get(k) ?? null, put: async (k, v) => { store5.set(k, v); } } };
+script = [{ delay: 60, ok: true }]; calls = [];
+const res5 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview'] })
+}), env5, ctx);
+const e5 = await sse(res5);
+const waitCount = e5.names.filter(n => n === 'waiting').length;
+T('লম্বা চেষ্টার সময় "অপেক্ষা" হার্টবিট আসে (নীরব নয়)', waitCount >= 1 && e5.texts.includes('ঠিক আছে'), { waitCount, names: e5.names });
+
+// ── ২ঘ. ঝুলে-থাকা চেষ্টা টাইমআউটে কাটা পড়ে → দ্রুত পরের ধাপে এগোয়
+const store6 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env6 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', ATTEMPT_TIMEOUT_MS: '40', WAIT_TICK_MS: '100000', FAYZAR_OCR_KEYS: {
+  get: async k => store6.get(k) ?? null, put: async (k, v) => { store6.set(k, v); } } };
+script = [{ stall: true }, { stall: true }, { stall: true }, { stall: true }, { ok: true }]; calls = [];
+const res6 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.6-flash'] })
+}), env6, ctx);
+const e6 = await sse(res6);
+T('ঝুলে-থাকা চেষ্টা টাইমআউটে কেটে পরের চেষ্টায় যায়', calls.length >= 4 && e6.texts.includes('ঠিক আছে'), { calls: calls.length, names: e6.names });
+T('টাইমআউট SERVER-শ্রেণিতে ধরা পড়ে → ব্যাকআফ/সুইচ হয়', e6.names.includes('switch_key') || e6.names.includes('switch_model') || e6.names.includes('retry_same_key'), e6.names);
 
 // ── ৩. খতিয়ান: 429-প্রাপ্ত কি এখন কুলিং, সঠিক সময়সহ
 let st = await (await status()).json();
