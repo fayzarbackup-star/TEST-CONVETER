@@ -1756,7 +1756,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       // Extract raw base64 without prefix
       const combinedBase64 = mediaItems.map(m => m.data.includes('base64,') ? m.data.split('base64,')[1] : m.data).join('|||');
 
-      const jobId = 'job_' + Date.now();
+      const jobId = 'job_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
 
       const userDirective = (elements.customDirectiveInput ? elements.customDirectiveInput.value : (document.getElementById('ai-custom-directive-input')?.value || '')).trim();
       const bridgePrompt = (userDirective)
