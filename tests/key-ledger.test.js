@@ -30,6 +30,9 @@ const near = (a, b, tol) => Math.abs(a - b) <= tol;
   // ── ১. মাস্কিং: পূর্ণ কি কখনো বের হবে না ────────────────────────────────
   const masked = L.maskKey(KEYS[0]);
   T('কি মাস্ক হয়, পূর্ণ কি ফাঁস হয় না', !masked.includes(KEYS[0]) && masked.startsWith('AIzaSy') && masked.endsWith('AAA1'));
+  // মাস্কটি HTTP হেডারে (X-Fayzar-Key) পাঠানো হয় — তাই ১০০% ASCII হতে হবে,
+  // নইলে Response তৈরির সময়ই ByteString ত্রুটিতে প্রতিটি সফল রিকোয়েস্ট ভেঙে পড়ে।
+  T('মাস্ক ASCII-only (HTTP হেডারে বৈধ)', /^[\x20-\x7E]+$/.test(masked), masked);
 
   // ── ২. retryDelay পার্সিং ───────────────────────────────────────────────
   T('retryDelay "34s" → ৩৪০০০ms', L.parseRetryDelay('34s') === 34000);

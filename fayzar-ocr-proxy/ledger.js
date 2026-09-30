@@ -22,9 +22,11 @@ const DEFAULT_RPM_COOLDOWN_MS = 60000;
 
 /** কি মাস্ক করা — লগ/স্ট্যাটাসে কখনোই পূর্ণ কি যাবে না */
 function maskKey(key) {
+  // শুধুমাত্র ASCII — এই মাস্ক HTTP হেডারে (X-Fayzar-Key) যায়, আর হেডারে
+  // non-Latin1 অক্ষর দিলে Response তৈরিই ব্যর্থ হয় (ByteString ত্রুটি)।
   const k = String(key || '');
-  if (k.length <= 12) return k.slice(0, 4) + '…';
-  return k.slice(0, 6) + '…' + k.slice(-4);
+  if (k.length <= 12) return k.slice(0, 4) + '...';
+  return k.slice(0, 6) + '...' + k.slice(-4);
 }
 
 /** "34s" / "1.5s" / "500ms" → মিলিসেকেন্ড */
@@ -269,7 +271,10 @@ function buildStatus(ledger, keys, now = Date.now()) {
     totalKeys: keys.length,
     keys: keys.map((k, i) => {
       const e = (ledger.keys && ledger.keys[maskKey(k)]) || createEntry(k, now);
-      const available = isAvailable(ledger, k, '', now);
+      const modelList = Object.keys(e.models || {});
+      const allModelsCooling = modelList.length > 0 &&
+        modelList.every(m => e.models[m].reopenAt > now);
+      const available = isAvailable(ledger, k, '', now) && !allModelsCooling;
       return {
         id: 'K' + String(i + 1).padStart(2, '0'),
         mask: e.mask,

@@ -585,6 +585,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       gasUrlInput: document.getElementById('ai-ocr-gas-url-input'),
       resetCreditsBtn: document.getElementById('ai-ocr-reset-credits-btn'),
       autoVerifyToggle: document.getElementById('ai-ocr-settings-autoverify'),
+      keysRefreshBtn: document.getElementById('ai-ocr-keys-refresh-btn'),
+      keysCsvBtn: document.getElementById('ai-ocr-keys-csv-btn'),
+      keysSummary: document.getElementById('ai-ocr-keys-summary'),
+      keysTbody: document.getElementById('ai-ocr-keys-tbody'),
+      keysModels: document.getElementById('ai-ocr-keys-models'),
       downloadAuditBtn: document.getElementById('ai-ocr-download-audit-btn'),
 
       // Re-verification & Audit elements
@@ -751,7 +756,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     if (proToggleBtn) {
       proToggleBtn.addEventListener('click', toggleProModel);
     }
-    if (elements.openSettingsBtn) elements.openSettingsBtn.addEventListener('click', () => toggleModal(elements.settingsModal, true));
+    if (elements.openSettingsBtn) elements.openSettingsBtn.addEventListener('click', () => {
+      toggleModal(elements.settingsModal, true);
+      refreshKeyStatus(true); // সেটিংস খুললেই কি-খতিয়ান নীরবে হালনাগাদ
+    });
+    if (elements.keysRefreshBtn) elements.keysRefreshBtn.addEventListener('click', () => refreshKeyStatus(false));
+    if (elements.keysCsvBtn) elements.keysCsvBtn.addEventListener('click', downloadKeyStatusCsv);
     if (elements.closeSettingsBtn) elements.closeSettingsBtn.addEventListener('click', () => toggleModal(elements.settingsModal, false));
     if (elements.saveSettingsBtn) elements.saveSettingsBtn.addEventListener('click', saveSettings);
     if (elements.resetCreditsBtn) elements.resetCreditsBtn.addEventListener('click', resetCredits);
@@ -2518,6 +2528,106 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     } finally {
       activeAbortController = null;
     }
+  }
+
+  // ===========================================================
+  // কি মনিটর — Worker-এর GET /status থেকে খতিয়ান দেখানো
+  // (কোনো পূর্ণ API key এখানে আসে না, শুধু মাস্কড তথ্য)
+  // ===========================================================
+  let lastKeyStatus = null;
+
+  function formatCountdown(sec) {
+    if (!sec || sec <= 0) return '—';
+    if (sec < 60) return `${toBengaliNumber(sec)} সেকেন্ড`;
+    if (sec < 3600) return `${toBengaliNumber(Math.ceil(sec / 60))} মিনিট`;
+    const h = Math.floor(sec / 3600);
+    const m = Math.ceil((sec % 3600) / 60);
+    return `${toBengaliNumber(h)} ঘণ্টা ${toBengaliNumber(m)} মিনিট`;
+  }
+
+  function renderKeyStatus(status) {
+    if (!elements.keysTbody) return;
+    lastKeyStatus = status;
+    const rows = (status && status.keys) || [];
+    const ready = rows.filter(k => k.state === 'READY').length;
+    const cooling = rows.filter(k => k.state === 'COOLING').length;
+    const invalid = rows.filter(k => k.state === 'INVALID').length;
+    const usedToday = rows.reduce((a, k) => a + (k.requestsToday || 0), 0);
+
+    if (elements.keysSummary) {
+      elements.keysSummary.innerHTML =
+        `মোট <b>${toBengaliNumber(rows.length)}</b> · প্রস্তুত <b class="text-emerald-600">${toBengaliNumber(ready)}</b>` +
+        ` · কুলিং <b class="text-amber-600">${toBengaliNumber(cooling)}</b>` +
+        ` · অবৈধ <b class="text-rose-600">${toBengaliNumber(invalid)}</b>` +
+        ` · আজ মোট রিকোয়েস্ট <b>${toBengaliNumber(usedToday)}</b>`;
+    }
+
+    const chip = (state) => state === 'READY'
+      ? '<span class="text-emerald-600 font-black">🟢 প্রস্তুত</span>'
+      : state === 'COOLING'
+        ? '<span class="text-amber-600 font-black">🟡 কুলিং</span>'
+        : '<span class="text-rose-600 font-black">🔴 অবৈধ</span>';
+
+    elements.keysTbody.innerHTML = rows.length === 0
+      ? '<tr><td colspan="6" class="px-2 py-3 text-center text-slate-500">কোনো কি পাওয়া যায়নি।</td></tr>'
+      : rows.map(k => `
+        <tr class="border-t border-slate-200 dark:border-slate-700">
+          <td class="px-2 py-1.5 font-mono">${k.id} <span class="text-slate-400">${k.mask}</span></td>
+          <td class="px-2 py-1.5">${chip(k.state)}</td>
+          <td class="px-2 py-1.5 text-center">${toBengaliNumber(k.requestsToday || 0)}</td>
+          <td class="px-2 py-1.5 text-center">${toBengaliNumber(k.success || 0)}/${toBengaliNumber(k.fail || 0)}</td>
+          <td class="px-2 py-1.5 text-center">${k.avgLatencyMs ? toBengaliNumber(Math.round(k.avgLatencyMs / 1000)) + 's' : '—'}</td>
+          <td class="px-2 py-1.5">${formatCountdown(k.reopenInSec)}${k.reopenReason ? ` <span class="text-slate-400">(${k.reopenReason})</span>` : ''}</td>
+        </tr>`).join('');
+
+    if (elements.keysModels) {
+      const blocked = [];
+      rows.forEach(k => Object.keys(k.models || {}).forEach(m => {
+        if (k.models[m].reopenInSec > 0) blocked.push(`${k.id}·${m} → ${formatCountdown(k.models[m].reopenInSec)} (${k.models[m].reason || ''})`);
+      }));
+      elements.keysModels.textContent = blocked.length
+        ? 'মডেল-ভিত্তিক কুলডাউন: ' + blocked.join(' | ')
+        : 'কোনো মডেল-ভিত্তিক কুলডাউন নেই।';
+    }
+  }
+
+  async function refreshKeyStatus(silent = false) {
+    if (!elements.keysSummary) return;
+    if (!SUPABASE_CONFIG.ENABLED || !SUPABASE_CONFIG.FUNCTIONS_URL) {
+      elements.keysSummary.textContent = 'প্রক্সি নিষ্ক্রিয় — কি মনিটর কেবল সার্ভার-সাইড কি-এর জন্য প্রযোজ্য।';
+      return;
+    }
+    elements.keysSummary.textContent = 'তথ্য আনা হচ্ছে...';
+    try {
+      const base = SUPABASE_CONFIG.FUNCTIONS_URL.replace(/\/+$/, '');
+      const res = await fetch(base + '/status', { method: 'GET' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (!data || !Array.isArray(data.keys)) throw new Error('পুরোনো প্রক্সি সংস্করণ (/status নেই)');
+      renderKeyStatus(data);
+    } catch (e) {
+      elements.keysSummary.innerHTML =
+        `<span class="text-rose-600">স্ট্যাটাস আনা যায়নি: ${e.message}</span><br>` +
+        `<span class="text-slate-500">Worker-এর নতুন সংস্করণ (KeyLedger) ডিপ্লয় করা আছে কি না দেখুন।</span>`;
+      if (elements.keysTbody) elements.keysTbody.innerHTML = '';
+      if (!silent) console.warn('Key status fetch failed:', e);
+    }
+  }
+
+  function downloadKeyStatusCsv() {
+    if (!lastKeyStatus || !lastKeyStatus.keys) {
+      showToast('আগে "রিফ্রেশ" চেপে তথ্য আনুন।', 'warning');
+      return;
+    }
+    const head = ['id', 'mask', 'state', 'requestsToday', 'success', 'fail', 'avgLatencyMs', 'reopenInSec', 'reopenReason'];
+    const lines = [head.join(',')].concat(lastKeyStatus.keys.map(k =>
+      head.map(h => JSON.stringify(k[h] == null ? '' : k[h])).join(',')));
+    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `fayzar-key-ledger-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
 
   async function runGasProxyOcr() {

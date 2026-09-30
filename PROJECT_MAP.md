@@ -245,7 +245,9 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 | `fayzar-ocr-proxy/ledger.js` | খতিয়ানের পিওর লজিক: ত্রুটি শ্রেণিবিন্যাস, কুলডাউন হিসাব, স্কোরিং, attempt plan |
 | `fayzar-ocr-proxy/wrangler.toml` | ডিপ্লয় কনফিগ (KV binding `FAYZAR_OCR_KEYS`) |
 | `fayzar-ocr-proxy/README.md` | ডিপ্লয় ধাপ, এন্ডপয়েন্ট ও কুলডাউন নীতি |
-| `tests/key-ledger.test.js` | ৩২টি অফলাইন ইউনিট টেস্ট (নকল ঘড়ি) — `npm run test:keys` |
+| `tests/key-ledger.test.js` | ৩৩টি অফলাইন ইউনিট টেস্ট (নকল ঘড়ি) — `npm run test:keys` |
+| `tests/proxy-worker.test.mjs` | ১৬টি Worker ইন্টিগ্রেশন টেস্ট (নকল KV + নকল Gemini) — `npm run test:proxy` |
+| index.html → সেটিংস → "কি মনিটর" | `/status` থেকে লাইভ টেবিল: অবস্থা, আজকের ব্যবহার, সফল/ব্যর্থ, কাউন্টডাউন, CSV এক্সপোর্ট |
 
 কুলডাউন নীতি: `RPM` = Google-এর `RetryInfo.retryDelay`, `RPD` = Pacific মধ্যরাত,
 `MODEL_NA` = ওই মডেল ৬ ঘণ্টা, `INVALID` = স্থায়ী, `SERVER` = ৩০/৬০/১২০/৩০০s ব্যাকঅফ।

@@ -2133,6 +2133,47 @@ ww
           </label>
         </div>
 
+        <!-- ===== কি মনিটর (KeyLedger /status) ===== -->
+        <div
+          class="p-3 bg-slate-50 dark:bg-[#1a263d] rounded-2xl border border-slate-200 dark:border-slate-700 mt-2">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="pr-2">
+              <span class="font-bold text-slate-800 dark:text-slate-200 block">কি মনিটর (API Key Ledger)</span>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">কোন কি কতবার ব্যবহার হয়েছে, কোনটি এখন বন্ধ এবং
+                কখন আবার খুলবে</p>
+            </div>
+            <div class="flex gap-1 shrink-0">
+              <button type="button" id="ai-ocr-keys-refresh-btn"
+                class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black transition cursor-pointer">
+                রিফ্রেশ
+              </button>
+              <button type="button" id="ai-ocr-keys-csv-btn"
+                class="px-3 py-1.5 rounded-lg bg-slate-600 hover:bg-slate-700 text-white text-[11px] font-black transition cursor-pointer">
+                CSV
+              </button>
+            </div>
+          </div>
+          <div id="ai-ocr-keys-summary" class="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-2">
+            তথ্য আনতে "রিফ্রেশ" চাপুন।
+          </div>
+          <div class="overflow-x-auto max-h-56 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <table class="w-full text-[11px] text-left border-collapse">
+              <thead class="bg-slate-100 dark:bg-slate-800 sticky top-0">
+                <tr class="text-slate-600 dark:text-slate-300">
+                  <th class="px-2 py-1.5 font-black">কি</th>
+                  <th class="px-2 py-1.5 font-black">অবস্থা</th>
+                  <th class="px-2 py-1.5 font-black text-center">আজ</th>
+                  <th class="px-2 py-1.5 font-black text-center">সফল/ব্যর্থ</th>
+                  <th class="px-2 py-1.5 font-black text-center">গড়</th>
+                  <th class="px-2 py-1.5 font-black">আবার খুলবে</th>
+                </tr>
+              </thead>
+              <tbody id="ai-ocr-keys-tbody" class="text-slate-700 dark:text-slate-200"></tbody>
+            </table>
+          </div>
+          <div id="ai-ocr-keys-models" class="mt-2 text-[10px] text-slate-500 dark:text-slate-400"></div>
+        </div>
+
         <div
           class="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 flex items-center justify-between text-emerald-900 dark:text-emerald-200">
           <span class="font-bold">আজকের অবশিষ্ট ফ্রি ক্রেডিট:</span>
