@@ -1659,14 +1659,17 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
     // 🚀 ফিক্স: বিশাল ফাইল (যেমন ২২ পেজ) একসাথে পাঠালে জেমিনির TTFB ৫ মিনিট পার হয়ে যায় এবং ক্লাউডফ্লেয়ার টাইমআউট করে দেয়। 
-    // তাই আগের মতো চাংকিং (১ পেজ/চাংক) চালু করা হলো যাতে দেড় মিনিটের মধ্যে পুরো ফাইল কমপ্লিট হয়।
-    const CHUNK_SIZE = 1;
+    // আবার ১ পেজ করে পাঠালে অনেক সময় লাগে (৮-১০ মিনিট)। তাই ৫ পেজ করে চাংকিং করা হলো যাতে দেড় মিনিটের মধ্যে পুরো ফাইল কমপ্লিট হয়।
+    const CHUNK_SIZE = 5;
     const chunks = splitMediaIntoChunks(mediaItems, CHUNK_SIZE);
     let fullResult = '';
 
     for (let i = 0; i < chunks.length; i++) {
+      const startPage = (i * CHUNK_SIZE) + 1;
+      const endPage = Math.min((i + 1) * CHUNK_SIZE, mediaItems.length);
+      
       if (onProgress) {
-        onProgress(`⚡ পেজ কনভার্ট হচ্ছে (${toBengaliNumber(i + 1)}/${toBengaliNumber(chunks.length)})...`, 30 + Math.floor((i / chunks.length) * 60));
+        onProgress(`⚡ পেজ কনভার্ট হচ্ছে (${toBengaliNumber(startPage)}-${toBengaliNumber(endPage)}/${toBengaliNumber(mediaItems.length)})...`, 30 + Math.floor((i / chunks.length) * 60));
       }
 
       const chunkResult = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
@@ -1674,7 +1677,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           onStream(fullResult + liveChunk);
         }
         if (onProgress) {
-           onProgress(`লাইভ স্ট্রিমিং চলছে (পেজ ${toBengaliNumber(i + 1)})...`, Math.min(95, 45 + Math.round((fullResult.length + liveChunk.length) / 30)));
+           onProgress(`লাইভ স্ট্রিমিং চলছে (পেজ ${toBengaliNumber(startPage)}-${toBengaliNumber(endPage)})...`, Math.min(95, 45 + Math.round((fullResult.length + liveChunk.length) / 30)));
         }
       });
       
