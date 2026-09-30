@@ -28,6 +28,9 @@
       else if (s.startsWith('\\[') && s.endsWith('\\]')) s = s.slice(2, -2).trim();
       else if (s.startsWith('\\(') && s.endsWith('\\)')) s = s.slice(2, -2).trim();
 
+      // Part-8b: alias-নর্মালাইজেশন (\dfrac/\vec/\overline/\triangle/cases …)
+      s = EquationConverter.normalizeLatexAliases(s);
+
       // 0.1 Pre-convert degree symbols and angles BEFORE _convertMacros
       s = s.replace(/\\angle\b/g, '\u2220');
       s = s.replace(/\^\s*\\circ\b|\^\{\s*\\circ\s*\}|\\circ\b|\\degree\b|\^\{\s*\u00B0\s*\}|\^\u00B0/g, '\u00B0');
@@ -66,6 +69,7 @@
 
       // 2. Convert LaTeX macros (fractions, roots, superscripts, subscripts, brackets)
       s = this._convertMacros(s, isU2B);
+      s = EquationConverter.applyBoundaryFreeSymbols(s);
 
       // 3. Convert math symbols, trig functions and greek letters
       s = this._convertSymbols(s);
@@ -869,6 +873,14 @@
 
         const mathContent = match[1] || match[2] || match[3] || match[4] || "";
 
+        // Part-8b: বাংলা অঙ্ক/শব্দ যদি প্রকৃত ইকুয়েশন-কাঠামোর ভিতরে থাকে (যেমন \frac{৩}{৫}),
+        // তবে ভেঙে ফেলা যাবে না — পুরোটা একই math সেগমেন্ট থাকবে (Word-এ ভগ্নাংশের ভিতরে বাংলা ঠিকই বসে)।
+        if (/[\^_{}]|\\/.test(mathContent)) {
+          segments.push({ type: 'math', value: mathContent });
+          lastIndex = regex.lastIndex;
+          continue;
+        }
+
         // If math block contains any Bengali letters, extract Bengali words as 'text' and pure math as 'math'
         if (/[\u0980-\u09FF]/.test(mathContent)) {
           // 1. Unpack any \text{...} containing Bengali
@@ -1172,6 +1184,73 @@
      * Replaces LaTeX math symbols, set theory operators, arrows, brackets, and text wrappers
      * with clean standard Unicode characters.
      */
+    /** Part-8b: সীমা-মুক্ত প্রতীক-পাস — \b ব্যর্থ হয় যখন কমান্ডের পরে _ ^ { সংখ্যা থাকে। */
+    static applyBoundaryFreeSymbols(str) {
+      let s = String(str == null ? '' : str);
+      const missingMap = [
+        [/\\(?:dfrac|tfrac|cfrac)(?![a-zA-Z])/g, '\\frac'],
+        [/\\(?:times)(?![a-zA-Z])/g, '\u00D7'],
+        [/\\(?:cdot)(?![a-zA-Z])/g, '\u00B7'],
+        [/\\(?:div)(?![a-zA-Z])/g, '\u00F7'],
+        [/\\(?:pm)(?![a-zA-Z])/g, '\u00B1'],
+        [/\\(?:mp)(?![a-zA-Z])/g, '\u2213'],
+        [/\\(?:leq|le)(?![a-zA-Z])/g, '\u2264'],
+        [/\\(?:geq|ge)(?![a-zA-Z])/g, '\u2265'],
+        [/\\(?:neq|ne)(?![a-zA-Z])/g, '\u2260'],
+        [/\\(?:approx)(?![a-zA-Z])/g, '\u2248'],
+        [/\\(?:equiv)(?![a-zA-Z])/g, '\u2261'],
+        [/\\(?:int)(?![a-zA-Z])/g, '\u222B'],
+        [/\\(?:iint)(?![a-zA-Z])/g, '\u222C'],
+        [/\\(?:oint)(?![a-zA-Z])/g, '\u222E'],
+        [/\\(?:sum)(?![a-zA-Z])/g, '\u2211'],
+        [/\\(?:prod)(?![a-zA-Z])/g, '\u220F'],
+        [/\\(?:infty)(?![a-zA-Z])/g, '\u221E'],
+        [/\\(?:partial)(?![a-zA-Z])/g, '\u2202'],
+        [/\\(?:nabla)(?![a-zA-Z])/g, '\u2207'],
+        [/\\(?:lim)(?![a-zA-Z])/g, 'lim '],
+        [/\\(?:log)(?![a-zA-Z])/g, 'log '],
+        [/\\(?:ln)(?![a-zA-Z])/g, 'ln '],
+        [/\\(?:exp)(?![a-zA-Z])/g, 'exp '],
+        [/\\(?:max)(?![a-zA-Z])/g, 'max '],
+        [/\\(?:min)(?![a-zA-Z])/g, 'min '],
+        [/\\(?:sin)(?![a-zA-Z])/g, 'sin '],
+        [/\\(?:cos)(?![a-zA-Z])/g, 'cos '],
+        [/\\(?:tan)(?![a-zA-Z])/g, 'tan '],
+        [/\\(?:cot)(?![a-zA-Z])/g, 'cot '],
+        [/\\(?:sec)(?![a-zA-Z])/g, 'sec '],
+        [/\\(?:csc)(?![a-zA-Z])/g, 'csc '],
+        [/\\(?:theta)(?![a-zA-Z])/g, '\u03B8'],
+        [/\\(?:pi)(?![a-zA-Z])/g, '\u03C0'],
+        [/\\(?:alpha)(?![a-zA-Z])/g, '\u03B1'],
+        [/\\(?:beta)(?![a-zA-Z])/g, '\u03B2'],
+        [/\\(?:gamma)(?![a-zA-Z])/g, '\u03B3'],
+        [/\\(?:delta)(?![a-zA-Z])/g, '\u03B4'],
+        [/\\(?:lambda)(?![a-zA-Z])/g, '\u03BB'],
+        [/\\(?:mu)(?![a-zA-Z])/g, '\u03BC'],
+        [/\\(?:sigma)(?![a-zA-Z])/g, '\u03C3'],
+        [/\\(?:phi|varphi)(?![a-zA-Z])/g, '\u03C6'],
+        [/\\(?:omega)(?![a-zA-Z])/g, '\u03C9'],
+        [/\\(?:angle)(?![a-zA-Z])/g, '\u2220'],
+        [/\\(?:perp)(?![a-zA-Z])/g, '\u22A5'],
+        [/\\(?:parallel)(?![a-zA-Z])/g, '\u2225'],
+        [/\\(?:triangle)(?![a-zA-Z])/g, '\u25B3'],
+        [/\\(?:percent)(?![a-zA-Z])/g, '%'],
+        [/\\(?:to|rightarrow)(?![a-zA-Z])/g, '\u2192'],
+        [/\\(?:Rightarrow)(?![a-zA-Z])/g, '\u21D2'],
+        [/\\(?:in)(?![a-zA-Z])/g, '\u2208'],
+        [/\\(?:notin)(?![a-zA-Z])/g, '\u2209'],
+        [/\\(?:cup)(?![a-zA-Z])/g, '\u222A'],
+        [/\\(?:cap)(?![a-zA-Z])/g, '\u2229'],
+        [/\\(?:ldots|dots|cdots)(?![a-zA-Z])/g, '\u2026'],
+        [/\\(?:square)(?![a-zA-Z])/g, '\u25A1']
+      ];
+      for (const [re, rep] of missingMap) {
+        s = s.replace(re, rep);
+      }
+      s = s.replace(/\\%/g, '%');
+      return s;
+    }
+
     static cleanLatexSymbols(latex) {
       if (!latex) return '';
       let s = String(latex);
@@ -1265,9 +1344,116 @@
       for (const [re, rep] of symMap) {
         s = s.replace(re, rep);
       }
+      s = EquationConverter.applyBoundaryFreeSymbols(s);
       return s;
     }
 
+    /**
+     * Part-8b: LaTeX alias-নর্মালাইজেশন — EQ field / OMML / প্রিভিউ তিন পাথেই একই রূপ পায়।
+     * যেমন: \dfrac → \frac; \vec{F} → F⃗; \overline{AB} → AB̄; \triangle → △; cases/vmatrix → পড়ার-উপযোগী রূপ।
+     */
+    static normalizeLatexAliases(latex) {
+      if (!latex) return '';
+      let s = String(latex);
+      // ভগ্নাংশ-পরিবার → \frac
+      s = s.replace(/\\(?:dfrac|tfrac|cfrac)\b/g, '\\frac');
+      // স্টাইল/সীমা কমান্ড বাদ
+      s = s.replace(/\\(?:displaystyle|textstyle|scriptstyle|limits|nolimits)\b/g, '');
+      // ভেক্টর / বার / আন্ডারবার → combining চিহ্ন (সব Word-এ নিরাপদ)
+      s = s.replace(/\\(?:vec|overrightarrow|overleftarrow)\s*\{([^{}]*)\}/g, '$1\u20D7');
+      s = s.replace(/\\overline\s*\{([^{}]*)\}/g, '$1\u0304');
+      s = s.replace(/\\underline\s*\{([^{}]*)\}/g, '$1\u0332');
+      // ত্রিভুজ — সত্যিকারের △ (U+25B3)
+      s = s.replace(/\\triangle\b/g, '\u25B3');
+      // অদৃশ্য ডিলিমিটার \left. / \right.
+      s = s.replace(/\\(?:left|right)\s*\./g, '');
+      // \left( \right] \big… → সাধারণ বন্ধনী
+      s = s.replace(/\\(?:left|right|big|Big|bigg|Bigg)\s*([.([{|)\]}\\/])/g, '$1');
+      // না-সমান / না-অন্তর্ভুক্ত
+      s = s.replace(/\\not\s*=\s*|\s*\\ne\b/g, '\u2260');
+      s = s.replace(/\\not\\in\b/g, '\u2209');
+      // cases / matrix / array → পড়ার-উপযোগী এক-লাইন রূপ
+      s = s.replace(/\\begin\{(cases|[pbvB]?matrix|array|aligned)\}(?:\{[^{}]*\})?([\s\S]*?)\\end\{\1\}/g, function (m0, env, body) {
+        const rows = String(body).split(/\\\\/).map(function (r) {
+          return r.replace(/&/g, ' ').replace(/\s+/g, ' ').trim();
+        }).filter(Boolean).join(' ; ');
+        if (env === 'cases') return '{ ' + rows + ' }';
+        if (/vmatrix/.test(env)) return '| ' + rows + ' |';
+        if (/pmatrix/.test(env)) return '( ' + rows + ' )';
+        if (/bmatrix/.test(env)) return '[ ' + rows + ' ]';
+        return rows;
+      });
+      // অবশিষ্ট \begin{…} / \end{…}
+      s = s.replace(/\\begin\{[^{}]*\}(?:\{[^{}]*\})?/g, '').replace(/\\end\{[^{}]*\}/g, '');
+      // থেকে-যাওয়া সারি-বিভাজক \\ → মধ্যস্থতাকারী
+      s = s.replace(/\\\\/g, ' ; ');
+      return s;
+    }
+
+    /**
+     * Part-8b: স্ক্রিন-প্রিভিউয়ের হালকা HTML ইকুয়েশন রেন্ডারার (Word-পেস্ট-টেবিল নয়)।
+     * ভগ্নাংশ/বর্গমূল/সূচক/নিম্নসূচক + ইউনিকোড প্রতীক — স্টুডিও প্রিভিউ ও HTML পাথে ব্যবহৃত।
+     */
+    static latexToPreviewHtml(latex, fontSizePt) {
+      if (!latex) return '';
+      let s = String(latex).trim();
+      s = s.replace(/^\$\$+|\$\$+$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/^\\\(|\\\)$/g, '').replace(/^\$+|\$+$/g, '').trim();
+      s = EquationConverter.normalizeLatexAliases(s);
+      s = EquationConverter.cleanLatexSymbols(s);
+
+      const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const readGroup = (str, start) => {
+        if (str[start] !== '{') return { body: str[start] || '', end: start + 1 };
+        let depth = 0;
+        for (let i = start; i < str.length; i++) {
+          if (str[i] === '{') depth++;
+          else if (str[i] === '}') { depth--; if (depth === 0) return { body: str.slice(start + 1, i), end: i + 1 }; }
+        }
+        return { body: str.slice(start + 1), end: str.length };
+      };
+
+      const render = (str) => {
+        let out = '';
+        let i = 0;
+        while (i < str.length) {
+          if (str.startsWith('\\frac', i)) {
+            const a = readGroup(str, i + 5);
+            const b = readGroup(str, a.end);
+            out += '<span style="display:inline-block;vertical-align:-0.45em;text-align:center;font-size:0.95em;line-height:1.15;">' +
+                   '<span style="display:block;padding:0 2px;">' + render(a.body) + '</span>' +
+                   '<span style="display:block;border-top:1px solid currentColor;padding:0 2px;">' + render(b.body) + '</span>' +
+                   '</span>';
+            i = b.end; continue;
+          }
+          if (str.startsWith('\\sqrt', i)) {
+            let j = i + 5, deg = '';
+            if (str[j] === '[') { const k = str.indexOf(']', j); if (k !== -1) { deg = str.slice(j + 1, k); j = k + 1; } }
+            const a = readGroup(str, j);
+            out += (deg ? '<sup style="font-size:0.7em;">' + render(deg) + '</sup>' : '') +
+                   '√<span style="border-top:1px solid currentColor;padding:0 1px;">' + render(a.body) + '</span>';
+            i = a.end; continue;
+          }
+          const ch = str[i];
+          if (ch === '^' || ch === '_') {
+            const a = readGroup(str, i + 1);
+            out += (ch === '^' ? '<sup style="font-size:0.75em;">' : '<sub style="font-size:0.75em;">') + render(a.body) + (ch === '^' ? '</sup>' : '</sub>');
+            i = a.end; continue;
+          }
+          if (ch === '{') { const a = readGroup(str, i); out += render(a.body); i = a.end; continue; }
+          if (ch === '}') { i++; continue; }
+          if (ch === '\\') {
+            const m = /^\\([a-zA-Z]+)\s?/.exec(str.slice(i));
+            if (m) { out += esc(m[1]) + ' '; i += m[0].length; continue; }
+            i++; continue;
+          }
+          out += esc(ch); i++;
+        }
+        return out;
+      };
+
+      const sizeStyle = fontSizePt ? ('font-size:' + fontSizePt + 'pt;') : '';
+      return '<span class="eq-rendered" style="font-family:\'Times New Roman\',serif;' + sizeStyle + '">' + render(s) + '</span>';
+    }
     /**
      * Converts a LaTeX string directly into Word OpenXML OMML (<m:oMath>).
      * Eliminates Equation Editor 3.0 popup, eliminates "Word equation too large to convert" error.
@@ -1276,6 +1462,8 @@
       if (!latex) return '';
       let s = latex.trim();
       s = s.replace(/^\$\$+|\$\$+$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/^\\\(|\\\)$/g, '').replace(/^\$+|\$+$/g, '').trim();
+
+      s = EquationConverter.normalizeLatexAliases(s);
 
       s = EquationConverter.cleanLatexSymbols(s);
 

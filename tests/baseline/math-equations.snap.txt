@@ -162,31 +162,41 @@
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">সমাধান করো: $ax^2 + bx + c = 0$</span>
+<span class="cq-text text-justify flex-1">সমাধান করো: <span class="eq-rendered" style="font-family:'Times New Roman',serif;">ax<sup style="font-size:0.75em;">2</sup> + bx + c = 0</span>
+</span>
 </div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">প্রমাণ করো যে, $sin^2 \theta + cos^2 \theta = 1$</span>
+<span class="cq-text text-justify flex-1">প্রমাণ করো যে, <span class="eq-rendered" style="font-family:'Times New Roman',serif;">sin<sup style="font-size:0.75em;">2</sup> θ + cos<sup style="font-size:0.75em;">2</sup> θ = 1</span>
+</span>
 </div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
-<span class="cq-text text-justify flex-1">দেখাও যে, $\frac{d}{dx} (e^x) = e^x$</span>
+<span class="cq-text text-justify flex-1">দেখাও যে, <span class="eq-rendered" style="font-family:'Times New Roman',serif;">
+<span style="display:inline-block;vertical-align:-0.45em;text-align:center;font-size:0.95em;line-height:1.15;">
+<span style="display:block;padding:0 2px;">d</span>
+<span style="display:block;border-top:1px solid currentColor;padding:0 2px;">dx</span>
+</span> (e<sup style="font-size:0.75em;">x</sup>) = e<sup style="font-size:0.75em;">x</sup>
+</span>
+</span>
 </div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৪।</span>
-<span class="cq-text text-justify flex-1">ইন্টিগ্রেশন করো: $\int x^2 \,dx$</span>
+<span class="cq-text text-justify flex-1">ইন্টিগ্রেশন করো: <span class="eq-rendered" style="font-family:'Times New Roman',serif;">∫ x<sup style="font-size:0.75em;">2</sup>  dx</span>
+</span>
 </div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৫।</span>
-<span class="cq-text text-justify flex-1">ম্যাট্রিক্স $A = \begin{pmatrix} 1 &amp; 2 \\ 3 &amp; 4 \end{pmatrix}$ হলে $A^{-1}$ নির্ণয় করো।</span>
+<span class="cq-text text-justify flex-1">ম্যাট্রিক্স <span class="eq-rendered" style="font-family:'Times New Roman',serif;">A = ( 1 2 ; 3 4 )</span> হলে <span class="eq-rendered" style="font-family:'Times New Roman',serif;">A<sup style="font-size:0.75em;">-1</sup>
+</span> নির্ণয় করো।</span>
 </div>
 </div>
 </div>
@@ -421,7 +431,7 @@
 </w:r>
 <m:oMath>
 <m:r>
-<m:t xml:space="preserve">\int </m:t>
+<m:t xml:space="preserve">∫ </m:t>
 </m:r>
 <m:sSup>
 <m:e>
@@ -470,7 +480,7 @@
 </w:r>
 <m:oMath>
 <m:r>
-<m:t xml:space="preserve">A = \begin{pmatrix} 1 &amp; 2 \\ 3 &amp; 4 \end{pmatrix}</m:t>
+<m:t xml:space="preserve">A = ( 1 2 ; 3 4 )</m:t>
 </m:r>
 </m:oMath>
 <w:r>

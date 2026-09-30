@@ -31,6 +31,7 @@ function loadEngines() {
 
   // Layout engine helpers first (export-dual-engine resolves them via globals)
   reg('TextRunProcessor', 'js/layout-engine/text-run-processor.js');
+  reg('EquationConverter', 'js/equation-converter.js');
   reg('ThemeConfig', 'js/layout-engine/theme-config.js');
   g.FayzarThemeConfig = g.ThemeConfig;
   reg('FayzarDocxBuilder', 'js/layout-engine/docx-builder.js');

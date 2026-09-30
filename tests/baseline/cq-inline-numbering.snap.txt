@@ -241,7 +241,9 @@
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
 <span class="cq-text text-justify flex-1">ঘ. বিক্রিয়াটি প্রত্যাবর্তী কি না বিশ্লেষণ করো। ৪</span>
 </div>
-<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">[উদ্দীপক ২]<br>$2H_2 + O_2 \rightarrow 2H_2O$</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">[উদ্দীপক ২]<br>
+<span class="eq-rendered" style="font-family:'Times New Roman',serif;">2H<sub style="font-size:0.75em;">2</sub> + O<sub style="font-size:0.75em;">2</sub> → 2H<sub style="font-size:0.75em;">2</sub>O</span>
+</div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">

@@ -429,7 +429,8 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">১২টি (F1 থেকে F12 পর্যন্ত মোট বারোটি কি থাকে)</span>
+<span class="cq-sub-txt">১২টি (<span class="eq-rendered" style="font-family:'Times New Roman',serif;">F<sub style="font-size:0.75em;">1</sub>
+</span> থেকে <span class="eq-rendered" style="font-family:'Times New Roman',serif;">F<sub style="font-size:0.75em;">1</sub>2</span> পর্যন্ত মোট বারোটি কি থাকে)</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
 </div>

@@ -307,7 +307,7 @@
       for (const opt of options) {
         html += `<div class="mcq-opt">`;
         html += `<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(${this.escape(opt.label)})</span> `;
-        html += `<span class="mcq-opt-text">${this.escape(this.normalizeRomanText(opt.text))}</span>`;
+        html += `<span class="mcq-opt-text">${this.richText(this.normalizeRomanText(opt.text))}</span>`;
         html += `</div>`;
       }
       html += `</div>`;
@@ -317,6 +317,64 @@
     /**
      * Renders a Single Question (MCQ or CQ).
      */
+    /** Part-8b: EquationConverter রেজলভার (ব্রাউজার/নোড দুই পরিবেশেই) */
+    _getEquationConverter() {
+      if (typeof EquationConverter !== 'undefined') return EquationConverter;
+      if (typeof globalThis !== 'undefined' && globalThis.EquationConverter) return globalThis.EquationConverter;
+      if (typeof window !== 'undefined' && window.EquationConverter) return window.EquationConverter;
+      // Part-8b: Node/টেস্ট পরিবেশে লোড-অর্ডার-নিরপেক্ষ শিম (TextRunProcessor-এর মতোই)
+      if (typeof require === 'function') {
+        try { return require('../equation-converter.js'); } catch (e1) {
+          try { return require('./equation-converter.js'); } catch (e2) { }
+        }
+      }
+      return null;
+    },
+
+    /** Part-8b: টেক্সট + $...$ ইকুয়েশন → স্ক্রিন-প্রিভিউ HTML (কাঁচা LaTeX আর কখনো নয়) */
+    richText(text) {
+      const raw = String(text == null ? '' : text);
+      const EC = this._getEquationConverter();
+      if (!EC || typeof EC.splitTextAndMath !== 'function') return this.escape(raw);
+      try {
+        const segs = EC.splitTextAndMath(raw);
+        return segs.map((seg) => {
+          if (seg && seg.type === 'math') {
+            return (typeof EC.latexToPreviewHtml === 'function') ? EC.latexToPreviewHtml(seg.value) : this.escape(seg.value);
+          }
+          return this.escape(seg && seg.value != null ? seg.value : '');
+        }).join('');
+      } catch (e) { return this.escape(raw); }
+    },
+
+    /** Part-8b: পুরো ব্লক — মার্কডাউন টেবিল (|---|) → সত্যিকারের <table>, বাকি লাইন <br>-এ */
+    richTextBlock(text) {
+      const lines = String(text == null ? '' : text).replace(/\r\n/g, '\n').split('\n');
+      let html = '';
+      let table = [];
+      const isSep = (cells) => cells.length > 0 && cells.every((c) => /^:?-{2,}:?$/.test(c));
+      const flushTable = () => {
+        if (!table.length) return;
+        const parsed = table.map((row) => row.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim()));
+        table = [];
+        let header = null;
+        if (parsed.length > 1 && isSep(parsed[1])) { header = parsed[0]; parsed.splice(0, 2); }
+        const th = (c) => `<th style="border:1px solid #64748b;background:#f1f5f9;padding:2px 6px;text-align:left;">${this.richText(c)}</th>`;
+        const td = (c) => `<td style="border:1px solid #94a3b8;padding:2px 6px;">${this.richText(c)}</td>`;
+        html += '<table style="border-collapse:collapse;margin:4px 0;">';
+        if (header) html += '<tr>' + header.map(th).join('') + '</tr>';
+        html += parsed.filter((r) => !isSep(r)).map((r) => '<tr>' + r.map(td).join('') + '</tr>').join('');
+        html += '</table>';
+      };
+      for (const line of lines) {
+        if (/^\s*\|.*\|\s*$/.test(line)) { table.push(line); continue; }
+        flushTable();
+        if (line.trim()) html += this.richText(line) + '<br>';
+      }
+      flushTable();
+      return html.replace(/<br>$/, '');
+    },
+
     renderQuestionItem(q, renderOpts = {}) {
       const isMcq = (q.options && q.options.length > 0) || (q.statements && q.statements.length > 0);
       let html = '';
@@ -324,7 +382,7 @@
       // Pre-context / Stimulus: Starts directly at the left margin, aligned with question serial!
       if (q.preContext) {
         html += `<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">`;
-        html += this.escape(q.preContext).replace(/\n/g, '<br>');
+        html += this.richTextBlock(q.preContext);
         html += `</div>`;
       }
 
@@ -333,19 +391,19 @@
         html += `<div class="mcq-q-item">`;
         html += `<div class="mcq-q-row">`;
         html += `<span class="mcq-num">${this.escape(q.num)}.</span>`;
-        html += `<span class="mcq-text">${this.escape(q.text)}</span>`;
+        html += `<span class="mcq-text">${this.richText(q.text)}</span>`;
         html += `</div>`;
 
         // Stimulus / statements if any (indented 22px)
         if (q.statements && q.statements.length > 0) {
           html += `<div class="mcq-stimulus-row">`;
           for (const stmt of q.statements) {
-            html += `<div>${this.escape(stmt)}</div>`;
+            html += `<div>${this.richText(stmt)}</div>`;
           }
           html += `</div>`;
         } else if (q.stimulus) {
           html += `<div class="mcq-stimulus-row">`;
-          html += this.escape(q.stimulus).replace(/\n/g, '<br>');
+          html += this.richTextBlock(q.stimulus);
           html += `</div>`;
         }
 
@@ -379,12 +437,12 @@
         html += `<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">`;
         html += `<div class="cq-q-row" style="display: flex; align-items: flex-start;">`;
         html += `<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">${this.escape(q.num)}।</span>`;
-        html += `<span class="cq-text text-justify flex-1">${this.escape(displayText)}</span>`;
+        html += `<span class="cq-text text-justify flex-1">${this.richText(displayText)}</span>`;
         html += `</div>`;
 
         if (stimRemaining) {
           html += `<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">`;
-          html += this.escape(stimRemaining).replace(/\n/g, '<br>');
+          html += this.richTextBlock(stimRemaining);
           html += `</div>`;
         }
 
@@ -396,7 +454,7 @@
               continue;
             }
             html += `<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">`;
-            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(sub.label)}.</span><span class="cq-sub-txt">${this.escape(sub.text)}</span></div>`;
+            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(sub.label)}.</span><span class="cq-sub-txt">${this.richText(sub.text)}</span></div>`;
             html += `<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">${this.escape(sub.mark)}</div>`;
             html += `</div>`;
           }
