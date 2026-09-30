@@ -24,7 +24,7 @@ import {
 } from './ledger.js';
 
 const MAX_ATTEMPTS = 24;         // সময়-বাজেটের সাথে সমন্বিত (subrequest সীমার নিরাপদ ভেতরে)
-const MAX_TOTAL_MS = 200000;     // মোট চেষ্টার সময়সীমা (~৩ মিনিট ২০s) — ৮-চেষ্টার হার্ড ক্যাপের বদলে
+const MAX_TOTAL_MS = 420000;     // part-7: বড় ফাইলে বেশি চেষ্টার সুযোগ (~৭ মিনিট); env.MAX_TOTAL_MS দিয়ে বদলানো যায়
 const SERVER_RETRY_DELAY_MS = 2500; // 503 transient হলে একবার ছোট বিরতি দিয়ে আবার
 const ATTEMPT_TIMEOUT_MS = 150000;  // part-6b: একটি চেষ্টার সর্বোচ্চ সময় — ঝুলে থাকা সংযোগ আটকাতে
 // নির্ভুলতা আগে: 3-flash-preview (বাংলা/টেবিল) → 3.8-flash (গণিত) → 3.6-flash (দ্রুত)
@@ -240,6 +240,9 @@ export default {
         ? body.models.slice(0, 6)
         : (body.model ? [body.model] : DEFAULT_MODELS);
 
+      // part-7: সময়-বাজেট env দিয়ে নিয়ন্ত্রণযোগ্য (ডিফল্ট ~৭ মিনিট) — ক্লায়েন্টের ৮-মিনিট সিলিংয়ের নিচে
+      const maxTotalMs = Math.max(30000, parseInt(env.MAX_TOTAL_MS || String(MAX_TOTAL_MS), 10));
+
       const apiKeys = await loadJson(env, 'API_KEYS', []);
       if (!apiKeys.length) return json({ error: 'KV-তে কোনো API key কনফিগার করা নেই' }, 500, env, request);
 
@@ -297,8 +300,8 @@ export default {
           const elapsed = () => Math.round((Date.now() - startedAll) / 1000);
           try {
             for (let i = 0; i < plan.length; i++) {
-              if (Date.now() - startedAll > MAX_TOTAL_MS) {
-                lastError = lastError || { status: 0, detail: `time budget ${MAX_TOTAL_MS}ms` };
+              if (Date.now() - startedAll > maxTotalMs) {
+                lastError = lastError || { status: 0, detail: `time budget ${maxTotalMs}ms` };
                 break;
               }
               const { key, model } = plan[i];

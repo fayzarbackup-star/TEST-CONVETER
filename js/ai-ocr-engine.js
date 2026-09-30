@@ -417,7 +417,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     ANON_KEY: 'cloudflare_proxy', // পুরোনো নাম — শুধু ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য
     ENABLED: true, 
     CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
-    TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
+    TIMEOUT_MS: 480000 // part-7: ৮ মিনিটের সিলিং — Worker-এর ৭ মিনিট বাজেটের উপরে হেডরুম
   };
 
   // ক্লাউড প্রক্সি (Cloudflare Worker) দিয়ে লোকাল কি ছাড়াই OCR চালানো সম্ভব কি না —
@@ -1929,10 +1929,15 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         return `⚡ চেষ্টা ${s.attempt || 1}/${s.total || '?'}: ${s.model} (${s.key || ''})…`;
       case 'retry_same_key':
         return `⚡ Google ব্যস্ত (${s.status || 503}) — ${s.waitSec || 3} সেকেন্ড পরে আবার চেষ্টা…`;
-      case 'switch_key':
-        return `⚡ বিকল্প কি-তে চ্যানেল সুইচ হচ্ছে…`;
+      case 'switch_key': {
+        // part-7: অপেক্ষার কারণ স্পষ্ট — কোটা শেষ নাকি মডেল ব্যস্ত
+        const why = (s.reason === 'RPD' || s.reason === 'RPM') ? 'কোটা শেষ'
+          : (s.reason === 'MODEL_NA') ? 'এই কি-তে মডেল নেই'
+          : (s.reason === 'INVALID') ? 'কি অবৈধ' : 'মডেল ব্যস্ত (৫০৩)';
+        return `⚡ ${why} — বিকল্প কি-তে যাচ্ছি…`;
+      }
       case 'switch_model':
-        return `⚡ নতুন মডেলে যাচ্ছি…`;
+        return `⚡ সব কি ব্যস্ত — ক্রম অনুযায়ী পরের মডেলে যাচ্ছি…`;
       case 'streaming':
         return `✅ সফল — ${s.model || ''} থেকে আউটপুট আসছে…`;
       case 'waiting':
@@ -1942,6 +1947,23 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       default:
         return '';
     }
+  }
+
+  /** part-7: ৫+ পৃষ্ঠার কভারেজ-যাচাই (একই অনুরোধ, কোনো ভাগ নয়) — নীরব অসম্পূর্ণ আউটপুট ঠেকাতে।
+   *  মডেল প্রতিটি পৃষ্ঠার শুরুতে "===== পৃষ্ঠা N/M =====" মার্কার দেয়; সেগুলো গুনে কম পৃষ্ঠা এলে
+   *  [অসম্পূর্ণ: …] চিহ্ন বসাই → অটো-ডাউনলোড বন্ধ হয়, ব্যবহারকারী সতর্ক হন। */
+  function applyPageCoverageGuard(text, expectedPages) {
+    if (!text || !text.trim() || expectedPages < 5) return text;
+    if (/\[অসম্পূর্ণ:/.test(text)) return text;
+    const found = new Set();
+    const re = /পৃষ্ঠা\s*([০-৯]{1,3})\s*\/\s*([০-৯]{1,3})/g;
+    let m;
+    while ((m = re.exec(text)) !== null) found.add(m[1]);
+    if (found.size >= expectedPages) return text;
+    const msg = found.size === 0
+      ? `[অসম্পূর্ণ: ${toBengaliNumber(expectedPages)} পৃষ্ঠার কভারেজ-মার্কার পাওয়া যায়নি — কতগুলো পৃষ্ঠার আউটপুট এসেছে তা নিশ্চিত করা গেল না। ফাইলটি আবার পাঠান (একই অনুরোধে, ভাগ নয়)।]`
+      : `[অসম্পূর্ণ: ${toBengaliNumber(expectedPages)} পৃষ্ঠার মধ্যে ${toBengaliNumber(found.size)} পৃষ্ঠার আউটপুট পাওয়া গেছে — বাকি পৃষ্ঠাগুলো আসেনি। ফাইলটি আবার পাঠান (একই অনুরোধে, ভাগ নয়)।]`;
+    return text + '\n\n' + msg;
   }
 
   async function executeGeminiRequestViaSupabase(payload, model = 'gemini-3-flash-preview', onStreamChunk = null, modelPriority = null) {
@@ -2111,7 +2133,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       
     } catch (err) {
       clearTimeout(timeoutId);
-      if (err.name === 'AbortError') throw new Error('Supabase request timeout (3 min)');
+      if (err.name === 'AbortError') throw new Error('Supabase request timeout (8 min)');
       throw err;
     }
   }
@@ -2151,6 +2173,18 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     let activePrompt = customPrompt || GEMINI_PROMPT;
     if (userDirective && !customPrompt) {
       activePrompt += `\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`;
+    }
+
+    // part-7: ৫+ পৃষ্ঠার ডকুমেন্টে পৃষ্ঠা-ভিত্তিক কভারেজ-বাধ্যবাধকতা — সব পৃষ্ঠা একই অনুরোধে, কোনো ভাগ নয়।
+    const coverageMandateApplied = !customPrompt && mediaParts.length >= 5;
+    if (coverageMandateApplied) {
+      const bnTotal = toBengaliNumber(mediaParts.length);
+      activePrompt += `\n\n### MULTI-PAGE COVERAGE MANDATE (HIGHEST PRIORITY — OVERRIDES OTHER FORMAT RULES):\n` +
+        `- There are exactly ${bnTotal} source pages in this request. You MUST produce output for EVERY page, in order, none skipped.\n` +
+        `- Start each source page's section with this exact marker on its own line (Bengali numerals): ===== পৃষ্ঠা <N>/${bnTotal} =====\n` +
+        `- Inside each page section, transcribe that page's full visible content (questions, answers/solutions, tables, figure placeholders) exactly per the rules above.\n` +
+        `- Do NOT stop before page ${bnTotal}. If space feels tight, write more compactly — but never omit content or pages.\n` +
+        `- At the very end, on its own line: MANIFEST: <comma-separated Bengali page numbers you fully transcribed>`;
     }
 
     const allActiveModels = [
@@ -2224,7 +2258,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         const payload = buildModelPayload(primaryModel, false);
         const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk, candidateModels);
         console.log(`[Supabase] Success via key: ${keyId}`);
-        return text;
+        // part-7: বহু-পৃষ্ঠার কভারেজ-যাচাই → কম পৃষ্ঠা এলে [অসম্পূর্ণ: …] (অটো-ডাউনলোড বন্ধ হবে)
+        return coverageMandateApplied ? applyPageCoverageGuard(text, mediaParts.length) : text;
       } catch (supabaseErr) {
         console.error('[Supabase] Proxy failed:', supabaseErr.message);
         // সিদ্ধান্ত শুধু নীতিমালা-মডিউলে (DOM-মুক্ত, পরীক্ষাযোগ্য): ভুল-টোকেন / অবৈধ-পেলোড /

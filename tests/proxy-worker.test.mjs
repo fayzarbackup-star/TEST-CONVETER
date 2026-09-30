@@ -339,5 +339,37 @@ res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
 const b2 = await res.json();
 T('সব কুলিং থাকলে আপলোড ছাড়াই ৪২৯ + retryInSec', res.status === 429 && b2.retryInSec > 0 && calls.length === 0, { s: res.status, r: b2.retryInSec, calls: calls.length });
 
+// ── ৯. part-7: MAX_TOTAL_MS env মানা হয় — ছোট বাজেটে দ্রুত থামে (বড় ফাইলের সময়-বাজেট নিয়ন্ত্রণ)
+const store7 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env7 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', MAX_TOTAL_MS: '60', FAYZAR_OCR_KEYS: {
+  get: async k => store7.get(k) ?? null, put: async (k, v) => { store7.set(k, v); } } };
+script = [err503, err503, err503, err503, err503, err503, err503, err503, { ok: true }]; calls = [];
+const _t7 = Date.now();
+const res7 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'] })
+}), env7, ctx);
+const e7 = await sse(res7);
+T('part-7: MAX_TOTAL_MS env মানা হয় — ছোট বাজেটে দ্রুত failed', e7.names.includes('failed') && (Date.now() - _t7) < 10000 && calls.length <= 8, { names: e7.names, calls: calls.length, ms: Date.now() - _t7 });
+
+// ── ১০. part-7: তিন-মডেল তালিকার কঠোর ক্রম (এলোমেলো নয়) — ৩-flash → ৩.৮ → ৩.৬
+const store8 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env8 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', FAYZAR_OCR_KEYS: {
+  get: async k => store8.get(k) ?? null, put: async (k, v) => { store8.set(k, v); } } };
+script = []; for (let i = 0; i < 24; i++) script.push(err503);
+calls = [];
+const res8 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'] })
+}), env8, ctx);
+const e8 = await sse(res8);
+const mi = (m) => calls.map((c, i) => c.model === m ? i : -1).filter(i => i >= 0);
+const m1 = mi('gemini-3-flash-preview'), m2 = mi('gemini-3.8-flash'), m3 = mi('gemini-3.6-flash');
+T('part-7: মডেল-ক্রম কঠোর — ৩-flash → ৩.৮ → ৩.৬ (এলোমেলো নয়)',
+  calls.length > 0 && calls[0].model === 'gemini-3-flash-preview'
+  && (!m2.length || (m1.length && Math.max(...m1) < Math.min(...m2)))
+  && (!m3.length || !m2.length || Math.max(...m2) < Math.min(...m3)),
+  calls.map(c => c.model));
+
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);
