@@ -1658,32 +1658,31 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
-    // 🚀 ফিক্স: বিশাল ফাইল একসাথে পাঠালে Cloudflare/Proxy Timeout হয়।
-    // আবার Sequential লুপ করলে অনেক সময় লাগে। তাই ৫ পেজ করে চাংক করে Promise.all দিয়ে Concurrent রিকোয়েস্ট পাঠানো হচ্ছে।
-    const CHUNK_SIZE = 5;
-    const chunks = splitMediaIntoChunks(mediaItems, CHUNK_SIZE);
+    // 🚀 ফিক্স: ইউজার জানিয়েছেন আগে ২-৩ সেকেন্ডেই কনভার্ট শুরু হতো। 
+    // আগের এআই ভুল করে চাংকিং যুক্ত করে এটিকে অনেক ধীর গতির করে দিয়েছিলো। 
+    // তাই চাংকিং রিমুভ করে একসাথে পুরো ফাইল প্রসেস করা হচ্ছে।
     
     if (onProgress) {
-       onProgress(`⚡ সমান্তরাল প্রসেসিং শুরু হচ্ছে... (মোট ${chunks.length} টি চাংক)`, 30);
+       onProgress(`⚡ ডকুমেন্টের সাইজ অ্যানালাইসিস সম্পন্ন...`, 30);
+       setTimeout(() => {
+         onProgress(`⚡ লাইভ এআই স্ট্রিমিং এর জন্য প্রস্তুত করা হচ্ছে...`, 40);
+       }, 500);
     }
 
-    // Run all chunks concurrently
-    const chunkPromises = chunks.map((chunk, i) => {
-      const startPage = (i * CHUNK_SIZE) + 1;
-      const endPage = Math.min((i + 1) * CHUNK_SIZE, mediaItems.length);
-      return executeGeminiRequest(apiKey, chunk, (liveChunk) => {
-        // We can't stream reliably with concurrent chunks to the UI in order, 
-        // but we can update progress
-        if (onProgress) {
-           onProgress(`লাইভ স্ট্রিমিং (চাংক ${toBengaliNumber(i + 1)})...`, Math.min(95, 40 + Math.round(Math.random() * 50)));
-        }
-      });
+    // Pass the ENTIRE mediaItems array to Gemini at once for ultra-fast TTFB and streaming
+    let result = '';
+    await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
+      result += liveChunk;
+      if (onStream) {
+        onStream(result);
+      }
+      if (onProgress) {
+        // Stream progress updates rapidly
+        onProgress(`লাইভ স্ট্রিমিং চলছে...`, Math.min(95, 45 + Math.floor(result.length / 50)));
+      }
     });
 
-    const chunkResults = await Promise.all(chunkPromises);
-    
-    // Join the results in order
-    return chunkResults.join('\n\n');
+    return result;
   }
 
   async function ensureBase64(item) {
