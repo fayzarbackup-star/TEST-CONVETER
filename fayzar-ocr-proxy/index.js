@@ -68,7 +68,8 @@ export default {
         if (exhaustedKeys[currentKey]) continue;
 
         attemptCount++;
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?key=${currentKey}`;
+        // alt=sse বাধ্যতামূলক: এছাড়া Gemini JSON-array স্ট্রিম দেয়, কিন্তু ক্লায়েন্ট `data:` SSE লাইন পার্স করে
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${currentKey}`;
         
         const geminiResponse = await fetch(geminiUrl, {
           method: 'POST',

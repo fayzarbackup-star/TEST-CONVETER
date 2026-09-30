@@ -1896,61 +1896,93 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         throw new Error(`Supabase ${response.status}: ${error.error || error.message}`);
       }
       
-      // ===== STREAMING HANDLING =====
+      // ===== STREAMING HANDLING (SSE + legacy JSON-array tolerant) =====
+      // পুরোনো worker `alt=sse` ছাড়া কল করত, ফলে Gemini JSON-array স্ট্রিম পাঠাত অথচ এখানে
+      // শুধু `data:` লাইন পার্স হতো — প্রতিটি কনভার্সনে প্রক্সিতে পুরো ফাইল আপলোড হয়ে বৃথা যেত।
+      // এখন দুই ফরম্যাটই পার্স হয় এবং কিছুই না পেলে throw করে দ্রুত key-pool ফলব্যাকে যায়।
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let fullText = '';
       let keyId = '';
       let buffer = '';
-      
-      if (reader && onStreamChunk) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          buffer += decoder.decode(value, { stream: true });
+
+      const absorb = (data) => {
+        if (!data || typeof data !== 'object') return;
+        if (data.error) throw new Error(`Proxy Error: ${JSON.stringify(data.error)}`);
+        if (data.keyId) keyId = data.keyId;
+        const parts = data.candidates?.[0]?.content?.parts;
+        if (Array.isArray(parts)) {
+          const t = parts.map(pp => pp.text || '').join('');
+          if (t) fullText += t;
+        } else if (typeof data.text === 'string' && data.text) {
+          fullText += data.text;
+        }
+        // কলারকে সর্বদা সম্পূর্ণ (ক্রমসঞ্চিত) টেক্সট দিতে হবে — ডেল্টা দিলে UI-তে আগের অংশ মুছে যেত
+        if (onStreamChunk && fullText) onStreamChunk(fullText);
+      };
+
+      const drain = (text, isFinal) => {
+        buffer += text;
+        if (buffer.includes('data:')) {
           const lines = buffer.split('\n');
-          buffer = lines.pop() || '';
-          
+          buffer = isFinal ? '' : (lines.pop() || '');
           for (const line of lines) {
-            if (line.startsWith('data: ') && line.length > 6) {
-              const jsonStr = line.slice(6).trim();
-              if (jsonStr === '[DONE]') continue;
-              try {
-                const data = JSON.parse(jsonStr);
-                // Handle native Gemini SSE format
-                if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                  const chunkText = data.candidates[0].content.parts[0].text;
-                  fullText += chunkText;
-                  onStreamChunk(chunkText);
-                } 
-                // Handle custom proxy format if any
-                else if (data.text) {
-                  fullText += data.text;
-                  onStreamChunk(data.text);
-                }
-                // Handle Proxy Stream Error
-                else if (data.error) {
-                  throw new Error(`Proxy Error: ${JSON.stringify(data)}`);
-                }
-                
-                if (data.keyId) keyId = data.keyId;
-                if (data.done) break;
-              } catch (e) {
-                // Only ignore JSON parsing errors for incomplete chunks
-                if (e.name !== 'SyntaxError') {
-                  throw e;
-                }
-              }
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const jsonStr = trimmed.slice(5).trim();
+            if (!jsonStr || jsonStr === '[DONE]') continue;
+            try { absorb(JSON.parse(jsonStr)); }
+            catch (e) { if (e.name !== 'SyntaxError') throw e; }
+          }
+          return;
+        }
+        // Legacy JSON-array stream: [ {...}, {...} ] — সম্পূর্ণ অবজেক্টগুলো খুঁজে বের করা
+        let depth = 0, objStart = -1, consumedTo = 0, inStr = false, esc = false;
+        for (let i = 0; i < buffer.length; i++) {
+          const ch = buffer[i];
+          if (inStr) {
+            if (esc) esc = false;
+            else if (ch === '\\') esc = true;
+            else if (ch === '"') inStr = false;
+            continue;
+          }
+          if (ch === '"') { inStr = true; continue; }
+          if (ch === '{') { if (depth === 0) objStart = i; depth++; }
+          else if (ch === '}') {
+            depth--;
+            if (depth === 0 && objStart !== -1) {
+              try { absorb(JSON.parse(buffer.slice(objStart, i + 1))); }
+              catch (e) { if (e.name !== 'SyntaxError') throw e; }
+              consumedTo = i + 1;
+              objStart = -1;
             }
           }
         }
+        buffer = isFinal ? '' : buffer.slice(consumedTo);
+      };
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          drain(decoder.decode(value, { stream: true }), false);
+        }
+        drain(decoder.decode(), true);
       } else {
-        const data = await response.json();
-        fullText = data.text || data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        keyId = data.keyId || '';
+        const raw = await response.text();
+        try {
+          const data = JSON.parse(raw);
+          if (Array.isArray(data)) data.forEach(absorb); else absorb(data);
+        } catch (_) {
+          drain(raw, true);
+        }
       }
-      
+
+      if (!fullText.trim()) {
+        // খালি ফলাফল নিয়ে সফল রিটার্ন করলে ব্যবহারকারী "কোনো টেক্সট পাওয়া যায়নি" দেখত।
+        throw new Error('Proxy returned an empty stream');
+      }
+
       return { text: fullText, model, keyId };
       
     } catch (err) {
@@ -2233,14 +2265,18 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             let buffer = '';
             let fullStreamedText = '';
             let lastChunkTime = 0;
-            const STREAM_IDLE_TIMEOUT_MS = 15000; // 15s idle keep-alive (fast fail for stuck streams)
+            // বড় মাল্টি-পেজ ফাইলে Gemini প্রথম টোকেন দিতে ২০-৯০ সেকেন্ড নিতে পারে (ছবি প্রসেসিং + রিজনিং)।
+            // তাই প্রথম টোকেনের জন্য আলাদা লম্বা grace, স্ট্রিম শুরু হলে স্বাভাবিক idle timeout।
+            const FIRST_TOKEN_TIMEOUT_MS = 120000; // 120s — প্রথম টোকেনের অপেক্ষা
+            const STREAM_IDLE_TIMEOUT_MS = 90000;  // 90s — দুই চাঙ্কের মাঝে সর্বোচ্চ বিরতি
             let shouldStopStream = false;
 
             while (true) {
               if (shouldStopStream) break;
               let chunkTimeoutId;
+              const idleLimitMs = fullStreamedText.length === 0 ? FIRST_TOKEN_TIMEOUT_MS : STREAM_IDLE_TIMEOUT_MS;
               const chunkTimeoutPromise = new Promise((_, reject) => {
-                chunkTimeoutId = setTimeout(() => reject(new Error('স্ট্রিমিং চলাকালীন সংযোগ বিচ্ছিন্ন হয়েছে (Idle Timeout)')), STREAM_IDLE_TIMEOUT_MS);
+                chunkTimeoutId = setTimeout(() => reject(new Error('স্ট্রিমিং চলাকালীন সংযোগ বিচ্ছিন্ন হয়েছে (Idle Timeout)')), idleLimitMs);
               });
 
               let readResult;
@@ -2304,8 +2340,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                             break;
                           }
                         }
-                        if (fullStreamedText.length > 35000) {
-                          console.warn('⚠️ নিরাপদ অক্ষর সীমা (৩৫,০০০) অতিক্রম! স্ট্রিমিং সম্পন্ন করা হলো।');
+                        // আগের সীমা ৩৫,০০০ ছিল — ১০-১২ পৃষ্ঠার বাংলা প্রশ্নপত্রই কেটে যাচ্ছিল।
+                        // এখন শুধু ব্রাউজার সুরক্ষার জন্য ৬০+ পৃষ্ঠার সমতুল্য হার্ড সীমা।
+                        if (fullStreamedText.length > 300000) {
+                          console.warn('⚠️ নিরাপদ অক্ষর সীমা (৩,০০,০০০) অতিক্রম! স্ট্রিমিং সম্পন্ন করা হলো।');
                           shouldStopStream = true;
                           fullStreamedText += '\n\n[অসম্পূর্ণ: নিরাপদ অক্ষর সীমা অতিক্রম করেছে]';
                           try { reader.cancel(); } catch(e){}
