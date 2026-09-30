@@ -26,6 +26,36 @@ import {
 const MAX_ATTEMPTS = 8;          // Cloudflare subrequest সীমার নিরাপদ ভেতরে
 const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.6-flash'];
 
+/**
+ * Origin-ম্যাচিং — exact + wildcard (`*.example.com`) সাপোর্ট করে।
+ * কারণ: Cloudflare Pages প্রতিটি ডিপ্লয়ের জন্য আলাদা সাবডোমেইন দেয়
+ *   (যেমন ab12cd.fayzar-conveter.pages.dev) — ওগুলোও অনুমোদিত থাকা দরকার।
+ * `*.example.com` → example.com এবং যেকোনো সাবডোমেইন, দুই-ই।
+ */
+function originAllowed(origin, allowedList) {
+  if (!origin) return false;
+  let host = '';
+  try { host = new URL(origin).hostname.toLowerCase(); } catch (e) { return false; }
+  for (const raw of allowedList) {
+    const a = String(raw || '').trim().toLowerCase();
+    if (!a) continue;
+    if (a === '*') return true;
+    if (a === origin.toLowerCase()) return true;
+    // নিয়ম: স্কিম (https://) থাকলে বাদ যাবে, তারপর হয় `*.host` প্যাটার্ন, নয় `host`
+    let pattern = a;
+    const scheme = pattern.match(/^[a-z][a-z0-9+.-]*:\/\//);
+    if (scheme) pattern = pattern.slice(scheme[0].length);
+    pattern = pattern.replace(/\/.*$/, '');
+    if (pattern.startsWith('*.')) {
+      const base = pattern.slice(2);
+      if (host === base || host.endsWith('.' + base)) return true;
+    } else if (pattern && pattern === host && (scheme ? origin.toLowerCase().startsWith(scheme[0]) : true)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function cors(extra = {}, env = {}, request = null) {
   // একাধিক origin সাপোর্ট: তালিকায় থাকলে অনুরোধের Origin-টাই ফিরিয়ে দেওয়া হয়
   // (তাই প্রোডাকশন + www + localhost ডেভ সবই চালানো যায়)।
@@ -35,7 +65,8 @@ function cors(extra = {}, env = {}, request = null) {
   const reqOrigin = request ? (request.headers.get('Origin') || '') : '';
   let allowOrigin = '*';
   if (allowed.length && !allowed.includes('*')) {
-    allowOrigin = allowed.includes(reqOrigin) ? reqOrigin : allowed[0];
+    // প্রতিফলনের সময় exact + wildcard — নইলে সাবডোমেইন-ডিপ্লয়ে CORS ফেল করবে
+    allowOrigin = (reqOrigin && originAllowed(reqOrigin, allowed)) ? reqOrigin : allowed[0];
   }
   return {
     'Access-Control-Allow-Origin': allowOrigin,
@@ -81,7 +112,7 @@ function originAllows(request, env) {
   const origin = request.headers.get('Origin') || '';
   if (!allowed.length || allowed.includes('*')) return { ok: true };   // allowlist নেই → পুরোনো আচরণ
   if (!origin) return { ok: false, reason: 'no_origin' };
-  if (!allowed.includes(origin)) return { ok: false, reason: 'bad_origin' };
+  if (!originAllowed(origin, allowed)) return { ok: false, reason: 'bad_origin' };
   return { ok: true };
 }
 

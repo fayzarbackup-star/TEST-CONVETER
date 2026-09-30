@@ -151,6 +151,32 @@ cRes = await worker.fetch(new Request('https://w.dev/', { method: 'POST',
   body: JSON.stringify({ payload: { contents: [] } }) }), envCap, ctx);
 T('অন্য IP প্রভাবিত হয় না (ক্যাপ per-IP)', cRes.status !== 429, cRes.status);
 
+// ── ০ঙ. Origin ওয়াইল্ডকার্ড (part-5: Cloudflare Pages সাবডোমেইন)
+const envWild = { PROXY_TOKEN: TOKEN, ALLOWED_ORIGINS: 'https://fayzar-conveter.pages.dev, https://*.fayzar-conveter.pages.dev, http://localhost:3008',
+  REQUIRE_ORIGIN: 'true', FAYZAR_OCR_KEYS: { get: async () => null, put: async () => {} } };
+const preWild = (origin) => worker.fetch(new Request('https://w.dev/', {
+  method: 'OPTIONS', headers: { 'Origin': origin, 'Access-Control-Request-Method': 'POST' } }), envWild, ctx);
+const postWild = (origin) => worker.fetch(new Request('https://w.dev/', {
+  method: 'POST',
+  headers: Object.assign({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN },
+                         origin ? { 'Origin': origin } : {}),
+  body: JSON.stringify({}) }), envWild, ctx);
+
+let wRes = await preWild('https://ab12cd.fayzar-conveter.pages.dev');
+T('ওয়াইল্ডকার্ড: প্রিভিউ সাবডোমেইন প্রতিফলিত হয় (CORS)',
+  wRes.headers.get('Access-Control-Allow-Origin') === 'https://ab12cd.fayzar-conveter.pages.dev',
+  wRes.headers.get('Access-Control-Allow-Origin'));
+wRes = await postWild('https://ab12cd.fayzar-conveter.pages.dev');
+T('ওয়াইল্ডকার্ড: পেজ-প্রিভিউ origin গেট পার হয় (৪০৩ নয়)', wRes.status !== 403, wRes.status);
+wRes = await postWild('https://fayzar-conveter.pages.dev');
+T('মূল pages.dev origin-ও চলে (৪০৩ নয়)', wRes.status !== 403, wRes.status);
+wRes = await postWild('https://evil-fayzar-conveter.pages.dev.evil.com');
+T('প্রতারণামূলক origin (suffix-ট্রিক) আটকায় → ৪০৩', wRes.status === 403, wRes.status);
+wRes = await postWild('https://notfayzar-conveter.pages.dev.attacker.net');
+T('অন্য ডোমেইনের সাবডোমেইন-নকলও আটকায় → ৪০৩', wRes.status === 403, wRes.status);
+wRes = await postWild('http://localhost:3008');
+T('localhost ডেভ এখনো চলে (৪০৩ নয়)', wRes.status !== 403, wRes.status);
+
 // ── ১. প্রথম কি-তেই সফল
 script = [{ ok: true }]; calls = [];
 let res = await post({ payload: { contents: [] }, models: ['gemini-3-flash-preview'] });
