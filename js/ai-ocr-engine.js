@@ -386,16 +386,16 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   const isDemo = (rawDemoSetting === 'true');
 
   let savedModelSetting = localStorage.getItem(STORAGE_KEYS.SELECTED_MODEL) || 'auto';
-  if (savedModelSetting === 'gemini-3.8-flash' || savedModelSetting === 'gemini-2.5-flash' || savedModelSetting.includes('2.5') || savedModelSetting.includes('lite')) {
+  if (savedModelSetting === 'gemini-1.5-flash' || savedModelSetting === 'gemini-1.5-pro' || savedModelSetting.includes('1.5') || savedModelSetting.includes('lite')) {
     savedModelSetting = 'auto';
     localStorage.setItem(STORAGE_KEYS.SELECTED_MODEL, 'auto');
   }
 
   const SUPABASE_CONFIG = {
-    FUNCTIONS_URL: 'https://pecxaxturmnlqhxuntfw.supabase.co/functions/v1/generate', // Deploy পর বদলান
-    ANON_KEY: 'sb_publishable_L6jswzoS9I3QSqi-k9XfdQ_YFlKYWSf', 
+    FUNCTIONS_URL: 'https://fayzar-ocr-proxy.fayzar-ocr-proxy.workers.dev', // Cloudflare Worker URL
+    ANON_KEY: 'cloudflare_proxy', 
     ENABLED: true, 
-    CHUNK_PAGES: 50, // Increased to process up to 50 pages together
+    CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
     TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
   };
 
@@ -1658,29 +1658,14 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
-    if (mediaItems.length <= SUPABASE_CONFIG.CHUNK_PAGES) {
-      if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে...', 50);
-      return await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-        if (onStream) onStream(liveChunk);
-        if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
-      });
-    }
-
-    const chunks = splitMediaIntoChunks(mediaItems, SUPABASE_CONFIG.CHUNK_PAGES);
-    let fullResult = '';
+    // ইউজারের রিকোয়েস্ট অনুযায়ী চাংকিং (Chunking) বাদ দেওয়া হলো।
+    // এখন সব পেজ একসাথে জেমিনিতে যাবে যাতে সে cross-page context বুঝতে পারে।
+    if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে (সব পেজ একসাথে)...', 50);
     
-    for (let i = 0; i < chunks.length; i++) {
-      if (onProgress) onProgress(`খণ্ডিত অংশ প্রসেস হচ্ছে ${toBengaliNumber(i + 1)}/${toBengaliNumber(chunks.length)}...`, 40 + Math.round((i / chunks.length) * 50));
-      
-      const text = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
-        if (onStream) onStream(liveChunk);
-        if (onProgress) onProgress(`অংশ ${toBengaliNumber(i + 1)} স্ট্রিমিং চলছে (${toBengaliNumber(fullResult.length + liveChunk.length)} অক্ষর)...`, 40 + Math.round((i / chunks.length) * 50));
-      });
-      
-      fullResult += text + '\n\n';
-    }
-    
-    return fullResult;
+    return await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
+      if (onStream) onStream(liveChunk);
+      if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
+    });
   }
 
   async function ensureBase64(item) {
@@ -1898,8 +1883,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${SUPABASE_CONFIG.ANON_KEY}`,
-          'apikey': SUPABASE_CONFIG.ANON_KEY,
-          'Accept': 'text/event-stream' // Request streaming
+          'apikey': SUPABASE_CONFIG.ANON_KEY
         },
         body: JSON.stringify({ payload, model }), // Send full payload (with images)
         signal: controller.signal
@@ -1947,7 +1931,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                 }
                 // Handle Proxy Stream Error
                 else if (data.error) {
-                  throw new Error(`Proxy Error: ${data.error} - ${data.details || ''}`);
+                  throw new Error(`Proxy Error: ${JSON.stringify(data)}`);
                 }
                 
                 if (data.keyId) keyId = data.keyId;
@@ -2085,8 +2069,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         console.log(`[Supabase] Success via key: ${keyId}`);
         return text;
       } catch (supabaseErr) {
-        console.error('[Supabase] Fatal error, throwing directly:', supabaseErr.message);
-        throw new Error(`সার্ভার এরর (Edge Function): ${supabaseErr.message}। পেজ সংখ্যা কমান বা একটু পরে আবার চেষ্টা করুন।`);
+        console.error('[Supabase] Fatal error, falling back to direct API pool:', supabaseErr.message);
+        if (typeof window.showToastNotification === 'function') {
+          window.showToastNotification('প্রক্সি সার্ভার ব্যর্থ হয়েছে, সরাসরি লোকাল পুল ব্যবহার করা হচ্ছে...', 'warning');
+        }
       }
     }
 
@@ -2122,9 +2108,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         }
 
         const epVersion = 'v1beta';
+        let realModel = model;
+
         const streamEndpoint = currentKey === 'BACKEND_PROXY'
           ? '/api/gemini'
-          : `https://generativelanguage.googleapis.com/${epVersion}/models/${model}:streamGenerateContent?alt=sse&key=${encodeURIComponent(currentKey)}`;
+          : `https://generativelanguage.googleapis.com/${epVersion}/models/${realModel}:streamGenerateContent?alt=sse&key=${encodeURIComponent(currentKey)}`;
 
         const buildFetchPayload = (payload) => {
           if (currentKey === 'BACKEND_PROXY') {
@@ -2212,7 +2200,13 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                 setLoading(true, `⚡ কোটা অপ্টিমাইজেশন: সক্রিয় কি-তে তাৎক্ষণিক সুইচ হচ্ছে...`, 50 + Math.min(40, (k + 1) * 2));
               }
               continue;
-            } else if (res.status === 503 || errMsg.includes('No capacity') || errMsg.includes('high demand') || errMsg.includes('UNAVAILABLE') || res.status === 404 || errMsg.includes('not found') || errMsg.includes('no longer available')) {
+            } else if (res.status === 404 || errMsg.includes('not found') || errMsg.includes('no longer available')) {
+              console.warn(`Model ${model} is not found (deprecated/removed). Skipping to next model.`);
+              if (!onStreamChunk) {
+                setLoading(true, `⚡ মডেল সাপোর্ট নেই, অন্য মডেলে সুইচ হচ্ছে...`, 50 + Math.min(40, (k + 1) * 2));
+              }
+              break; // Break the 'k' loop, try next model
+            } else if (res.status === 503 || errMsg.includes('No capacity') || errMsg.includes('high demand') || errMsg.includes('UNAVAILABLE')) {
               if (typeof FayzarOcrConfig !== 'undefined') {
                 if (typeof FayzarOcrConfig.markKeyModelCooldown === 'function') {
                   FayzarOcrConfig.markKeyModelCooldown(currentKey, model, 300);
@@ -4106,3 +4100,4 @@ ${bodyContentXml}
   };
 
 })(typeof window !== 'undefined' ? window : this);
+
