@@ -26,9 +26,20 @@ import {
 const MAX_ATTEMPTS = 8;          // Cloudflare subrequest সীমার নিরাপদ ভেতরে
 const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.6-flash'];
 
-function cors(extra = {}) {
+function cors(extra = {}, env = {}, request = null) {
+  // একাধিক origin সাপোর্ট: তালিকায় থাকলে অনুরোধের Origin-টাই ফিরিয়ে দেওয়া হয়
+  // (তাই প্রোডাকশন + www + localhost ডেভ সবই চালানো যায়)।
+  // ⚠️ `Vary: Origin` না থাকলে CDN/browser আগের এক origin-এর CORS উত্তর ক্যাশ করে
+  // অন্য origin-কে ভুল উত্তর দিতে পারে — তাই হেডারটি সবসময় পাঠানো হয়।
+  const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const reqOrigin = request ? (request.headers.get('Origin') || '') : '';
+  let allowOrigin = '*';
+  if (allowed.length && !allowed.includes('*')) {
+    allowOrigin = allowed.includes(reqOrigin) ? reqOrigin : allowed[0];
+  }
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Vary': 'Origin',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
     'Access-Control-Expose-Headers': 'X-Fayzar-Key, X-Fayzar-Model, X-Fayzar-Attempts',
@@ -36,11 +47,38 @@ function cors(extra = {}) {
   };
 }
 
-function json(data, status = 200) {
+function json(data, status = 200, env = {}, request = null) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: cors({ 'Content-Type': 'application/json' })
+    headers: cors({ 'Content-Type': 'application/json' }, env, request)
   });
+}
+
+/** শেয়ারড সিক্রেট যাচাই — PROXY_TOKEN না থাকলে সার্ভিস খুলে দিই না (fail-closed) */
+function isAuthorized(request, env) {
+  const token = env.PROXY_TOKEN;
+  if (!token) return 'unconfigured';
+  const header = request.headers.get('Authorization') || '';
+  const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+  const alt = request.headers.get('apikey') || '';
+  if (bearer === token || alt === token) return 'ok';
+  // ট্রানজিশন উইন্ডো: পুরোনো ডিপ্লয়ের ক্লায়েন্টকে ভাঙতে না চাইলে LEGACY_TOKEN দিন,
+  // সব ক্লায়েন্ট আপডেট হলে সেটি মুছে ফেলুন।
+  if (env.LEGACY_TOKEN && (bearer === env.LEGACY_TOKEN || alt === env.LEGACY_TOKEN)) return 'ok';
+  return 'denied';
+}
+
+/** প্রতি-মিনিট রেট লিমিট (best-effort; KV eventual-consistent, তাই কঠোর গ্যারান্টি নয়) */
+async function rateLimited(env, request, limitPerMin) {
+  if (!limitPerMin) return false;
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const bucket = `RL:${ip}:${Math.floor(Date.now() / 60000)}`;
+  try {
+    const cur = parseInt(await env.FAYZAR_OCR_KEYS.get(bucket) || '0', 10) || 0;
+    if (cur >= limitPerMin) return true;
+    await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 120 });
+  } catch (e) { /* KV সমস্যা হলে ব্লক করি না */ }
+  return false;
 }
 
 async function loadJson(env, name, fallback) {
@@ -57,30 +95,45 @@ async function loadJson(env, name, fallback) {
 export default {
   async fetch(request, env, ctx) {
     if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: cors() });
+      return new Response(null, { headers: cors({}, env, request) });
     }
 
     const url = new URL(request.url);
 
+    // ---------------------------------------------------------------- AUTH
+    const auth = isAuthorized(request, env);
+    if (auth === 'unconfigured') {
+      return json({
+        error: 'PROXY_TOKEN কনফিগার করা নেই — নিরাপত্তার জন্য সার্ভিস বন্ধ।',
+        fix: 'wrangler secret put PROXY_TOKEN  (এবং ক্লায়েন্টের SUPABASE_CONFIG.PROXY_TOKEN একই রাখুন)'
+      }, 503, env, request);
+    }
+    if (auth !== 'ok') {
+      return json({ error: 'Unauthorized' }, 401, env, request);
+    }
+    if (await rateLimited(env, request, parseInt(env.RATE_PER_MIN || '0', 10))) {
+      return json({ error: 'অনুরোধের হার বেশি — এক মিনিট পর চেষ্টা করুন।' }, 429, env, request);
+    }
+
     // ---------------------------------------------------------------- STATUS
     if (request.method === 'GET') {
       if (url.pathname !== '/status') {
-        return json({ ok: true, service: 'fayzar-ocr-proxy', endpoints: ['POST /', 'GET /status'] });
+        return json({ ok: true, service: 'fayzar-ocr-proxy', endpoints: ['POST /', 'GET /status'] }, 200, env, request);
       }
       const apiKeys = await loadJson(env, 'API_KEYS', []);
       const ledger = await loadJson(env, 'KEY_LEDGER', { keys: {} });
-      return json(buildStatus(ledger, apiKeys, Date.now()));
+      return json(buildStatus(ledger, apiKeys, Date.now()), 200, env, request);
     }
 
     if (request.method !== 'POST') {
-      return new Response('Method Not Allowed', { status: 405, headers: cors() });
+      return new Response('Method Not Allowed', { status: 405, headers: cors({}, env, request) });
     }
 
     // ------------------------------------------------------------------ OCR
     try {
       const body = await request.json();
       const payload = body.payload;
-      if (!payload) return json({ error: 'payload অনুপস্থিত' }, 400);
+      if (!payload) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
 
       // ক্লায়েন্ট একটি মডেল বা অগ্রাধিকার-তালিকা পাঠাতে পারে
       let models = Array.isArray(body.models) && body.models.length
@@ -88,7 +141,7 @@ export default {
         : (body.model ? [body.model] : DEFAULT_MODELS);
 
       const apiKeys = await loadJson(env, 'API_KEYS', []);
-      if (!apiKeys.length) return json({ error: 'KV-তে কোনো API key কনফিগার করা নেই' }, 500);
+      if (!apiKeys.length) return json({ error: 'KV-তে কোনো API key কনফিগার করা নেই' }, 500, env, request);
 
       const ledger = await loadJson(env, 'KEY_LEDGER', { keys: {} });
       const now = Date.now();
@@ -104,7 +157,7 @@ export default {
           error: 'সবগুলো কি এই মুহূর্তে কুলডাউনে আছে।',
           retryInSec: soonest ? soonest.reopenInSec : 60,
           status
-        }, 429);
+        }, 429, env, request);
       }
 
       const attempts = [];
@@ -144,7 +197,7 @@ export default {
               'X-Fayzar-Key': maskKey(key),
               'X-Fayzar-Model': model,
               'X-Fayzar-Attempts': String(i + 1)
-            })
+            }, env, request)
           });
         }
 
@@ -173,10 +226,10 @@ export default {
         lastError,
         attempts,
         status: buildStatus(ledger, apiKeys, Date.now())
-      }, 502);
+      }, 502, env, request);
 
     } catch (error) {
-      return json({ error: error.message }, 500);
+      return json({ error: error.message }, 500, env, request);
     }
   }
 };

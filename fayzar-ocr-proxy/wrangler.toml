@@ -6,4 +6,8 @@ compatibility_date = "2026-09-01"
 # id বসানোর নিয়ম README.md-তে দেওয়া আছে।
 [[kv_namespaces]]
 binding = "FAYZAR_OCR_KEYS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+id = "2de59ce830064432b4e8938373ebc2bf"
+
+[vars]
+ALLOWED_ORIGINS = "https://fayzarcomputer.com.bd, http://localhost:3008"
+RATE_PER_MIN = "20"

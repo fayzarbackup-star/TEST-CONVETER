@@ -410,7 +410,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
   const SUPABASE_CONFIG = {
     FUNCTIONS_URL: 'https://fayzar-ocr-proxy.fayzar-ocr-proxy.workers.dev', // Cloudflare Worker URL
-    ANON_KEY: 'cloudflare_proxy', 
+    // ⚠️ Worker-এর PROXY_TOKEN-এর সাথে হুবহু মিলতে হবে। এটি ক্লায়েন্টে থাকা শেয়ারড সিক্রেট —
+    // ক্যাজুয়াল অপব্যবহার ঠেকায়, কিন্তু ডিটারমিনড অ্যাটাকার পড়ে ফেলতে পারে; তাই Worker-এ
+    // রেট-লিমিট + Origin allowlist অবশ্যই রাখুন (fayzar-ocr-proxy/README.md দেখুন)।
+    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || '40jclzkNXxkaji5MkXaosxKn7JDnrxLzOYMYN6wCYJAx',
+    ANON_KEY: 'cloudflare_proxy', // পুরোনো নাম — শুধু ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য
     ENABLED: true, 
     CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
     TIMEOUT_MS: 300000 // Increased timeout to 5 minutes
@@ -1928,8 +1932,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_CONFIG.ANON_KEY}`,
-          'apikey': SUPABASE_CONFIG.ANON_KEY
+          'Authorization': `Bearer ${SUPABASE_CONFIG.PROXY_TOKEN}`,
+          'apikey': SUPABASE_CONFIG.PROXY_TOKEN
         },
         // models[] পাঠানো হলে Worker একই আপলোড দিয়ে কি ও মডেল — দুই স্তরেই ফেইলওভার করে
         body: JSON.stringify({ payload, model, models: (modelPriority && modelPriority.length ? modelPriority : [model]) }),
@@ -1939,8 +1943,13 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       clearTimeout(timeoutId);
       
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-        throw new Error(`Supabase ${response.status}: ${error.error || error.message}`);
+        // ৪২৯ (retryInSec), ৫০২ (attempts[].class) কিংবা ৪০১ — সিদ্ধান্ত নেওয়ার জন্য
+        // পুরো বডিটাই দরকার, তাই স্ট্যাটাস+বডি error-এর সাথে বেঁধে দেওয়া হলো।
+        const body = await response.json().catch(() => ({}));
+        const err = new Error(body.error || body.message || `Proxy HTTP ${response.status}`);
+        err.proxyStatus = response.status;
+        err.proxyBody = body;
+        throw err;
       }
       
       // ===== STREAMING HANDLING (SSE + legacy JSON-array tolerant) =====
@@ -2149,42 +2158,61 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         console.log(`[Supabase] Success via key: ${keyId}`);
         return text;
       } catch (supabaseErr) {
-        console.error('[Supabase] Fatal error, falling back to direct API pool:', supabaseErr.message);
+        console.error('[Supabase] Proxy failed:', supabaseErr.message);
+        // সিদ্ধান্ত শুধু নীতিমালা-মডিউলে (DOM-মুক্ত, পরীক্ষাযোগ্য): ভুল-টোকেন / অবৈধ-পেলোড /
+        // সব-কুলডাউনে লোকাল পুলে *যাওয়া যাবে না* — কেবল ব্যবহারকারীর নিজের BYOK কি থাকলে সরাসরি চেষ্টা।
+        const policy = (typeof FayzarProxyPolicy !== 'undefined')
+          ? FayzarProxyPolicy.decideProxyFallback(supabaseErr.proxyStatus || 0, supabaseErr.proxyBody || null, Boolean(userCustomKey))
+          : { action: 'abort', tone: 'warning', message: 'প্রক্সি সার্ভার ব্যর্থ হয়েছে — কিছুক্ষণ পর আবার চেষ্টা করুন।' };
         if (typeof window.showToastNotification === 'function') {
-          window.showToastNotification('প্রক্সি সার্ভার ব্যর্থ হয়েছে, সরাসরি লোকাল পুল ব্যবহার করা হচ্ছে...', 'warning');
+          window.showToastNotification(policy.message, policy.tone || 'warning');
+        }
+        if (policy.action === 'abort') {
+          throw new Error(policy.message);
         }
       }
     }
 
-    // MODEL & KEY STRATEGY: For each model, try all healthy keys specifically for that model.
+    // ---- প্রচেষ্টার সীমা (আগে ছিল অসীম: ৪ মডেল × ১৯ কি = ৭৬ বার, প্রতি বার পুরো ফাইল আপলোড) ----
+    const MAX_KEY_ATTEMPTS_PER_MODEL = 3;          // প্রতি মডেলে সর্বোচ্চ ৩টি কি
+    const MAX_TOTAL_ATTEMPTS = 8;                  // সব মডেল মিলিয়ে সর্বোচ্চ ৮টি আপলোড-চেষ্টা
+    const OCR_TOTAL_DEADLINE_MS = 6 * 60 * 1000;   // পুরো রূপান্তরের সর্বোচ্চ সময় (৬ মিনিট)
+    const ocrStartedAt = Date.now();
+    let totalAttempts = 0;
+
+    // MODEL & KEY STRATEGY: For each model, try a few healthy keys for that model.
     for (let i = 0; i < candidateModels.length; i++) {
       const model = candidateModels[i];
 
-      // Build key pool prioritized for THIS specific model (healthy keys at front, cooling keys at back)
+      // এই মডেলের জন্য *সুস্থ* কি-গুলো (কুলিং কি আর জোর করে চেষ্টা করা হয় না — সেটিই
+      // আগে ৭৬-বারের লুপ বানাত, আর কুলিং কি কখনো সফল হয় না)।
       let keyPool = [];
       if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.getKeysForModel === 'function') {
-        keyPool = FayzarOcrConfig.getKeysForModel(model, true);
+        keyPool = FayzarOcrConfig.getKeysForModel(model, false);
       } else if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.getRotatedSystemKeys === 'function') {
-        keyPool = FayzarOcrConfig.getRotatedSystemKeys(true);
+        keyPool = FayzarOcrConfig.getRotatedSystemKeys(false);
       }
 
       if (apiKey && isValidKeyFn(apiKey) && !keyPool.includes(apiKey.trim())) {
         keyPool.unshift(apiKey.trim());
       }
-      if (keyPool.length === 0) {
+      // ব্রাউজারে কোনো সিস্টেম-কি নেই (ভল্ট খালি)। লোকাল সার্ভার (serve.js) চালু থাকলে
+      // GEMINI_API_KEY দিয়ে সেটি ব্যবহার করা যায়; পাবলিক হোস্টে অটো-ফলব্যাক নেই।
+      if (keyPool.length === 0 && typeof location !== 'undefined' &&
+          /^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)) {
         keyPool.push('BACKEND_PROXY');
       }
+      if (keyPool.length === 0) continue;   // এই মডেলে কোনো সুস্থ কি নেই → পরের মডেল
 
-      for (let k = 0; k < keyPool.length; k++) {
+      const modelAttemptLimit = Math.min(keyPool.length, MAX_KEY_ATTEMPTS_PER_MODEL);
+      for (let k = 0; k < modelAttemptLimit; k++) {
         const currentKey = keyPool[k];
-
-        // Skip keys currently cooling down specifically on THIS model (unless all are cooling)
-        if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.isKeyModelAvailable === 'function') {
-          const isAvail = FayzarOcrConfig.isKeyModelAvailable(currentKey, model);
-          if (!isAvail) {
-            const hasHealthy = keyPool.some(k => FayzarOcrConfig.isKeyModelAvailable(k, model));
-            if (hasHealthy) continue;
-          }
+        totalAttempts++;
+        if (totalAttempts > MAX_TOTAL_ATTEMPTS) {
+          throw new Error('সর্বোচ্চ সংখ্যক চেষ্টা শেষ — সবগুলো কি/মডেল এই মুহূর্তে ব্যর্থ। কিছুক্ষণ পর আবার চেষ্টা করুন।');
+        }
+        if (Date.now() - ocrStartedAt > OCR_TOTAL_DEADLINE_MS) {
+          throw new Error('সময়সীমা শেষ — সার্ভার নির্ধারিত সময়ে সম্পূর্ণ ফলাফল দেয়নি। অনুগ্রহ করে আবার চেষ্টা করুন।');
         }
 
         const epVersion = 'v1beta';
@@ -2524,7 +2552,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         if (onStreamChunk) onStreamChunk(marked);
         return cleanOcrResponse(marked);
       }
-      throw new Error(lastError?.message || 'Gemini API-র সকল কি ব্যস্ত বা কোটা পূর্ণ। অনুগ্রহ করে কয়েক মুহূর্ত পর পুনরায় চেষ্টা করুন।');
+      throw new Error(isRateLimited
+        ? 'সার্ভারের সবগুলো কি-এর কোটা/রেট-লিমিট শেষ — কিছুক্ষণ (বা কয়েক ঘণ্টা) পর আবার চেষ্টা করুন।'
+        : (lastError?.message || 'Gemini API-র সকল কি ব্যস্ত বা কোটা পূর্ণ। অনুগ্রহ করে কয়েক মুহূর্ত পর পুনরায় চেষ্টা করুন।'));
     } finally {
       activeAbortController = null;
     }
@@ -2600,7 +2630,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     elements.keysSummary.textContent = 'তথ্য আনা হচ্ছে...';
     try {
       const base = SUPABASE_CONFIG.FUNCTIONS_URL.replace(/\/+$/, '');
-      const res = await fetch(base + '/status', { method: 'GET' });
+      const res = await fetch(base + '/status', {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${SUPABASE_CONFIG.PROXY_TOKEN}` }
+      });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       if (!data || !Array.isArray(data.keys)) throw new Error('পুরোনো প্রক্সি সংস্করণ (/status নেই)');

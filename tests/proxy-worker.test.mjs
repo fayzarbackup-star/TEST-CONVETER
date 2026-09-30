@@ -7,7 +7,8 @@ import worker from '../fayzar-ocr-proxy/index.js';
 
 const KEYS = ['AIzaSyAAAA1111AAAA1111AAAA1111AAAA1111', 'AIzaSyBBBB2222BBBB2222BBBB2222BBBB2222', 'AIzaSyCCCC3333CCCC3333CCCC3333CCCC3333'];
 const store = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
-const env = { FAYZAR_OCR_KEYS: {
+const TOKEN = 'unit-test-token';
+const env = { PROXY_TOKEN: TOKEN, FAYZAR_OCR_KEYS: {
   get: async k => store.get(k) ?? null,
   put: async (k, v) => { store.set(k, v); }
 }};
@@ -26,10 +27,14 @@ globalThis.fetch = async (url, opts) => {
   return new Response(JSON.stringify(r.body), { status: r.status, headers: { 'Content-Type': 'application/json' } });
 };
 
-const post = (body) => worker.fetch(new Request('https://w.dev/', {
-  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+const post = (body, headers = {}) => worker.fetch(new Request('https://w.dev/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN, ...headers },
+  body: JSON.stringify(body)
 }), env, ctx);
-const status = () => worker.fetch(new Request('https://w.dev/status'), env, ctx);
+const status = () => worker.fetch(new Request('https://w.dev/status', {
+  headers: { 'Authorization': 'Bearer ' + TOKEN }
+}), env, ctx);
 
 let pass = 0, fail = 0;
 const T = (n, c, x) => { c ? pass++ : fail++; console.log((c ? '✅' : '❌') + ' ' + n + (c ? '' : '  → ' + JSON.stringify(x))); };
@@ -40,6 +45,66 @@ const err429min = { status: 429, body: { error: { code: 429, message: 'quota', d
 const err404 = { status: 404, body: { error: { code: 404, message: 'models/x is not found for API version v1beta' } } };
 const err400key = { status: 400, body: { error: { code: 400, message: 'API key not valid. Please pass a valid API key.' } } };
 const err400bad = { status: 400, body: { error: { code: 400, message: 'Invalid JSON payload received' } } };
+
+// ── ০. অথেনটিকেশন (টোকেন ছাড়া কিছুই নয়)
+let r401 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ payload: { contents: [] } })
+}), env, ctx);
+T('টোকেন ছাড়া POST → ৪০১', r401.status === 401);
+r401 = await worker.fetch(new Request('https://w.dev/status'), env, ctx);
+T('টোকেন ছাড়া /status → ৪০১', r401.status === 401);
+const wrong = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer nope' },
+  body: JSON.stringify({ payload: { contents: [] } })
+}), env, ctx);
+T('ভুল টোকেন → ৪০১', wrong.status === 401);
+const noTokenEnv = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer x' },
+  body: JSON.stringify({ payload: { contents: [] } })
+}), { FAYZAR_OCR_KEYS: env.FAYZAR_OCR_KEYS }, ctx);
+T('PROXY_TOKEN সেট না থাকলে সার্ভিস বন্ধ (fail-closed)', noTokenEnv.status === 503);
+
+// ── ০বি. প্রথম মডেলের কোটা শেষ → দ্বিতীয় মডেলও চেষ্টা হয় (fallback আর অদৃশ্য নয়)
+//    আলাদা KV-তে চালানো হয়, যাতে পরের টেস্টগুলোর খতিয়ান/কুলডাউন নষ্ট না হয়।
+const err429day = { status: 429, body: { error: { code: 429, message: 'quota exceeded', details: [
+  { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'GenerateRequestsPerDayPerProjectPerModel' }] },
+  { '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: '3600s' }] } } };
+const store2 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env2 = { PROXY_TOKEN: TOKEN, FAYZAR_OCR_KEYS: {
+  get: async k => store2.get(k) ?? null,
+  put: async (k, v) => { store2.set(k, v); }
+}};
+script = [err429day, err429day, err429day, err429day, { ok: true }]; calls = [];
+const resFb = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.6-flash'] })
+}), env2, ctx);
+T('প্রথম মডেল দৈনিক-কোটা-শেষ হলেও দ্বিতীয় মডেলে সফল হয়',
+  resFb.status === 200 && calls[calls.length - 1].model === 'gemini-3.6-flash', calls);
+T('প্রথম মডেলে ৪টি চেষ্টার বেশি খরচ হয় না',
+  calls.filter(c => c.model === 'gemini-3-flash-preview').length <= 4, calls);
+
+// ── ০সি. CORS: একাধিক origin সাপোর্ট (প্রোডাকশন + localhost ডেভ একসাথে)
+const envOrigins = { PROXY_TOKEN: TOKEN, ALLOWED_ORIGINS: 'https://fayzarcomputer.com.bd, http://localhost:3008',
+  FAYZAR_OCR_KEYS: { get: async () => null, put: async () => {} } };
+const pre = (origin, e = envOrigins) => worker.fetch(new Request('https://w.dev/', {
+  method: 'OPTIONS', headers: origin ? { 'Origin': origin, 'Access-Control-Request-Method': 'POST' } : {}
+}), e, ctx);
+let corsRes = await pre('https://fayzarcomputer.com.bd');
+T('প্রোডাকশন origin → নিজের origin-ই ফেরত আসে',
+  corsRes.headers.get('Access-Control-Allow-Origin') === 'https://fayzarcomputer.com.bd', [...corsRes.headers]);
+corsRes = await pre('http://localhost:3008');
+T('localhost ডেভ origin-ও অনুমোদিত (মাল্টি-অরিজিন)',
+  corsRes.headers.get('Access-Control-Allow-Origin') === 'http://localhost:3008', corsRes.headers.get('Access-Control-Allow-Origin'));
+corsRes = await pre('https://evil.example.com');
+T('অননুমোদিত origin-কে তার origin ফেরত দেওয়া হয় না',
+  corsRes.headers.get('Access-Control-Allow-Origin') !== 'https://evil.example.com', corsRes.headers.get('Access-Control-Allow-Origin'));
+corsRes = await pre('https://fayzarcomputer.com.bd');
+T('Vary: Origin পাঠানো হয় (CORS ক্যাশ-বিষ poisoning ঠেকাতে)', /origin/i.test(corsRes.headers.get('Vary') || ''), corsRes.headers.get('Vary'));
+corsRes = await worker.fetch(new Request('https://w.dev/', { method: 'OPTIONS' }), { PROXY_TOKEN: TOKEN, FAYZAR_OCR_KEYS: env.FAYZAR_OCR_KEYS }, ctx);
+T('ALLOWED_ORIGINS না থাকলে আগের মতো * (ব্যাকওয়ার্ড কম্প্যাটিবল)',
+  corsRes.headers.get('Access-Control-Allow-Origin') === '*', corsRes.headers.get('Access-Control-Allow-Origin'));
 
 // ── ১. প্রথম কি-তেই সফল
 script = [{ ok: true }]; calls = [];
