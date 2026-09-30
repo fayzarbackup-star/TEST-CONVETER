@@ -1658,14 +1658,30 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
-    // ইউজারের রিকোয়েস্ট অনুযায়ী চাংকিং (Chunking) বাদ দেওয়া হলো।
-    // এখন সব পেজ একসাথে জেমিনিতে যাবে যাতে সে cross-page context বুঝতে পারে।
-    if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে (সব পেজ একসাথে)...', 50);
+    // Restore chunking (1 page at a time) for speed
+    const CHUNK_SIZE = 1;
+    const chunks = splitMediaIntoChunks(mediaItems, CHUNK_SIZE);
+    let fullResult = '';
+
+    for (let i = 0; i < chunks.length; i++) {
+      if (onProgress) {
+        onProgress(`⚡ পেজ কনভার্ট হচ্ছে (${toBengaliNumber(i + 1)}/${toBengaliNumber(chunks.length)})...`, 30 + Math.floor((i / chunks.length) * 60));
+      }
+
+      const chunkResult = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
+        if (onStream) {
+          // Stream is cumulative, so we need to add the previously accumulated text
+          onStream(fullResult + liveChunk);
+        }
+        if (onProgress) {
+           onProgress(`লাইভ স্ট্রিমিং চলছে (পেজ ${toBengaliNumber(i + 1)})...`, Math.min(95, 45 + Math.round((fullResult.length + liveChunk.length) / 30)));
+        }
+      });
+      
+      fullResult += chunkResult + '\n\n';
+    }
     
-    return await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-      if (onStream) onStream(liveChunk);
-      if (onProgress) onProgress(`লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveChunk.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveChunk.length / 30)));
-    });
+    return fullResult;
   }
 
   async function ensureBase64(item) {
