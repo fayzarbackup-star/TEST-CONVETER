@@ -299,7 +299,24 @@
     - For English Question Papers, run in standard/normal manner:
       * Question numbers must remain standard English format: 1. , 2. , 3. , etc. (DO NOT convert to '১।' or '1|').
       * Sub-questions and items must remain standard English format: (a), (b), (c), (d) or (i), (ii), (iii), (iv) or a. , b. , c. , d. as written in the source document.
-      * Options must remain standard English format without forcing 'ক.', 'খ.', 'গ.', 'ঘ.' or Bengali letters.`;
+      * Options must remain standard English format without forcing 'ক.', 'খ.', 'গ.', 'ঘ.' or Bengali letters.
+
+18. MANDATORY INTERNAL TWO-PHASE SELF-RECHECK BEFORE OUTPUT (একই উত্তরে নিজেই পুনঃযাচাই — সর্বাধিক গুরুত্বপূর্ণ):
+    - PHASE 1 (INTERNAL DRAFT — DO NOT PRINT): Silently transcribe the ENTIRE document from the first page to the last page.
+    - PHASE 2 (INTERNAL VERIFICATION — DO NOT PRINT): Before writing anything, go back over EVERY attached page image one more time and compare it line-by-line against your own draft. Specifically re-check:
+      * MISSING CONTENT: Is any question, sub-question, stimulus (উদ্দীপক), option, statement, table row or page missing? Recover it.
+      * NUMBERING: Does every question serial and sub-question label match the source EXACTLY and in the same order (১। ২। ৩। অথবা 1. 2. 3. / ক. খ. গ. ঘ.)? NEVER renumber, re-sequence, merge or split them.
+      * MARKS: Does every mark shown in the source still exist in your output with the exact same value and position (end of the line)? Multi-digit marks (১০, ১৫) must stay intact.
+      * NUMBERS, UNITS & EQUATIONS: Re-read every digit, unit, chemical formula and equation against the image.
+      * SPELLING & STIMULUS FIDELITY: The stimulus and question wording must match the source word-for-word.
+    - FINAL OUTPUT: Print the corrected, fully verified document ONE time only. NEVER print the phase labels, the draft, a comparison table, or any commentary about this process.
+    - MARKS ARE NEVER REMOVED (নম্বর কখনোই মুছবেন না): Omitting board/source citations is required for a fresh paper, but the marks of a question ([১], ৩, মান: ৪) must ALWAYS be preserved. Removing a board tag must never remove the marks printed next to it.
+    - MANDATORY VERIFICATION NOTE AT THE VERY END: After the last line of the document you MUST append exactly one audit block, starting with this exact marker:
+      [এআই অডিট নোট ও পরিবর্তনসমূহ:
+      - প্রশ্ন ৪(খ), মূল পৃষ্ঠা ২: শব্দটি ঝাপসা ছিল; অনুমান করে "..." বসানো হয়েছে — যাচাই প্রয়োজন।
+      - প্রশ্ন ৬(গ), মূল পৃষ্ঠা ৩: পুনঃযাচাইয়ে এই উপ-প্রশ্নটি খসড়ায় বাদ পড়েছিল, যোগ করা হয়েছে।
+      - প্রশ্ন ১(ক), মূল পৃষ্ঠা ১: বোর্ড রেফারেন্স [ঢাকা বোর্ড-২০২৩] মুছে ফেলা হয়েছে (নম্বর অক্ষত আছে)।]
+    - If the re-check found nothing to change, still append: [এআই অডিট নোট ও পরিবর্তনসমূহ: মূল ফাইলের সাথে সম্পূর্ণ যাচাইকৃত; কোনো অনুমান বা সংশোধন করা হয়নি।]`;
 
   const GEMINI_VERIFY_PROMPT = `You are the Chief Examination Paper Auditor, Proofreader, and Senior Bengali Question Typist.
 You are given:
@@ -2267,7 +2284,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             let lastChunkTime = 0;
             // বড় মাল্টি-পেজ ফাইলে Gemini প্রথম টোকেন দিতে ২০-৯০ সেকেন্ড নিতে পারে (ছবি প্রসেসিং + রিজনিং)।
             // তাই প্রথম টোকেনের জন্য আলাদা লম্বা grace, স্ট্রিম শুরু হলে স্বাভাবিক idle timeout।
-            const FIRST_TOKEN_TIMEOUT_MS = 120000; // 120s — প্রথম টোকেনের অপেক্ষা
+            const FIRST_TOKEN_TIMEOUT_MS = 240000; // 240s — একই কলে অভ্যন্তরীণ পুনঃযাচাই হওয়ায় প্রথম টোকেন দেরিতে আসবে
             const STREAM_IDLE_TIMEOUT_MS = 90000;  // 90s — দুই চাঙ্কের মাঝে সর্বোচ্চ বিরতি
             let shouldStopStream = false;
 
@@ -2555,7 +2572,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
   function extractAuditNote(text) {
     if (!text) return null;
-    const match = text.match(/(?:[০-৯0-9]+[।\.\)]\s*)?\[\s*(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/);
+    const match = text.match(/(?:[০-৯0-9]+[।\.\)]\s*)?\[\s*(?:[^\]\n]{0,12}?\s*)?(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/);
     return match ? match[0].trim() : null;
   }
 
@@ -2873,9 +2890,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
     // STRIP all AI Audit Note & Change Log blocks completely so they NEVER enter the document text!
     // Case 1: When attached to a question number e.g. "১২। [নোট ও পরিবর্তনসমূহ: ... \n - bullet 1\n - bullet 2" before subquestion "(ক)"
-    text = text.replace(/([০-৯0-9]+[।\.\)])\s*\[\s*(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/gi, '$1\n');
+    text = text.replace(/([০-৯0-9]+[।\.\)])\s*\[\s*(?:[^\]\n]{0,12}?\s*)?(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/gi, '$1\n');
     // Case 2: Standalone note block e.g. "[নোট ও পরিবর্তনসমূহ: ..."
-    text = text.replace(/\[\s*(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/gi, '');
+    text = text.replace(/\[\s*(?:[^\]\n]{0,12}?\s*)?(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)[\s\S]*?(?:\]|(?=\n\s*(?:\([ক-ঘa-divx০-৯]+\)|[ক-ঘa-divx][\.\)]|[০-৯0-9]+[।\.\)]|#{1,6}\s|$)))/gi, '');
 
     // Strip exam board tags, cadet college tags, and chapter citations anywhere in text
     text = text.replace(/\s*\[\s*(?:[^\]\n]*(?:(?:ঢাকা|রাজশাহী|দিনাজপুর|কুমিল্লা|চট্টগ্রাম|সিলেট|বরিশাল|যশোর|ময়মনসিংহ|মাদ্রাসা|কারিগরি|সকল)?\s*(?:বোর্ড|বো\.)|ক্যাডেট\s*কলেজ|জিলা\s*স্কুল|অধ্যায়|অধ্যায়|অনুশীলনী|পরিপত্র|সহপাঠ|গদ্যাংশ|পদ্যাংশ|বোর্ড\s*প্রশ্ন|মডেল\s*টেস্ট|Board|Cadet|Chapter))[^\]\n]*\]\s*/gi, ' ');
@@ -2986,7 +3003,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       }
 
       // Skip any residual Audit Note blocks & bullet lists completely!
-      if (/^\s*\[\s*(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)/i.test(trimmed)) {
+      if (/^\s*\[\s*(?:[^\]\n]{0,12}?\s*)?(?:নোট|পরিবর্তনসমূহ|সংশোধনী|অডিট|খসড়া|Note|Audit)/i.test(trimmed)) {
         inNoteBlock = !trimmed.endsWith(']');
         continue;
       }
@@ -3517,6 +3534,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       if (noteMatch) {
         auditNote = noteMatch[0];
         exportText = exportText.replace(auditNoteRegex, '').trim();
+      } else if (state.lastAuditNote) {
+        // যাচাই-নোটটি cleanOcrResponse() আগেই বডি থেকে সরিয়ে রাখে; তাই সংরক্ষিত কপি থেকে নেওয়া হয়
+        auditNote = state.lastAuditNote;
       }
       
       const isStudentCopy = document.getElementById('cleanCopyCheckbox')?.checked;
