@@ -1670,15 +1670,13 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     }
 
     // Pass the ENTIRE mediaItems array to Gemini at once for ultra-fast TTFB and streaming
-    let result = '';
-    await executeGeminiRequest(apiKey, mediaItems, (liveChunk) => {
-      result += liveChunk;
+    const result = await executeGeminiRequest(apiKey, mediaItems, (liveText) => {
       if (onStream) {
-        onStream(result);
+        onStream(liveText);
       }
       if (onProgress) {
         // Stream progress updates rapidly
-        onProgress(`লাইভ স্ট্রিমিং চলছে...`, Math.min(95, 45 + Math.floor(result.length / 50)));
+        onProgress(`লাইভ স্ট্রিমিং চলছে...`, Math.min(95, 45 + Math.floor(liveText.length / 50)));
       }
     });
 
