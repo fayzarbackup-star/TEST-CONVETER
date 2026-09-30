@@ -221,6 +221,22 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 
 ---
 
+## 🧪 Layout Regression Suite (`tests/`)
+
+| ফাইল | কাজ |
+| :--- | :--- |
+| `tests/run-regression.js` | স্ন্যাপশট রানার — `npm run test:layout` (verify) / `npm run test:layout:update` (baseline লেখা) / `--only=<id>` ফিল্টার |
+| `tests/lib/harness.js` | Node-এ active engine লোড + fixture → CLASSIFIER / PARSED / STRUCTURE / HTML / DOCX_XML / RTF স্ন্যাপশট তৈরি |
+| `tests/baseline/*.snap.txt` | ফ্রিজ করা "before" আউটপুট (৩০/০৯/২০২৬ অবস্থা, জ্ঞাত বাগসহ) |
+| `tests/baseline/*.actual.txt` | ফেইল হলে লেখা স্ক্র্যাচ আউটপুট (git-ignored) |
+| `tests/fixtures/cq-marks-edge.input.md` | CQ মার্ক edge-case: `১০`, `[১]`, `(৩)`, মার্কবিহীন |
+| `tests/fixtures/cq-inline-numbering.input.md` | CQ `১. ক.` inline numbering + LaTeX |
+| `tests/README.md` | suite-এর ব্যবহার ও জ্ঞাত ত্রুটির তালিকা |
+
+উদ্দেশ্য: EXAM_CQ পরিবর্তনের পর MCQ / MATH / COMBINED স্ন্যাপশট অপরিবর্তিত আছে — তা প্রমাণ করা।
+
+---
+
 ## ⚠️ Fix Log (২০২৬-০৯-২৮)
 
 | # | সমস্যা | ফাইল | Status |

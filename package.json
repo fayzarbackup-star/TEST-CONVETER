@@ -4,6 +4,7 @@
     "jszip": "^3.10.2"
   },
   "scripts": {
-    "test:layout": "node tests/run-regression.js"
+    "test:layout": "node tests/run-regression.js",
+    "test:layout:update": "node tests/run-regression.js --update"
   }
 }
