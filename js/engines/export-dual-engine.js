@@ -662,7 +662,7 @@
           let firstLineText = qTextTrimmed;
           let remainingStimLines = [];
           if (q.stimulus) {
-            const allStimLines = q.stimulus.split('\\n').map(l => l.trim()).filter(Boolean);
+            const allStimLines = q.stimulus.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
             if (!firstLineText && allStimLines.length > 0) {
               const fLine = allStimLines[0].trim();
               if (fLine.startsWith('|') && fLine.endsWith('|')) {
@@ -2676,41 +2676,6 @@ ${bodyAndSectXml}
       }
     },
 
-    generateGenericRtf(rawText, docType, options = {}) {
-      const isBijoy = this.isBijoyFont(options);
-      const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
-      let rtf = '{\\rtf1\\ansi\\deff0\n';
-      rtf += `{\\fonttbl\n{\\f0\\fnil\\fcharset0 ${fontName};}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n`;
-      rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
-      rtf += '\\paperw11906\\paperh16838\\margl720\\margr720\\margt720\\margb720\n';
-      const lines = String(rawText || '').split('\\n');
-      for (const line of lines) {
-        if (!line.trim()) {
-          rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 \\par}\n';
-        } else {
-          rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(line, options) + '\\par}\n';
-        }
-      }
-      rtf += '}';
-      return rtf;
-    },
-
-    async generateGenericDocx(rawText, docType, options = {}) {
-      const isBijoy = this.isBijoyFont(options);
-      const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
-      const contentXmlParts = [];
-      const lines = String(rawText || '').split('\\n');
-      for (const line of lines) {
-        if (!line.trim()) {
-          contentXmlParts.push(`<w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>`);
-        } else {
-          contentXmlParts.push(`<w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>`);
-          contentXmlParts.push(this.formatDocxText(line, options));
-          contentXmlParts.push(`</w:p>`);
-        }
-      }
-      return await this._buildDocxPackage(contentXmlParts.join(''), fontName, options);
-    },
 
     // -------------------------------------------------------------------------
     // 6. VECTOR PDF / BROWSER PRINT ENGINE

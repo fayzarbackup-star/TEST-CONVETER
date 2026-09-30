@@ -8,6 +8,7 @@
     "test:layout:update": "node tests/run-regression.js --update",
     "test:keys": "node tests/key-ledger.test.js",
     "test:proxy": "node tests/proxy-worker.test.mjs",
-    "test": "node tests/run-regression.js && node tests/key-ledger.test.js && node tests/proxy-worker.test.mjs"
+    "test:policy": "node tests/proxy-failure-policy.test.js",
+    "test": "node tests/run-regression.js && node tests/key-ledger.test.js && node tests/proxy-worker.test.mjs && node tests/proxy-failure-policy.test.js"
   }
 }

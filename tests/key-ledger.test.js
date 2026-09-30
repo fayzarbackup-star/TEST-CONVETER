@@ -147,6 +147,15 @@ const near = (a, b, tol) => Math.abs(a - b) <= tol;
   T('অ্যাটেম্পট সংখ্যা সীমার মধ্যে থাকে (subrequest সুরক্ষা)',
     L.buildAttemptPlan({ keys: {} }, many, MODELS, NOW, 8).length === 8);
 
+  // ── ১০. প্রতি মডেলের ন্যায্য অ্যাটেম্পট বাজেট ─────────────────────────────
+  const fairPlan = L.buildAttemptPlan({ keys: {} }, many, ['m-a', 'm-b'], NOW, 8);
+  const aCount = fairPlan.filter(p => p.model === 'm-a').length;
+  const bCount = fairPlan.filter(p => p.model === 'm-b').length;
+  T('দুই মডেলই অ্যাটেম্পট পায় (প্রথম মডেল সব খেয়ে ফেলে না)', aCount > 0 && bCount > 0, { aCount, bCount });
+  T('প্রতি মডেল সর্বোচ্চ ceil(8/2)=4 চেষ্টা', aCount <= 4 && bCount <= 4, { aCount, bCount });
+  const fairPlan3 = L.buildAttemptPlan({ keys: {} }, many, ['m-a', 'm-b', 'm-c'], NOW, 8);
+  T('তিন মডেলেও সবাই সুযোগ পায়', ['m-a', 'm-b', 'm-c'].every(m => fairPlan3.some(p => p.model === m)));
+
   console.log(results.join('\n'));
   console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
   process.exit(fail ? 1 : 0);

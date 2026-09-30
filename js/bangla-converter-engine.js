@@ -830,20 +830,6 @@
     return res;
   }
 
-  function convertDigits(text, format) {
-    if (!text) return text;
-    if (format === 'bengali') {
-      for (let d = 0; d < 10; d++) {
-        text = text.replaceAll(ENGLISH_NUMBERS[d], BANGLA_NUMBERS[d]);
-      }
-    } else if (format === 'english') {
-      for (let d = 0; d < 10; d++) {
-        text = text.replaceAll(BANGLA_NUMBERS[d], ENGLISH_NUMBERS[d]);
-      }
-    }
-    return text;
-  }
-
   // Recognized English patterns in Bijoy documents to prevent corrupting genuine English words into Bijoy glyphs
   // Strictly matches URLs, emails, uppercase acronyms, or distinct multi-word English terms and isolated/trailing dashes
   const BIJOY_ENGLISH_TOKEN_REGEX = /(https?:\/\/[^\s]+|www\.[^\s]+|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|\b(?:UNO|DC|ADC|SP|ASP|AC|NID|SSC|HSC|JSC|PSC|BSc|MSc|BA|MA|BBA|MBA|MBBS|BEd|BCS|ICT|PDF|DOC|DOCX|XLS|XLSX|PPT|PPTX|SMS|OTP|PIN|GPA|CGPA|URL|HTTP|HTTPS|WWW|COM|BD|ORG|GOV|CDAP|NGO|USA|UK|UN|WHO|UNDP|UNICEF|BBS|BRAC|BUET|DU|RU|CU|KU|SUST|BAPEX|WASA|DESCO|DPDC|NESCO|BREB|PDB|BPDB|BTRC|BRTC|BIWTA|RTHD|LGD|LGED|PWD|RHD|BWDB|BEPZA|BIDA|EPZ|NBR|ACC|DUDOK|RAB|BGB|DGFI|NSI|CID|DB|SB|PBI|IEEE|ISO|AI|ML)\b|\b(?:Email|Phone|Mobile|Tel|Fax|Web|Website|Name|Date|Roll|Reg|Section|Class|Room|Total|Page|Mark|Marks|Pass|Fail|Grade|Subject|Code|Bangla|English|Math|Physics|Chemistry|Biology|Exam|Test|Week|Month|Year|Notice|Official|Department|Ministry|Office|Officer|Director|Manager|Chairman|Secretary|Principal|Teacher|Teachers|Student|Students|Father|Mother|Village|Post|Thana|Upazila|District|Division|Bangladesh|Community|Development|Action|Plan|Study|Project|Report|Summary|Activity|Activities|Responsible|Stakeholders|Resources|Needed|Timeline|Meeting|Awareness|Addiction|Classes|During|Introduce|Sports|Cultural|Support|Group|Organize|Workshop|Setting|Rules|Launch|Reward|System|Reduce|Involve|Clinic|Counseling|Approximate)\b(?::|\b)|[-–—−‒―]|\s*[-–—−‒―]\s*)/g;
@@ -1260,10 +1246,10 @@
 
   function convertDigits(text, targetFormat = 'bangla') {
     if (!text || typeof text !== 'string') return text || '';
-    if (targetFormat === 'keep') return text;
+    if (targetFormat === 'keep' || targetFormat === 'none') return text;
 
     let res = text;
-    if (targetFormat === 'bangla' || targetFormat === 'bn') {
+    if (targetFormat === 'bangla' || targetFormat === 'bn' || targetFormat === 'bengali') {
       for (let d = 0; d < 10; d++) {
         res = res.replaceAll(ENGLISH_DIGITS[d], BENGALI_DIGITS[d]);
       }

@@ -252,10 +252,18 @@ function rankKeys(ledger, keys, model, now = Date.now()) {
  * ফলে ব্যবহারকারীর পছন্দের মডেল আগে, আর সেই মডেলে সবচেয়ে সুস্থ কি আগে।
  */
 function buildAttemptPlan(ledger, keys, models, now = Date.now(), maxAttempts = 8) {
+  // প্রতি মডেলের জন্য সীমা: আগে প্রথম মডেলই ৮টি চেষ্টা খেয়ে ফেলত, তাই মডেল-১ এর
+  // দৈনিক কোটা শেষ হলে (RPD) দ্বিতীয়/তৃতীয় মডেল কখনোই চেষ্টা হতো না — ব্যবহারকারী
+  // "সব কিছুর ব্যর্থ" দেখত। এখন প্রতিটি মডেল ন্যায্য ভাগ পায়।
+  const list = Array.isArray(models) && models.length ? models : [];
+  if (!list.length) return [];
+  const perModel = Math.max(1, Math.ceil(maxAttempts / list.length));
+
   const plan = [];
-  for (const model of models) {
-    for (const key of rankKeys(ledger, keys, model, now)) {
-      plan.push({ key, model });
+  for (const model of list) {
+    const ranked = rankKeys(ledger, keys, model, now);
+    for (let i = 0; i < ranked.length && i < perModel; i++) {
+      plan.push({ key: ranked[i], model });
       if (plan.length >= maxAttempts) return plan;
     }
   }

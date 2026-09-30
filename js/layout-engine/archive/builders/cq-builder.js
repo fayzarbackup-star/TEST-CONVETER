@@ -64,7 +64,7 @@
             </w:p>`;
 
             // Render stimulus text
-            const stimulusParts = block.stimulus.split('\\n');
+            const stimulusParts = block.stimulus.split(/\r?\n/);
             for (const sp of stimulusParts) {
               if (!sp.trim()) continue;
               xml += `
