@@ -23,8 +23,18 @@ import {
   buildAttemptPlan, buildStatus, maskKey, ensureEntry
 } from './ledger.js';
 
-const MAX_ATTEMPTS = 8;          // Cloudflare subrequest সীমার নিরাপদ ভেতরে
-const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.6-flash'];
+const MAX_ATTEMPTS = 24;         // সময়-বাজেটের সাথে সমন্বিত (subrequest সীমার নিরাপদ ভেতরে)
+const MAX_TOTAL_MS = 200000;     // মোট চেষ্টার সময়সীমা (~৩ মিনিট ২০s) — ৮-চেষ্টার হার্ড ক্যাপের বদলে
+const SERVER_RETRY_DELAY_MS = 2500; // 503 transient হলে একবার ছোট বিরতি দিয়ে আবার
+// নির্ভুলতা আগে: 3-flash-preview (বাংলা/টেবিল) → 3.8-flash (গণিত) → 3.6-flash (দ্রুত)
+const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'];
+
+/** একই মডেলের বাকি এন্ট্রি এড়িয়ে যাওয়ার জন্য পরের মডেলের সূচক বের করা */
+function skipRestOfModel(plan, from, model) {
+  let j = from;
+  while (j + 1 < plan.length && plan[j + 1].model === model) j++;
+  return j;
+}
 
 /**
  * Origin-ম্যাচিং — exact + wildcard (`*.example.com`) সাপোর্ট করে।
@@ -251,71 +261,156 @@ export default {
 
       const attempts = [];
       let lastError = null;
+      const startedAll = Date.now();
+      const encoder = new TextEncoder();
+      const retryMs = Math.max(0, parseInt(env.SERVER_RETRY_MS || String(SERVER_RETRY_DELAY_MS), 10));
+      const serverRetry = { used: false };
+      const serverFailKeys = Object.create(null);   // model → Set(key) — কয়টি কি ৫০৩ খেয়েছে
 
-      for (let i = 0; i < plan.length; i++) {
-        const { key, model } = plan[i];
-        const started = Date.now();
-        const geminiUrl =
-          `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}` +
-          `:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`;
-
-        let res = null;
-        let verdict = null;
-
-        try {
-          res = await fetch(geminiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-        } catch (netErr) {
-          const entry = ensureEntry(ledger, key, Date.now());
-          verdict = classifyGeminiError(0, { error: { message: netErr.message } }, {
-            now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
-          });
+      // খতিয়ান থেকে "ধরা-পড়া" কি আনা (sticky) — কিন্তু মডেলের ক্রম কখনো বদলায় না।
+      // গুণমান-অগ্রাধিকার: ১ নম্বর মডেলই আগে; sticky শুধু ওই মডেলের ভেতরে সেই কি-টিকে সবার আগে আনে।
+      try {
+        const lastGood = await loadJson(env, 'LAST_GOOD', null);
+        if (lastGood && lastGood.mask) {
+          const idx = plan.findIndex(p => maskKey(p.key) === lastGood.mask && p.model === lastGood.model);
+          if (idx > 0) {
+            const item = plan[idx];
+            const firstSame = plan.findIndex(p => p.model === item.model);
+            if (firstSame !== -1 && firstSame !== idx) {
+              const rest = plan.filter((_, j) => j !== idx);
+              rest.splice(firstSame, 0, item);
+              plan = rest;
+            }
+          }
         }
+      } catch (e) { /* sticky ব্যর্থ হলেও চলবে */ }
 
-        if (res && res.ok) {
-          // সফল — স্ট্রিম সরাসরি ক্লায়েন্টকে পাঠানো হচ্ছে
-          recordSuccess(ledger, key, model, Date.now() - started, Date.now());
-          ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
-          return new Response(res.body, {
-            headers: cors({
-              'Content-Type': res.headers.get('Content-Type') || 'text/event-stream',
-              'Cache-Control': 'no-cache',
-              'X-Fayzar-Key': maskKey(key),
-              'X-Fayzar-Model': model,
-              'X-Fayzar-Attempts': String(i + 1)
-            }, env, request)
-          });
+      // ---- লাইভ স্ট্রিম: সফল হওয়ার আগেই ক্লায়েন্ট অবস্থা দেখতে পাবে (হার্টবিট) ----
+      const stream = new ReadableStream({
+        async start(controller) {
+          const note = (s) => {
+            try { controller.enqueue(encoder.encode(`data: ${JSON.stringify({ fayzar_status: s })}\n\n`)); } catch (e) {}
+          };
+          const elapsed = () => Math.round((Date.now() - startedAll) / 1000);
+          try {
+            for (let i = 0; i < plan.length; i++) {
+              if (Date.now() - startedAll > MAX_TOTAL_MS) {
+                lastError = lastError || { status: 0, detail: `time budget ${MAX_TOTAL_MS}ms` };
+                break;
+              }
+              const { key, model } = plan[i];
+              const started = Date.now();
+              const geminiUrl =
+                `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}` +
+                `:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`;
+
+              note({ event: 'trying', attempt: i + 1, total: plan.length, key: maskKey(key), model, elapsedSec: elapsed() });
+
+              let res = null;
+              let verdict = null;
+              try {
+                res = await fetch(geminiUrl, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+              } catch (netErr) {
+                const entry = ensureEntry(ledger, key, Date.now());
+                verdict = classifyGeminiError(0, { error: { message: netErr.message } }, {
+                  now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
+                });
+              }
+
+              if (!res || !res.ok) {
+                if (!verdict) {
+                  const errText = await res.text().catch(() => '');
+                  const entry = ensureEntry(ledger, key, Date.now());
+                  verdict = classifyGeminiError(res.status, errText, {
+                    now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
+                  });
+                  lastError = { status: res.status, detail: verdict.detail };
+                } else {
+                  lastError = { status: 0, detail: verdict.detail };
+                }
+
+                recordFailure(ledger, key, model, verdict, Date.now());
+                attempts.push({ key: maskKey(key), model, class: verdict.class, reopenInSec: Math.ceil((verdict.reopenAfterMs || 0) / 1000) });
+
+                // পেলোড নিজেই অবৈধ — অন্য কি/মডেলে চেষ্টা করে লাভ নেই
+                if (verdict.class === 'FATAL_INPUT') {
+                  note({ event: 'fatal', class: verdict.class, detail: verdict.detail });
+                  break;
+                }
+
+                // 503: মডেলই অসুস্থ — প্রথমে ছোট বিরতিতে একবার, তারপর কি, শেষে মডেল বদল
+                if (verdict.class === 'SERVER') {
+                  const set = (serverFailKeys[model] = serverFailKeys[model] || new Set());
+                  if (!serverRetry.used) {
+                    serverRetry.used = true;
+                    note({ event: 'retry_same_key', status: lastError.status, waitSec: Math.round(retryMs / 1000), key: maskKey(key), model, elapsedSec: elapsed() });
+                    if (retryMs) await new Promise(r => setTimeout(r, retryMs));
+                    i--;                     // একই এন্ট্রি আবার চেষ্টা
+                    continue;
+                  }
+                  set.add(key);
+                  if (set.size >= 2) {       // একই মডেলে দুই কি ব্যর্থ → মডেল বদল
+                    note({ event: 'switch_model', from: model, reason: 'server', elapsedSec: elapsed() });
+                    i = skipRestOfModel(plan, i, model);
+                    continue;
+                  }
+                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'server', elapsedSec: elapsed() });
+                  continue;
+                }
+
+                note({ event: 'switch_key', key: maskKey(key), model, reason: verdict.class, elapsedSec: elapsed() });
+                continue;
+              }
+
+              // ---------- সফল ----------
+              recordSuccess(ledger, key, model, Date.now() - started, Date.now());
+              ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
+              ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() })));
+              note({ event: 'streaming', attempt: i + 1, key: maskKey(key), model, elapsedSec: elapsed() });
+
+              const reader = res.body.getReader();
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                controller.enqueue(value);
+              }
+              try { controller.close(); } catch (e) {}
+              return;
+            }
+
+            // সব চেষ্টা শেষ/সময় শেষ — খতিয়ান সংরক্ষণ করে ক্লায়েন্টকে জানানো
+            await env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger));
+            note({
+              event: 'failed', status: 502, elapsedSec: elapsed(),
+              body: {
+                error: lastError && lastError.status === 503
+                  ? 'Google-এর সার্ভার এখন ব্যস্ত (৫০৩) — কিছুক্ষণ পরে আবার চেষ্টা করুন।'
+                  : 'সবগুলো কি/মডেল ব্যর্থ হয়েছে।',
+                lastError, attempts,
+                status: buildStatus(ledger, apiKeys, Date.now())
+              }
+            });
+            try { controller.close(); } catch (e) {}
+          } catch (error) {
+            try {
+              note({ event: 'failed', status: 500, body: { error: error.message } });
+              controller.close();
+            } catch (e) {}
+          }
         }
+      });
 
-        if (res && !verdict) {
-          const errText = await res.text().catch(() => '');
-          const entry = ensureEntry(ledger, key, Date.now());
-          verdict = classifyGeminiError(res.status, errText, {
-            now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
-          });
-          lastError = { status: res.status, detail: verdict.detail };
-        } else if (verdict) {
-          lastError = { status: 0, detail: verdict.detail };
-        }
-
-        recordFailure(ledger, key, model, verdict, Date.now());
-        attempts.push({ key: maskKey(key), model, class: verdict.class, reopenInSec: Math.ceil((verdict.reopenAfterMs || 0) / 1000) });
-
-        // পেলোড নিজেই অবৈধ — অন্য কি-তে চেষ্টা করে লাভ নেই
-        if (verdict.class === 'FATAL_INPUT') break;
-      }
-
-      // সব চেষ্টা ব্যর্থ — খতিয়ান সংরক্ষণ করে বিস্তারিত জানানো
-      await env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger));
-      return json({
-        error: 'সবগুলো কি/মডেল ব্যর্থ হয়েছে।',
-        lastError,
-        attempts,
-        status: buildStatus(ledger, apiKeys, Date.now())
-      }, 502, env, request);
+      return new Response(stream, {
+        headers: cors({
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'X-Accel-Buffering': 'no'
+        }, env, request)
+      });
 
     } catch (error) {
       return json({ error: error.message }, 500, env, request);

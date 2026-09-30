@@ -10,7 +10,7 @@ id = "2de59ce830064432b4e8938373ebc2bf"
 
 [vars]
 ALLOWED_ORIGINS = "https://fayzar-conveter.pages.dev, https://*.fayzar-conveter.pages.dev, http://localhost:3008, http://127.0.0.1:3008"
-RATE_PER_MIN = "20"
+RATE_PER_MIN = "40"
 
 # part-4: ব্রাউজার ছাড়া সরাসরি কল বন্ধ (স্ক্রিপ্ট-অপব্যবহার রোধ)
 # note: পুরোনো ডোমেইন (fayzarcomputer.com.bd) আর ব্যবহার না হওয়ায় allowlist থেকে সরানো হলো

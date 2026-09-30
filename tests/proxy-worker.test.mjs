@@ -8,10 +8,28 @@ import worker from '../fayzar-ocr-proxy/index.js';
 const KEYS = ['AIzaSyAAAA1111AAAA1111AAAA1111AAAA1111', 'AIzaSyBBBB2222BBBB2222BBBB2222BBBB2222', 'AIzaSyCCCC3333CCCC3333CCCC3333CCCC3333'];
 const store = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
 const TOKEN = 'unit-test-token';
-const env = { PROXY_TOKEN: TOKEN, FAYZAR_OCR_KEYS: {
+const env = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', FAYZAR_OCR_KEYS: {
   get: async k => store.get(k) ?? null,
   put: async (k, v) => { store.set(k, v); }
 }};
+
+/** SSE রেসপন্স থেকে ইভেন্ট/টেক্সট/চূড়ান্ত-ব্যর্থতা বের করা */
+async function sse(res) {
+  const text = await res.text();
+  const events = [];
+  for (const line of text.split('\n')) {
+    const t = line.trim();
+    if (!t.startsWith('data:')) continue;
+    const j = t.slice(5).trim();
+    if (!j || j === '[DONE]') continue;
+    try { events.push(JSON.parse(j)); } catch (e) { /* আংশিক লাইন */ }
+  }
+  const statuses = events.filter(e => e.fayzar_status).map(e => e.fayzar_status);
+  const texts = events.filter(e => e.candidates)
+    .map(e => (e.candidates[0].content.parts || []).map(p => p.text || '').join('')).join('');
+  return { statuses, texts, finalFailure: statuses.find(x => x.event === 'failed') || null, events, names: statuses.map(x => x.event) };
+}
+const tries = (e) => e.statuses.filter(s => s.event === 'trying');
 const ctx = { waitUntil: p => p };
 
 let script = [];            // প্রতিটি Gemini কলের নকল উত্তর
@@ -70,7 +88,7 @@ const err429day = { status: 429, body: { error: { code: 429, message: 'quota exc
   { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId: 'GenerateRequestsPerDayPerProjectPerModel' }] },
   { '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: '3600s' }] } } };
 const store2 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
-const env2 = { PROXY_TOKEN: TOKEN, FAYZAR_OCR_KEYS: {
+const env2 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', FAYZAR_OCR_KEYS: {
   get: async k => store2.get(k) ?? null,
   put: async (k, v) => { store2.set(k, v); }
 }};
@@ -80,8 +98,9 @@ const resFb = await worker.fetch(new Request('https://w.dev/', {
   headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
   body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.6-flash'] })
 }), env2, ctx);
+const eFb = await sse(resFb);   // স্ট্রিম ড্রেন করলেই সব Gemini কল গণনা সম্পূর্ণ হয়
 T('প্রথম মডেল দৈনিক-কোটা-শেষ হলেও দ্বিতীয় মডেলে সফল হয়',
-  resFb.status === 200 && calls[calls.length - 1].model === 'gemini-3.6-flash', calls);
+  resFb.status === 200 && calls[calls.length - 1].model === 'gemini-3.6-flash' && eFb.texts.includes('ঠিক আছে'), calls);
 T('প্রথম মডেলে ৪টি চেষ্টার বেশি খরচ হয় না',
   calls.filter(c => c.model === 'gemini-3-flash-preview').length <= 4, calls);
 
@@ -177,21 +196,63 @@ T('অন্য ডোমেইনের সাবডোমেইন-নকল�
 wRes = await postWild('http://localhost:3008');
 T('localhost ডেভ এখনো চলে (৪০৩ নয়)', wRes.status !== 403, wRes.status);
 
-// ── ১. প্রথম কি-তেই সফল
+// ── ১. প্রথম কি-তেই সফল (এখন স্ট্রিমেই অবস্থা আসে)
 script = [{ ok: true }]; calls = [];
 let res = await post({ payload: { contents: [] }, models: ['gemini-3-flash-preview'] });
+let e = await sse(res);
 T('প্রথম কি-তে সফল → ২০০ ও SSE', res.status === 200 && res.headers.get('Content-Type').includes('event-stream'));
-const hKey = res.headers.get('X-Fayzar-Key') || '';
-T('হেডারে মাস্কড কি ও মডেল আছে', hKey.includes('...') && res.headers.get('X-Fayzar-Model') === 'gemini-3-flash-preview', hKey);
-T('হেডারের মাস্ক ASCII-only (ByteString নিরাপদ)', /^[\x20-\x7E]+$/.test(hKey), hKey);
-T('পূর্ণ কি হেডারে ফাঁস হয় না', !KEYS.some(k => (res.headers.get('X-Fayzar-Key') || '').includes(k)));
+const streaming = e.statuses.find(s => s.event === 'streaming');
+T('স্ট্রিম ইভেন্টে মাস্কড কি ও মডেল আসে', !!streaming && streaming.key.includes('...') && streaming.model === 'gemini-3-flash-preview', streaming);
+T('মাস্ক ASCII-only (ByteString নিরাপদ)', /^[\x20-\x7E]+$/.test(streaming ? streaming.key : ''), streaming && streaming.key);
+T('পূর্ণ কি কোথাও ফাঁস হয় না', !KEYS.some(k => JSON.stringify(e.events).includes(k)));
+T('আসল আউটপুট ক্লায়েন্ট পর্যন্ত পৌঁছেছে', e.texts.includes('ঠিক আছে'), e.texts);
 T('মাত্র ১টি Gemini কল হয়েছে', calls.length === 1, calls);
 
-// ── ২. ২টি কি 429 → ৩য় কি-তে সফল (একই আপলোড, ক্লায়েন্ট কিছু জানে না)
+// ── ১ক. হার্টবিট: সফল হওয়ার আগেই "trying" ইভেন্ট (আর জমে থাকবে না)
+T('স্ট্রিমে trying → streaming ক্রম আছে', e.names.indexOf('trying') >= 0 && e.names.indexOf('trying') < e.names.indexOf('streaming'), e.names);
+
+// ── ২. ২টি কি 429 → ৩য় কি-তে সফল
 script = [err429min, err429min, { ok: true }]; calls = [];
 res = await post({ payload: { contents: [] }, models: ['gemini-3-flash-preview'] });
-T('২টি 429-এর পর ৩য় কি-তে সফল', res.status === 200 && res.headers.get('X-Fayzar-Attempts') === '3', calls);
-T('ফেইলওভারে ক্লায়েন্টের পুনঃআপলোড লাগেনি (১ রিকোয়েস্ট)', calls.length === 3);
+e = await sse(res);
+T('২টি 429-এর পর ৩য় কি-তে সফল', res.status === 200 && tries(e).length === 3 && e.texts.includes('ঠিক আছে'), tries(e).length);
+T('ফেইলওভারে ক্লায়েন্টের পুনঃআপলোড লাগেনি (নতুন Gemini কল ৩টি)', calls.length === 3);
+
+// ── ২ক. 503 → আগে একই কি-তে ছোট বিরতিতে ১ বার, তারপর (দুই কি ব্যর্থ হলে) মডেল বদল
+const err503 = { status: 503, body: { error: { code: 503, message: 'This model is currently experiencing high demand.' } } };
+const store3 = new Map([['API_KEYS', JSON.stringify(KEYS)]]);
+const env3 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', FAYZAR_OCR_KEYS: {
+  get: async k => store3.get(k) ?? null,
+  put: async (k, v) => { store3.set(k, v); } } };
+script = [err503, err503, err503, { ok: true }]; calls = [];
+let res3 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.6-flash'] })
+}), env3, ctx);
+const e3 = await sse(res3);
+T('৫০৩-এ আগে একই কি-তে একবার পুনঃচেষ্টা', e3.names.includes('retry_same_key'), e3.names);
+T('দুই কি ৫০৩ খেলে মডেল বদল হয় (সব কি শেষ করার আগেই)', e3.names.includes('switch_model') && calls[calls.length-1].model === 'gemini-3.6-flash', { names: e3.names, calls });
+T('এই পথে একই মডেলে সব কি নষ্ট হয় না (≤৩ Gemini কল)', calls.filter(c => c.model === 'gemini-3-flash-preview').length <= 3, calls);
+T('শেষ পর্যন্ত সফল ও আউটপুট এসেছে', res3.status === 200 && e3.texts.includes('ঠিক আছে'));
+
+// ── ২খ. Sticky: মডেল-ক্রম (গুণমান-অগ্রাধিকার) অটুট; শুধু ওই মডেলের ভেতরে ধরা-পড়া কি আগে
+const store4 = new Map([['API_KEYS', JSON.stringify(KEYS)],
+  ['LAST_GOOD', JSON.stringify({ mask: KEYS[2].slice(0,6) + '...' + KEYS[2].slice(-4), model: 'gemini-3.6-flash', at: Date.now() })]]);
+const env4 = { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', FAYZAR_OCR_KEYS: {
+  get: async k => store4.get(k) ?? null, put: async (k, v) => { store4.set(k, v); } } };
+script = [err429min, err429min, err429min, { ok: true }]; calls = [];
+const res4 = await worker.fetch(new Request('https://w.dev/', {
+  method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+  body: JSON.stringify({ payload: { contents: [] }, models: ['gemini-3-flash-preview', 'gemini-3.6-flash'] })
+}), env4, ctx);
+const e4 = await sse(res4);
+const t4 = tries(e4);
+T('Sticky: আগের সফল মডেল পিছনের হলেও গুণমান-অগ্রাধিকার অটুট (প্রথম চেষ্টা ১ নম্বর মডেলই)',
+  t4.length >= 1 && calls[0].model === 'gemini-3-flash-preview' && t4[0].model === 'gemini-3-flash-preview',
+  { tries: t4.map(x => x.model), calls });
+T('Sticky: ওই মডেলের ভেতরে ধরা-পড়া কি-টিই সবার আগে (মডেল বদল হয় না)',
+  !!calls[3] && calls[3].model === 'gemini-3.6-flash' && calls[3].key === KEYS[2].slice(-4),
+  calls);
 
 // ── ৩. খতিয়ান: 429-প্রাপ্ত কি এখন কুলিং, সঠিক সময়সহ
 let st = await (await status()).json();
@@ -205,33 +266,39 @@ T('/status-এ পূর্ণ কি নেই', !KEYS.some(k => JSON.stringify
 store.set('KEY_LEDGER', JSON.stringify({ keys: {} }));
 script = [err404, err404, err404, { ok: true }]; calls = [];
 res = await post({ payload: {}, models: ['gemini-3.8-flash', 'gemini-3.6-flash'] });
+e = await sse(res);
 T('404-এর পর পরের মডেলে চলে যায়', res.status === 200 && calls[3].model === 'gemini-3.6-flash', calls);
 
 // ── ৫. 400 API_KEY_INVALID → ওই কি স্থায়ী বাদ
 store.set('KEY_LEDGER', JSON.stringify({ keys: {} }));
 script = [err400key, { ok: true }]; calls = [];
 res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
+await sse(res);
 st = await (await status()).json();
 T('অবৈধ কি INVALID হিসেবে চিহ্নিত', st.keys.some(k => k.state === 'INVALID'), st.keys.map(k => k.state));
 
-// ── ৬. 400 পেলোড ত্রুটি → বাকি কি-তে বৃথা চেষ্টা নয়
+// ── ৬. 400 পেলোড ত্রুটি → বাকি কি-তে বৃথা চেষ্টা নয় (স্ট্রিমে চূড়ান্ত বার্তা)
 store.set('KEY_LEDGER', JSON.stringify({ keys: {} }));
 script = [err400bad, { ok: true }, { ok: true }]; calls = [];
 res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
-T('পেলোড ত্রুটিতে সঙ্গে সঙ্গে থামে (১ কল)', res.status === 502 && calls.length === 1, calls);
+e = await sse(res);
+T('পেলোড ত্রুটিতে সঙ্গে সঙ্গে থামে (১ কল)', calls.length === 1, calls);
+T('চূড়ান্ত ব্যর্থতা স্ট্রিমেই জানানো হয় (fatal)', !!e.finalFailure && e.statuses.some(s => s.event === 'fatal'), e.names);
 
-// ── ৭. নেটওয়ার্ক ব্যর্থতা → পরের কি
+// ── ৭. নেটওয়ার্ক ব্যর্থতা → একই কি-তে একবার, তাতেও না হলে পরের কি
 store.set('KEY_LEDGER', JSON.stringify({ keys: {} }));
-script = [{ throw: true }, { ok: true }]; calls = [];
+script = [{ throw: true }, { throw: true }, { ok: true }]; calls = [];
 res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
-T('নেটওয়ার্ক ব্যর্থতায় পরের কি-তে সফল', res.status === 200 && calls.length === 2);
+e = await sse(res);
+T('নেটওয়ার্ক ব্যর্থতায় পুনঃচেষ্টা/কি-বদল হয়ে সফল', res.status === 200 && e.texts.includes('ঠিক আছে'), { calls, names: e.names });
 
-// ── ৮. সব কি কুলিং → 429 + retryInSec
+// ── ৮. সব কি/মডেল ব্যর্থ → স্ট্রিমে চূড়ান্ত ৫০২-বার্তা (আর নীরব ৫০২ নয়)
 store.set('KEY_LEDGER', JSON.stringify({ keys: {} }));
 script = [err429min, err429min, err429min]; calls = [];
 res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
-const body = await res.json();
-T('সব ব্যর্থ হলে ৫০২ ও বিস্তারিত attempts', res.status === 502 && body.attempts.length === 3, body.attempts);
+e = await sse(res);
+T('সব ব্যর্থ হলে স্ট্রিমে ৫০২ + বিস্তারিত attempts', !!e.finalFailure && e.finalFailure.status === 502 && e.finalFailure.body.attempts.length >= 1, e.finalFailure);
+T('আগে থেকে "trying" ইভেন্ট দিয়ে অগ্রগতি জানানো হয়েছে', tries(e).length >= 1);
 script = []; calls = [];
 res = await post({ payload: {}, models: ['gemini-3-flash-preview'] });
 const b2 = await res.json();

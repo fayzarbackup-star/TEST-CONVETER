@@ -413,7 +413,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     // ⚠️ Worker-এর PROXY_TOKEN-এর সাথে হুবহু মিলতে হবে। এটি ক্লায়েন্টে থাকা শেয়ারড সিক্রেট —
     // ক্যাজুয়াল অপব্যবহার ঠেকায়, কিন্তু ডিটারমিনড অ্যাটাকার পড়ে ফেলতে পারে; তাই Worker-এ
     // রেট-লিমিট + Origin allowlist অবশ্যই রাখুন (fayzar-ocr-proxy/README.md দেখুন)।
-    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || '40jclzkNXxkaji5MkXaosxKn7JDnrxLzOYMYN6wCYJAx',
+    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || 'cloudflare_proxy',
     ANON_KEY: 'cloudflare_proxy', // পুরোনো নাম — শুধু ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য
     ENABLED: true, 
     CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
@@ -1921,6 +1921,27 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
    * Supabase Edge Function via Streaming (SSE)
    * Returns: { text: string, model: string, keyId: string }
    */
+  /** Worker-এর লাইভ হার্টবিট → বাংলা অগ্রগতি-বার্তা (part-6′) */
+  function proxyStatusMessage(s) {
+    if (!s || !s.event) return '';
+    switch (s.event) {
+      case 'trying':
+        return `⚡ চেষ্টা ${s.attempt || 1}/${s.total || '?'}: ${s.model} (${s.key || ''})…`;
+      case 'retry_same_key':
+        return `⚡ Google ব্যস্ত (${s.status || 503}) — ${s.waitSec || 3} সেকেন্ড পরে আবার চেষ্টা…`;
+      case 'switch_key':
+        return `⚡ বিকল্প কি-তে চ্যানেল সুইচ হচ্ছে…`;
+      case 'switch_model':
+        return `⚡ নতুন মডেলে যাচ্ছি…`;
+      case 'streaming':
+        return `✅ সফল — ${s.model || ''} থেকে আউটপুট আসছে…`;
+      case 'fatal':
+        return '⚠️ ফাইল/পেলোডে সমস্যা — অন্য কি বা মডেলে চেষ্টা করে লাভ নেই।';
+      default:
+        return '';
+    }
+  }
+
   async function executeGeminiRequestViaSupabase(payload, model = 'gemini-3-flash-preview', onStreamChunk = null, modelPriority = null) {
     if (!SUPABASE_CONFIG.ENABLED) throw new Error('Supabase proxy disabled');
     
@@ -1972,10 +1993,25 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       let keyId = '';
       let buffer = '';
 
+      let proxyFailure = null;
+      let proxyTruncated = false;      // finishReason: MAX_TOKENS — আউটপুট কেটে গেছে
       const absorb = (data) => {
         if (!data || typeof data !== 'object') return;
+        // Worker-এর লাইভ হার্টবিট: সফল হওয়ার আগেই অবস্থা দেখা যায় (আর "জমে থাকা" নয়)
+        if (data.fayzar_status) {
+          const st = data.fayzar_status;
+          if (st.event === 'failed') {
+            proxyFailure = { status: st.status || 502, body: st.body || { error: 'সবগুলো কি/মডেল ব্যর্থ হয়েছে।' } };
+          }
+          const note = proxyStatusMessage(st);
+          if (note) setLoading(true, note, Math.min(96, 48 + (st.attempt || 1) * 4));
+          return;
+        }
         if (data.error) throw new Error(`Proxy Error: ${JSON.stringify(data.error)}`);
         if (data.keyId) keyId = data.keyId;
+        // আউটপুট সীমায় পৌঁছালে সেটি লুকিয়ে না রেখে স্পষ্ট চিহ্ন দেওয়া হয় (নইলে অর্ধেক প্রশ্নপত্র
+        // "সফল" ভেবে ডাউনলোড হয়ে যেত) — ক্লায়েন্টের অটো-ডাউনলোড ব্লকার এটি চিনে ফেলে।
+        if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') proxyTruncated = true;
         const parts = data.candidates?.[0]?.content?.parts;
         if (Array.isArray(parts)) {
           const t = parts.map(pp => pp.text || '').join('');
@@ -2029,7 +2065,15 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
       if (reader) {
         while (true) {
-          const { done, value } = await reader.read();
+          // হার্টবিট আসতেই থাকে; ৩ মিনিট সম্পূর্ণ নীরবতা মানে সংযোগ মৃত — তখন থামা ভালো
+          let _idleTimer = null;
+          const _idle = new Promise((_, rej) => {
+            _idleTimer = setTimeout(() => rej(new Error('প্রক্সি থেকে ৩ মিনিট ধরে কোনো সাড়া আসেনি — সংযোগ বিচ্ছিন্ন')), 180000);
+          });
+          let _r;
+          try { _r = await Promise.race([reader.read(), _idle]); }
+          finally { clearTimeout(_idleTimer); }
+          const { done, value } = _r;
           if (done) break;
           drain(decoder.decode(value, { stream: true }), false);
         }
@@ -2042,6 +2086,18 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         } catch (_) {
           drain(raw, true);
         }
+      }
+
+      if (fullText.trim() && proxyTruncated && !/\[অসম্পূর্ণ:/.test(fullText)) {
+        fullText += '\n\n[অসম্পূর্ণ: MAX_TOKENS — আউটপুট সীমায় পৌঁছেছে, শেষ অংশ কাটা পড়তে পারে। ফাইলটি ছোট করে বা মডেল বদলে পুনরায় চেষ্টা করুন।]';
+      }
+
+      if (!fullText.trim() && proxyFailure) {
+        // Worker স্ট্রিমেই চূড়ান্ত ব্যর্থতা জানিয়েছে → নীতিমালা-মডিউল সিদ্ধান্ত নেবে (লোকাল পুলে যাবে না)
+        const perr = new Error((proxyFailure.body && proxyFailure.body.error) || 'সবগুলো কি/মডেল ব্যর্থ হয়েছে।');
+        perr.proxyStatus = proxyFailure.status;
+        perr.proxyBody = proxyFailure.body;
+        throw perr;
       }
 
       if (!fullText.trim()) {
