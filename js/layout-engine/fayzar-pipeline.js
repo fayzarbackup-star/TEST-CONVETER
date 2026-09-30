@@ -19,6 +19,24 @@
       : Date.now();
   }
 
+  /** Part-8a: OCR-আর্টিফ্যাক্ট পরিষ্কার — পৃষ্ঠা-মার্কার (=...=) ও MANIFEST লাইন বাদ।
+   *  কভারেজ-গার্ড আগে চলে (ক্লায়েন্ট), তাই যাচাই অটুট থাকে; আউটপুট ডকুমেন্টে মার্কার যায় না। */
+  function stripOcrArtifacts(text) {
+    if (!text) return text;
+    let out = String(text);
+    // ১) সম্পূর্ণ মার্কার — ===== পৃষ্ঠা ১/৪৬ ===== (যেকোনো =, স্পেস, বাংলা/ইংরেজি অঙ্ক, ইনলাইন-ও)
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*={2,}[ \t]*/g, '');
+    // ২) আংশিক/ভাঙা মার্কার — একপাশে = ছাড়া, লাইন-শেষে
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*(?=\r?\n|$)/gm, '');
+    out = out.replace(/[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+[ \t]*\/[ \t]*[০-৯0-9]+[ \t]*={2,}[ \t]*/g, '');
+    // ৩) কভারেজ MANIFEST লাইন
+    out = out.replace(/^[ \t]*MANIFEST\s*[:\uFF1A][^\r\n]*/gm, '');
+    // ৪) খালি লাইন জমলে দুইয়ে নামানো (লাইন-এন্ডিং অপরিবর্তিত)
+    const nl = out.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
+    out = out.replace(/(?:\r?\n){3,}/g, nl + nl);
+    return out;
+  }
+
   const FayzarPipeline = {
     version: '4.0.0',
 
@@ -186,7 +204,7 @@
      */
     async process(rawText, options = {}) {
       const startTime = safeNow();
-      const text = String(rawText || '').trim();
+      const text = stripOcrArtifacts(String(rawText || '').trim());
       const outputFormat = (options.outputFormat || options.format || 'html').toLowerCase();
 
       // Step 1: Classify (with explicit docType override support)
@@ -271,6 +289,7 @@
     // -------------------------------------------------------------------------
 
     _parseByDocType(docType, text, options = {}) {
+      text = stripOcrArtifacts(String(text || ''));
       switch (docType) {
         case 'EXAM_CQ':
         case 'EXAM_COMBINED':

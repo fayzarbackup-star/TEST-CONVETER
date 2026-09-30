@@ -1966,6 +1966,24 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     return text + '\n\n' + msg;
   }
 
+  /** Part-8a: OCR-আর্টিফ্যাক্ট পরিষ্কার — পৃষ্ঠা-মার্কার (=...=) ও MANIFEST লাইন বাদ।
+   *  কভারেজ-গার্ড আগে চলে (ক্লায়েন্ট), তাই যাচাই অটুট থাকে; আউটপুট ডকুমেন্টে মার্কার যায় না। */
+  function stripOcrArtifacts(text) {
+    if (!text) return text;
+    let out = String(text);
+    // ১) সম্পূর্ণ মার্কার — ===== পৃষ্ঠা ১/৪৬ ===== (যেকোনো =, স্পেস, বাংলা/ইংরেজি অঙ্ক, ইনলাইন-ও)
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*={2,}[ \t]*/g, '');
+    // ২) আংশিক/ভাঙা মার্কার — একপাশে = ছাড়া, লাইন-শেষে
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*(?=\r?\n|$)/gm, '');
+    out = out.replace(/[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+[ \t]*\/[ \t]*[০-৯0-9]+[ \t]*={2,}[ \t]*/g, '');
+    // ৩) কভারেজ MANIFEST লাইন
+    out = out.replace(/^[ \t]*MANIFEST\s*[:\uFF1A][^\r\n]*/gm, '');
+    // ৪) খালি লাইন জমলে দুইয়ে নামানো (লাইন-এন্ডিং অপরিবর্তিত)
+    const nl = out.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
+    out = out.replace(/(?:\r?\n){3,}/g, nl + nl);
+    return out;
+  }
+
   async function executeGeminiRequestViaSupabase(payload, model = 'gemini-3-flash-preview', onStreamChunk = null, modelPriority = null) {
     if (!SUPABASE_CONFIG.ENABLED) throw new Error('Supabase proxy disabled');
     
@@ -2260,7 +2278,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk, candidateModels);
         console.log(`[Supabase] Success via key: ${keyId}`);
         // part-7: বহু-পৃষ্ঠার কভারেজ-যাচাই → কম পৃষ্ঠা এলে [অসম্পূর্ণ: …] (অটো-ডাউনলোড বন্ধ হবে)
-        return coverageMandateApplied ? applyPageCoverageGuard(text, mediaParts.length) : text;
+        const guarded = coverageMandateApplied ? applyPageCoverageGuard(text, mediaParts.length) : text;
+        return stripOcrArtifacts(guarded);
       } catch (supabaseErr) {
         console.error('[Supabase] Proxy failed:', supabaseErr.message);
         // সিদ্ধান্ত শুধু নীতিমালা-মডিউলে (DOM-মুক্ত, পরীক্ষাযোগ্য): ভুল-টোকেন / অবৈধ-পেলোড /

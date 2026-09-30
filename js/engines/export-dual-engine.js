@@ -11,6 +11,24 @@
 (function (global) {
   'use strict';
 
+  /** Part-8a: OCR-আর্টিফ্যাক্ট পরিষ্কার — পৃষ্ঠা-মার্কার (=...=) ও MANIFEST লাইন বাদ।
+   *  কভারেজ-গার্ড আগে চলে (ক্লায়েন্ট), তাই যাচাই অটুট থাকে; আউটপুট ডকুমেন্টে মার্কার যায় না। */
+  function stripOcrArtifacts(text) {
+    if (!text) return text;
+    let out = String(text);
+    // ১) সম্পূর্ণ মার্কার — ===== পৃষ্ঠা ১/৪৬ ===== (যেকোনো =, স্পেস, বাংলা/ইংরেজি অঙ্ক, ইনলাইন-ও)
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*={2,}[ \t]*/g, '');
+    // ২) আংশিক/ভাঙা মার্কার — একপাশে = ছাড়া, লাইন-শেষে
+    out = out.replace(/[ \t]*={2,}[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+(?:[ \t]*\/[ \t]*[০-৯0-9]+)?[ \t]*(?=\r?\n|$)/gm, '');
+    out = out.replace(/[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+[ \t]*\/[ \t]*[০-৯0-9]+[ \t]*={2,}[ \t]*/g, '');
+    // ৩) কভারেজ MANIFEST লাইন
+    out = out.replace(/^[ \t]*MANIFEST\s*[:\uFF1A][^\r\n]*/gm, '');
+    // ৪) খালি লাইন জমলে দুইয়ে নামানো (লাইন-এন্ডিং অপরিবর্তিত)
+    const nl = out.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
+    out = out.replace(/(?:\r?\n){3,}/g, nl + nl);
+    return out;
+  }
+
   const ExportDualEngine = {
 
     /**
@@ -281,6 +299,7 @@
       // 2. Strip YAML frontmatter from rawText robustly
       let cleanText = rawText.trimStart();
       cleanText = cleanText.replace(/^---[\s\S]*?---\s*/, '');
+      cleanText = stripOcrArtifacts(cleanText);
 
       const format = (options.format || 'doc').toLowerCase();
       if (format === 'docx') {
@@ -293,6 +312,7 @@
      * Generates Word 2003 (.doc) binary/RTF Blob.
      */
     generateLegacyDoc(rawText, docType = 'EXAM_CQ', options = {}) {
+      rawText = stripOcrArtifacts(String(rawText || ''));
       let qEngine = this._getQuestionEngine();
 
       if (qEngine && docType === 'EXAM_COMBINED') {
@@ -433,6 +453,7 @@
      * Compatible with Word 2007, 2010, 2013, 2016, 2019, 2021, and Office 365.
      */
     async generateModernDocx(rawText, docType = 'EXAM_CQ', options = {}) {
+      rawText = stripOcrArtifacts(String(rawText || ''));
       let qEngine = this._getQuestionEngine();
 
       if (qEngine && docType === 'EXAM_COMBINED') {
