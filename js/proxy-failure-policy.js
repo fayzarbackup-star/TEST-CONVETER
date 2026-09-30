@@ -56,6 +56,11 @@
       return { kind: 'unauthorized', waitSec: 0, detail: String(b.error || 'unauthorized'), attempts };
     }
 
+    if (status === 429 && (b.limit === 'ip_daily' || /দৈনিক/.test(String(b.error || '')))) {
+      // দৈনিক per-IP ক্যাপ — কি-কুলডাউন নয়; তাই অপেক্ষা নয়, সরাসরি থামা
+      return { kind: 'daily_cap', waitSec: Number(b.retryInSec) || 3600, detail: String(b.error || 'daily cap'), attempts };
+    }
+
     if (status === 429) {
       const wait = Number(b.retryInSec) || soonestReopenSec(b.status);
       return { kind: 'all_cooling', waitSec: wait, detail: String(b.error || 'all keys cooling'), attempts };
@@ -116,6 +121,12 @@
         return {
           action: 'abort', kind: info.kind, waitSec: 0, tone: 'error',
           message: '🔒 প্রক্সি টোকেন মেলেনি (৪০১)। অ্যাডমিনকে জানান — সাইটের PROXY_TOKEN ও Worker-এর PROXY_TOKEN এক রাখতে হবে।'
+        };
+
+      case 'daily_cap':
+        return {
+          action: 'abort', kind: info.kind, waitSec: 0, tone: 'warn',
+          message: `⏳ আপনার দৈনিক সীমা শেষ হয়েছে (একই সংযোগ থেকে অনেক অনুরোধ)। প্রায় ${humanWait(info.waitSec)} পরে আবার চেষ্টা করুন।`
         };
 
       case 'server_error':

@@ -1928,6 +1928,16 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     const timeoutId = setTimeout(() => controller.abort(), SUPABASE_CONFIG.TIMEOUT_MS);
     
     try {
+      // part-4: টোকেন খালি/প্লেসহোল্ডার হলে অকারণ নেটওয়ার্ক কল না করে স্পষ্ট বার্তা
+      {
+        const t = String(SUPABASE_CONFIG.PROXY_TOKEN || '').trim();
+        if (!t || t === 'cloudflare_proxy' || t === 'PROXY_TOKEN' || t === '<token>') {
+          const msg = '⚙️ সেটআপ অসম্পূর্ণ: প্রক্সি টোকেন বসানো হয়নি। অ্যাডমিনকে জানান — js/ai-ocr-engine.js-এ SUPABASE_CONFIG.PROXY_TOKEN সেট করতে হবে।';
+          if (typeof showToast === 'function') showToast(msg, 'error');
+          throw new Error(msg);
+        }
+      }
+
       const response = await fetch(SUPABASE_CONFIG.FUNCTIONS_URL, {
         method: 'POST',
         headers: {

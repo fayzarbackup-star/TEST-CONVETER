@@ -68,6 +68,40 @@ function isAuthorized(request, env) {
   return 'denied';
 }
 
+/**
+ * Origin গেট (part-4) — ব্রাউজার সবসময় Origin পাঠায়, স্ক্রিপ্ট/বট পাঠায় না।
+ * REQUIRE_ORIGIN=true হলে অনুমোদিত Origin ছাড়া POST সরাসরি 403।
+ * মনে রাখা জরুরি: এটি নিরাপত্তার *বাধা*, গোপনীয়তা নয় — Origin হেডার নকল করা যায়।
+ * তাই মূল সুরক্ষা = রেট-লিমিট + দৈনিক ক্যাপ + অথেনটিকেশন।
+ */
+function originAllows(request, env) {
+  const requireOrigin = String(env.REQUIRE_ORIGIN || '').toLowerCase() === 'true';
+  if (!requireOrigin) return { ok: true };
+  const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const origin = request.headers.get('Origin') || '';
+  if (!allowed.length || allowed.includes('*')) return { ok: true };   // allowlist নেই → পুরোনো আচরণ
+  if (!origin) return { ok: false, reason: 'no_origin' };
+  if (!allowed.includes(origin)) return { ok: false, reason: 'bad_origin' };
+  return { ok: true };
+}
+
+/** দৈনিক per-IP ক্যাপ (part-4) — এক IP এক দিনে কতবার OCR করতে পারবে */
+async function dailyCapped(env, request, limitPerDay) {
+  if (!limitPerDay) return { blocked: false };
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const day = new Date().toISOString().slice(0, 10);          // UTC দিন
+  const bucket = `IPD:${ip}:${day}`;
+  try {
+    const cur = parseInt(await env.FAYZAR_OCR_KEYS.get(bucket) || '0', 10) || 0;
+    if (cur >= limitPerDay) {
+      const midnight = new Date(`${day}T24:00:00Z`).getTime() || (Date.now() + 3600000);
+      return { blocked: true, used: cur, retryInSec: Math.max(60, Math.ceil((midnight - Date.now()) / 1000)) };
+    }
+    await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 90000 });
+  } catch (e) { /* KV সমস্যা হলে ব্লক করি না */ }
+  return { blocked: false };
+}
+
 /** প্রতি-মিনিট রেট লিমিট (best-effort; KV eventual-consistent, তাই কঠোর গ্যারান্টি নয়) */
 async function rateLimited(env, request, limitPerMin) {
   if (!limitPerMin) return false;
@@ -111,8 +145,32 @@ export default {
     if (auth !== 'ok') {
       return json({ error: 'Unauthorized' }, 401, env, request);
     }
+    if (request.method === 'POST') {
+      const gate = originAllows(request, env);
+      if (!gate.ok) {
+        return json({
+          error: 'এই উৎস থেকে অনুরোধ নেওয়া হয় না।',
+          fix: gate.reason === 'no_origin'
+            ? 'ব্রাউজার ছাড়া (curl/স্ক্রিপ্ট) সরাসরি কল বন্ধ। সঠিক সাইট থেকে ব্যবহার করুন।'
+            : 'ALLOWED_ORIGINS-এ এই ডোমেইনটি নেই — Worker-এর ভেরিয়েবলে যোগ করুন।'
+        }, 403, env, request);
+      }
+    }
+
     if (await rateLimited(env, request, parseInt(env.RATE_PER_MIN || '0', 10))) {
       return json({ error: 'অনুরোধের হার বেশি — এক মিনিট পর চেষ্টা করুন।' }, 429, env, request);
+    }
+
+    if (request.method === 'POST') {
+      const cap = await dailyCapped(env, request, parseInt(env.DAILY_PER_IP || '0', 10));
+      if (cap.blocked) {
+        return json({
+          error: 'আপনার দৈনিক ব্যবহারের সীমা শেষ (একই ইন্টারনেট সংযোগ থেকে অনেক অনুরোধ)।',
+          limit: 'ip_daily',
+          usedToday: cap.used,
+          retryInSec: cap.retryInSec
+        }, 429, env, request);
+      }
     }
 
     // ---------------------------------------------------------------- STATUS

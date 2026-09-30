@@ -106,6 +106,51 @@ corsRes = await worker.fetch(new Request('https://w.dev/', { method: 'OPTIONS' }
 T('ALLOWED_ORIGINS না থাকলে আগের মতো * (ব্যাকওয়ার্ড কম্প্যাটিবল)',
   corsRes.headers.get('Access-Control-Allow-Origin') === '*', corsRes.headers.get('Access-Control-Allow-Origin'));
 
+// ── ০গ. Origin গেট (part-4, REQUIRE_ORIGIN=true)
+const envGate = { PROXY_TOKEN: TOKEN, ALLOWED_ORIGINS: 'https://fayzarcomputer.com.bd', REQUIRE_ORIGIN: 'true',
+  FAYZAR_OCR_KEYS: { get: async () => null, put: async () => {} } };
+const postJson = (origin) => worker.fetch(new Request('https://w.dev/', {
+  method: 'POST',
+  headers: Object.assign({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN },
+                         origin ? { 'Origin': origin } : {}),
+  body: JSON.stringify({ payload: { contents: [] } })
+}), envGate, ctx);
+
+let gRes = await postJson(null);
+T('Origin ছাড়া POST → ৪০৩ (স্ক্রিপ্ট-অপব্যবহার বন্ধ)', gRes.status === 403, gRes.status);
+gRes = await postJson('https://evil.example.com');
+T('অননুমোদিত Origin থেকে POST → ৪০৩', gRes.status === 403, gRes.status);
+gRes = await postJson('https://fayzarcomputer.com.bd');
+T('অনুমোদিত Origin থেকে POST → গেট পার হয় (৪০৩ নয়)', gRes.status !== 403, gRes.status);
+
+const envNoGate = { PROXY_TOKEN: TOKEN, ALLOWED_ORIGINS: 'https://fayzarcomputer.com.bd',
+  FAYZAR_OCR_KEYS: { get: async () => null, put: async () => {} } };
+gRes = await worker.fetch(new Request('https://w.dev/', { method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN },
+  body: JSON.stringify({ payload: { contents: [] } }) }), envNoGate, ctx);
+T('REQUIRE_ORIGIN না থাকলে আগের আচরণ (ব্যাকওয়ার্ড কম্প্যাটিবল)', gRes.status !== 403, gRes.status);
+
+const statusRes = await worker.fetch(new Request('https://w.dev/status',
+  { headers: { 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN } }), envGate, ctx);
+T('/status গেটের বাইরে (মনিটরিং curl অটুট)', statusRes.status === 200, statusRes.status);
+
+// ── ০ঘ. দৈনিক per-IP ক্যাপ (part-4)
+const today = new Date().toISOString().slice(0, 10);
+const usedStore = new Map();
+usedStore.set(`IPD:1.2.3.4:${today}`, '3');            // ইতিমধ্যে ৩ বার ব্যবহার
+const envCap = { PROXY_TOKEN: TOKEN, DAILY_PER_IP: '3',
+  FAYZAR_OCR_KEYS: { get: async (k) => usedStore.get(k) ?? null, put: async (k, v) => { usedStore.set(k, v); } } };
+let cRes = await worker.fetch(new Request('https://w.dev/', { method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN, 'CF-Connecting-IP': '1.2.3.4' },
+  body: JSON.stringify({ payload: { contents: [] } }) }), envCap, ctx);
+const cBody = await cRes.json();
+T('দৈনিক সীমা শেষ হলে → ৪২৯ + limit:ip_daily', cRes.status === 429 && cBody.limit === 'ip_daily', cBody);
+
+cRes = await worker.fetch(new Request('https://w.dev/', { method: 'POST',
+  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}`, 'apikey': TOKEN, 'CF-Connecting-IP': '5.6.7.8' },
+  body: JSON.stringify({ payload: { contents: [] } }) }), envCap, ctx);
+T('অন্য IP প্রভাবিত হয় না (ক্যাপ per-IP)', cRes.status !== 429, cRes.status);
+
 // ── ১. প্রথম কি-তেই সফল
 script = [{ ok: true }]; calls = [];
 let res = await post({ payload: { contents: [] }, models: ['gemini-3-flash-preview'] });

@@ -94,6 +94,18 @@ T('soonestReopenSec — সবচেয়ে আগে খুলবে এম�
 T('soonestReopenSec — খালি স্ট্যাটাসে ০', policy.soonestReopenSec({}) === 0);
 T('humanWait — বাংলা সংখ্যায় ঘণ্টা/মিনিট', /ঘণ্টা/.test(policy.humanWait(65062)) && /[০-৯]/.test(policy.humanWait(65062)), policy.humanWait(65062));
 
+// ── part-4: দৈনিক per-IP ক্যাপ (কি-কুলডাউন নয় → অপেক্ষা নয়, থামা)
+const dailyBody = { error: 'আপনার দৈনিক ব্যবহারের সীমা শেষ (একই ইন্টারনেট সংযোগ থেকে অনেক অনুরোধ)।',
+                    limit: 'ip_daily', usedToday: 100, retryInSec: 7200 };
+const dailyInfo = FayzarProxyPolicy.parseProxyFailure(429, dailyBody);
+T('৪২৯ + limit:ip_daily → kind === daily_cap', dailyInfo.kind === 'daily_cap', dailyInfo);
+const daily = FayzarProxyPolicy.decideProxyFallback(429, dailyBody, false);
+T('দৈনিক ক্যাপে → abort (ব্রাউজার নিজে থামে)', daily.action === 'abort', daily);
+T('দৈনিক ক্যাপে বার্তাটি বাংলায় "দৈনিক সীমা" বলে', /দৈনিক সীমা/.test(daily.message), daily.message);
+T('দৈনিক ক্যাপে waitSec লুকানো তথ্য নয়, বরং বার্তায় সময় আছে', /[০-৯]/.test(daily.message), daily.message);
+const withByokDaily = FayzarProxyPolicy.decideProxyFallback(429, dailyBody, true);
+T('BYOK থাকলেও দৈনিক ক্যাপে abort (কোটা বাঁচাতে)', withByokDaily.action === 'abort', withByokDaily);
+
 console.log(results.join('\n'));
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);
