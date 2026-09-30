@@ -2233,10 +2233,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     if (state.selectedModel && state.selectedModel !== 'auto' && state.selectedModel !== 'pro-bridge' && !state.selectedModel.includes('2.5-flash')) {
       candidateModels = [state.selectedModel, ...allActiveModels.filter(m => m !== state.selectedModel)];
     } else {
-      // ১০০% প্রমাণিত ও দ্রুততম সক্রিয় মডেল সিকোয়েন্স:
-      // #1 gemini-3-flash-preview (ডিপ রিজনিং) | #2 gemini-3.6-flash (উচ্চগতির ব্যাকআপ)
+      // ব্যবহারকারীর নির্ধারিত অগ্রাধিকার-ক্রম (কঠোর, এলোমেলো নয়):
+      // #1 gemini-3-flash-preview (ডিপ রিজনিং) | #2 gemini-3.8-flash (গণিত/LaTeX) | #3 gemini-3.6-flash (দ্রুত ব্যাকআপ)
       candidateModels = [
         'gemini-3-flash-preview',
+        'gemini-3.8-flash',
         'gemini-3.6-flash'
       ];
     }
