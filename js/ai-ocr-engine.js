@@ -413,7 +413,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     // ⚠️ Worker-এর PROXY_TOKEN-এর সাথে হুবহু মিলতে হবে। এটি ক্লায়েন্টে থাকা শেয়ারড সিক্রেট —
     // ক্যাজুয়াল অপব্যবহার ঠেকায়, কিন্তু ডিটারমিনড অ্যাটাকার পড়ে ফেলতে পারে; তাই Worker-এ
     // রেট-লিমিট + Origin allowlist অবশ্যই রাখুন (fayzar-ocr-proxy/README.md দেখুন)।
-    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || 'cloudflare_proxy',
+    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || '40jclzkNXxkaji5MkXaosxKn7JDnrxLzOYMYN6wCYJAx',
     ANON_KEY: 'cloudflare_proxy', // পুরোনো নাম — শুধু ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য
     ENABLED: true, 
     CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
