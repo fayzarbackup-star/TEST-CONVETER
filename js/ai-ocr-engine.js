@@ -2129,8 +2129,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         let fetchPayload = buildFetchPayload(currentPayload);
 
         // 60s timeout: accommodates large image uploads and initial TTFB
-        // FAST FALLBACK: Reduce connection timeout to 15s so dead keys/network drops fail quickly
-        const CONNECT_TIMEOUT_MS = 15000;
+        // FAST FALLBACK: Restored to 60s because large PDF OCR takes > 15s to start streaming
+        const CONNECT_TIMEOUT_MS = 60000;
         try {
           const attemptStartTime = Date.now();
           if (typeof FayzarOcrConfig !== 'undefined' && typeof FayzarOcrConfig.logAudit === 'function') {
