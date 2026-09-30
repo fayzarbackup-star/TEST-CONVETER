@@ -1658,33 +1658,32 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 
   async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
-    // 🚀 ফিক্স: বিশাল ফাইল (যেমন ২২ পেজ) একসাথে পাঠালে জেমিনির TTFB ৫ মিনিট পার হয়ে যায় এবং ক্লাউডফ্লেয়ার টাইমআউট করে দেয়। 
-    // আবার ১ পেজ করে পাঠালে অনেক সময় লাগে (৮-১০ মিনিট)। তাই ৫ পেজ করে চাংকিং করা হলো যাতে দেড় মিনিটের মধ্যে পুরো ফাইল কমপ্লিট হয়।
+    // 🚀 ফিক্স: বিশাল ফাইল একসাথে পাঠালে Cloudflare/Proxy Timeout হয়।
+    // আবার Sequential লুপ করলে অনেক সময় লাগে। তাই ৫ পেজ করে চাংক করে Promise.all দিয়ে Concurrent রিকোয়েস্ট পাঠানো হচ্ছে।
     const CHUNK_SIZE = 5;
     const chunks = splitMediaIntoChunks(mediaItems, CHUNK_SIZE);
-    let fullResult = '';
+    
+    if (onProgress) {
+       onProgress(`⚡ সমান্তরাল প্রসেসিং শুরু হচ্ছে... (মোট ${chunks.length} টি চাংক)`, 30);
+    }
 
-    for (let i = 0; i < chunks.length; i++) {
+    // Run all chunks concurrently
+    const chunkPromises = chunks.map((chunk, i) => {
       const startPage = (i * CHUNK_SIZE) + 1;
       const endPage = Math.min((i + 1) * CHUNK_SIZE, mediaItems.length);
-      
-      if (onProgress) {
-        onProgress(`⚡ পেজ কনভার্ট হচ্ছে (${toBengaliNumber(startPage)}-${toBengaliNumber(endPage)}/${toBengaliNumber(mediaItems.length)})...`, 30 + Math.floor((i / chunks.length) * 60));
-      }
-
-      const chunkResult = await executeGeminiRequest(apiKey, chunks[i], (liveChunk) => {
-        if (onStream) {
-          onStream(fullResult + liveChunk);
-        }
+      return executeGeminiRequest(apiKey, chunk, (liveChunk) => {
+        // We can't stream reliably with concurrent chunks to the UI in order, 
+        // but we can update progress
         if (onProgress) {
-           onProgress(`লাইভ স্ট্রিমিং চলছে (পেজ ${toBengaliNumber(startPage)}-${toBengaliNumber(endPage)})...`, Math.min(95, 45 + Math.round((fullResult.length + liveChunk.length) / 30)));
+           onProgress(`লাইভ স্ট্রিমিং (চাংক ${toBengaliNumber(i + 1)})...`, Math.min(95, 40 + Math.round(Math.random() * 50)));
         }
       });
-      
-      fullResult += chunkResult + '\n\n';
-    }
+    });
+
+    const chunkResults = await Promise.all(chunkPromises);
     
-    return fullResult;
+    // Join the results in order
+    return chunkResults.join('\n\n');
   }
 
   async function ensureBase64(item) {
