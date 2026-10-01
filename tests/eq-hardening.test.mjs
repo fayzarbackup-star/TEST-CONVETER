@@ -145,5 +145,33 @@ const MCQ = [
   T('docx-handler জটিল ম্যাথে OMML এমিট করে', dh.includes('<m:oMath') && dh.includes('_ommlStr'));
 }
 
+
+// ---------- ৮) Part-9c-fix: CQ বন্ধনী-সাবপ্রশ্ন + needsEqField + .doc নেটিভ OMML ----------
+{
+  // (ক) `ক)` `খ)` বন্ধনী-লেবেল CQ-তে subQuestions হবে, options নয়
+  const cqText = '১২। `$x, y, z$` এর একটি বহুপদী, `$F = x^3$`।\nক) দেখাও যে, `$F$` চক্র-ক্রমিক রাশি।\nখ) `$F$` কে উৎপাদকে বিশ্লেষণ কর।\nগ) যদি `$x = 1$` হয় তবে দেখাও।';
+  const cqParsed = require('../js/engines/question-engine.js').parseQuestionPaper(cqText, { docType: 'EXAM_CQ' });
+  const q1 = cqParsed.sections[0].questions[0];
+  T('CQ: ক) খ) গ) → subQuestions', (q1.subQuestions || []).length === 3, 'subs=' + (q1.subQuestions || []).length);
+  T('CQ: বন্ধনী-লেবেল options-এ যায় না', (q1.options || []).length === 0, 'opts=' + (q1.options || []).length);
+
+  // (খ) needsEqField: যেকোনো `$...$` রাশি = ইকুয়েশন (সংখ্যা/একক বাদে)
+  const nf = [['y = x - 3', true], ['y = x + 3, y = x - 3', true], ['A(-4, 13)', true], ['R - {3/2}', true], ['75, 65', false], ['8 cm', false], ['5', false], ['cm', false]];
+  for (const [latex, want] of nf) {
+    const got = EC.needsEqField(latex);
+    T(`needsEqField(${JSON.stringify(latex)}) = ${want}`, got === want, 'got=' + got);
+  }
+
+  // (গ) `.doc` RTF: সরল সমীকরণও ম্যাথ-জোনে (আগে প্লেইন ইটালিক হতো)
+  const plainRtf = Export.generateLegacyDoc('১। `$y = x - 3$` রেখাটি আঁক।', 'EXAM_CQ', {});
+  const PR = typeof plainRtf.text === 'function' ? await plainRtf.text() : String(plainRtf);
+  T('.doc: `y = x - 3` এখন ম্যাথ-জোনে', /\\mmath\{[^}]*\\mr y = x - 3/.test(PR), PR.slice(PR.indexOf('\\mmath', 200) - 20, PR.indexOf('\\mmath', 200) + 60));
+
+  // (ঘ) docx-to-doc-engine: EQ-ফিল্ড নিষ্ক্রিয় + OMML সিরিয়ালাইজার
+  const d2d = fs.readFileSync(path.join(H.ROOT, 'js/docx-to-doc-engine.js'), 'utf8');
+  T('.doc ইঞ্জিনে OMML সিরিয়ালাইজার আছে', d2d.includes('_serializeOmmlNode'));
+  T('.doc ইঞ্জিনে পুরোনো EQ-ফিল্ড HTML আর বানানো হয় না', !/mso-element:field-begin/.test(d2d));
+}
+
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);

@@ -169,6 +169,26 @@
           }
         }
 
+        // Part-9c-fix: CQ-তে বন্ধনী-লেবেল (ক) খ) গ) ঘ)) = সাব-প্রশ্ন — MCQ অপশন নয়।
+        // আগে OCR-এর `ক)` `খ)` লাইনগুলো parseMcqOptions-এ ধরা পড়ে `options` হয়ে যেত;
+        // CQ রেন্ডারারে options ছাপা হয় না ⇒ প্রশ্নের ক/খ/গ পুরো হারিয়ে যেত (.doc/.docx দুটোতেই)।
+        const _isMcqCtx = /MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
+        if (!_isMcqCtx && currentQuestion && (!currentQuestion.options || currentQuestion.options.length === 0)) {
+          const brSub = line.match(/^\(?\s*([কখগঘ])\s*\)\s*(.+)$/);
+          if (brSub) {
+            let bTxt = brSub[2].trim();
+            let bMark = '';
+            const bm = bTxt.match(/[\s\t]+([১২৩৪\d])$/);
+            if (bm) { bMark = bm[1]; bTxt = bTxt.substring(0, bTxt.length - bm[0].length).trim(); }
+            currentQuestion.subQuestions.push({
+              label: brSub[1],
+              text: bTxt,
+              mark: bMark || (brSub[1] === 'ক' ? '১' : brSub[1] === 'খ' ? '২' : brSub[1] === 'গ' ? '৩' : '৪')
+            });
+            continue;
+          }
+        }
+
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions

@@ -34,6 +34,23 @@
      * @param {Object} options 
      * @returns {Promise<Object>}
      */
+    /**
+     * Part-9c: OMML নোড (m:oMath / m:oMathPara) → সিরিয়ালাইজড markup (Word HTML-এ নেটিভ সমীকরণ)।
+     * রুট ডকুমেন্টে xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" আগেই আছে,
+     * তাই Word এই markup-কে এডিটযোগ্য নেটিভ সমীকরণ হিসেবে পড়ে — Equation Editor (EQ-ফিল্ড) নয়।
+     */
+    _serializeOmmlNode(node) {
+      try {
+        if (!node) return '';
+        if (typeof XMLSerializer !== 'undefined') {
+          const out = new XMLSerializer().serializeToString(node);
+          if (out && /<m:oMath/.test(out)) return out;
+        }
+        const raw = (typeof node.outerHTML === 'string') ? node.outerHTML : '';
+        return /<m:oMath/.test(raw) ? raw : '';
+      } catch (e) { return ''; }
+    }
+
     async convertDocxToDoc(file, options = {}) {
       const opts = Object.assign({
         pageSize: 'a4',        // 'a4', 'legal', 'letter'
@@ -671,29 +688,13 @@
                 const hasEqSwitches = /\\[FRISBXUA]\b/.test(cleanEq);
                 let fieldHtml;
 
-                if (hasEqSwitches) {
-                  // Complex EQ (fraction, radical etc.) → 5-part Word HTML EQ field
-                  // cleanEq must be ASCII-safe EQ instruction
-                  fieldHtml =
-                    `<span style="font-family:'Times New Roman',serif;font-size:12pt;">` +
-                    `<!--[if supportFields]>` +
-                      `<span style='mso-element:field-begin'></span>` +
-                      ` EQ ${cleanEq} ` +
-                      `<span style='mso-element:field-separator'></span>` +
-                    `<![endif]-->` +
-                    `<span style="font-style:italic;">${formattedEq}</span>` +
-                    `<!--[if supportFields]>` +
-                      `<span style='mso-element:field-end'></span>` +
-                    `<![endif]-->` +
-                    `</span>`;
-                } else {
-                  // Simple symbols, Unicode math, superscripts → direct HTML span
-                  // এটি সর্বদা সঠিকভাবে render করে, "Error!" হওয়ার কোনো সুযোগ নেই
-                  fieldHtml =
-                    `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">` +
-                    `${formattedEq}` +
-                    `</span>`;
-                }
+                // Part-9c: পুরোনো EQ-ফিল্ড ধরা পড়লে আর কখনো Equation-Editor ফিল্ড বানানো হয় না
+                // (আধুনিক Word-এ সেই ফিল্ডই "Word equation too large to convert" এরর দিত) —
+                // সরল (italic) রেন্ডার করা হয়, যেটা কখনো এরর দেয় না।
+                fieldHtml =
+                  `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">` +
+                  `${formattedEq}` +
+                  `</span>`;
 
 
                 runsHtml.push(fieldHtml);
@@ -736,8 +737,17 @@
           // ============================================================
           let mathHtml = '';
           try {
+            // Part-9c: OMML হুবহু রাখা হয় ⇒ Word-এ নেটিভ (এডিটযোগ্য) সমীকরণ।
+            // আগে এখানে EQ-ফিল্ড HTML বানানো হতো (Equation Editor 3.0) — আধুনিক Word-এ
+            // তাতেই "Word equation too large to convert" এরর আসত (ব্যবহারকারীর রিপোর্ট #১ ও #২)।
+            mathHtml = this._serializeOmmlNode(child);
+            if (mathHtml) {
+              runsHtml.push(mathHtml);
+              runCount++;
+              continue;
+            }
             if (typeof EquationConverter !== 'undefined' && typeof EquationConverter.ommlNodeToEqHtml === 'function') {
-              // Preferred: use EquationConverter's OMML-to-EQ converter
+              // ফ্ল্যাট-টেক্সট fallback (শুধু সিরিয়ালাইজ ব্যর্থ হলে)
               mathHtml = EquationConverter.ommlNodeToEqHtml(child, 12, true);
             } else if (typeof EquationConverter !== 'undefined' && typeof EquationConverter.ommlToOpenXmlRuns === 'function') {
               // Fallback: extract readable math text from OMML node

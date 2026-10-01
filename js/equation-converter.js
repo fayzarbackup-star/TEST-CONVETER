@@ -960,9 +960,11 @@
       // Simple measurement units e.g. "cm", "m", "kg"
       if (/^(?:cm|mm|m|km|gm|kg|sec|s|hr|min|V|W|kW|A|mA|Hz|N|Pa|J)$/i.test(s)) return false;
 
-      // Mathematical or scientific structures requiring Word EQ switch commands or Office Math:
-      // Fractions, roots, superscripts, subscripts, scientific multiplication, integrals, matrices, etc.
-      return /\\frac|\\dfrac|\\tfrac|\\sqrt|\\int|\\sum|\\prod|\\lim|\\matrix|\\binom|\\overline|\\underline|\\vec|\\dot|\\ddot|\\partial|\^|_|\\times/.test(s);
+      // Part-9c-fix: `$...$`/`\\(...\\)` দিয়ে ব্যবহারকারী সচেতনভাবে গণিত লিখেছেন ⇒ এটি ইকুয়েশন।
+      // আগে কেবল \\frac/\\sqrt/^/_/\\times থাকলে true হতো, ফলে `$y = x - 3$`, `$A(-4, 13)$` জাতীয়
+      // রাশিগুলো সরল ইউনিকোড/ইটালিক টেক্সট হয়ে যেত (Word-এ সমীকরণ হিসেবে এডিট করা যেত না —
+      // ব্যবহারকারীর রিপোর্ট #৪)। সংখ্যা/একক আগেই false রিটার্ন করেছে, তাই বাকি সব = ইকুয়েশন।
+      return true;
     }
 
     /**
