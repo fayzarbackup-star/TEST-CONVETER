@@ -24,182 +24,158 @@
       "questions": [
         {
           "num": "১",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "হার্ডডিস্ক"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "র্যাম"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "মাইক্রোপ্রসেসর"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "মাদারবোর্ড"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "কম্পিউটারের ব্রেইন বলা হয় কাকে?"
         },
         {
           "num": "২",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "মাউস"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "কিবোর্ড"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "স্ক্যানার"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "প্রিন্টার"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "নিচের কোনটি ইনপুট ডিভাইস নয়?"
         },
         {
           "num": "৩",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "৮টি"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "১০টি"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "১২টি (F1 থেকে F12 পর্যন্ত মোট বারোটি কি থাকে)"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "১৪টি"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "একটি সাধারণ কিবোর্ডে কয়টি ফাংশন কি থাকে? (যেখানে অনেকগুলো অপশন একসাথে থাকতে পারে এবং লম্বা অপশন থাকতে পারে যা পরের লাইনে চলে যাবে)"
         },
         {
           "num": "৪",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "Read Only Memory"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "Random Only Memory"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "Read Outer Memory"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "Random Output Memory"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "ROM এর পূর্ণরূপ কী?"
         },
         {
           "num": "৫",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "লিনাক্স"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "ফায়ারফক্স"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "গুগল ক্রোম"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "অপেরা"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "কোনটি অপারেটিং সিস্টেম?"
         },
         {
           "num": "৬",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [
+          "options": [
             {
               "label": "ক",
-              "mark": "১",
               "text": "Ctrl + N"
             },
             {
               "label": "খ",
-              "mark": "২",
               "text": "Ctrl + O"
             },
             {
               "label": "গ",
-              "mark": "৩",
               "text": "Ctrl + S"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
               "text": "Ctrl + P"
             }
           ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
           "text": "এমএস ওয়ার্ডে নতুন ডকুমেন্ট খোলার শর্টকাট কোনটি?"
         }
       ],
@@ -211,12 +187,12 @@
 ===== STRUCTURE =====
 {
   "marks": [
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪"
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
   ],
   "numbering": [
     "১",
@@ -231,79 +207,49 @@
     {
       "hasStimulus": false,
       "num": "১",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "কম্পিউটারের ব্রেইন বলা হয় কাকে?"
     },
     {
       "hasStimulus": false,
       "num": "২",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "নিচের কোনটি ইনপুট ডিভাইস নয়?"
     },
     {
       "hasStimulus": false,
       "num": "৩",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "একটি সাধারণ কিবোর্ডে কয়টি ফাংশন কি থাকে?"
     },
     {
       "hasStimulus": false,
       "num": "৪",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "ROM এর পূর্ণরূপ কী?"
     },
     {
       "hasStimulus": false,
       "num": "৫",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "কোনটি অপারেটিং সিস্টেম?"
     },
     {
       "hasStimulus": false,
       "num": "৬",
-      "optionCount": 0,
+      "optionCount": 4,
       "section": 0,
-      "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
-      ],
+      "subs": [],
       "textHead": "এমএস ওয়ার্ডে নতুন ডকুমেন্ট খোলার শর্টকাট"
     }
   ],
@@ -322,7 +268,7 @@
 <div class="crop-br">
 </div>
 </div>
-<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
+<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="line-height: 1.45; font-size: 12pt;">
 <div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
 <div style="text-align: left; flex: 1; white-space: nowrap;">
@@ -334,220 +280,160 @@
 </div>
 </div>
 <div class="qp-columns two-columns">
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">কম্পিউটারের ব্রেইন বলা হয় কাকে?</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১.</span>
+<span class="mcq-text">কম্পিউটারের ব্রেইন বলা হয় কাকে?</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">হার্ডডিস্ক</span>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-4">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">হার্ডডিস্ক</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">র্যাম</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">র্যাম</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">মাইক্রোপ্রসেসর</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">মাইক্রোপ্রসেসর</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">মাদারবোর্ড</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">মাদারবোর্ড</span>
 </div>
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">নিচের কোনটি ইনপুট ডিভাইস নয়?</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">মাউস</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">২.</span>
+<span class="mcq-text">নিচের কোনটি ইনপুট ডিভাইস নয়?</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-4">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">মাউস</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">কিবোর্ড</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">কিবোর্ড</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">স্ক্যানার</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">স্ক্যানার</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">প্রিন্টার</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">প্রিন্টার</span>
 </div>
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
-<span class="cq-text text-justify flex-1">একটি সাধারণ কিবোর্ডে কয়টি ফাংশন কি থাকে? (যেখানে অনেকগুলো অপশন একসাথে থাকতে পারে এবং লম্বা অপশন থাকতে পারে যা পরের লাইনে চলে যাবে)</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">৮টি</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৩.</span>
+<span class="mcq-text">একটি সাধারণ কিবোর্ডে কয়টি ফাংশন কি থাকে? (যেখানে অনেকগুলো অপশন একসাথে থাকতে পারে এবং লম্বা অপশন থাকতে পারে যা পরের লাইনে চলে যাবে)</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">৮টি</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">১০টি</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">১০টি</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">১২টি (<span class="eq-rendered" style="font-family:'Times New Roman',serif;">F<sub style="font-size:0.75em;">1</sub>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">১২টি (<span class="eq-rendered" style="font-family:'Times New Roman',serif;">F<sub style="font-size:0.75em;">1</sub>
 </span> থেকে <span class="eq-rendered" style="font-family:'Times New Roman',serif;">F<sub style="font-size:0.75em;">1</sub>2</span> পর্যন্ত মোট বারোটি কি থাকে)</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">১৪টি</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">১৪টি</span>
 </div>
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৪।</span>
-<span class="cq-text text-justify flex-1">ROM এর পূর্ণরূপ কী?</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">Read Only Memory</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৪.</span>
+<span class="mcq-text">ROM এর পূর্ণরূপ কী?</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-2">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">Read Only Memory</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">Random Only Memory</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">Random Only Memory</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">Read Outer Memory</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">Read Outer Memory</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">Random Output Memory</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">Random Output Memory</span>
 </div>
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৫।</span>
-<span class="cq-text text-justify flex-1">কোনটি অপারেটিং সিস্টেম?</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">লিনাক্স</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৫.</span>
+<span class="mcq-text">কোনটি অপারেটিং সিস্টেম?</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-4">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">লিনাক্স</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">ফায়ারফক্স</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">ফায়ারফক্স</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">গুগল ক্রোম</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">গুগল ক্রোম</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">অপেরা</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">অপেরা</span>
 </div>
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৬।</span>
-<span class="cq-text text-justify flex-1">এমএস ওয়ার্ডে নতুন ডকুমেন্ট খোলার শর্টকাট কোনটি?</span>
 </div>
-<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">Ctrl + N</span>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৬.</span>
+<span class="mcq-text">এমএস ওয়ার্ডে নতুন ডকুমেন্ট খোলার শর্টকাট কোনটি?</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-4">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">Ctrl + N</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">Ctrl + O</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">Ctrl + O</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">Ctrl + S</span>
 </div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">Ctrl + S</span>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">Ctrl + P</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
-</div>
-<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
-<div class="flex-1 text-justify">
-<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">Ctrl + P</span>
-</div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
 </div>
 </div>
 </div>
@@ -591,6 +477,62 @@
 </w:p>
 <w:p>
 <w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) হার্ডডিস্ক</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) র্যাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) মাইক্রোপ্রসেসর</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) মাদারবোর্ড</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
 <w:spacing w:before="20" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="260" w:hanging="260"/>
 </w:pPr>
@@ -606,6 +548,62 @@
 </w:p>
 <w:p>
 <w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) মাউস</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) কিবোর্ড</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) স্ক্যানার</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) প্রিন্টার</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
 <w:spacing w:before="20" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="260" w:hanging="260"/>
 </w:pPr>
@@ -617,6 +615,109 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">৩. একটি সাধারণ কিবোর্ডে কয়টি ফাংশন কি থাকে? (যেখানে অনেকগুলো অপশন একসাথে থাকতে পারে এবং লম্বা অপশন থাকতে পারে যা পরের লাইনে চলে যাবে)</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) ৮টি</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) ১০টি</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) ১২টি (</w:t>
+</w:r>
+<m:oMath>
+<m:sSub>
+<m:e>
+<m:r>
+<m:t xml:space="preserve">F</m:t>
+</m:r>
+</m:e>
+<m:sub>
+<m:r>
+<m:t xml:space="preserve">1</m:t>
+</m:r>
+</m:sub>
+</m:sSub>
+</m:oMath>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> থেকে </w:t>
+</w:r>
+<m:oMath>
+<m:sSub>
+<m:e>
+<m:r>
+<m:t xml:space="preserve">F</m:t>
+</m:r>
+</m:e>
+<m:sub>
+<m:r>
+<m:t xml:space="preserve">1</m:t>
+</m:r>
+</m:sub>
+</m:sSub>
+<m:r>
+<m:t xml:space="preserve">2</m:t>
+</m:r>
+</m:oMath>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> পর্যন্ত মোট বারোটি কি থাকে)</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) ১৪টি</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -654,6 +755,126 @@
 </w:p>
 <w:p>
 <w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Read Only Memory</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Random Only Memory</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Read Outer Memory</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Random Output Memory</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
 <w:spacing w:before="20" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="260" w:hanging="260"/>
 </w:pPr>
@@ -669,6 +890,62 @@
 </w:p>
 <w:p>
 <w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) লিনাক্স</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) ফায়ারফক্স</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) গুগল ক্রোম</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) অপেরা</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
 <w:spacing w:before="20" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="260" w:hanging="260"/>
 </w:pPr>
@@ -680,6 +957,126 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">৬. এমএস ওয়ার্ডে নতুন ডকুমেন্ট খোলার শর্টকাট কোনটি?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl + N</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl + O</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="260"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2450"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl + S</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl + P</w:t>
 </w:r>
 </w:p>
 <w:sectPr>

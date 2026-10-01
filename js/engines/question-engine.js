@@ -16,7 +16,7 @@
     /**
      * Normalizes text and parses it into structured exam paper components.
      */
-    parseQuestionPaper(rawText) {
+    parseQuestionPaper(rawText, parseOptions = {}) {
       if (!rawText) rawText = '';
       // 0. Strip vision layout tags
       rawText = rawText.replace(/^\s*\[LAYOUT:[^\]]*\]\s*[\r\n]?/im, '');
@@ -172,8 +172,26 @@
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions
-        const isMergedCqSub = mcqOpts.length >= 2 && mcqOpts.some(o => /[\s\t]+[১২৩৪\d]$/.test(o.text.trim()) || o.text.trim().length > 50);
+        const isMcqDoc = /MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
+const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s\t]+[১২৩৪\d]$/.test(o.text.trim()) || o.text.trim().length > 50);
         
+        // Part-9b: অপশন-সীমা — একই লেবেল (ক/খ/গ/ঘ) আবার শুরু হলে সেটা নতুন প্রশ্নের শুরু,
+        // আগের প্রশ্নে জোড়া লাগানো নয় (১৫-অপশনের ভুল-গ্রুপিং ও তথ্য-হার দুটোই ঠেকায়)।
+        if (mcqOpts.length > 0 && currentQuestion && currentQuestion.options.length > 0 &&
+            currentQuestion.options.some(o => o.label === mcqOpts[0].label)) {
+          currentSection.questions.push(currentQuestion);
+          currentQuestion = {
+            num: '',
+            text: line.trim(),
+            preContext: '',
+            stimulus: '',
+            statements: [],
+            subQuestions: [],
+            options: []
+          };
+          continue;
+        }
+
         if (mcqOpts.length >= 2 && currentQuestion && !isMergedCqSub) {
           currentQuestion.options = currentQuestion.options.concat(mcqOpts);
           continue;
@@ -199,7 +217,7 @@
 
         // 3. Sub-question for CQ (ক., খ., গ., ঘ. - separated by dot, colon, or dari; NOT bracket ')')
         const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.*?)(?:\s*([১২৩৪\d]))?$/);
-        if (subMatch && currentQuestion && currentQuestion.options.length === 0 && (!currentQuestion.statements || currentQuestion.statements.length === 0)) {
+        if (subMatch && !isMcqDoc && currentQuestion && currentQuestion.options.length === 0 && (!currentQuestion.statements || currentQuestion.statements.length === 0)) {
           currentQuestion.subQuestions.push({
             label: subMatch[1],
             text: subMatch[2].trim(),
@@ -411,6 +429,16 @@
         if (q.options && q.options.length > 0) {
           html += `<div class="mcq-options-row">`;
           html += this.renderMcqOptions(q.options, renderOpts);
+        // Part-9b: অপশন না পেলে (লম্বা লাইন subQuestions-এ গেলে) সেগুলোও ছাপা হবে — তথ্য হারাবে না
+        if ((!q.options || q.options.length === 0) && q.subQuestions && q.subQuestions.length > 0) {
+          html += `<div class="mcq-options-row">`;
+          for (const sub of q.subQuestions) {
+            if (!sub || !sub.text) continue;
+            html += `<div>(${this.escape(sub.label || '')}) ${this.richText(sub.text)}${sub.mark ? ` <span class="mcq-mark">${this.escape(sub.mark)}</span>` : ''}</div>`;
+          }
+          html += `</div>`;
+        }
+
           html += `</div>`;
         }
 

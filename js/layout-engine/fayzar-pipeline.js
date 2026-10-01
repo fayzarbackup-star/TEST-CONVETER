@@ -298,7 +298,7 @@
         case 'EXAM_MCQ': {
           const qEngine = this._getQuestionEngine();
           if (qEngine && typeof qEngine.parseQuestionPaper === 'function') {
-            return qEngine.parseQuestionPaper(text);
+          return qEngine.parseQuestionPaper(text, { docType });
           }
           break;
         }

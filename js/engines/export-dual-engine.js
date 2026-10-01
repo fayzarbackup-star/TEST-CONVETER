@@ -153,25 +153,32 @@
       for (const run of runs) {
         if (run.type === 'math') {
           const rawLatex = run.cleanLatex || run.value || '';
-          let _eqOut = null;
           const _EqC = (typeof EquationConverter !== 'undefined') ? EquationConverter
             : (typeof window !== 'undefined' && window.EquationConverter) ? window.EquationConverter : null;
+          // Part-9c: Word 2007+ এর নেটিভ ম্যাথ ফরম্যাট (RTF math zone) — Equation Editor নয়,
+          // তাই Word-এ সমীকরণ সরাসরি এডিট করা যায় এবং "Word equation too large to convert" আর আসে না।
+          const isMathy = _EqC && typeof _EqC.needsEqField === 'function'
+            ? _EqC.needsEqField(rawLatex)
+            : /\\|\^|_/.test(String(rawLatex));
+          if (isMathy && _EqC && typeof _EqC.latexToOmml === 'function' && typeof _EqC.ommlToRtfMath === 'function') {
+            try {
+              const omml = _EqC.latexToOmml(rawLatex, isBijoy);
+              const zone = _EqC.ommlToRtfMath(omml);
+              if (zone && zone.rtf && /\\m[frsnd]/.test(zone.rtf) && !/\\mr \}/.test(zone.rtf)) {
+                out += zone.rtf;
+                continue;
+              }
+            } catch (e) { /* নিচের ফলব্যাকে যাই */ }
+          }
+          let _eqOut = null;
           if (_EqC && typeof _EqC.latexToEqField === 'function') {
             try { _eqOut = _EqC.latexToEqField(rawLatex, isBijoy); } catch(e) {}
           }
           if (_eqOut) {
-            // If it only contains superscripts/subscripts and symbols, avoid EQ field to prevent Word "Error!" on Unicode
-            if (!/\\[FRIBXA]\b/i.test(_eqOut)) {
-                let rtfSafe = this.escapeUnicodeRtf(_eqOut);
-                rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super $1}');
-                rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub $1}');
-                out += '{\\f1 ' + rtfSafe + '}';
-            } else {
-                let escapedEq = this.escapeUnicodeRtf(_eqOut);
-                // Unescape EQ specific commands so Word recognizes them
-                escapedEq = escapedEq.replace(/\\\\(F|R|I|B|X|A|S|up|do|al|ar|ac|con)/gi, '\\$1');
-                out += '{\\field{\\*\\fldinst EQ ' + escapedEq + '}{\\fldrslt }}';
-            }
+            let rtfSafe = this.escapeUnicodeRtf(_eqOut);
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super $1}');
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub $1}');
+            out += '{\\f1 ' + rtfSafe + '}';
           } else {
             out += '{\\f1 ' + this.escapeRtf(rawLatex) + '}';
           }
@@ -317,8 +324,8 @@
 
       if (qEngine && docType === 'EXAM_COMBINED') {
         const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
-        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '');
-        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '');
+        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' });
+        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' });
         const validator = this._getSchemaValidator();
         if (validator) { validator.validate(docType, parsedCq); validator.validate(docType, parsedMcq); }
         const rtf = this.generateCombinedExamRtf(parsedCq, parsedMcq, options);
@@ -326,7 +333,7 @@
       }
 
       if (qEngine && (docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL')) {
-        const parsed = qEngine.parseQuestionPaper(rawText);
+        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         const rtf = this.generateCqExamRtf(parsed, options);
@@ -334,7 +341,7 @@
       }
 
       if (qEngine && docType === 'EXAM_MCQ') {
-        const parsed = qEngine.parseQuestionPaper(rawText);
+        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         const rtf = this.generateMcqExamRtf(parsed, options);
@@ -487,22 +494,22 @@
 
       if (qEngine && docType === 'EXAM_COMBINED') {
         const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
-        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '');
-        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '');
+        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' });
+        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' });
         const validator = this._getSchemaValidator();
         if (validator) { validator.validate(docType, parsedCq); validator.validate(docType, parsedMcq); }
         return await this.generateCombinedExamDocx(parsedCq, parsedMcq, options);
       }
 
       if (qEngine && (docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL')) {
-        const parsed = qEngine.parseQuestionPaper(rawText);
+        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         return await this.generateCqExamDocx(parsed, options);
       }
 
       if (qEngine && docType === 'EXAM_MCQ') {
-        const parsed = qEngine.parseQuestionPaper(rawText);
+        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         return await this.generateMcqExamDocx(parsed, options);
@@ -901,20 +908,20 @@
           if (q.options && q.options.length > 0) {
             const opts = q.options;
             if (opts.length >= 4) {
-              const o0 = '({\\f0 ' + this.formatRtfText(opts[0].label, options) + '}) ' + this.renderMcqTextRtf(opts[0].text, options);
-              const o1 = '({\\f0 ' + this.formatRtfText(opts[1].label, options) + '}) ' + this.renderMcqTextRtf(opts[1].text, options);
-              const o2 = '({\\f0 ' + this.formatRtfText(opts[2].label, options) + '}) ' + this.renderMcqTextRtf(opts[2].text, options);
-              const o3 = '({\\f0 ' + this.formatRtfText(opts[3].label, options) + '}) ' + this.renderMcqTextRtf(opts[3].text, options);
-
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\li240\\tx3600 ' + o0 + '\\tab ' + o1 + '\\par}\n';
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa20\\li240\\tx3600 ' + o2 + '\\tab ' + o3 + '\\par}\n';
+              // Part-9b: ৪টির বেশি অপশন থাকলেও সবগুলো ২-২ করে বসে (আগে ৫+ অপশন নীরবে বাদ পড়ত)
+              for (let oi = 0; oi < opts.length; oi += 2) {
+                const isLastRow = oi + 2 >= opts.length;
+                let rowRtf = '({\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
+                if (opts[oi + 1]) rowRtf += '\tab ({\f0 ' + this.formatRtfText(opts[oi + 1].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi + 1].text, options);
+                rtf += '{\ql\fs24\f0\sl240\slmult1\sb0\sa' + (isLastRow ? '20' : '0') + '\li240\tx3600 ' + rowRtf + '\par}\n';
+              }
             } else {
               let optLine = '';
               for (let oi = 0; oi < opts.length; oi++) {
-                const optRtf = '({\\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
-                optLine += (oi > 0 ? '\\tab ' : '') + optRtf;
+                const optRtf = '({\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
+                optLine += (oi > 0 ? '\tab ' : '') + optRtf;
               }
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa20\\li240\\tx2450\\tx4900\\tx7350 ' + optLine + '\\par}\n';
+              rtf += '{\ql\fs24\f0\sl240\slmult1\sb0\sa20\li240\tx2450\tx4900\tx7350 ' + optLine + '\par}\n';
             }
           }
         }
@@ -1063,13 +1070,13 @@
           if (q.options && q.options.length > 0) {
             const opts = q.options;
             if (opts.length >= 4) {
-              const o0 = this.renderDocxRuns(`(${opts[0].label}) ${opts[0].text}`, options, { sz: 24 });
-              const o1 = this.renderDocxRuns(`(${opts[1].label}) ${opts[1].text}`, options, { sz: 24 });
-              const o2 = this.renderDocxRuns(`(${opts[2].label}) ${opts[2].text}`, options, { sz: 24 });
-              const o3 = this.renderDocxRuns(`(${opts[3].label}) ${opts[3].text}`, options, { sz: 24 });
-
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
+              // Part-9b: সব অপশন ২-২ করে রেন্ডার (আগে ৫+ অপশন নীরবে বাদ পড়ত)
+              for (let oi = 0; oi < opts.length; oi += 2) {
+                const isLastRow = oi + 2 >= opts.length;
+                let rowXml = this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
+                if (opts[oi + 1]) rowXml += '<w:r><w:tab/></w:r>' + this.renderDocxRuns(`(${opts[oi + 1].label}) ${opts[oi + 1].text}`, options, { sz: 24 });
+                bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="${isLastRow ? '20' : '0'}" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${rowXml}</w:p>`;
+              }
             } else {
               let runs = '';
               for (let oi = 0; oi < opts.length; oi++) {
@@ -1256,6 +1263,13 @@
                 block += `{\\ql\\fs24${lineSpacingRtf}\\sb0\\sa0\\li260\\tx2450 ` + o0 + '\\tab ' + o1 + '\\par}\n';
                 block += `{\\ql\\fs24${lineSpacingRtf}\\sb0\\sa${isTwoPage ? '15' : '0'}\\li260\\tx2450 ` + o2 + '\\tab ' + o3 + '\\par}\n';
               }
+              // Part-9b: ৪টির বেশি অপশন থাকলে বাকিগুলোও ২-২ করে (আগে নীরবে বাদ পড়ত)
+              for (let oi = 4; oi < opts.length; oi += 2) {
+                const isLastRow = oi + 2 >= opts.length;
+                let extraRtf = '({\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
+                if (opts[oi + 1]) extraRtf += '\tab ({\f0 ' + this.formatRtfText(opts[oi + 1].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi + 1].text, options);
+                block += `{\ql\fs24${lineSpacingRtf}\sb0\sa${isLastRow ? (isTwoPage ? '15' : '0') : '0'}\li260\tx2450 ` + extraRtf + '\par}\n';
+              }
             } else {
               let optLine = '';
               for (let oi = 0; oi < opts.length; oi++) {
@@ -1265,6 +1279,13 @@
               block += `{\\ql\\fs24${lineSpacingRtf}\\sb0\\sa0\\li260\\tx2450\\tx4900\\tx7350 ` + optLine + '\\par}\n';
             }
           }
+        // Part-9b: অপশন না থাকলে subQuestions-এর লাইনগুলোও ছাপা হবে (তথ্য হারাবে না)
+        if ((!q.options || q.options.length === 0) && q.subQuestions && q.subQuestions.length > 0) {
+          for (const sub of q.subQuestions) {
+            if (!sub || !sub.text) continue;
+            block += `{\ql\fs24${lineSpacingRtf}\sb0\sa15\li260 ` + this.renderMcqTextRtf(`(${sub.label || ''}) ${sub.text}` + (sub.mark ? ' ' + sub.mark : ''), options) + '\par}\n';
+          }
+        }
         }
         return block;
       };
@@ -1381,21 +1402,28 @@
 
         if (q.options && q.options.length > 0) {
           const opts = q.options;
-          if (opts.length >= 4) {
-            const o0 = this.renderDocxRuns(`(${opts[0].label}) ${opts[0].text}`, options, { sz: 24 });
-            const o1 = this.renderDocxRuns(`(${opts[1].label}) ${opts[1].text}`, options, { sz: 24 });
-            const o2 = this.renderDocxRuns(`(${opts[2].label}) ${opts[2].text}`, options, { sz: 24 });
-            const o3 = this.renderDocxRuns(`(${opts[3].label}) ${opts[3].text}`, options, { sz: 24 });
-
-            qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/><w:tabs><w:tab w:val="left" w:pos="2450"/></w:tabs></w:pPr>${o0}<w:r><w:tab/></w:r>${o1}</w:p>`;
-            qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/><w:tabs><w:tab w:val="left" w:pos="2450"/></w:tabs></w:pPr>${o2}<w:r><w:tab/></w:r>${o3}</w:p>`;
-          } else {
-            let runs = '';
-            for (let oi = 0; oi < opts.length; oi++) {
-              if (oi > 0) runs += '<w:r><w:tab/></w:r>';
-              runs += this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
+            if (opts.length >= 4) {
+              // Part-9b: সব অপশন ২-২ করে (আগে ৫+ অপশন নীরবে বাদ পড়ত)
+              for (let oi = 0; oi < opts.length; oi += 2) {
+                const isLastRow = oi + 2 >= opts.length;
+                let rowXml = this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
+                if (opts[oi + 1]) rowXml += '<w:r><w:tab/></w:r>' + this.renderDocxRuns(`(${opts[oi + 1].label}) ${opts[oi + 1].text}`, options, { sz: 24 });
+                qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="${isLastRow ? '10' : '0'}" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/><w:tabs><w:tab w:val="left" w:pos="2450"/></w:tabs></w:pPr>${rowXml}</w:p>`;
+              }
+            } else {
+              let runs = '';
+              for (let oi = 0; oi < opts.length; oi++) {
+                if (oi > 0) runs += '<w:r><w:tab/></w:r>';
+                runs += this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
+              }
+              qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
             }
-            qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
+        }
+        // Part-9b: অপশন না থাকলে subQuestions (লম্বা লাইন) — এগুলোও ছাপা হবে
+        if ((!q.options || q.options.length === 0) && q.subQuestions && q.subQuestions.length > 0) {
+          for (const sub of q.subQuestions) {
+            if (!sub || !sub.text) continue;
+            qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="10" w:line="240" w:lineRule="auto"/><w:ind w:left="260"/></w:pPr>${this.renderDocxRuns(`(${sub.label || ''}) ${sub.text}` + (sub.mark ? ' ' + sub.mark : ''), options, { sz: 24 })}</w:p>`;
           }
         }
         return qXml;

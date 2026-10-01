@@ -930,6 +930,13 @@
         });
       }
 
+      // Part-9c: টেক্সট-সেগমেন্টে পড়ে থাকা কাঁচা LaTeX ($, \\vec{}, \\frac{}{}) পরিষ্কার করি —
+      // OCR-এ $...$ মাঝপথে ভেঙে গেলেও আর কাঁচা কোড ডকুমেন্টে যাবে না।
+      for (let k = 0; k < segments.length; k++) {
+        if (segments[k] && segments[k].type === 'text' && /[\\$]/.test(String(segments[k].value || ''))) {
+          segments[k] = { type: 'text', value: EquationConverter.sanitizePlainLatex(segments[k].value) };
+        }
+      }
       return segments;
     }
 
@@ -1357,6 +1364,8 @@
       let s = String(latex);
       // ভগ্নাংশ-পরিবার → \frac
       s = s.replace(/\\(?:dfrac|tfrac|cfrac)\b/g, '\\frac');
+      // Part-9b: দ্বিপদী সহগ \binom{n}{r} (ও \dbinom/\tbinom) → C(n, r) — আগে কাঁচা LaTeX হিসেবে বেরিয়ে যেত
+      s = s.replace(/\\(?:d|t)?binom\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, 'C($1, $2)');
       // স্টাইল/সীমা কমান্ড বাদ
       s = s.replace(/\\(?:displaystyle|textstyle|scriptstyle|limits|nolimits)\b/g, '');
       // ভেক্টর / বার / আন্ডারবার → combining চিহ্ন (সব Word-এ নিরাপদ)
@@ -1388,6 +1397,139 @@
       // থেকে-যাওয়া সারি-বিভাজক \\ → মধ্যস্থতাকারী
       s = s.replace(/\\\\/g, ' ; ');
       return s;
+    }
+
+    /**
+     * Part-9c: প্লেইন টেক্সটে (ম্যাথ-নয়) পড়ে থাকা LaTeX-অবশিষ্ট পরিষ্কার করে।
+     * OCR-এ $...$ মাঝপথে ভেঙে গেলে \\vec{A}, \\frac{a}{b}, $ ইত্যাদি কাঁচা টেক্সট হিসেবে বেরিয়ে যেত।
+     */
+    static sanitizePlainLatex(text) {
+      if (!text) return '';
+      let s = String(text);
+      if (!/[\\$]/.test(s)) return s;
+      // ১) ভেক্টর/বার/আন্ডারবার → combining চিহ্ন
+      s = s.replace(/\\(?:vec|overrightarrow)\\s*\{([^{}]*)\}/g, '$1\u20D7');
+      s = s.replace(/\\overline\\s*\{([^{}]*)\}/g, '$1\u0304');
+      s = s.replace(/\\underline\\s*\{([^{}]*)\}/g, '$1\u0332');
+      // ২) দ্বি-মাত্রিক কমান্ড → পাঠ-উপযোগী রূপ
+      s = s.replace(/\\d?frac\\s*\{([^{}]*)\\}\s*\{([^{}]*)\\}/g, '($1)/($2)');
+      s = s.replace(/\\sqrt\\s*\{([^{}]*)\\}/g, '\u221A($1)');
+      s = s.replace(/\\(?:d|t)?binom\\s*\{([^{}]*)\\}\s*\{([^{}]*)\\}/g, 'C($1, $2)');
+      // ৩) কমান্ড-সীমানা/ফাঁকা কমান্ড বাদ
+      s = s.replace(/\\(?:left|right|big|Big|bigg|Bigg)\\s*([.([{|)\]}\\/])/g, '$1');
+      s = s.replace(/\\(?:displaystyle|textstyle|limits|nolimits|quad|qquad)\\b/g, ' ');
+      // ৪) পরিচিত симвল (সীমানা-মুক্ত পাস)
+      try { s = EquationConverter.applyBoundaryFreeSymbols(s); } catch (e) {}
+      // ৫) অবশিষ্ট { } বাদ + একাধিক স্পেস
+      s = s.replace(/[{}\\]/g, ' ').replace(/[ \t]{2,}/g, ' ');
+      // ৬) আটকে-থাকা $ চিহ্ন বাদ (একক $ ম্যাথ-ডিলিমিটার হিসেবে রেখে দেওয়া নিরাপদ নয়)
+      s = s.replace(/\$+/g, ' ').replace(/ +([,.;।])/g, '$1');
+      return s;
+    }
+
+    /**
+     * Part-9c: OMML → RTF ম্যাথ-জোন (Office 2007+ এর নেটিভ ম্যাথ ফরম্যাট — Equation Editor নয়)।
+     * আউটপুট: {\\mmath{\\*\\moMath …}{\\mmathPict}}  → Word-এ সরাসরি এডিটযোগ্য সমীকরণ।
+     */
+    static ommlToRtfMath(ommlXml) {
+      const esc = (t) => String(t == null ? '' : t).split('').map(function (ch) {
+        const c = ch.charCodeAt(0);
+        if (ch === '\\') return '\\\\';
+        if (ch === '{') return '\\{';
+        if (ch === '}') return '\\}';
+        if (c >= 0x20 && c <= 0x7e) return ch;
+        return '\\u' + (c > 32767 ? c - 65536 : c) + '?';
+      }).join('');
+
+      const src = String(ommlXml || '').replace(/<\?xml[^>]*\?>/g, '');
+      const inner = (src.match(/<m:oMath[^>]*>([\s\S]*)<\/m:oMath>/) || [, src])[1];
+
+      const body = EquationConverter._ommlBodyToRtfMath(inner, esc);
+      const zone = '{\\mmath{\\*\\moMath ' + body + '}{\\mmathPict}}';
+      return { rtf: zone, plain: String(src).replace(/<[^>]*>/g, '') };
+    }
+    /** OMML-ট্রি → RTF ম্যাথ কন্ট্রোল-ওয়ার্ড (Office 2007+ নেটিভ ম্যাথ) */
+    static _ommlBodyToRtfMath(body, esc) {
+      const tree = EquationConverter._parseOmmlTree(body);
+      const kids = (n) => (n.children || []).filter(function (c) { return c.name !== '#text' || String(c.text || '').trim(); });
+      const local = (n) => String(n.name || '').replace(/^(m|w):/, '');
+      const textOf = (n) => {
+      const rawText = (n) => (n.children || []).filter(function (c) { return c.name === '#text'; }).map(function (c) { return c.text || ''; }).join('');
+      const textOf = (n) => {
+        if (local(n) === 't') return rawText(n) || String(n.text || '');
+        return kids(n).map(textOf).join('');
+      };
+        return kids(n).map(textOf).join('');
+      };
+      const find = (n, name) => kids(n).find(function (c) { return local(c) === name; });
+      const convAll = (n) => kids(n).map(conv).join('');
+      const conv = (n) => {
+        const name = local(n);
+        if (name === 'oMath' || name === 'oMathPara') return convAll(n);
+        if (name === 'r') return '{\\mr ' + esc(textOf(n)) + '}';
+        if (name === 't') return esc(rawText(n) || n.text || '');
+        if (name === 'f') {
+          const isBar = /val="bar"/.test(String((find(n, 'fPr') || {}).attrs || '')) || /m:val="bar"/.test(JSON.stringify(find(n, 'fPr') || {}));
+          const num = find(n, 'num'), den = find(n, 'den');
+          return '{\\mf{\\mfPr{\\mctrlPr}' + (isBar ? '{\\mtype bar}' : '') + '}{\\mnum ' + (num ? convAll(num) : '') + '}{\\mden ' + (den ? convAll(den) : '') + '}}';
+        }
+        if (name === 'rad') {
+          const deg = find(n, 'deg'), e = find(n, 'e');
+          const pr = find(n, 'radPr');
+          const hide = pr ? /degHide[^>]*val="1"/.test(pr.attrs || '') || kids(pr).some(function (c) { return local(c) === 'degHide' && /val="1"/.test(c.attrs || ''); }) : true;
+          return '{\\mrad{\\mradPr{\\mctrlPr}' + (hide ? '{\\mdegHide 1}' : '') + '}' +
+                 '{\\mdeg ' + (deg ? convAll(deg) : '') + '}{\\me ' + (e ? convAll(e) : '') + '}}';
+        }
+        if (name === 'sSup' || name === 'sSub' || name === 'sSubSup') {
+          const e = find(n, 'e'), sup = find(n, 'sup'), sub = find(n, 'sub');
+          const head = '{\\m' + name + '{\\m' + name + 'Pr{\\mctrlPr}}{\\me ' + (e ? convAll(e) : '') + '}';
+          if (name === 'sSup') return head + '{\\msup ' + (sup ? convAll(sup) : '') + '}}';
+          if (name === 'sSub') return head + '{\\msub ' + (sub ? convAll(sub) : '') + '}}';
+          return head + '{\\msub ' + (sub ? convAll(sub) : '') + '}{\\msup ' + (sup ? convAll(sup) : '') + '}}';
+        }
+        if (name === 'nary') {
+          const e = find(n, 'e'), sup = find(n, 'sup'), sub = find(n, 'sub');
+          const pr = find(n, 'naryPr');
+          const chrNode = pr ? kids(pr).find(function (c) { return local(c) === 'chr'; }) : null;
+          const chr = chrNode ? (String(chrNode.attrs || '').match(/val="([^"]*)"/) || [, '\u222B'])[1] : '\u222B';
+          const limLoc = pr && /undOvr/.test(pr.attrs || '') ? 'undOvr' : 'subSup';
+          return '{\\mnary{\\mnaryPr{\\mctrlPr}{\\mchr ' + esc(chr) + '}{\\mlimLoc ' + limLoc + '}}' +
+                 '{\\msub ' + (sub ? convAll(sub) : '') + '}{\\msup ' + (sup ? convAll(sup) : '') + '}{\\me ' + (e ? convAll(e) : '') + '}}';
+        }
+        if (name === 'd') {
+          const e = find(n, 'e');
+          return '{\\md{\\mdPr{\\mctrlPr}}{\\me ' + (e ? convAll(e) : '') + '}}';
+        }
+        if (name === 'acc') {
+          const e = find(n, 'e'), pr = find(n, 'accPr');
+          const chrNode = pr ? kids(pr).find(function (c) { return local(c) === 'chr'; }) : null;
+          const chr = chrNode ? (String(chrNode.attrs || '').match(/val="([^"]*)"/) || [, '\u0302'])[1] : '\u0302';
+          return '{\\macc{\\maccPr{\\mctrlPr}{\\mchr ' + esc(chr) + '}}{\\me ' + (e ? convAll(e) : '') + '}}';
+        }
+        if (name === 'bar') {
+          const e = find(n, 'e');
+          return '{\\mbar{\\mbarPr{\\mctrlPr}}{\\me ' + (e ? convAll(e) : '') + '}}';
+        }
+        return convAll(n);
+      };
+      return conv(tree);
+    }
+
+    /** ছোট XML → ট্রি পার্সার (আমাদের নিজস্ব OMML-এর জন্য যথেষ্ট) */
+    static _parseOmmlTree(xml) {
+      const root = { name: '#root', children: [], attrs: '' };
+      const stack = [root];
+      const re = /<(\/?)([a-zA-Z0-9]+:[a-zA-Z0-9]+)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>/g;
+      let m, last = 0;
+      while ((m = re.exec(xml)) !== null) {
+        const txt = xml.slice(last, m.index);
+        if (txt) stack[stack.length - 1].children.push({ name: '#text', text: txt, children: [], attrs: '' });
+        last = re.lastIndex;
+        if (m[1] === '/') { if (stack.length > 1) stack.pop(); }
+        else if (m[4] === '/') stack[stack.length - 1].children.push({ name: m[2], children: [], attrs: m[3] || '' });
+        else { const node = { name: m[2], children: [], attrs: m[3] || '' }; stack[stack.length - 1].children.push(node); stack.push(node); }
+      }
+      return root;
     }
 
     /**

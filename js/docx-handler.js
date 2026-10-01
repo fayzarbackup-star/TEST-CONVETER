@@ -151,19 +151,25 @@
     /**
      * ধাপ ১: প্যারাগ্রাফের ভেতর থাকা ল্যাটেক্স ($...$) এবং OMML ইকুয়েশনকে OpenXML EQ Field এ রূপান্তর
      */
-    _step1_convertMathToOpenXml(p, xmlDoc, isU2B, stats) {
-      // 0. Parse native OMML equations (<m:oMath>) to EQ fields
-      if (typeof EquationConverter !== 'undefined') {
-        const oMathNodes = Array.from(p.getElementsByTagName("m:oMath"));
-        for (let m of oMathNodes) {
-          const newRuns = EquationConverter.ommlToOpenXmlRuns(m, xmlDoc);
-          if (newRuns && newRuns.length > 0) {
-            for (let newR of newRuns) p.insertBefore(newR, m);
-            p.removeChild(m);
-            stats.convertedRuns++;
-          }
+    /** Part-9c: OMML-XML স্ট্রিং → DOM নোড (docx-এ নেটিভ সমীকরণ রাখতে) */
+    _ommlStringToNodes(ommlXml, xmlDoc) {
+      try {
+        if (!ommlXml || typeof DOMParser === 'undefined') return null;
+        const wrapped = '<root xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">' + ommlXml + '</root>';
+        const parsed = new DOMParser().parseFromString(wrapped, 'text/xml');
+        if (!parsed || parsed.getElementsByTagName('parsererror').length > 0) return null;
+        const out = [];
+        for (const k of Array.from(parsed.documentElement.childNodes)) {
+          if (k.nodeType !== 1) continue;
+          out.push(xmlDoc.importNode(k, true));
         }
-      }
+        return out;
+      } catch (e) { return null; }
+    }
+
+    _step1_convertMathToOpenXml(p, xmlDoc, isU2B, stats) {
+      // Part-9c: nেটিভ OMML (<m:oMath>) অপরিবর্তিত রাখা হয় — আগে এখানে EQ-ফিল্ডে বদলানো হতো,
+      // ফলে আধুনিক Word-এ সমীকরণ এডিট করলে Equation Editor এরর আসত।
 
       // 1. Merge contiguous runs to prevent fragmented LaTeX syntax
       const initialRuns = Array.from(p.getElementsByTagName("w:r"));
@@ -188,19 +194,28 @@
       for (let seg of segments) {
         if (seg.type === 'math') {
           if (typeof EquationConverter !== 'undefined' && EquationConverter.needsEqField && !EquationConverter.needsEqField(seg.value)) {
-            // Simple math quantity/unit/number (e.g. $90\%$, $40$, $40~m$, $B - \cos\theta = 0$): Clean standard text runs
+            // সরল রাশি/একক (যেমন $90\%$, $40$): পরিষ্কার টেক্সট রান
             const simpleRuns = EquationConverter.createSimpleMathRuns(xmlDoc, seg.value, baseRPr, isU2B);
             newRuns.push(...simpleRuns);
             stats.convertedRuns++;
           } else {
-            // Complex equation: Convert LaTeX to EQ Field code
-            const eqCode = EquationConverter.latexToEqField(seg.value, isU2B);
-            const eqRuns = EquationConverter.createOpenXmlEqRuns(xmlDoc, eqCode, baseRPr, isU2B);
-            newRuns.push(...eqRuns);
-            stats.convertedRuns++;
+            // Part-9c: জটিল সমীকরণ → নেটিভ OMML (আগে EQ-ফিল্ডে বদলানো হতো, যা আধুনিক Word-এ
+            // এডিট করা যেত না এবং "Word equation too large to convert" এরর দিত)
+            const _ommlStr = (typeof EquationConverter !== 'undefined' && typeof EquationConverter.latexToOmml === 'function')
+              ? EquationConverter.latexToOmml(seg.value, isU2B) : '';
+            const _nodes = this._ommlStringToNodes(_ommlStr, xmlDoc);
+            if (_nodes && _nodes.length > 0) {
+              newRuns.push(..._nodes);
+              stats.convertedRuns++;
+            } else {
+              const eqCode = EquationConverter.latexToEqField(seg.value, isU2B);
+              const eqRuns = EquationConverter.createOpenXmlEqRuns(xmlDoc, eqCode, baseRPr, isU2B);
+              newRuns.push(...eqRuns);
+              stats.convertedRuns++;
+            }
           }
         } else if (seg.type === 'text' && seg.value) {
-          // Keep Unicode text intact in step 1!
+          // Unicode টেক্সট অটুট (ধাপ ১)
           const textRun = EquationConverter.createTextRun(xmlDoc, seg.value, null, baseRPr);
           newRuns.push(textRun);
         }
