@@ -18,6 +18,8 @@
      * Translates a LaTeX equation into a Word EQ Field code string.
      */
     static latexToEqField(latex, isU2B) {
+      // Part-9e: অ্যাকসেন্ট-পরিবার → combining (EQ-ফলব্যাকে কাঁচা \\vec/\\overline যাবে না)
+      latex = EquationConverter.applyAccentsToCombining(latex);
       if (typeof isU2B === 'undefined') isU2B = true;
       if (!latex) return "";
       let s = latex.trim();
@@ -930,10 +932,47 @@
         });
       }
 
+      // Part-9c-fix: OCR মাঝেমধ্যে একই সমীকরণের ভিতরে অতিরিক্ত `$` বসিয়ে ভেঙে দেয় —
+      // যেমন `$F(x, y, z) $= x$ ^3 + y^3$` বা `$\\ $theta =$ \\frac{\\pi}{3}$`।
+      // তখন দুই ম্যাথ-সেগমেন্টের মাঝে ছোট "গ্লু" টেক্সট পড়ে থাকে (=, +, ^, সংখ্যা…)।
+      // নিয়ম: মাঝের টুকরোয় বাংলা অক্ষর নেই, দৈর্ঘ্য ≤ ২৪, আর তাতে গণিত-সদৃশ চিহ্ন/কমান্ড আছে
+      // ⇒ ম্যাথ-ফ্র্যাগমেন্ট তিনটিকে জোড়া লাগিয়ে একটাই ইকুয়েশন বানাই।
+      const glueIsMath = (t) => {
+        const v = String(t || '');
+        if (!v.trim()) return true;                       // ফাঁকা
+        if (/[\u0980-\u09FF]/.test(v)) return false;      // বাংলা শব্দ = সত্যিকারের টেক্সট
+        if (v.length > 24) return false;                  // লম্বা বাক্য = টেক্সটই
+        return /[=+\-*/^_<>()\[\]{}\\.,'|!:]|\d/.test(v);
+      };
+      const merged = [];
+      for (let k = 0; k < segments.length; k++) {
+        const cur = segments[k];
+        if (cur && cur.type === 'math') {
+          let val = String(cur.value || '');
+          let m = k;
+          while (m + 2 < segments.length
+                 && segments[m + 1] && segments[m + 1].type === 'text' && glueIsMath(segments[m + 1].value)
+                 && segments[m + 2] && segments[m + 2].type === 'math') {
+            val = val.replace(/\s+$/, '') + ' ' + String(segments[m + 1].value || '').trim() + ' ' + String(segments[m + 2].value || '').replace(/^\s+/, '');
+            m += 2;
+          }
+          k = m;
+          // ছোট মেরামত: ভাঙা `\ theta` → `\theta` (ব্যাকস্ল্যাশ+ফাঁক+অক্ষর জোড়া লাগাই)।
+          // খেয়াল: এখানে sanitizePlainLatex ডাকা যাবে না — ওটি প্লেইন-টেক্সটের জন্য,
+          // প্রকৃত LaTeX (`\frac{\pi}{3}`) মেরে ফেলে।
+          val = val.replace(/\\\s+(?=[a-zA-Z])/g, '\\');
+          merged.push({ type: 'math', value: val });
+          continue;
+        }
+        merged.push(cur);
+      }
+      segments.length = 0;
+      for (const seg of merged) segments.push(seg);
+
       // Part-9c: টেক্সট-সেগমেন্টে পড়ে থাকা কাঁচা LaTeX ($, \\vec{}, \\frac{}{}) পরিষ্কার করি —
       // OCR-এ $...$ মাঝপথে ভেঙে গেলেও আর কাঁচা কোড ডকুমেন্টে যাবে না।
       for (let k = 0; k < segments.length; k++) {
-        if (segments[k] && segments[k].type === 'text' && /[\\$]/.test(String(segments[k].value || ''))) {
+        if (segments[k] && segments[k].type === 'text' && /[\\$`']/.test(String(segments[k].value || ''))) {
           segments[k] = { type: 'text', value: EquationConverter.sanitizePlainLatex(segments[k].value) };
         }
       }
@@ -1265,6 +1304,10 @@
       let s = String(latex);
 
       const symMap = [
+        // Part-9d: \operatorname{cosec} / \operatornamewithlimits{...} জাতীয় র্যাপার →
+        // ভিতরের নাম (Word-এ সাধারণ ফাংশন-নাম টেক্সট রান হিসেবেই ঠিক দেখায়)।
+        // আগে এগুলো কাঁচা \operatorname{...} হয়ে ডকুমেন্টে চলে যেত (ব্যবহারকারীর রিপোর্ট #৩)।
+        [/\\operatornamewithlimits\s*\{([^{}]+)\}|\\operatorname\*?\s*\{([^{}]+)\}/g, '$1$2'],
         // Greek letters
         [/\\theta\b|\\vartheta\b/g, '\u03B8'],
         [/\\pi\b/g, '\u03C0'],
@@ -1361,6 +1404,25 @@
      * Part-8b: LaTeX alias-নর্মালাইজেশন — EQ field / OMML / প্রিভিউ তিন পাথেই একই রূপ পায়।
      * যেমন: \dfrac → \frac; \vec{F} → F⃗; \overline{AB} → AB̄; \triangle → △; cases/vmatrix → পড়ার-উপযোগী রূপ।
      */
+    /**
+     * Part-9e: অ্যাকসেন্ট-পরিবার → combining চিহ্ন (টেক্সট/প্রিভিউ/EQ-ফলব্যাক পাথে)।
+     * OMML পাথ আলাদা — সেখানে m:acc/m:bar বানানো হয় (Word-এ মাথার উপরে চিহ্ন বসে)।
+     */
+    static applyAccentsToCombining(t) {
+      let s = String(t || '');
+      s = s.replace(/\\(?:vec|overrightarrow|overleftarrow)\s*\{([^{}]*)\}/g, '$1\u20D7');
+      s = s.replace(/\\overline\s*\{([^{}]*)\}/g, '$1\u0304');
+      s = s.replace(/\\bar\s*\{([^{}]*)\}/g, '$1\u0304');
+      s = s.replace(/\\underline\s*\{([^{}]*)\}/g, '$1\u0332');
+      s = s.replace(/\\widehat\s*\{([^{}]*)\}/g, '$1\u02C6');
+      s = s.replace(/\\hat\s*\{([^{}]*)\}/g, '$1\u02C6');
+      s = s.replace(/\\widetilde\s*\{([^{}]*)\}/g, '$1\u02DC');
+      s = s.replace(/\\tilde\s*\{([^{}]*)\}/g, '$1\u02DC');
+      s = s.replace(/\\ddot\s*\{([^{}]*)\}/g, '$1\u00A8');
+      s = s.replace(/\\dot\s*\{([^{}]*)\}/g, '$1\u02D9');
+      return s;
+    }
+
     static normalizeLatexAliases(latex) {
       if (!latex) return '';
       let s = String(latex);
@@ -1370,10 +1432,10 @@
       s = s.replace(/\\(?:d|t)?binom\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, 'C($1, $2)');
       // স্টাইল/সীমা কমান্ড বাদ
       s = s.replace(/\\(?:displaystyle|textstyle|scriptstyle|limits|nolimits)\b/g, '');
-      // ভেক্টর / বার / আন্ডারবার → combining চিহ্ন (সব Word-এ নিরাপদ)
-      s = s.replace(/\\(?:vec|overrightarrow|overleftarrow)\s*\{([^{}]*)\}/g, '$1\u20D7');
-      s = s.replace(/\\overline\s*\{([^{}]*)\}/g, '$1\u0304');
-      s = s.replace(/\\underline\s*\{([^{}]*)\}/g, '$1\u0332');
+      // Part-9e: ভেক্টর/বার/আন্ডারবার আর combining-চিহ্নে নামানো হয় না — OMML-এ সঠিক
+      // অ্যাকসেন্ট-এলিমেন্ট (<m:acc>/<m:bar>) বানিয়ে Word-এর মাথার উপরে চিহ্ন বসানো হয়।
+      // (আগে `\vec{a}` → `a⃗` এক রান হত ⇒ Word-এ তীর পাশে বসে যেত — ব্যবহারকারীর রিপোর্ট #৩।)
+      // প্লেইন-টেক্সট পাথে (sanitizePlainLatex) combining রূপ আগের মতোই থাকে।
       // ত্রিভুজ — সত্যিকারের △ (U+25B3)
       s = s.replace(/\\triangle\b/g, '\u25B3');
       // অদৃশ্য ডিলিমিটার \left. / \right.
@@ -1405,9 +1467,46 @@
      * Part-9c: প্লেইন টেক্সটে (ম্যাথ-নয়) পড়ে থাকা LaTeX-অবশিষ্ট পরিষ্কার করে।
      * OCR-এ $...$ মাঝপথে ভেঙে গেলে \\vec{A}, \\frac{a}{b}, $ ইত্যাদি কাঁচা টেক্সট হিসেবে বেরিয়ে যেত।
      */
+    /**
+     * Part-9e: `\$`-ছাড়া ব্যাকটিক-স্পানের ভিতরের ছোট LaTeX-escape → সরল ইউনিকোড টেক্সট।
+     * ব্যবহারকারীর নির্দেশ: ফাঁকা-থাকা নাম্বার/চিহ্ন ইকুয়েশন বাদে সাধারণ টেক্সটে থাকবে (ইংরেজি ফন্টে)।
+     */
+    static _unescapeMiniLatex(t) {
+      let s = String(t);
+      s = s.replace(/\\[{}]/g, function (m) { return m === '\\{' ? '{' : '}'; });
+      const map = {
+        '\\pm': '\u00B1', '\\mp': '\u2213', '\\times': '\u00D7', '\\div': '\u00F7',
+        '\\cdot': '\u00B7', '\\le': '\u2264', '\\leq': '\u2264', '\\ge': '\u2265',
+        '\\geq': '\u2265', '\\ne': '\u2260', '\\neq': '\u2260', '\\infty': '\u221E',
+        '\\emptyset': '\u2205', '\\varnothing': '\u2205', '\\degree': '\u00B0',
+        '\\angle': '\u2220', '\\parallel': '\u2225', '\\perp': '\u22A5'
+      };
+      for (const k of Object.keys(map)) {
+        s = s.split(k).join(map[k]);
+      }
+      s = s.replace(/\\sqrt\s*\{([^{}]*)\}/g, '\u221A($1)');
+      s = s.replace(/\\d?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '($1)/($2)');
+      // গুরুত্বপূর্ণ: { } অটুট রাখি — `\{3\}` মানে প্রদর্শনে `{3}` (সেট-নোটেশন)
+      s = s.replace(/\\/g, '').replace(/[ \t]{2,}/g, ' ');
+      return s;
+    }
+
     static sanitizePlainLatex(text) {
       if (!text) return '';
       let s = String(text);
+      // Part-9e: OCR মাঝেমধ্যে কোনো `$` ছাড়াই ব্যাকটিক-কোড-স্পানে LaTeX লিখে দেয়
+      // (যেমন ``\`\{3\}\`` বা ``\`\{\pm 3\}\``) — তখন কাঁচা `\{` `\}` ব্যাকটিকসহ ছাপা হয়ে যেত।
+      // প্রথমে ওই স্প্যানগুলো কোনো-`$`-হীন হলে সরল ইউনিকোড টেক্সটে নামাই।
+      s = s.replace(/`([^`]*)`/g, function (mm, inner) {
+        if (/\$/.test(inner)) return mm;                      // `$…$` — ম্যাথ, অপরিবর্তিত
+        if (!/\\/.test(inner)) return inner;                   // ব্যাকটিক-শুধু র‍্যাপার — খুলে দিই
+        return EquationConverter._unescapeMiniLatex(inner);
+      });
+      // ব্যাকটিক কখনো ডকুমেন্টে যাওয়ার নয় — যা টিকে আছে তা বাদ
+      s = s.replace(/`/g, '');
+      // সংখ্যা-জড়ানো একক কোটেশন (OCR আর্টিফ্যাক্ট: '32', 720') → নম্বরটুকু
+      s = s.replace(/'(\d[\d.,]*\d|\d)'/g, '$1');
+      s = s.replace(/(\d)'(?=[\s,.;।?!)]|$)/g, '$1');
       if (!/[\\$]/.test(s)) return s;
       // ১) ভেক্টর/বার/আন্ডারবার → combining চিহ্ন
       s = s.replace(/\\(?:vec|overrightarrow)\\s*\{([^{}]*)\}/g, '$1\u20D7');
@@ -1544,6 +1643,8 @@
       s = s.replace(/^\$\$+|\$\$+$/g, '').replace(/^\\\[|\\\]$/g, '').replace(/^\\\(|\\\)$/g, '').replace(/^\$+|\$+$/g, '').trim();
       s = EquationConverter.normalizeLatexAliases(s);
       s = EquationConverter.cleanLatexSymbols(s);
+      // Part-9e: ভিজ্যুয়াল প্রিভিউতে অ্যাকসেন্ট → combining চিহ্ন (তীর/বার অক্ষরের উপর বসে)
+      s = EquationConverter.applyAccentsToCombining(s);
 
       const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       const readGroup = (str, start) => {
@@ -1630,6 +1731,38 @@
         return -1;
       }
 
+      // Part-9e: অ্যাকসেন্ট-পরিবার (\vec, \bar, \hat …) → সত্যিকারের OMML এলিমেন্ট।
+      const ACCENTS = [
+        ['\\overrightarrow', 'acc', '\u20D7'], ['\\vec', 'acc', '\u20D7'],
+        ['\\overline', 'bar', ''], ['\\underline', 'barBot', ''],
+        ['\\bar', 'bar', ''], ['\\widehat', 'acc', '\u02C6'], ['\\hat', 'acc', '\u02C6'],
+        ['\\widetilde', 'acc', '\u02DC'], ['\\tilde', 'acc', '\u02DC'],
+        ['\\ddot', 'acc', '\u00A8'], ['\\dot', 'acc', '\u02D9']
+      ];
+      function accentXml(kind, chr, arg) {
+        const inner = '<m:e>' + parseChunk(arg) + '</m:e>';
+        if (kind === 'acc') return '<m:acc><m:accPr><m:chr m:val="' + chr + '"/></m:accPr>' + inner + '</m:acc>';
+        if (kind === 'barBot') return '<m:bar><m:barPr><m:pos m:val="bot"/></m:barPr>' + inner + '</m:bar>';
+        return '<m:bar><m:barPr><m:pos m:val="top"/></m:barPr>' + inner + '</m:bar>';
+      }
+      function parseAccentAt(str, idx) {
+        for (const [cmd, kind, chr] of ACCENTS) {
+          if (str.startsWith(cmd, idx) && !/[a-zA-Z]/.test(str[idx + cmd.length] || '')) {
+            let bStart = str.indexOf('{', idx + cmd.length);
+            let arg = null, next = idx;
+            if (bStart !== -1 && bStart <= idx + cmd.length + 1) {
+              const bEnd = findMatchingBrace(str, bStart);
+              if (bEnd !== -1) { arg = str.slice(bStart + 1, bEnd); next = bEnd + 1; }
+            } else {
+              const ch = str[idx + cmd.length];
+              if (ch) { arg = ch; next = idx + cmd.length + 1; }
+            }
+            if (arg !== null) return { out: accentXml(kind, chr, arg), next };
+          }
+        }
+        return null;
+      }
+
       function parseChunk(str) {
         if (!str) return '';
         let out = '';
@@ -1670,11 +1803,20 @@
               let radEnd = findMatchingBrace(str, radStart);
               if (radEnd !== -1) {
                 const rad = str.slice(radStart + 1, radEnd);
-                out += '<m:rad><m:radPr><m:degHide m:val="' + (deg ? 'off' : 'on') + '"/></m:radPr>' + (deg ? '<m:deg>' + parseChunk(deg) + '</m:deg>' : '') + '<m:e>' + parseChunk(rad) + '</m:e></m:rad>';
+                // Part-9c-fix: Word নিজে সর্বদা `<m:deg/>` এলিমেন্ট রাখে (ডিগ্রি না থাকলেও)।
+                // খালি `<m:deg/>` বাদ দিলে Microsoft Word ঠিকই চলে, কিন্তু LibreOffice-এ
+                // র্যাডিক্যালের ভিতরের সংখ্যা লোপ পায় (√⃞) — তাই Word-এর হুবহু গঠন রাখা হলো।
+                out += '<m:rad><m:radPr><m:degHide m:val="' + (deg ? 'off' : 'on') + '"/></m:radPr>' + (deg ? '<m:deg>' + parseChunk(deg) + '</m:deg>' : '<m:deg/>') + '<m:e>' + parseChunk(rad) + '</m:e></m:rad>';
                 i = radEnd + 1;
                 continue;
               }
             }
+          }
+
+          // Part-9e: অ্যাকসেন্ট-পরিবার → সত্যিকারের OMML এলিমেন্ট (তীর/বার/টিল্ডে মাথার উপরে বসে)
+          {
+            const _acc = parseAccentAt(str, i);
+            if (_acc) { out += _acc.out; i = _acc.next; continue; }
           }
 
           // 3. Regular chars / expressions
@@ -1684,9 +1826,25 @@
           textChunk += str[i];
           i++;
           
-          while (i < str.length && !str.startsWith('\\frac', i) && !str.startsWith('\\sqrt', i)) {
-            textChunk += str[i];
+          // Part-9e: শুধু **স্ক্রিপ্ট-গোষ্ঠীর** ভিতরে (`_{\sqrt{27}}`, `^{\frac{1}{2}}`) থাকা
+          // \frac/\sqrt চাঙ্ক ভাঙবে না (আগে `log_{\sqrt{27}}` নষ্ট হত)। সাধারণ সেট-ব্রেস
+          // `{x ∈ R : x ≠ \frac{1}{2}}`-এর ভিতরের \frac কিন্তু আগের মতোই ফ্র্যাকশন হিসেবে পার্স হবে।
+          const _bstack = [];
+          let _prev = '';
+          for (const ch of textChunk) {
+            if (ch === '{') _bstack.push(_prev === '_' || _prev === '^' ? 'script' : 'plain');
+            else if (ch === '}') _bstack.pop();
+            _prev = ch;
+          }
+          while (i < str.length) {
+            const breakHere = !_bstack.includes('script') && (str.startsWith('\\frac', i) || str.startsWith('\\sqrt', i));
+            if (breakHere) break;
+            const ch2 = str[i];
+            if (ch2 === '{') _bstack.push(_prev === '_' || _prev === '^' ? 'script' : 'plain');
+            else if (ch2 === '}') _bstack.pop();
+            textChunk += ch2;
             i++;
+            _prev = ch2;
           }
 
           if (textChunk) {
@@ -1724,13 +1882,18 @@
               res += '<m:sSub><m:e></m:e><m:sub>' + parseChunk(scriptVal) + '</m:sub></m:sSub>';
             }
           } else {
-            // Collect plain text until next ^ or _
+            // Collect plain text until next ^ or _ (কিংবা অ্যাকসেন্ট-কমান্ড)
             let plain = '';
-            while (j < tStr.length && tStr[j] !== '^' && tStr[j] !== '_') {
+            while (j < tStr.length && tStr[j] !== '^' && tStr[j] !== '_' && !parseAccentAt(tStr, j)) {
               plain += tStr[j];
               j++;
             }
-            if (j < tStr.length && (tStr[j] === '^' || tStr[j] === '_')) {
+            const _accNext = (j < tStr.length && tStr[j] !== '^' && tStr[j] !== '_') ? parseAccentAt(tStr, j) : null;
+            if (_accNext) {
+              if (plain) res += '<m:r><m:t xml:space="preserve">' + escapeXml(plain) + '</m:t></m:r>';
+              res += _accNext.out;
+              j = _accNext.next;
+            } else if (j < tStr.length && (tStr[j] === '^' || tStr[j] === '_')) {
               // The last character in `plain` is the base for the script
               const base = plain.slice(-1);
               const prefix = plain.slice(0, -1);

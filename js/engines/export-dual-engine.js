@@ -23,6 +23,10 @@
     out = out.replace(/[ \t]*পৃষ্ঠা[ \t]*[০-৯0-9]+[ \t]*\/[ \t]*[০-৯0-9]+[ \t]*={2,}[ \t]*/g, '');
     // ৩) কভারেজ MANIFEST লাইন
     out = out.replace(/^[ \t]*MANIFEST\s*[:\uFF1A][^\r\n]*/gm, '');
+    // ৩.৫) Part-9d: মার্কডাউন হেডিং-চিহ্ন (`##`, `###`) লিক বন্ধ — শুধু সেগমেন্ট-হেডিং লাইনে,
+    //      প্রশ্ন-নম্বর দিয়ে শুরু হওয়া লাইনে নয় (সেখানে পার্সার নিজেই `#` সামলায়)।
+    //      OCR `## উদাহরণ ২৯।` জাতীয় লাইন দিলে আগে `##` প্রিন্ট হয়ে যেত।
+    out = out.replace(/^[ \t]*#{1,6}[ \t]*(?![\u09E6-\u09EF\d]+[।.)])/gm, '');
     // ৪) খালি লাইন জমলে দুইয়ে নামানো (লাইন-এন্ডিং অপরিবর্তিত)
     const nl = out.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
     out = out.replace(/(?:\r?\n){3,}/g, nl + nl);
@@ -164,7 +168,7 @@
             try {
               const omml = _EqC.latexToOmml(rawLatex, isBijoy);
               const zone = _EqC.ommlToRtfMath(omml);
-              if (zone && zone.rtf && /\\m[frsnd]/.test(zone.rtf) && !/\\mr \}/.test(zone.rtf)) {
+              if (zone && zone.rtf && /\\m(?:f|rad|sSup|sSub|sSubSup|acc|bar|nary|d|func|groupChr|limLow|limUpp|borderBox|box)\{|\\mr [^{}]/.test(zone.rtf) && !/\\mr \}/.test(zone.rtf)) {
                 out += zone.rtf;
                 continue;
               }

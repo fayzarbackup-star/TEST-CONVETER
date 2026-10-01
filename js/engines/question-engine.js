@@ -310,17 +310,36 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
      * Parses MCQ options even when fused together (e.g. ক) আমানুনখ) সিলমুন) or wrapped in brackets (e.g. (ক) ... (খ) ...).
      */
     parseMcqOptions(line) {
+      // Part-9e: LaTeX/কোড-স্প্যানের ভিতরের অক্ষরকে অপশন-লেবেল ভাবা নিষিদ্ধ।
+      // আগে `$3\vec{a} - 2\vec{b}$`-এর ভিতরের `a`/`b`-কে ইংরেজি লেবেল `a.`, `b.` ভেবে ভেঙে
+      // ফেলা হত ⇒ অপশনে ভূত-লেবেল (ক a খ b) আর `\vec` হারিয়ে যেত (ব্যবহারকারীর স্ক্রিনশট #৩)।
+      // এখন: কোড-স্প্যানগুলো (ব্যাকটিক, $..$, $$..$$) মাস্ক করে কেবল বাইরের লেখায় লেবেল খোঁজা হয়।
+      const spans = [];
+      const masked = String(line).replace(/`[^`]*`|\$\$[\s\S]*?\$\$|\$[^$]*\$/g, (mm) => {
+        spans.push(mm);
+        return '\u0000' + (spans.length - 1) + '\u0000';
+      });
+
       const regex = /(?:^|\s*)(?:[\(\[\{（]?([ক-ঘa-dABCD])[.)\]\}]\s*)(.*?)(?=(?:[\s\t]*[\(\[\{（]?[ক-ঘa-dABCD][.)\]\}]|$))/g;
       const options = [];
       let m;
-      while ((m = regex.exec(line)) !== null) {
-        let text = m[2].trim();
-        // Strip any trailing opening bracket captured before next option
+      // মাস্ক-করা অংশ বাদ দিয়ে লেবেল-পজিশন খুঁজি
+      const labelPositions = [];
+      let mm2;
+      const labelRe = /(?:^|[\s\t])(?:[\(\[\{（]?([ক-ঘa-dABCD])[.)\]\}]\s*)/g;
+      while ((mm2 = labelRe.exec(masked)) !== null) {
+        labelPositions.push({ label: mm2[1], start: mm2.index + (mm2[0].length - mm2[0].replace(/^[\s\t]+/, '').length), contentStart: labelRe.lastIndex });
+      }
+      if (labelPositions.length === 0) return options;
+      for (let i = 0; i < labelPositions.length; i++) {
+        const end = i + 1 < labelPositions.length ? labelPositions[i + 1].start : masked.length;
+        let text = masked.slice(labelPositions[i].contentStart, end).trim();
+        // ট্রেইলিং খোলা ব্র্যাকেট বাদ
         text = text.replace(/[\(\[\{（]+$/, '').trim();
+        // মাস্ক-প্লেসহোল্ডার ফিরিয়ে আনি
+        text = text.replace(/\u0000(\d+)\u0000/g, (x, idx) => spans[parseInt(idx, 10)] || '');
         text = this.normalizeRomanText(text);
-        if (text) {
-          options.push({ label: m[1], text });
-        }
+        if (text) options.push({ label: labelPositions[i].label, text });
       }
       return options;
     },

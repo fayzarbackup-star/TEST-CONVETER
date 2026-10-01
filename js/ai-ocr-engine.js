@@ -3510,7 +3510,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             try {
               if (typeof EquationConverter.ommlToRtfMath === 'function' && typeof EquationConverter.latexToOmml === 'function') {
                 const _z = EquationConverter.ommlToRtfMath(EquationConverter.latexToOmml(seg.value, isBijoy));
-                if (_z && _z.rtf && /\\m[frsnd]/.test(_z.rtf) && !/\\mr \}/.test(_z.rtf)) _zone = _z.rtf;
+                if (_z && _z.rtf && /\\m(?:f|rad|sSup|sSub|sSubSup|acc|bar|nary|d|func|groupChr|limLow|limUpp|borderBox|box)\{|\\mr [^{}]/.test(_z.rtf) && !/\\mr \}/.test(_z.rtf)) _zone = _z.rtf;
               }
             } catch (e) { _zone = null; }
             if (_zone) {

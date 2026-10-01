@@ -173,5 +173,83 @@ const MCQ = [
   T('.doc ইঞ্জিনে পুরোনো EQ-ফিল্ড HTML আর বানানো হয় না', !/mso-element:field-begin/.test(d2d));
 }
 
+
+// ---------- ৯) Part-9c-fix2: OCR-এর ভাঙা `$` জোড়া লাগানো ----------
+{
+  const brk1 = EC.splitTextAndMath('$F(x, y, z) $= x$ ^3 + y^3 + z^3 - 3xyz$').filter(s => s.type === 'math');
+  T('ভাঙা-১: তিন টুকরো → এক ইকুয়েশন', brk1.length === 1 && brk1[0].value.includes('y^3 + z^3'), JSON.stringify(brk1.map(b => b.value)));
+
+  const brk2 = EC.splitTextAndMath('$\\ $theta =$ \\frac{\\pi}{3}$ হলে দেখাও').filter(s => s.type === 'math');
+  T('ভাঙা-২: `\\ theta` মেরামত + \\frac অটুট', brk2.length === 1 && /\\theta = \\frac\{\\pi\}\{3\}/.test(brk2[0].value), JSON.stringify(brk2.map(b => b.value)));
+
+  const brk3 = EC.splitTextAndMath('$x^2 + y^2 + z^ $2 = xy + yz +$  zx$।').filter(s => s.type === 'math');
+  T('ভাঙা-৩: জোড়া লেগে এক ইকুয়েশন', brk3.length === 1 && /zx$/.test(brk3[0].value.trim()), JSON.stringify(brk3.map(b => b.value)));
+
+  // বাংলা-গ্লু থাকলে জোড়া লাগা যাবে না (সত্যিকারের টেক্সট)
+  const noMerge = EC.splitTextAndMath('$a + b$ এরপর $c + d$');
+  T('বাংলা-গ্লু থাকলে আলাদাই থাকে', noMerge.filter(s => s.type === 'math').length === 2, JSON.stringify(noMerge.map(s => s.type + ':' + s.value)));
+
+  const liveCqPath = '/home/user/probe/live3/height_cq.live-preview.txt';
+  if (fs.existsSync(liveCqPath)) {
+    const liveCq = fs.readFileSync(liveCqPath, 'utf8');
+    const xml = Export.renderDocxRuns(liveCq.split('\\n').find(l => l.includes('theta')) || '', {}, { sz: 24 });
+    T('লাইভ-OCR-এর `$\\ $theta` লাইন এখন OMML', /<m:oMath/.test(xml), xml.slice(0, 100));
+  } else {
+    T('লাইভ-OCR-এর `$\\ $theta` স্কিপ করা হল (ফাইল নেই)', true);
+  }
+}
+
+
+// ---------- ১০) Part-9d: \operatorname র্যাপার + ## হেডিং-লিক ----------
+{
+  const op = EC.latexToOmml('\\operatorname{cosec}(\\theta)', false) || '';
+  T('\\operatorname{cosec} → cosec (কাঁচা র্যাপার নেই)', /cosec/.test(op.replace(/<[^>]+>/g, '')) && !/operatorname/.test(op), op.replace(/<[^>]+>/g, '').slice(0, 60));
+  const opw = EC.latexToOmml('\\operatornamewithlimits{lim}_{x \\to 0}', false) || '';
+  T('\\operatornamewithlimits → ভিতরের নাম', !/operatornamewithlimits/.test(opw), opw.replace(/<[^>]+>/g, '').slice(0, 60));
+
+  // ## হেডিং-লিক: `## উদাহরণ ২৯।` লাইনে ## আর থাকবে না, কিন্তু `## ১২।` প্রশ্ন-শিরোনাম অটুট
+  const html = String((await Pipeline.process('## ১২। `$x$` যাচাই।\n## উদাহরণ ২৯। `$y = x - 3$`\nক. দেখাও।', { docType: 'EXAM_CQ', outputFormat: 'html' })).content || '');
+  const plain = html.replace(/<[^>]*>/g, '');
+  T('## হেডিং-লিক নেই', !/#/.test(plain), plain.slice(0, 80));
+  T('প্রশ্ন-শিরোনাম অটুট (১২।)', plain.includes('১২।'));
+  T('"উদাহরণ ২৯" লাইন থাকেছে (তথ্য হারায়নি)', plain.includes('উদাহরণ ২৯'));
+}
+
+
+// ---------- ১১) Part-9e: ভূত-লেবেল, ভেক্টর-তীর (<m:acc>), কোটেশন-আর্টিফ্যাক্ট, log_{√} ----------
+{
+  // (ক) MCQ-তে `$3\vec{a} - 2\vec{b}$`-এর ভিতরের a/b আর ভূত-লেবেল বানাবে না
+  const line = '\tক. `$3\\vec{a} - 2\\vec{b}$`\tখ. `$-3\\vec{a} + 2\\vec{b}$`\tগ. `$7\\vec{a} - 4\\vec{b}$`\tঘ. `$7\\vec{a} + 4\\vec{b}$`';
+  const qe2 = require('../js/engines/question-engine.js');
+  const opts = qe2.parseMcqOptions(line);
+  T('ভূত-লেবেল নেই (ঠিক ৪টি অপশন ক/খ/গ/ঘ)', opts.length === 4 && opts.map(o => o.label).join('') === 'কখগঘ', opts.map(o => o.label).join(''));
+  T('`\\vec` অপশনে অটুট', opts[0].text.includes('\\vec{a}'), opts[0].text.slice(0, 40));
+
+  // (খ) ভেক্টর → সত্যিকারের OMML অ্যাকসেন্ট (combining নয়)
+  const vo = EC.latexToOmml('5\\vec{a} - 3\\vec{b}', false) || '';
+  T('ভেক্টর = <m:acc> ×২ (মাথার উপরে তীর)', (vo.match(/<m:acc>/g) || []).length === 2, (vo.match(/<m:acc>/g) || []).length);
+  T('ভেক্টরে combining-চিহ্ন নেই (রানের টেক্সট পরিষ্কার)', !/\u20D7/.test((vo.match(/<m:t[^>]*>[^<]*<\/m:t>/g) || []).join('')), vo.replace(/<[^>]+>/g, '').slice(0, 40));
+  T('m:acc-এর chr = U+20D7 (Word-এর মানক)', /<m:chr m:val="\u20D7"\/>/.test(vo), (vo.match(/<m:chr[^>]*>/) || [''])[0]);
+  T('$\\overline{AB}$ = <m:bar>', /<m:bar>/.test(EC.latexToOmml('\\overline{AB}', false) || ''));
+
+  // (গ) কোটেশন-আর্টিফ্যাক্ট + ব্যাকটিক-LaTeX
+  T("720' → 720", EC.sanitizePlainLatex("সহগ 720' হলে") === 'সহগ 720 হলে', EC.sanitizePlainLatex("সহগ 720' হলে"));
+  T("'32' → 32", EC.sanitizePlainLatex("উত্তর '32' সঠিক") === 'উত্তর 32 সঠিক', EC.sanitizePlainLatex("উত্তর '32' সঠিক"));
+  T('`\\{3\\}` → {3}', EC.sanitizePlainLatex('`\\{3\\}`') === '{3}', EC.sanitizePlainLatex('`\\{3\\}`'));
+  T('`\\{\\pm 3\\}` → {± 3}', EC.sanitizePlainLatex('`\\{\\pm 3\\}`').includes('±') && !/\\\\/.test(EC.sanitizePlainLatex('`\\{\\pm 3\\}`')), EC.sanitizePlainLatex('`\\{\\pm 3\\}`'));
+  const btSegs = EC.splitTextAndMath('মান `$x$` এর পর `\{3\}`');
+  T('ব্যাকটিক-$ ম্যাথ হিসেবে টিকে আছে', btSegs.some(g => g.type === 'math' && g.value.includes('x')), JSON.stringify(btSegs.map(g => g.type + ':' + g.value)));
+  T('ব্যাকটিক-LaTeX টেক্সটে ` নেই', !btSegs.some(g => g.type === 'text' && g.value.includes('`')), JSON.stringify(btSegs.map(g => g.type + ':' + g.value)));
+
+  // (ঘ) `log_{\sqrt{27}}` — ব্রেসে আটকাবে না, √27 সাবস্ক্রিপ্টে যাবে
+  const lo = EC.latexToOmml('\\log_{\\sqrt{27}}, x = 3\\frac{1}{3}', false) || '';
+  T('log_√27: ব্রেস নেই', !/\{/.test(lo.replace(/<[^>]+>/g, '')) || !/log \{/.test(lo.replace(/<[^>]+>/g, '')), lo.replace(/<[^>]+>/g, '').slice(0, 40));
+  T('log_√27: √27 সাবস্ক্রিপ্টে (m:rad m:sub-এ)', /<m:sub>\s*<m:rad>/.test(lo.replace(/\s+/g, '')), lo.slice(0, 90));
+
+  // (ঙ) সেট-নোটেশনের ভিতরের \frac অটুট (m:f)
+  const so = EC.latexToOmml('\\{x \\in \\mathbb{R} : x \\neq \\frac{1}{2}\\}', false) || '';
+  T('সেট-নোটেশনে ভগ্নাংশ টিকে আছে (m:f)', /<m:f>/.test(so), so.replace(/<[^>]+>/g, '').slice(0, 50));
+}
+
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);
