@@ -25,6 +25,13 @@ console.log('══ ফাইল:', file);
 console.log('   আকার:', s.length, 'বাইট');
 console.log('   EQ ফিল্ড:', fields_begin, '/ sep:', seps, '/ end:', ends, '| MsoFieldCode span:', cnt(/class="MsoFieldCode"/g));
 console.log('   OMML (m:):', cnt(/<\/?m:[a-zA-Z]/g), '| ম্যাথ-জোন (\\mmath):', cnt(/\\mmath/g), '| <i> সংখ্যা-ভুল:', cnt(/<i>[0-9]/g));
+{
+  const ital = (s.match(/<i>([^<]*)<\/i>/g) || []).map((r) => r.slice(3, -4));
+  const inCode = (s.match(/mso-element:field-begin[\s\S]{0,900}?mso-element:field-end/g) || [])
+    .reduce((n, reg) => n + (reg.match(/<i>/g) || []).length, 0);
+  const bad = ital.filter((x) => !/^[A-Za-z]+$/.test(x));
+  console.log('   Part-9k ইটালিক: মোট', ital.length, '| ফিল্ড-কোডের ভেতরে', inCode, '| অস্বাভাবিক (সংখ্যা/সুইচ):', bad.length);
+}
 console.log();
 
 // code = begin→(separator?result)?  , terminator = field-end (lookahead: দুই কাঠামোতেই কাজ করে)

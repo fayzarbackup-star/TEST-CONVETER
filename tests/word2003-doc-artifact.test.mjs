@@ -7,6 +7,9 @@
  * নিয়ম (৯i):  EQ ফিল্ড = **ক্লিন ফিল্ড** — begin + ` EQ <কোড>` + end **একই supportFields block-এ**;
  *             কোনো field-separator নেই, separator↔end-এ কোনো ক্যাশ-টেক্সট নেই
  *             (js/docx-handler.js:L1428-এর গঠন)। ⇒ Word 2003-এ ডাবল-ক্লিক-এডিটেও ডুপ অসম্ভব।
+ * নিয়ম (৯k):  ফিল্ড-কোডের ভেতরের **চলক-অক্ষর** <i>-রানে মোড়া (EQ রেজাল্ট null ⇒ পর্দায়
+ *             ফরম্যাটিং আসে কোডের run থেকেই) — সংখ্যা/চিহ্ন ও `\F`/`\S`/`\up4` সুইচ-টোকেন
+ *             খাড়া; কোডের **অক্ষর হুবহু অপরিবর্তিত** (ফরম্যাটিং কেবল রান-লেভেলে)।
  */
 import fs from 'fs';
 import path from 'path';
@@ -88,18 +91,46 @@ async function runConvert(docMath) {
   T('EQ সুইচ আছে (\\F( ভগ্নাংশ)', cnt(html, /EQ\s*[^\n<]*\\F\(/g) > 0, cnt(html, /EQ[^\n<]*\\F\(/g));
 
   // ৯i-এর মূল প্রমাণ: begin+কোড+end একই supportFields block-এ (MsoFieldCode span)
-  const cleanBlocks = cnt(html, /<!--\[if supportFields\]><span class="MsoFieldCode"><span[^>]*field-begin[^>]*><\/span><span[^>]*mso-spacerun[^>]*>&nbsp;<\/span>EQ [\s\S]{0,300}?<span[^>]*field-end[^>]*><\/span><\/span><!\[endif\]-->/g);
+  const cleanBlocks = cnt(html, /<!--\[if supportFields\]><span class="MsoFieldCode"><span[^>]*field-begin[^>]*><\/span><span[^>]*mso-spacerun[^>]*>&nbsp;<\/span>EQ [\s\S]{0,900}?<span[^>]*field-end[^>]*><\/span><\/span><!\[endif\]-->/g);
   T('৯i: প্রতিটি ফিল্ড = এক ব্লকে begin→কোড→end (MsoFieldCode)', cleanBlocks === fields, `${cleanBlocks} / ${fields}`);
   T('৯i: separator-ব্লক একটিও নেই', cnt(html, /field-separator/g) === 0);
 
-  // প্রতিটি begin→end-এর মাঝে কেবল EQ কোড — <i>/italic/Font-style ক্যাশ নেই
-  let innerBad = 0;
-  const re = /mso-element:field-begin[^>]*><\/span>([\s\S]{0,320}?)<span[^>]*mso-element:field-end/g;
+  // প্রতিটি begin→end-এর মাঝে কেবল EQ কোড + অক্ষরের <i>-রান (ক্যাশ-ফলাফল নেই)
+  let innerBad = 0, regions = 0, regionsWithItalic = 0, italicRuns = 0, italicBad = 0, switchInItalic = 0, tagLeak = 0;
+  const re = /mso-element:field-begin[^>]*><\/span>([\s\S]{0,900}?)<span[^>]*mso-element:field-end/g;
+  const FN = /^(?:sin|cos|tan|cot|sec|csc|log|ln|lim|max|min|exp|det|mod|deg|arcsin|arccos|arctan|sinh|cosh|tanh)$/i;
   let m;
   while ((m = re.exec(html)) !== null) {
-    if (/<i>|font-style\s*:\s*italic/i.test(m[1]) || !/EQ\s/.test(m[1])) innerBad++;
+    const region = m[1];
+    regions++;
+    const textOnly = region.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ');
+    if (!/^\s*EQ\s/.test(textOnly)) innerBad++;                       // কোড ছাড়া কিছু থাকলেই ধরা পড়বে
+    if (/<sup>|<sub>|font-style\s*:\s*italic/i.test(region)) innerBad++;   // ক্যাশ-বডির চিহ্ন
+    if (/&lt;i&gt;|&amp;lt;/.test(region)) tagLeak++;                   // ট্যাগ টেক্সট হয়ে গেলে
+    const runs = region.match(/<i>([^<]*)<\/i>/g) || [];
+    if (runs.length) regionsWithItalic++;
+    for (const r of runs) {
+      italicRuns++;
+      const inner = r.slice(3, -4);
+      if (!/^[A-Za-z]+$/.test(inner) || FN.test(inner)) italicBad++;     // সংখ্যা/ফাংশন-নাম ইটালিক হলে ব্যর্থ
+      if (inner.includes('\\') || inner.includes('(')) switchInItalic++;
+    }
+    if (/\\<i>/.test(region)) switchInItalic++;                        // সুইচ-অক্ষর ভেঙে ইটালিক হলে
   }
-  T('৯i: begin↔end-এর মাঝে কেবল EQ কোড (ক্যাশ-টেক্সট/ইটালিক নেই)', innerBad === 0, innerBad);
+  T('৯k: begin↔end-এর মাঝে শুধু EQ কোড (+অক্ষরে <i>) — ক্যাশ-টেক্সট নেই', innerBad === 0, innerBad);
+  T('৯k: <i>-রান আছে এবং কেবল চলক-অক্ষরে (সংখ্যা/ফাংশন-নাম নয়)', italicRuns > 0 && italicBad === 0 && regionsWithItalic > 0, { italicRuns, italicBad, regionsWithItalic });
+  T('৯k: সুইচ-টোকেন (`\\F`, `\\S`, `\\up4`) ইটালিক হয়নি', switchInItalic === 0, switchInItalic);
+  T('৯k: কোডে ট্যাগ টেক্সট-লিক নেই (`&lt;i&gt;` শূন্য)', tagLeak === 0, tagLeak);
+  // স্যুইচবিহীন সাধারণ ম্যাথ (x = 5) plain-span পাথে বৈধভাবে <i> পায় — তাই ফিল্ড-গণনার বদলে
+  // ডকুমেন্ট-জুড়ে আসল নিরাপত্তা-নিয়ম মাপি: প্রতিটি <i> কেবল চলক-অক্ষর ধরে (সংখ্যা/সুইচ/চিহ্ন নয়)।
+  const allItalics = html.match(/<i>([^<]*)<\/i>/g) || [];
+  const badItalic = allItalics.filter((r) => {
+    const inner = r.slice(3, -4);
+    return !/^[A-Za-z]+$/.test(inner) || FN.test(inner);
+  });
+  T('৯k: ফিল্ড-কোডের ভেতরে <i>-রান আছে (ইটালিক থেকেই আঁকবে)', italicRuns > 0, italicRuns);
+  T('৯k: ডকুমেন্টের প্রতিটি <i> কেবল চলক-অক্ষর (সংখ্যা/সুইচ/চিহ্ন নয়)', badItalic.length === 0, badItalic.slice(0, 3));
+  T('৯i: ক্যাশ-ফলাফল-স্প্যান কোথাও নেই', cnt(html, /<span style="font-style:italic;">/g) === 0, cnt(html, /<span style="font-style:italic;">/g));
 
   const vis = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
   T('.doc-এ কাঁচা LaTeX/`$` নেই', cnt(vis, /\$|\\(frac|sqrt|vec|overline)\b/g) === 0);

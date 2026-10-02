@@ -64,6 +64,31 @@
         .join('');
     }
 
+    /**
+     * Part-9k: EQ ফিল্ড-কোডের ভেতরের চলক-অক্ষরগুলোকে ইটালিক রান করা।
+     * কেন কোডে: EQ ফিল্ডের ফলাফল Word সবসময় **null** সেভ করে (Murray Sargent, MS —
+     * "EQ fields always have a null field result")। তাই পর্দায় রাশি আঁকা হয়
+     * ফিল্ড-কোডের run-ফরম্যাটিং থেকেই। ৯i-তে ক্যাশ-ফলাফল বাদ দেওয়ায় ইটালিক-রান
+     * আর কোথাও ছিল না ⇒ স্বাভাবিক ভিউতে অক্ষর খাড়া দেখাত (ব্যবহারকারীর রিপোর্ট)।
+     * নিয়ম: `\F` `\S` `\up4` `\do8` জাতীয় সুইচ/অপশন টোকেন ও sin/cos/log… ফাংশন-নাম
+     * খাড়া; কেবল সাধারণ চলক-অক্ষর <i>-এ মোড়া; সংখ্যা/চিহ্ন অপরিবর্তিত।
+     * নিরাপত্তা: ফরম্যাটিং কেবল রান-লেভেলে — কোডের **অক্ষর হুবহু আগের মতো**, তাই
+     * EQ পার্সিং/এডিটিং কিছুই বদলায় না (ট্যাগ কোডের টেক্সট নয়)।
+     */
+    _styleEqCodeLetters(rawCode) {
+      const FN = /^(?:sin|cos|tan|cot|sec|csc|log|ln|lim|max|min|exp|det|mod|deg|arcsin|arccos|arctan|sinh|cosh|tanh)$/i;
+      const esc = (x) => this._escapeHtml(x);
+      return String(rawCode === undefined || rawCode === null ? '' : rawCode)
+        .split(/(\\[A-Za-z]{1,3}\d*|[A-Za-z]+)/g)
+        .map((part) => {
+          if (!part) return '';
+          if (/^\\[A-Za-z]/.test(part)) return esc(part);
+          if (/^[A-Za-z]+$/.test(part)) return FN.test(part) ? esc(part) : `<i>${esc(part)}</i>`;
+          return esc(part);
+        })
+        .join('');
+    }
+
     _ommlToLegacyEqHtml(node, mode = 'eqfield') {
       try {
         if (!node) return '';
@@ -116,7 +141,7 @@
             + `</span>`;
         }
         return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
-          + `<!--[if supportFields]><span class="MsoFieldCode"><span style='mso-element:field-begin'></span><span style='mso-spacerun:yes'>&nbsp;</span>EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-end'></span></span><![endif]-->`
+          + `<!--[if supportFields]><span class="MsoFieldCode"><span style='mso-element:field-begin'></span><span style='mso-spacerun:yes'>&nbsp;</span>EQ ${this._styleEqCodeLetters(eqCode)} <span style='mso-element:field-end'></span></span><![endif]-->`
           + `</span>`;
       } catch (e) { return ''; }
     }
