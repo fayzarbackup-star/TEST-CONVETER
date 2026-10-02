@@ -41,8 +41,8 @@
      * তাই `.doc`-এ Equation Editor 3.0-এর `EQ` ফিল্ড (2003-নেটিভ, এডিটযোগ্য);
      * `.docx` আগের মতোই OMML রাখে (আধুনিক Word-এ নেটিভ ও এডিটযোগ্য)।
      * @param {Node} node   m:oMath / m:oMathPara নোড
-     * @param {string} mode 'eqfield' (ডিফল্ট — **ফলাফল-ক্যাশ খালি**: Word নিজে EQ কোড থেকে আঁকে,
-     *                            তাই এডিটরে ঢুকলে কোনো অতিরিক্ত/ডুপ টেক্সট যায় না — Part-9h)
+     * @param {string} mode 'eqfield' (ডিফল্ট — **ক্লিন ফিল্ড**: begin+কোড+end একই block-এ,
+     *                            separator/ক্যাশ-টেক্সট কিছুই নেই — Part-9i; এডিটে ডুপ অসম্ভব)
      *                     | 'cached' (৯f-এর আচরণ: ফিল্ড-ফলাফলে পড়ার-উপযোগ্য ক্যাশ টেক্সটও থাকে)
      *                     | 'plain'  (ফিল্ড ছাড়াই শুধু ইটালিক পাঠ্য)
      * @returns {string} Word-HTML
@@ -100,16 +100,23 @@
           // Part-9g: অক্ষর ইটালিক, সংখ্যা খাড়া (EE-স্টাইল)
           return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(body)}</span>`;
         }
-        // Equation Editor 3.0 EQ ফিল্ড — Microsoft Word HTML-এর ৫-অংশের ফিল্ড গঠন
-        // Part-9h: ফলাফল-অঞ্চল **খালি** রাখা হয় (RTF পাথের `{\fldrslt }`-এর মতোই)।
-        // কারণ: Word 2003-এ সমীকরণ ডাবল-ক্লিক করে EE-এ এডিটে ঢুকলে ফিল্ডের ক্যাশ-ফলাফল
-        // টেক্সটটাও ভিতরে ঢুকে ডুপ হয় (ব্যবহারকারীর রিপোর্ট: "n−1/2" অতিরিক্ত)। EQ একটি
-        // display-ফিল্ড — Word খোলার/প্রিন্টের সময় কোড থেকেই সমীকরণ আঁকে (MS doc-confirmed)।
-        const resultHtml = (mode === 'cached') ? `<span style="font-style:italic;">${body}</span>` : '';
+        // Equation Editor 3.0 EQ ফিল্ড — Word 2003-নেটিভ, এডিটযোগ্য।
+        // Part-9i (রিভিউয়ার-নির্দেশ, js/docx-handler.js:L1428-এর ক্লিন গঠন):
+        //   begin + ` EQ <কোড>` + end — **একই conditional block-এ**; কোনো field-separator নেই,
+        //   separator↔end-এ কোনো ক্যাশ-ফলাফল টেক্সটও নেই।
+        // কারণ: separator/cached-body থাকলে Word 2003-এ ডাবল-ক্লিক → EE in-place activation-এর
+        //   সময় সেই টেক্সট সমীকরণ-ক্যানভাসে ঢুকে মূল রাশির পাশে বসে = ডুপ (ব্যবহারকারীর স্ক্রিনশট)।
+        //   EQ display-ফিল্ড — Word খোলার/প্রিন্টের সময় কোড থেকেই আঁকে (MS doc-confirmed)।
+        // docMath:'cached' দিলে ৯f-এর পুরোনো আচরণ (separator + ক্যাশ span) ফিরে আসে — fallback।
+        if (mode === 'cached') {
+          return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
+            + `<!--[if supportFields]><span style='mso-element:field-begin'></span> EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-separator'></span><![endif]-->`
+            + `<span style="font-style:italic;">${body}</span>`
+            + `<!--[if supportFields]><span style='mso-element:field-end'></span><![endif]-->`
+            + `</span>`;
+        }
         return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
-          + `<!--[if supportFields]><span style='mso-element:field-begin'></span> EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-separator'></span><![endif]-->`
-          + resultHtml
-          + `<!--[if supportFields]><span style='mso-element:field-end'></span><![endif]-->`
+          + `<!--[if supportFields]><span class="MsoFieldCode"><span style='mso-element:field-begin'></span><span style='mso-spacerun:yes'>&nbsp;</span>EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-end'></span></span><![endif]-->`
           + `</span>`;
       } catch (e) { return ''; }
     }
@@ -118,7 +125,7 @@
       const opts = Object.assign({
         pageSize: 'a4',        // 'a4', 'legal', 'letter'
         preserveSutonny: true,
-        docMath: 'eqfield',    // 9h: 'eqfield' (খালি-ক্যাশ ফিল্ড — ডিফল্ট) | 'cached' (ক্যাশ-সহ) | 'plain' (ফিল্ড ছাড়া)
+        docMath: 'eqfield',    // 9i: 'eqfield' (ডিফল্ট — ক্লিন ফিল্ড: separator/ক্যাশ নেই) | 'cached' (৯f: ক্যাশ-সহ) | 'plain' (ফিল্ড ছাড়া)
         optimizeForQuestionPaper: true,
         includeImages: true,
         onProgress: (percent, msg) => {}

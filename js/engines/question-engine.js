@@ -16,6 +16,30 @@
     /**
      * Normalizes text and parses it into structured exam paper components.
      */
+    /**
+     * Part-9j: একটি CQ-লাইন থেকে সাব-প্রশ্ন ভাগ করা।
+     * সীমা = লাইন-শুরু, ট্যাব, বা ২+ স্পেস — তাই `গ. সা. গু.` (এক স্পেসে বসা সংক্ষেপ)
+     * ভাঙে না, কিন্তু `ক. লেখা\t২\tখ. লেখা\t৮` ঠিকঠাক তিন টুকরো হয়।
+     */
+    _cqSubLineParts(line) {
+      const s = String(line);
+      const marks = [];
+      const re = /(?:^|\t| {2,})([কখগঘ])[\.\:।\-]\s*/g;
+      let m;
+      while ((m = re.exec(s)) !== null) marks.push({ label: m[1], start: m.index, textStart: re.lastIndex });
+      if (!marks.length || marks[0].start !== 0) return [];
+      const parts = [];
+      for (let i = 0; i < marks.length; i++) {
+        const end = (i + 1 < marks.length) ? marks[i + 1].start : s.length;
+        let text = s.slice(marks[i].textStart, end).trim();
+        let mark = '';
+        const mm = text.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
+        if (mm) { mark = mm[1]; text = text.slice(0, text.length - mm[0].length).trim(); }
+        if (text) parts.push({ label: marks[i].label, text, mark });
+      }
+      return parts;
+    },
+
     parseQuestionPaper(rawText, parseOptions = {}) {
       if (!rawText) rawText = '';
       // 0. Strip vision layout tags
@@ -51,7 +75,12 @@
       for (let i = 0; i < Math.min(8, lines.length); i++) {
         const line = lines[i];
         const cleanLine = line.replace(/^[\*\#\-\s]+/, '').trim();
-        if (/^[\u09E6-\u09EF\d]+[।.)]/.test(cleanLine) || /^([কখগঘ]|[abcdABCD])[\.\:।\-]/.test(cleanLine) || /^#{1,6}\s*[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
+        // Part-9j: হেডার-স্ক্যান যেন body-লাইন না গেলে — `## প্রশ্ন ১২।` ও `ক)`/`ক.` অপশন-লাইন
+        // এখানে ব্রেক না করায় আগে `ক) ঢাকা ...` লাইনটিকে header.location ভেবে bodyStartIndex
+        // এগিয়ে যেত ⇒ প্রথম প্রশ্ন(গুলো) নিঃশব্দে বাদ পড়ত (MCQ প্রশ্নপত্রে ধরা পড়েছে)।
+        if (/^(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(cleanLine) ||
+            /^(?:[কখগঘ]|[abcdABCD])[\.\:।\-\)\]]/.test(cleanLine) ||
+            /^#{1,6}\s*(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
           break; // Questions have started, header is complete
         }
         if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine)) {
@@ -100,7 +129,12 @@
         }
       }
 
-      const bodyLines = lines.slice(bodyStartIndex);
+      // Part-9j: ফাইলের শেষে থাকা যাচাই/অডিট-নোট ব্লক আলাদা করা হয় — প্রশ্নের গায়ে জোড়া না লেগে
+      // শেষ পৃষ্ঠায় "যাচাই প্রতিবেদন" শীট হিসেবে HTML/DOCX/RTF তিন পথেই একইভাবে ছাপে
+      // (preview == download; ব্যবহারকারীর নিয়ম: অডিট নোট শেষ পৃষ্ঠায় একা)।
+      const _auditSplit = this._extractTrailingAuditNote(lines.slice(bodyStartIndex));
+      if (_auditSplit.note) result.auditNote = _auditSplit.note;
+      const bodyLines = _auditSplit.lines;
       let currentSection = { title: '', marks: '', questions: [] };
       let currentQuestion = null;
       let pendingPreContext = '';
@@ -132,7 +166,9 @@
         }
 
         // Question Number Match (১।, ২।, ৩। or 1., 2., 3. or ## ১।)
-        const qStartMatch = line.match(/^(?:>\s*)?(?:#{1,6}\s*)?([\u09E6-\u09EF\d]+)[।.)]\s*(.*)$/);
+        // Part-9j: OCR হেডিং প্রায়ই `## প্রশ্ন ১২। ...` লিখে — আগে `#` আর সংখ্যার মাঝে
+        // `প্রশ্ন` শব্দ থাকলে রেগেক্স ফেল করত ⇒ প্রশ্নটি parse-ই হতো না, নিঃশব্দে হারিয়ে যেত।
+        const qStartMatch = line.match(/^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-–—:ঃ.]*)?([\u09E6-\u09EF\d]+)[।.)]\s*(.*)$/);
         if (qStartMatch) {
           if (currentQuestion) {
             currentSection.questions.push(currentQuestion);
@@ -178,7 +214,7 @@
           if (brSub) {
             let bTxt = brSub[2].trim();
             let bMark = '';
-            const bm = bTxt.match(/[\s\t]+([১২৩৪\d])$/);
+            const bm = bTxt.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
             if (bm) { bMark = bm[1]; bTxt = bTxt.substring(0, bTxt.length - bm[0].length).trim(); }
             currentQuestion.subQuestions.push({
               label: brSub[1],
@@ -189,11 +225,32 @@
           }
         }
 
+        // Part-9j: CQ-তে লাইন-শুরুতে `ক./খ./গ./ঘ.` = সাব-প্রশ্ন — parseMcqOptions-এর আগেই ধরা হয়।
+        // আগে inline সংক্ষেপ (যেমন `গ. সা. গু.` = গরিষ্ঠ সাধারণ গুণনীয়ক) দুই টুকরো হয়ে option-এ
+        // চলে যেত ⇒ CQ রেন্ডারে সেগুলো ছাপা হয় না ⇒ সাব-প্রশ্ন ও মার্ক দুটোই নিঃশব্দে হারাত।
+        const _cqDocCtx = !/MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
+        if (_cqDocCtx && currentQuestion && (currentQuestion.options || []).length === 0 &&
+            (!currentQuestion.statements || currentQuestion.statements.length === 0) &&
+            /^[কখগঘ][\.\:।\-]\s/.test(line)) {
+          const cqParts = this._cqSubLineParts(line);
+          if (cqParts.length) {
+            const _fkDefault = { 'ক': '১', 'খ': '২', 'গ': '৩', 'ঘ': '৪' };
+            for (const part of cqParts) {
+              currentQuestion.subQuestions.push({
+                label: part.label,
+                text: part.text,
+                mark: part.mark || _fkDefault[part.label] || ''
+              });
+            }
+            continue;
+          }
+        }
+
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions
         const isMcqDoc = /MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
-const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s\t]+[১২৩৪\d]$/.test(o.text.trim()) || o.text.trim().length > 50);
+const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s\t]+[\u09E6-\u09EF\d]$/.test(o.text.trim()) || o.text.trim().length > 50);
         
         // Part-9b: অপশন-সীমা — একই লেবেল (ক/খ/গ/ঘ) আবার শুরু হলে সেটা নতুন প্রশ্নের শুরু,
         // আগের প্রশ্নে জোড়া লাগানো নয় (১৫-অপশনের ভুল-গ্রুপিং ও তথ্য-হার দুটোই ঠেকায়)।
@@ -220,7 +277,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         if (isMergedCqSub && currentQuestion) {
           for (const opt of mcqOpts) {
             let text = opt.text.trim();
-            const markMatch = text.match(/[\s\t]+([১২৩৪\d])$/);
+            const markMatch = text.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
             let mark = '';
             if (markMatch) {
               mark = markMatch[1];
@@ -236,7 +293,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         }
 
         // 3. Sub-question for CQ (ক., খ., গ., ঘ. - separated by dot, colon, or dari; NOT bracket ')')
-        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.*?)(?:\s*([১২৩৪\d]))?$/);
+        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.*?)(?:[\s\t]*([\u09E6-\u09EF\d]+))?\s*$/);
         if (subMatch && !isMcqDoc && currentQuestion && currentQuestion.options.length === 0 && (!currentQuestion.statements || currentQuestion.statements.length === 0)) {
           currentQuestion.subQuestions.push({
             label: subMatch[1],
@@ -276,6 +333,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           } else if (currentQuestion.subQuestions.length > 0) {
             const lastSub = currentQuestion.subQuestions[currentQuestion.subQuestions.length - 1];
             lastSub.text += ' ' + cleanStim;
+          } else if ((currentQuestion.options || []).length > 0) {
+            // Part-9j: MCQ-তে অপশনের পরে আসা লাইন আগে নিঃশব্দে বাদ পড়ত (টীকা/নোট/গোটা-লাইন ধারাবাহিকতা) —
+            // এখন প্রশ্নের টেক্সটে যোগ হয়, হারায় না।
+            currentQuestion.text = (currentQuestion.text ? currentQuestion.text + ' ' : '') + cleanStim;
           }
         }
       }
@@ -320,13 +381,13 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         return '\u0000' + (spans.length - 1) + '\u0000';
       });
 
-      const regex = /(?:^|\s*)(?:[\(\[\{（]?([ক-ঘa-dABCD])[.)\]\}]\s*)(.*?)(?=(?:[\s\t]*[\(\[\{（]?[ক-ঘa-dABCD][.)\]\}]|$))/g;
+      const regex = /(?:^|\s*)(?:[\(\[\{（]?([ক-চa-dABCD])[.)\]\}]\s*)(.*?)(?=(?:[\s\t]*[\(\[\{（]?[ক-চa-dABCD][.)\]\}]|$))/g;
       const options = [];
       let m;
       // মাস্ক-করা অংশ বাদ দিয়ে লেবেল-পজিশন খুঁজি
       const labelPositions = [];
       let mm2;
-      const labelRe = /(?:^|[\s\t])(?:[\(\[\{（]?([ক-ঘa-dABCD])[.)\]\}]\s*)/g;
+      const labelRe = /(?:^|[\s\t])(?:[\(\[\{（]?([ক-চa-dABCD])[.)\]\}]\s*)/g;
       while ((mm2 = labelRe.exec(masked)) !== null) {
         labelPositions.push({ label: mm2[1], start: mm2.index + (mm2[0].length - mm2[0].replace(/^[\s\t]+/, '').length), contentStart: labelRe.lastIndex });
       }
@@ -575,8 +636,42 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
      */
     renderToHtml(parsedData, options = {}) {
       let html = this._renderToHtmlCore(parsedData, options);
-      if (options && options.auditNote) html += this.renderAuditSheet(options);
+      // Part-9j: অডিট-নোট MD থেকে পার্স হলেও (parsedData.auditNote) শীট ছাপে
+      const _note = (options && options.auditNote) || (parsedData && parsedData.auditNote);
+      if (_note) html += this.renderAuditSheet(Object.assign({}, options, { auditNote: _note }));
       return html;
+    },
+
+    /**
+     * Part-9j: ফাইলের শেষের যাচাই/অডিট-নোট ব্লক আলাদা করা।
+     * শুধু তখনই কাটে যখন ব্লকে বুলেট (`- `) বা স্পষ্ট সিগন্যাল (মূল পৃষ্ঠা/LaTeX/যাচাই/শিখনফল...) আছে,
+     * আর ব্লকের ঠিক আগে কোনো প্রশ্ন-লাইন/শিরোনাম আছে — তাই সাধারণ বডি-টেক্সট ভুলে কাটা পড়ে না।
+     */
+    _extractTrailingAuditNote(lines) {
+      const arr = Array.isArray(lines) ? lines.slice() : [];
+      const NOTE_RE = /(মূল\s*পৃষ্ঠা|LaTeX\s*(?:ফরম্যাটে|কোডে)|যাচাই|অডিট|শিখনফল|বোর্ড\s*রেফারেন্স|সমাধান\s*নোট)/i;
+      let end = arr.length - 1;
+      while (end >= 0 && !String(arr[end]).trim()) end--;
+      if (end < 0) return { note: '', lines: arr };
+      let start = end;
+      let seen = false;
+      for (let i = end; i >= 0; i--) {
+        const raw = String(arr[i]);
+        const t = raw.trim();
+        if (/^(?:#{1,6}\s*)?(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(t) || /^#{1,6}\s+\S/.test(t)) break; // প্রশ্ন/শিরোনাম ⇒ থামো
+        const isBullet = /^[-–—•*]\s+/.test(t) || /^\[/.test(t) || /\]$/.test(t);
+        const isNote = NOTE_RE.test(t);
+        if (isBullet || isNote) { seen = true; start = i; continue; }
+        if (!t) { if (seen) { start = i; continue; } break; }
+        if (seen) { start = i; continue; }  // ব্লকের ভেতরের continuation
+        break;
+      }
+      if (!seen) return { note: '', lines: arr };
+      const block = arr.slice(start, end + 1);
+      const strong = block.some((l) => /^[-–—•*]\s+/.test(String(l).trim()) || NOTE_RE.test(String(l)));
+      if (!strong) return { note: '', lines: arr };
+      const note = block.map((l) => String(l)).join('\n').trim();
+      return { note, lines: arr.slice(0, start) };
     },
 
     _auditNoteLines(options = {}) {

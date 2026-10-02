@@ -9,7 +9,7 @@ const FIXTURE = process.argv[2];
 const OUT = process.argv[3] || '/home/user/probe/live3f/out_Word2003.doc';
 const MODE = process.argv[4] || 'eqfield';
 if (!FIXTURE || !fs.existsSync(FIXTURE)) { console.error('ব্যবহার: node qa/mk-doc-from-docx.mjs <in.docx> <out.doc> [eqfield|plain]'); process.exit(1); }
-const ROOT = '/home/user/repo_p2';
+const ROOT = process.env.REPO_ROOT || '/home/user/repo_p2';
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8' };
 const server = http.createServer((req, res) => {

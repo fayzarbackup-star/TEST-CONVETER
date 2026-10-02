@@ -74,8 +74,8 @@ const MCQ = [
     'ঙ. $\\frac{1}{6}$', 'চ. $\\frac{1}{7}$'].join('\n');
   const p = Pipeline._parseByDocType('EXAM_MCQ', doc6, {});
   const q = p.sections.flatMap((s) => s.questions)[0];
-  // ঙ/চ লেবেল পার্সার চেনে না — তাই কৃত্রিমভাবে অপশন বাড়িয়ে রেন্ডার-ক্ষমতা মাপি
-  q.options = q.options.concat([{ label: 'ঙ', text: '$\\frac{1}{6}$' }, { label: 'চ', text: '$\\frac{1}{7}$' }]);
+  // Part-9j: ঙ/চ লেবেল এখন পার্সার নিজেই চেনে (আগে লাইন দুটি নিঃশব্দে হারাত) — কৃত্রিম ইনজেকশন লাগে না
+  T('৬-অপশন → ঙ/চ লেবেলও অপশন হিসেবে ধরা পড়ে', (q.options || []).length === 6, (q.options || []).map((o) => o.label));
   const dXml = await Export.generateMcqExamDocx(p, { returnInnerXml: true });
   const xml = (dXml.bodyXml || '') + (dXml.sectPr || '');
   let rtf = Export.generateMcqExamRtf(p, {}); if (rtf && rtf.text) rtf = await rtf.text();
@@ -209,13 +209,12 @@ const MCQ = [
   T('বাংলা-গ্লু থাকলে আলাদাই থাকে', noMerge.filter(s => s.type === 'math').length === 2, JSON.stringify(noMerge.map(s => s.type + ':' + s.value)));
 
   // .doc/.docx-এ কাঁচা ল্যাটেক্স ০
-  const probePath = '/home/user/probe/live3/height_cq.live-preview.txt';
-  if (fs.existsSync(probePath)) {
-    const liveCq = fs.readFileSync(probePath, 'utf8');
+  if (fs.existsSync('/home/user/probe/live3/height_cq.live-preview.txt')) {
+    const liveCq = fs.readFileSync('/home/user/probe/live3/height_cq.live-preview.txt', 'utf8');
     const xml = Export.renderDocxRuns(liveCq.split('\n').find(l => l.includes('theta')) || '', {}, { sz: 24 });
     T('লাইভ-OCR-এর `$\\ $theta` লাইন এখন OMML', /<m:oMath/.test(xml), xml.slice(0, 100));
   } else {
-    T('লাইভ-OCR-এর `$\\ $theta` ফাইল-টেস্ট (ফাইল না থাকায় স্কিপ)', true);
+    T('লাইভ-OCR-এর `$\\ $theta` লাইন (ফাইল না থাকায় স্কিপ)', true);
   }
 }
 

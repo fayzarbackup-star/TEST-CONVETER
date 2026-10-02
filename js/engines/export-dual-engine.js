@@ -422,6 +422,15 @@
      * Generates Board Standard Combined (CQ+MCQ) Word DOCX Document.
      */
     // Part-9: অডিট-নোট পৃষ্ঠা — মূল কনটেন্টের একদম শেষে, পেজ-ব্রেক দিয়ে আলাদা পৃষ্ঠায়।
+    /** Part-9j: parsed অবজেক্টে MD থেকে ধরা অডিট-নোট থাকলে options-এ তুলে দিই
+     *  (HTML preview ও DOCX/RTF ডাউনলোডে একই অডিট-শীট ⇒ preview == download)। */
+    _withAuditNote(options = {}, ...parsedList) {
+      if (options && options.auditNote) return options;
+      const hit = (parsedList || []).find((p) => p && p.auditNote && String(p.auditNote).trim());
+      if (!hit) return options;
+      return Object.assign({}, options, { auditNote: String(hit.auditNote) });
+    },
+
     _auditNoteLines(options = {}) {
       if (!options || !options.auditNote) return [];
       const note = String(options.auditNote).replace(/^\s*\[/, '').replace(/\]\s*$/, '').trim();
@@ -454,6 +463,7 @@
     },
 
     async generateCombinedExamDocx(parsedCq, parsedMcq, options = {}) {
+      options = this._withAuditNote(options, parsedCq, parsedMcq);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
 
@@ -663,6 +673,7 @@
     // -------------------------------------------------------------------------
 
     generateCqExamRtf(parsedData, options = {}) {
+      options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
 
@@ -787,6 +798,7 @@
      * Generates Board Standard Combined (CQ+MCQ) Word RTF Document.
      */
     generateCombinedExamRtf(parsedCq, parsedMcq, options = {}) {
+      options = this._withAuditNote(options, parsedCq, parsedMcq);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
 
@@ -949,6 +961,7 @@
      * Generates Board Standard Creative Question (CQ) Modern Word (.docx).
      */
     async generateCqExamDocx(parsedData, options = {}) {
+      options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
       const rightTabPos = 7050;
@@ -1123,6 +1136,7 @@
      * Generates Board Standard MCQ Word RTF Document.
      */
     generateMcqExamRtf(parsedData, options = {}) {
+      options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
 
@@ -1321,6 +1335,7 @@
      * Generates Board Standard MCQ Modern Word (.docx).
      */
     async generateMcqExamDocx(parsedData, options = {}) {
+      options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
       const marginTwips = options.margin === 0.4 ? 576 : 720;
