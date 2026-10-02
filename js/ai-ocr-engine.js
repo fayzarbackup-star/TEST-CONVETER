@@ -3505,20 +3505,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
             const clean = EquationConverter.sanitizeSimpleMath ? EquationConverter.sanitizeSimpleMath(seg.value, isBijoy) : seg.value.replace(/\$/g, '');
             rtf += renderSimpleMathRtf(clean, isBijoy, fontSizeHalfPt, false);
           } else {
-            // Part-9c: Word 2007+ নেটিভ RTF ম্যাথ-জোন — Equation Editor নয় (Word-এ এডিটযোগ্য)
-            let _zone = null;
-            try {
-              if (typeof EquationConverter.ommlToRtfMath === 'function' && typeof EquationConverter.latexToOmml === 'function') {
-                const _z = EquationConverter.ommlToRtfMath(EquationConverter.latexToOmml(seg.value, isBijoy));
-                if (_z && _z.rtf && /\\m(?:f|rad|sSup|sSub|sSubSup|acc|bar|nary|d|func|groupChr|limLow|limUpp|borderBox|box)\{|\\mr [^{}]/.test(_z.rtf) && !/\\mr \}/.test(_z.rtf)) _zone = _z.rtf;
-              }
-            } catch (e) { _zone = null; }
-            if (_zone) {
-              rtf += _zone;
-            } else {
-              const eqCode = EquationConverter.latexToEqField(seg.value, isBijoy);
-              rtf += renderEquationForRtf(eqCode, isBijoy, fontSizeHalfPt, false);
-            }
+            // Part-9f: Word 2003-নিরাপদ EQ-ফিল্ড (Equation Editor) — ম্যাথ-জোন বাদ
+            const eqCode = EquationConverter.latexToEqField(seg.value, isBijoy);
+            rtf += renderEquationForRtf(eqCode, isBijoy, fontSizeHalfPt, false);
           }
         } else if (seg.value) {
           rtf += renderRunsForRtfPlain(seg.value, isBijoy, fontSizeHalfPt, false);

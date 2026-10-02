@@ -81,8 +81,9 @@ const MCQ = [
   let rtf = Export.generateMcqExamRtf(p, {}); if (rtf && rtf.text) rtf = await rtf.text();
   T('৬-অপশন → DOCX-এ ৬টি ভগ্নাংশ', cnt(xml, /<m:f>/g) === 6, cnt(xml, /<m:f>/g));
   T('৬-অপশন → DOCX-এ শেষ লেবেলগুলোও আছে', xml.includes('ঙ') && xml.includes('চ'));
-  T('৬-অপশন → RTF-এ ৬টি ম্যাথ-জোন ভগ্নাংশ', cnt(String(rtf), /\\mf\{/g) >= 6, cnt(String(rtf), /\\mf\{/g));
-  T('৬-অপশন → RTF-এ কোনো EQ-ফিল্ড নেই (Equation Editor নয়)', !/fldinst EQ/.test(String(rtf)));
+  T('৬-অপশন → `.doc`-এ ৬টি ভগ্নাংশ (Equation Editor \\F( ))', cnt(String(rtf), /\\F\(/g) === 6, cnt(String(rtf), /\\F\(/g));
+  T('৬-অপশন → `.doc`-এ ম্যাথ-জোন নেই (Word 2003-safe)', cnt(String(rtf), /\\mmath\{/g) === 0, cnt(String(rtf), /\\mmath\{/g));
+  T('৬-অপশন → `.doc`-এ EQ-ফিল্ড আছে (2003-নেটিভ)', cnt(String(rtf), /fldinst EQ/g) >= 1, cnt(String(rtf), /fldinst EQ/g));
 }
 
 // ---------- ৫) subQuestions ফলব্যাক (অপশন না থাকলে সেগুলোও ছাপা হয়) ----------
@@ -110,10 +111,11 @@ const MCQ = [
     const xml = (cq.bodyXml || '') + (cq.sectPr || '') + (mq.bodyXml || '') + (mq.sectPr || '');
     let rtf = Export.generateLegacyDoc(real, 'EXAM_COMBINED', {}); if (rtf && rtf.text) rtf = await rtf.text();
     const hF = cnt(html, /vertical-align:-0\.45em/g), dF = cnt(xml, /<m:f>/g);
-    const rF = cnt(String(rtf), /\\mf\{/g) + cnt(String(rtf), /\\F\s*\(/g);
+    const rF = cnt(String(rtf), /\\F\(/g);
     T('আসল ফাইল: ভগ্নাংশ প্রিভিউ == DOCX', hF === dF && hF > 0, `${hF} / ${dF}`);
-    T('আসল ফাইল: ভগ্নাংশ DOCX == .doc (ম্যাথ-জোন)', dF === rF, `${dF} / ${rF}`);
-    T('আসল ফাইল: .doc-এ কোনো EQ-ফিল্ড নেই', !/fldinst EQ/.test(String(rtf)), cnt(String(rtf), /fldinst EQ/g));
+    T('Part-9f: `.doc`-এ ভগ্নাংশ = Equation Editor \\F( ) — সংখ্যা মেলে', dF > 0 && rF === dF, `${dF} / ${rF}`);
+    T('Part-9f: `.doc`-এ EQ-ফিল্ড আছে (Word 2003-নেটিভ)', cnt(String(rtf), /fldinst EQ/g) >= 1, cnt(String(rtf), /fldinst EQ/g));
+    T('Part-9f: `.doc`-এ RTF ম্যাথ-জোন নেই (2003 ক্র্যাশ-মুক্ত)', cnt(String(rtf), /\\mmath\{/g) === 0, cnt(String(rtf), /\\mmath\{/g));
     T('আসল ফাইল: কাঁচা LaTeX নেই (HTML/DOCX)', cnt(plain(html), /\\[a-zA-Z]{2,}/g) === 0 && cnt(plain(xml), /\\[a-zA-Z]{2,}/g) === 0);
     T('আসল ফাইল: $ চিহ্ন নেই', cnt(plain(html), /\$/g) === 0);
   } else {
@@ -133,13 +135,14 @@ const MCQ = [
   let rtf = Export.generateLegacyDoc(fx.body, 'EXAM_MATH', {});
   if (rtf && typeof rtf.text === 'function') rtf = await rtf.text();
   const R = String(rtf);
-  T('.doc-এ EQ-ফিল্ড (Equation Editor) নেই', !/fldinst EQ/.test(R), cnt(R, /fldinst EQ/g));
-  T('.doc-এ নেটিভ ম্যাথ-জোন আছে', cnt(R, /\\mmath\{/g) >= 1, cnt(R, /\\mmath\{/g));
+  T('Part-9f: `.doc`-এ RTF ম্যাথ-জোন নেই (Word 2003-safe)', cnt(R, /\\mmath\{/g) === 0, cnt(R, /\\mmath\{/g));
+  T('Part-9f: `.doc`-এ EQ-ফিল্ড (Equation Editor, 2003-নেটিভ) আছে', cnt(R, /fldinst EQ/g) >= 1, cnt(R, /fldinst EQ/g));
 
   const realDocx = fs.readFileSync(path.join(H.ROOT, 'js/engines/export-dual-engine.js'), 'utf8');
-  T('formatRtfText এখন ম্যাথ-জোন ব্যবহার করে', realDocx.includes('ommlToRtfMath'));
+  T('Part-9f: EDE আর ম্যাথ-জোন এমিট করে না', !/out \+= zone\.rtf/.test(realDocx));
+  T('Part-9f: EDE-তে docMath সুইচ + EQ-ফিল্ড রাইটার আছে', realDocx.includes('docMathMode') && realDocx.includes('fldinst EQ'));
   const client = fs.readFileSync(path.join(H.ROOT, 'js/ai-ocr-engine.js'), 'utf8');
-  T('ক্লায়েন্ট RTF পাথেও ম্যাথ-জোন', client.includes('ommlToRtfMath'));
+  T('Part-9f: ক্লায়েন্টেও ম্যাথ-জোন এমিট নেই (ডেড RTF পাথও 2003-safe)', !/rtf \+= _zone/.test(client));
   const dh = fs.readFileSync(path.join(H.ROOT, 'js/docx-handler.js'), 'utf8');
   T('docx-handler আর OMML→EQ রূপান্তর করে না', !/Parse native OMML equations \(<m:oMath>\) to EQ fields/.test(dh) && dh.includes('_ommlStringToNodes'));
   T('docx-handler জটিল ম্যাথে OMML এমিট করে', dh.includes('<m:oMath') && dh.includes('_ommlStr'));
@@ -162,15 +165,31 @@ const MCQ = [
     T(`needsEqField(${JSON.stringify(latex)}) = ${want}`, got === want, 'got=' + got);
   }
 
-  // (গ) `.doc` RTF: সরল সমীকরণও ম্যাথ-জোনে (আগে প্লেইন ইটালিক হতো)
+  // (গ) Part-9f: `.doc` RTF — ম্যাথ-জোন নেই; সরল রাশি = প্লেইন ইটালিক পাঠ্য (2003-safe)
   const plainRtf = Export.generateLegacyDoc('১। `$y = x - 3$` রেখাটি আঁক।', 'EXAM_CQ', {});
   const PR = typeof plainRtf.text === 'function' ? await plainRtf.text() : String(plainRtf);
-  T('.doc: `y = x - 3` এখন ম্যাথ-জোনে', /\\mmath\{[^}]*\\mr y = x - 3/.test(PR), PR.slice(PR.indexOf('\\mmath', 200) - 20, PR.indexOf('\\mmath', 200) + 60));
+  T('Part-9f: সরল সমীকরণে কোনো ম্যাথ-জোন/EQ-ফিল্ড নেই', cnt(PR, /\\mmath\{/g) === 0 && !/fldinst EQ/.test(PR), PR.slice(0, 90));
+  T('Part-9f: সরল সমীকরণের রাশি হুবহু পাঠ্যে আছে', PR.includes('y = x - 3'));
 
-  // (ঘ) docx-to-doc-engine: EQ-ফিল্ড নিষ্ক্রিয় + OMML সিরিয়ালাইজার
+  // (গ২) Part-9f: docMath:'plain' মোড — জটিল সমীকরণেও ফিল্ড ছাড়া পাঠ্য
+  let rtfPlain = Export.generateLegacyDoc('২। `$\\frac{1}{2}$ + `$\\sqrt{3}$`', 'EXAM_CQ', { docMath: 'plain' });
+  if (rtfPlain && rtfPlain.text) rtfPlain = await rtfPlain.text();
+  T("Part-9f: docMath:'plain' → EQ-ফিল্ড ০ + ম্যাথ-জোন ০", cnt(String(rtfPlain), /fldinst EQ/g) === 0 && cnt(String(rtfPlain), /\\mmath\{/g) === 0,
+    cnt(String(rtfPlain), /fldinst EQ/g) + ' / ' + cnt(String(rtfPlain), /\\mmath\{/g));
+
+  // (গ৩) Part-9f: সুপার/সাবস্ক্রিপ্ট → RTF `{\\super}`/`{\\sub}` (EQ সুইচ যেন পাঠ্যে না থাকে)
+  let rtfSup = Export.generateLegacyDoc('৩। `$x^2 + y_3$` লেখ।', 'EXAM_CQ', {});
+  if (rtfSup && rtfSup.text) rtfSup = await rtfSup.text();
+  const SUP = String(rtfSup);
+  T('Part-9f: সুপারস্ক্রিপ্ট → {\\super ...}', /\{\\super /.test(SUP), SUP.slice(0, 120));
+  T('Part-9f: সাবস্ক্রিপ্ট → {\\sub ...}', /\{\\sub /.test(SUP), SUP.slice(0, 120));
+  T('Part-9f: কাঁচা EQ সুইচ (`\\S\\up`/`\\S\\do`) পাঠ্যে নেই', !/[\\]{1,2}S[\\]{1,2}(up|do)/.test(SUP), SUP.slice(0, 120));
+
+  // (ঘ) Part-9f: docx-to-doc-engine — `.doc`-এ OMML নয়, 2003-নেটিভ EQ ফিল্ড
   const d2d = fs.readFileSync(path.join(H.ROOT, 'js/docx-to-doc-engine.js'), 'utf8');
-  T('.doc ইঞ্জিনে OMML সিরিয়ালাইজার আছে', d2d.includes('_serializeOmmlNode'));
-  T('.doc ইঞ্জিনে পুরোনো EQ-ফিল্ড HTML আর বানানো হয় না', !/mso-element:field-begin/.test(d2d));
+  T('Part-9f: `.doc` ইঞ্জিনে OMML সিরিয়ালাইজার আর নেই', !d2d.includes('_serializeOmmlNode'));
+  T('Part-9f: `.doc` ইঞ্জিনে 2003-নিরাপদ EQ-ফিল্ড রাইটার আছে', d2d.includes('_ommlToLegacyEqHtml') && d2d.includes('mso-element:field-begin'));
+  T('Part-9f: oMath ব্র্যাঞ্চ EQ-ফিল্ড পথ ব্যবহার করে', /mathHtml = this\._ommlToLegacyEqHtml\(child/.test(d2d));
 }
 
 
@@ -189,13 +208,14 @@ const MCQ = [
   const noMerge = EC.splitTextAndMath('$a + b$ এরপর $c + d$');
   T('বাংলা-গ্লু থাকলে আলাদাই থাকে', noMerge.filter(s => s.type === 'math').length === 2, JSON.stringify(noMerge.map(s => s.type + ':' + s.value)));
 
-  const liveCqPath = '/home/user/probe/live3/height_cq.live-preview.txt';
-  if (fs.existsSync(liveCqPath)) {
-    const liveCq = fs.readFileSync(liveCqPath, 'utf8');
-    const xml = Export.renderDocxRuns(liveCq.split('\\n').find(l => l.includes('theta')) || '', {}, { sz: 24 });
+  // .doc/.docx-এ কাঁচা ল্যাটেক্স ০
+  const probePath = '/home/user/probe/live3/height_cq.live-preview.txt';
+  if (fs.existsSync(probePath)) {
+    const liveCq = fs.readFileSync(probePath, 'utf8');
+    const xml = Export.renderDocxRuns(liveCq.split('\n').find(l => l.includes('theta')) || '', {}, { sz: 24 });
     T('লাইভ-OCR-এর `$\\ $theta` লাইন এখন OMML', /<m:oMath/.test(xml), xml.slice(0, 100));
   } else {
-    T('লাইভ-OCR-এর `$\\ $theta` স্কিপ করা হল (ফাইল নেই)', true);
+    T('লাইভ-OCR-এর `$\\ $theta` ফাইল-টেস্ট (ফাইল না থাকায় স্কিপ)', true);
   }
 }
 

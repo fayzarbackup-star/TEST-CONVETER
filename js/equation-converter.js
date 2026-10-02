@@ -1961,6 +1961,27 @@
     static ommlNodeToEqHtml(oMathNode, fontSize = 12, isBijoy = true) {
       if (!oMathNode) return '';
 
+      // ── Namespace-agnostic child lookup (Part-9f fix) ─────────────
+      // আগে `node.querySelector('[*|localName="e"]')` ব্যবহার হতো — DOM-এ `localName`
+      // অ্যাট্রিবিউট নয়, তাই ব্রাউজারে কিছুই মিলত না এবং সুপারস্ক্রিপ্ট/ভগ্নাংশ হারিয়ে যেত।
+      function firstByLocal(node, names) {
+        if (!node) return null;
+        const want = names.map((n) => String(n).toLowerCase());
+        const kids = node.childNodes || [];
+        for (let i = 0; i < kids.length; i++) {
+          const ch = kids[i];
+          if (ch.nodeType !== 1) continue;
+          const ln = (ch.localName || String(ch.nodeName).split(':').pop() || '').toLowerCase();
+          if (want.indexOf(ln) !== -1) return ch;
+        }
+        const all = node.getElementsByTagName ? node.getElementsByTagName('*') : [];
+        for (let i = 0; i < all.length; i++) {
+          const ln = (all[i].localName || String(all[i].nodeName).split(':').pop() || '').toLowerCase();
+          if (want.indexOf(ln) !== -1) return all[i];
+        }
+        return null;
+      }
+
       // ── Recursive OMML text extractor ──────────────────────────────
       function extractMathText(node) {
         if (!node) return '';
@@ -1973,8 +1994,8 @@
 
         // Fraction: numerator / denominator
         if (localName === 'f') {
-          const num = node.querySelector ? node.querySelector('[*|localName="num"],[*|localName="fNum"]') : null;
-          const den = node.querySelector ? node.querySelector('[*|localName="den"],[*|localName="fDen"]') : null;
+          const num = firstByLocal(node, ['num', 'fNum']);
+          const den = firstByLocal(node, ['den', 'fDen']);
           const numText = num ? extractMathText(num) : walkChildren(node).split('/')[0] || '';
           const denText = den ? extractMathText(den) : walkChildren(node).split('/')[1] || '';
           if (numText && denText) return numText + '/' + denText;
@@ -1983,23 +2004,23 @@
 
         // Superscript / Subscript
         if (localName === 'sSup') {
-          const base = node.querySelector ? node.querySelector('[*|localName="e"]') : null;
-          const sup  = node.querySelector ? node.querySelector('[*|localName="sup"]') : null;
+          const base = firstByLocal(node, ['e']);
+          const sup  = firstByLocal(node, ['sup']);
           const b = base ? extractMathText(base) : '';
           const s = sup  ? extractMathText(sup)  : '';
           return b + (s ? '\u207F'.includes(s) ? s : '^' + s : '');
         }
         if (localName === 'sSub') {
-          const base = node.querySelector ? node.querySelector('[*|localName="e"]') : null;
-          const sub  = node.querySelector ? node.querySelector('[*|localName="sub"]') : null;
+          const base = firstByLocal(node, ['e']);
+          const sub  = firstByLocal(node, ['sub']);
           const b = base ? extractMathText(base) : '';
           const s = sub  ? extractMathText(sub)  : '';
           return b + (s ? '_' + s : '');
         }
         if (localName === 'sSubSup') {
-          const base = node.querySelector ? node.querySelector('[*|localName="e"]') : null;
-          const sub  = node.querySelector ? node.querySelector('[*|localName="sub"]') : null;
-          const sup  = node.querySelector ? node.querySelector('[*|localName="sup"]') : null;
+          const base = firstByLocal(node, ['e']);
+          const sub  = firstByLocal(node, ['sub']);
+          const sup  = firstByLocal(node, ['sup']);
           const b = base ? extractMathText(base) : '';
           const sb = sub  ? '_' + extractMathText(sub)  : '';
           const sp = sup  ? '^' + extractMathText(sup)  : '';
@@ -2008,8 +2029,8 @@
 
         // Radical (√)
         if (localName === 'rad') {
-          const deg = node.querySelector ? node.querySelector('[*|localName="deg"]') : null;
-          const e   = node.querySelector ? node.querySelector('[*|localName="e"]')   : null;
+          const deg = firstByLocal(node, ['deg']);
+          const e   = firstByLocal(node, ['e']);
           const degText = deg ? extractMathText(deg).trim() : '';
           const eText   = e   ? extractMathText(e)          : walkChildren(node);
           return degText ? degText + '\u221A(' + eText + ')' : '\u221A(' + eText + ')';

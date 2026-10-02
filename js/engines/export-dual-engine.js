@@ -159,21 +159,11 @@
           const rawLatex = run.cleanLatex || run.value || '';
           const _EqC = (typeof EquationConverter !== 'undefined') ? EquationConverter
             : (typeof window !== 'undefined' && window.EquationConverter) ? window.EquationConverter : null;
-          // Part-9c: Word 2007+ এর নেটিভ ম্যাথ ফরম্যাট (RTF math zone) — Equation Editor নয়,
-          // তাই Word-এ সমীকরণ সরাসরি এডিট করা যায় এবং "Word equation too large to convert" আর আসে না।
-          const isMathy = _EqC && typeof _EqC.needsEqField === 'function'
-            ? _EqC.needsEqField(rawLatex)
-            : /\\|\^|_/.test(String(rawLatex));
-          if (isMathy && _EqC && typeof _EqC.latexToOmml === 'function' && typeof _EqC.ommlToRtfMath === 'function') {
-            try {
-              const omml = _EqC.latexToOmml(rawLatex, isBijoy);
-              const zone = _EqC.ommlToRtfMath(omml);
-              if (zone && zone.rtf && /\\m(?:f|rad|sSup|sSub|sSubSup|acc|bar|nary|d|func|groupChr|limLow|limUpp|borderBox|box)\{|\\mr [^{}]/.test(zone.rtf) && !/\\mr \}/.test(zone.rtf)) {
-                out += zone.rtf;
-                continue;
-              }
-            } catch (e) { /* নিচের ফলব্যাকে যাই */ }
-          }
+          // Part-9f (Word-2003 ক্র্যাশ ফিক্স): RTF math zone (`\mmath` = Office 2007+ ম্যাথ ফরম্যাট)
+          // Word 2003 (11.0) তা বোঝে না — 9c-তে `.doc`-এ পাঠানোর পর ওই Word ক্র্যাশ করত।
+          // এখন `.doc` = 2003-নেটিভ Equation Editor 3.0 (EQ ফিল্ড, ডিফল্ট), অথবা
+          // docMath:'plain' দিলে ফিল্ড ছাড়া ইটালিক পাঠ্য। `.docx` আগের মতোই OMML রাখে।
+          const docMathMode = (options && options.docMath) || 'eqfield';
           let _eqOut = null;
           if (_EqC && typeof _EqC.latexToEqField === 'function') {
             try { _eqOut = _EqC.latexToEqField(rawLatex, isBijoy); } catch(e) {}
@@ -182,7 +172,16 @@
             let rtfSafe = this.escapeUnicodeRtf(_eqOut);
             rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super $1}');
             rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub $1}');
-            out += '{\\f1 ' + rtfSafe + '}';
+            if (docMathMode === 'plain' || !/\\[FRIBXA]\b/i.test(_eqOut)) {
+              // সরল রাশি / plain মোড → ফিল্ড ছাড়া ইটালিক পাঠ্য (সব Word-এ পড়া যায়)
+              out += '{\\f1 ' + rtfSafe + '}';
+            } else {
+              // Equation Editor 3.0 EQ ফিল্ড → Word 2003-এ নেটিভ ও এডিটযোগ্য
+              let escapedEq = this.escapeUnicodeRtf(_eqOut);
+              // EQ সুইচগুলো Word যেন চিনতে পারে (escaped form → switch form)
+              escapedEq = escapedEq.replace(/\\\\(F|R|I|B|X|A|S|up|do|al|ar|ac|con)/gi, '\\$1');
+              out += '{\\field{\\*\\fldinst EQ ' + escapedEq + '}{\\fldrslt }}';
+            }
           } else {
             out += '{\\f1 ' + this.escapeRtf(rawLatex) + '}';
           }

@@ -35,19 +35,55 @@
      * @returns {Promise<Object>}
      */
     /**
-     * Part-9c: OMML নোড (m:oMath / m:oMathPara) → সিরিয়ালাইজড markup (Word HTML-এ নেটিভ সমীকরণ)।
-     * রুট ডকুমেন্টে xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" আগেই আছে,
-     * তাই Word এই markup-কে এডিটযোগ্য নেটিভ সমীকরণ হিসেবে পড়ে — Equation Editor (EQ-ফিল্ড) নয়।
+     * Part-9f (Word-2003 ক্র্যাশ ফিক্স): OMML নোড → Word 97-2003-নিরাপদ HTML।
+     * Word 2003 (11.0) `m:` (OMML = Office 2007+) ট্যাগ বোঝে না — Part-9c-তে `.doc`-এ OMML
+     * পাঠানোর পর ব্যবহারকারীর Word 2003 ক্র্যাশ করত (Disabled-Items ডায়ালগ)।
+     * তাই `.doc`-এ Equation Editor 3.0-এর `EQ` ফিল্ড (2003-নেটিভ, এডিটযোগ্য);
+     * `.docx` আগের মতোই OMML রাখে (আধুনিক Word-এ নেটিভ ও এডিটযোগ্য)।
+     * @param {Node} node   m:oMath / m:oMathPara নোড
+     * @param {string} mode 'eqfield' (ডিফল্ট) | 'plain' (ফিল্ড ছাড়া শুধু ইটালিক পাঠ্য)
+     * @returns {string} Word-HTML
      */
-    _serializeOmmlNode(node) {
+    _ommlToLegacyEqHtml(node, mode = 'eqfield') {
       try {
         if (!node) return '';
-        if (typeof XMLSerializer !== 'undefined') {
-          const out = new XMLSerializer().serializeToString(node);
-          if (out && /<m:oMath/.test(out)) return out;
+        const EqC = (typeof EquationConverter !== 'undefined') ? EquationConverter
+          : (typeof window !== 'undefined' && window.EquationConverter) ? window.EquationConverter : null;
+        let eqCode = '';
+        if (EqC && typeof EqC._parseOmmlNode === 'function') {
+          try { eqCode = String(EqC._parseOmmlNode(node) || '').replace(/\s+/g, ' ').trim(); } catch (e) { eqCode = ''; }
         }
-        const raw = (typeof node.outerHTML === 'string') ? node.outerHTML : '';
-        return /<m:oMath/.test(raw) ? raw : '';
+        // দৃশ্যমান ফলাফল-টেক্সট: পড়ার-উপযোগী ম্যাথ (1/2, √(27), x²) —
+        // কাঁচা EQ সুইচ (\S\up4(3), \F(1,2)) কখনো যেন চোখে না পড়ে। Word নিজে ফিল্ড
+        // পুনঃগণনা করে আসল সমীকরণ আঁকে; অন্য ভিউয়ারে এই পাঠ্যটাই দেখায়।
+        let body = '';
+        if (EqC && typeof EqC.ommlNodeToEqHtml === 'function') {
+          try { body = EqC.ommlNodeToEqHtml(node, 12, true) || ''; } catch (e) { body = ''; }
+        }
+        if (!body && EqC && typeof EqC.formatEqCodeToWordHtml === 'function') {
+          body = EqC.formatEqCodeToWordHtml(eqCode, 12, true);
+        }
+        if (!body) body = this._escapeHtml(eqCode);
+        if (body) {
+          // ^2 → <sup>2</sup>, _3 → <sub>3</sub> (পাঠ্য আগেই HTML-escape করা, তাই নিরাপদ)
+          const inner = body
+            .replace(/^<span[^>]*>([\s\S]*)<\/span>$/, '$1')
+            .replace(/\^\s*([0-9A-Za-z+\-]{1,6})/g, '<sup>$1</sup>')
+            .replace(/_\s*([0-9A-Za-z+\-]{1,6})/g, '<sub>$1</sub>');
+          body = `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">${inner}</span>`;
+        }
+        if (!eqCode && !body) return '';
+        // EQ সুইচ (\F \R \S \I \B \X \A \U) থাকলে ফিল্ড, নইলে সাধারণ ইটালিক স্প্যান
+        const hasSwitches = /\\[FRISBXUA]\b/i.test(eqCode);
+        if (mode === 'plain' || !hasSwitches) {
+          return `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">${body}</span>`;
+        }
+        // Equation Editor 3.0 EQ ফিল্ড — Microsoft Word HTML-এর ৫-অংশের ফিল্ড গঠন
+        return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
+          + `<!--[if supportFields]><span style='mso-element:field-begin'></span> EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-separator'></span><![endif]-->`
+          + `<span style="font-style:italic;">${body}</span>`
+          + `<!--[if supportFields]><span style='mso-element:field-end'></span><![endif]-->`
+          + `</span>`;
       } catch (e) { return ''; }
     }
 
@@ -55,6 +91,7 @@
       const opts = Object.assign({
         pageSize: 'a4',        // 'a4', 'legal', 'letter'
         preserveSutonny: true,
+        docMath: 'eqfield',    // 9f: `.doc`-এ ম্যাথ = EQ ফিল্ড ('eqfield') | প্লেইন পাঠ্য ('plain')
         optimizeForQuestionPaper: true,
         includeImages: true,
         onProgress: (percent, msg) => {}
@@ -737,10 +774,11 @@
           // ============================================================
           let mathHtml = '';
           try {
-            // Part-9c: OMML হুবহু রাখা হয় ⇒ Word-এ নেটিভ (এডিটযোগ্য) সমীকরণ।
-            // আগে এখানে EQ-ফিল্ড HTML বানানো হতো (Equation Editor 3.0) — আধুনিক Word-এ
-            // তাতেই "Word equation too large to convert" এরর আসত (ব্যবহারকারীর রিপোর্ট #১ ও #২)।
-            mathHtml = this._serializeOmmlNode(child);
+            // Part-9f (Word-2003 ক্র্যাশ ফিক্স): Word 2003 (11.0) `m:` (OMML = Office 2007+)
+            // ট্যাগ বোঝে না — 9c-তে `.doc`-এ OMML পাঠানোর পর ব্যবহারকারীর Word 2003 ক্র্যাশ করত।
+            // তাই 2003-নেটিভ Equation Editor 3.0 (EQ) ফিল্ড; docMath:'plain' দিলে ফিল্ড ছাড়া পাঠ্য।
+            // `.docx` আগের মতোই OMML-ই রাখে (আধুনিক Word-এ নেটিভ/এডিটযোগ্য)।
+            mathHtml = this._ommlToLegacyEqHtml(child, (opts && opts.docMath) || 'eqfield');
             if (mathHtml) {
               runsHtml.push(mathHtml);
               runCount++;
