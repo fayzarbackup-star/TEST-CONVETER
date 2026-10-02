@@ -41,7 +41,10 @@
      * তাই `.doc`-এ Equation Editor 3.0-এর `EQ` ফিল্ড (2003-নেটিভ, এডিটযোগ্য);
      * `.docx` আগের মতোই OMML রাখে (আধুনিক Word-এ নেটিভ ও এডিটযোগ্য)।
      * @param {Node} node   m:oMath / m:oMathPara নোড
-     * @param {string} mode 'eqfield' (ডিফল্ট) | 'plain' (ফিল্ড ছাড়া শুধু ইটালিক পাঠ্য)
+     * @param {string} mode 'eqfield' (ডিফল্ট — **ফলাফল-ক্যাশ খালি**: Word নিজে EQ কোড থেকে আঁকে,
+     *                            তাই এডিটরে ঢুকলে কোনো অতিরিক্ত/ডুপ টেক্সট যায় না — Part-9h)
+     *                     | 'cached' (৯f-এর আচরণ: ফিল্ড-ফলাফলে পড়ার-উপযোগ্য ক্যাশ টেক্সটও থাকে)
+     *                     | 'plain'  (ফিল্ড ছাড়াই শুধু ইটালিক পাঠ্য)
      * @returns {string} Word-HTML
      */
     /**
@@ -98,9 +101,14 @@
           return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(body)}</span>`;
         }
         // Equation Editor 3.0 EQ ফিল্ড — Microsoft Word HTML-এর ৫-অংশের ফিল্ড গঠন
+        // Part-9h: ফলাফল-অঞ্চল **খালি** রাখা হয় (RTF পাথের `{\fldrslt }`-এর মতোই)।
+        // কারণ: Word 2003-এ সমীকরণ ডাবল-ক্লিক করে EE-এ এডিটে ঢুকলে ফিল্ডের ক্যাশ-ফলাফল
+        // টেক্সটটাও ভিতরে ঢুকে ডুপ হয় (ব্যবহারকারীর রিপোর্ট: "n−1/2" অতিরিক্ত)। EQ একটি
+        // display-ফিল্ড — Word খোলার/প্রিন্টের সময় কোড থেকেই সমীকরণ আঁকে (MS doc-confirmed)।
+        const resultHtml = (mode === 'cached') ? `<span style="font-style:italic;">${body}</span>` : '';
         return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
           + `<!--[if supportFields]><span style='mso-element:field-begin'></span> EQ ${this._escapeHtml(eqCode)} <span style='mso-element:field-separator'></span><![endif]-->`
-          + `<span style="font-style:italic;">${body}</span>`
+          + resultHtml
           + `<!--[if supportFields]><span style='mso-element:field-end'></span><![endif]-->`
           + `</span>`;
       } catch (e) { return ''; }
@@ -110,7 +118,7 @@
       const opts = Object.assign({
         pageSize: 'a4',        // 'a4', 'legal', 'letter'
         preserveSutonny: true,
-        docMath: 'eqfield',    // 9f: `.doc`-এ ম্যাথ = EQ ফিল্ড ('eqfield') | প্লেইন পাঠ্য ('plain')
+        docMath: 'eqfield',    // 9h: 'eqfield' (খালি-ক্যাশ ফিল্ড — ডিফল্ট) | 'cached' (ক্যাশ-সহ) | 'plain' (ফিল্ড ছাড়া)
         optimizeForQuestionPaper: true,
         includeImages: true,
         onProgress: (percent, msg) => {}

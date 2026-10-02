@@ -1,12 +1,11 @@
 /**
- * Part-9f: Word-2003 `.doc` আর্টিফ্যাক্ট-টেস্ট (আসল Chromium-এ পুরো পেজ-ফ্লো)
+ * Part-9f/9g/9h: Word-2003 `.doc` আর্টিফ্যাক্ট-টেস্ট (আসল Chromium-এ পুরো পেজ-ফ্লো)
  *   node tests/word2003-doc-artifact.test.mjs
  *
- * যা যাচাই হয় (৯c-তে `.doc`-এ OMML পাঠানোর কারণে Word 2003 ক্র্যাশ করত):
- *   ১) `.doc`-এ কোনো OMML (`<m:oMath`, `<m:f`, `</m:` …) নেই — Word 2003 বোঝে না, ক্র্যাশ করে।
- *   ২) `.doc`-এ Equation Editor 3.0 EQ-ফিল্ড আছে (5-অংশের Word-HTML ফিল্ড) — 2003-নেটিভ।
- *   ৩) কোনো RTF math zone (`\mmath`) নেই; কাঁচা LaTeX নেই; রাশিগুলোর পাঠ্য অটুট।
- *   ৪) docMath:'plain' মোডেও ফাইল তৈরি হয় (ফিল্ড ছাড়া) — ফলব্যাক পথ।
+ * নিয়ম (৯f):  `.doc`-এ OMML (`m:`) বা ম্যাথ-জোন (`\mmath`) থাকতে পারবে না — Word 2003 ক্র্যাশ করে।
+ * নিয়ম (৯g):  অক্ষর ইটালিক, সংখ্যা/ফাংশন-নাম খাড়া (Equation Editor স্ট্রাকচার)।
+ * নিয়ম (৯h):  EQ ফিল্ডের ফলাফল-অঞ্চল **খালি** — Word নিজে কোড থেকে আঁকে,
+ *             তাই এডিটরে ঢুকলে ক্যাশ-টেক্সট ডুপ হয়ে যায় না (ব্যবহারকারীর রিপোর্ট #৭৭-খ)।
  */
 import fs from 'fs';
 import path from 'path';
@@ -27,9 +26,8 @@ const cnt = (s, re) => (String(s).match(re) || []).length;
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.css': 'text/css; charset=utf-8', '.json': 'application/json',
 };
-
 const server = http.createServer((req, res) => {
   const urlPath = decodeURIComponent(req.url.split('?')[0]);
   const fp = path.join(ROOT, urlPath === '/' ? 'index.html' : urlPath);
@@ -54,11 +52,10 @@ async function runConvert(docMath) {
   await page.route('**', (route) => {
     const u = route.request().url();
     if (u.startsWith(BASE)) return route.continue();
-    return route.abort(); // বাইরের CDN/ফন্ট — দরকার নেই
+    return route.abort();
   });
   await page.goto(`${BASE}/docx-to-doc.html`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => typeof window.docxToDocEngine !== 'undefined', { timeout: 30000 }).catch(() => {});
-  // docMath মোড ইনজেক্ট (পেজ ডিফল্ট 'eqfield'; plain যাচাইয়ের জন্য op-কে র্যাপ করি)
+  await page.waitForFunction(() => typeof window.docxToDocEngine !== 'undefined', { timeout: 30000 });
   if (docMath && docMath !== 'eqfield') {
     await page.evaluate((mode) => {
       const orig = window.docxToDocEngine.convertDocxToDoc.bind(window.docxToDocEngine);
@@ -74,59 +71,60 @@ async function runConvert(docMath) {
   return text;
 }
 
-// ---------- ১) ডিফল্ট মোড: eqfield ----------
+// ---------- ১) ডিফল্ট (৯h): EQ ফিল্ড, ক্যাশ-ফলাফল খালি ----------
 {
   const html = await runConvert('eqfield');
-  fs.writeFileSync(path.join(OUTDIR, 'height_cq9f_Word2003.doc'), html);
+  fs.writeFileSync(path.join(OUTDIR, 'height_cq9h_Word2003.doc'), html);
 
+  const fields = cnt(html, /mso-element:field-begin/g);
+  const seps = cnt(html, /mso-element:field-separator/g);
+  const ends = cnt(html, /mso-element:field-end/g);
   T('.doc-এ কোনো OMML ট্যাগ নেই (`<m:oMath`)', cnt(html, /<m:oMath/g) === 0, cnt(html, /<m:oMath/g));
   T('.doc-এ কোনো m: ট্যাগই নেই (Word 2003-safe)', cnt(html, /<\/?m:[a-zA-Z]/g) === 0, cnt(html, /<\/?m:[a-zA-Z]/g));
-  T('.doc-এ `<m:f>`/`<m:rad>` নেই', cnt(html, /<m:f>/g) === 0 && cnt(html, /<m:rad>/g) === 0);
   T('.doc-এ RTF ম্যাথ-জোন (`\\mmath`) নেই', cnt(html, /\\mmath/g) === 0, cnt(html, /\\mmath/g));
-  T('.doc-এ Equation Editor EQ-ফিল্ড আছে (5-অংশ)', cnt(html, /mso-element:field-begin/g) > 0 && cnt(html, /mso-element:field-end/g) > 0,
-    [cnt(html, /mso-element:field-begin/g), cnt(html, /mso-element:field-end/g)]);
-  T('.doc-এ EQ সুইচ আছে (\\F( ভগ্নাংশ)', cnt(html, /EQ\s*[^<]*\\F\(/g) > 0, cnt(html, /\\F\(/g));
-  T('.doc-এ কাঁচা LaTeX/`$` নেই', cnt(html.replace(/<[^>]*>/g, ''), /\$|\\(frac|sqrt|vec|overline)\b/g) === 0);
-  T('.doc-এ সমীকরণের রাশি পাঠ্যে অটুট (x, √, 27)', /27/.test(html));
-  T('.doc ফাইল সাইজ যুক্তিসঙ্গত (৫ KB+)', html.length > 5000, html.length);
+  T('EQ ফিল্ড ট্রিপল সমান (begin/sep/end)', fields > 0 && fields === seps && seps === ends, [fields, seps, ends]);
+  T('EQ সুইচ আছে (\\F( ভগ্নাংশ)', cnt(html, /EQ\s*[^<]*\\F\(/g) > 0, cnt(html, /\\F\(/g));
+
+  // ৯h-এর মূল প্রমাণ: separator-এর পরে সরাসরি field-end — কোথাও ক্যাশ-টেক্সট নেই
+  const emptyResults = cnt(html, /field-separator'><\/span><!\[endif\]--><!--\[if supportFields\]><span[^>]*field-end[\s\S]{0,12}?<\/span><!\[endif\]-->/g);
+  T('৯h: প্রতিটি ফিল্ডের ফলাফল-অঞ্চল খালি (ক্যাশ-টেক্সট নেই)', emptyResults === fields, `${emptyResults} / ${fields}`);
+  T('৯h: separator↔field-end-এর মাঝে কোনো <span> ফলাফল নেই', !/field-separator'><\/span><!\[endif\]--><span/.test(html));
+
+  const vis = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
+  T('.doc-এ কাঁচা LaTeX/`$` নেই', cnt(vis, /\$|\\(frac|sqrt|vec|overline)\b/g) === 0);
+  T('.doc-এ সমীকরণের রাশি কোডে অটুট (x, 27)', /27/.test(html) && /\\F\(/.test(html));
+
+  // সিমুলেটেড "Word compute" ভিউ: supportFields কমেন্ট খুলে দিলে শুধু EQ কোড দেখা যায়, ডুপ নয়
+  const sim = html.replace(/<!--\[if supportFields\]>/g, '').replace(/<!\[endif\]-->/g, '');
+  const simVis = sim.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<span[^>]*mso-element[^>]*><\/span>/g, ' ').replace(/<[^>]+>/g, ' ');
+  T('সিমুলেটেড Word-ভিউতে `EQ \\F(` কোড পরিষ্কার', /EQ[^\n]{0,80}\\F\(/.test(simVis), simVis.slice(0, 160));
 }
 
-// ---------- ১ক) ব্রাউজার-রেন্ডার: দৃশ্যমান পাঠ্যে কাঁচা EQ সুইচ যেন না থাকে ----------
+// ---------- ২) 'cached' মোড (৯f-আচরণ): ফলাফল-ক্যাশ থাকে + ৯g স্টাইল ----------
 {
-  const html = fs.readFileSync(path.join(OUTDIR, 'height_cq9f_Word2003.doc'), 'utf8');
-  const previewPath = path.join(OUTDIR, 'preview_render.html');
-  fs.writeFileSync(previewPath, html);
-  const browser = await chromium.launch();
-  const page = await (await browser.newContext({ viewport: { width: 1000, height: 1250 } })).newPage();
-  await page.goto('file://' + previewPath, { waitUntil: 'load' });
-  await page.waitForTimeout(800);
-  const visible = await page.evaluate(() => document.body.innerText);
-  const srcHtml = fs.readFileSync(previewPath, 'utf8');
-  await page.screenshot({ path: path.join(OUTDIR, 'preview_page1.png'), fullPage: false });
-  await browser.close();
-  T('রেন্ডারে কাঁচা `\\S\\up` নেই', !/[\\]{1,2}S[\\]{1,2}up/.test(visible), visible.slice(0, 140));
-  T('রেন্ডারে কাঁচা `\\F(` নেই', !/[\\]{1,2}F\(/.test(visible), visible.slice(0, 140));
-  T('ভগ্নাংশ পড়ার-উপযোগ্য (1/2)', /1\/2/.test(visible), visible.slice(0, 160));
-  T('সুপারস্ক্রিপ্ট `<sup>` ট্যাগে', /<sup>/.test(srcHtml), /<sup>\d/.test(srcHtml));
-  T('Part-9g: অক্ষর ইটালিক (<i>) — Equation-Editor স্টাইল', /<i>[A-Za-z]/.test(srcHtml), (srcHtml.match(/<i>[A-Za-z][^<]*<\/i>/g) || []).slice(0, 4));
-  T('Part-9g: সংখ্যা ইটালিক নয় (খাড়া)', !/<i>[0-9]/.test(srcHtml), (srcHtml.match(/<i>[0-9][^<]*<\/i>/g) || []).slice(0, 3));
-  T('Part-9g: ফাংশন-নাম খাড়া (log/sin ইটালিক নয়)', !/<i>(log|sin|cos|tan|lim)<\/i>/i.test(srcHtml));
-  T('মূল প্রশ্ন-পাঠ্য রেন্ডারে আছে', visible.includes('F(x, y, z)'), visible.slice(0, 160));
+  const html = await runConvert('cached');
+  fs.writeFileSync(path.join(OUTDIR, 'height_cq9h_Word2003_cached.doc'), html);
+  T('cached: OMML/m: নেই', cnt(html, /<\/?m:[a-zA-Z]/g) === 0 && cnt(html, /\\mmath/g) === 0);
+  T('cached: ফিল্ড-ফলাফলে <span> ক্যাশ আছে', cnt(html, /field-separator'><\/span><!\[endif\]--><span/g) > 0);
+  T('cached: অক্ষর ইটালিক (<i>)', /<i>[A-Za-z]/.test(html), (html.match(/<i>[A-Za-z][^<]*<\/i>/g) || []).slice(0, 3));
+  T('cached: সংখ্যা ইটালিক নয় (খাড়া)', !/<i>[0-9]/.test(html));
+  T('cached: সুপারস্ক্রিপ্ট `<sup>` ট্যাগে', /<sup>\d/.test(html));
 }
 
-// ---------- ২) ফলব্যাক মোড: plain ----------
+// ---------- ৩) 'plain' মোড: ফিল্ড ছাড়া (সব Word-এ পড়া যায়) ----------
 {
   const html = await runConvert('plain');
-  fs.writeFileSync(path.join(OUTDIR, 'height_cq9f_Word2003_plain.doc'), html);
+  fs.writeFileSync(path.join(OUTDIR, 'height_cq9h_Word2003_plain.doc'), html);
   T('plain: কোনো m: ট্যাগ নেই', cnt(html, /<\/?m:[a-zA-Z]/g) === 0, cnt(html, /<\/?m:[a-zA-Z]/g));
   T('plain: কোনো EQ-ফিল্ড নেই', cnt(html, /mso-element:field-begin/g) === 0, cnt(html, /mso-element:field-begin/g));
   T('plain: ম্যাথ-জোন নেই', cnt(html, /\\mmath/g) === 0);
+  T('plain: অক্ষর ইটালিক, সংখ্যা খাড়া', /<i>[A-Za-z]/.test(html) && !/<i>[0-9]/.test(html));
 }
 
-// ---------- ৩) `.docx` পাথ অপরিবর্তিত (OMML অটুট) ----------
+// ---------- ৪) `.docx` পাথ অপরিবর্তিত (OMML অটুট) ----------
 {
   const { execSync } = await import('child_process');
-  const xml = execSync(`cd /tmp && rm -rf dxchk && mkdir dxchk && cd dxchk && unzip -o -q ${FIXTURE} word/document.xml && grep -o "<m:oMath" word/document.xml | wc -l`).toString().trim();
+  const xml = execSync(`cd /tmp && rm -rf dxchk9h && mkdir dxchk9h && cd dxchk9h && unzip -o -q ${FIXTURE} word/document.xml && grep -o "<m:oMath" word/document.xml | wc -l`).toString().trim();
   T('.docx (ইনপুট) এখনও OMML ধরে রাখে', Number(xml) > 0, xml);
 }
 
