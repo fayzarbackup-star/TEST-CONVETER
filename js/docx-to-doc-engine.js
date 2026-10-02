@@ -44,6 +44,23 @@
      * @param {string} mode 'eqfield' (ডিফল্ট) | 'plain' (ফিল্ড ছাড়া শুধু ইটালিক পাঠ্য)
      * @returns {string} Word-HTML
      */
+    /**
+     * Part-9g: Equation Editor-স্টাইল টাইপোগ্রাফি — অক্ষর (a, b, n) ইটালিক, সংখ্যা/চিহ্ন নরমাল।
+     * ফাংশন-নাম (sin, log, lim…) গণিতের নিয়মে খাড়া (upright) থাকে।
+     * ইনপুট: HTML-escaped রাশি (sup/sub ট্যাগ থাকতে পারে)। আউটপুট: <i> মোড়ানো HTML।
+     */
+    _styleMathLetters(inner) {
+      const FN = /^(sin|cos|tan|cot|sec|csc|log|ln|lim|max|min|exp|det|mod|deg|arcsin|arccos|arctan|sinh|cosh|tanh)$/i;
+      return String(inner === undefined || inner === null ? '' : inner)
+        .split(/(<[^>]+>)/)
+        .map((part) => {
+          if (!part) return '';
+          if (part.charAt(0) === '<') return part;               // ট্যাগ হুবহু
+          return part.replace(/[A-Za-z]+/g, (w) => (FN.test(w) ? w : `<i>${w}</i>`));
+        })
+        .join('');
+    }
+
     _ommlToLegacyEqHtml(node, mode = 'eqfield') {
       try {
         if (!node) return '';
@@ -70,13 +87,15 @@
             .replace(/^<span[^>]*>([\s\S]*)<\/span>$/, '$1')
             .replace(/\^\s*([0-9A-Za-z+\-]{1,6})/g, '<sup>$1</sup>')
             .replace(/_\s*([0-9A-Za-z+\-]{1,6})/g, '<sub>$1</sub>');
-          body = `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">${inner}</span>`;
+          // Part-9g: পুরোটা ইটালিক নয় — কেবল অক্ষর ইটালিক, সংখ্যা/চিহ্ন খাড়া (EE-স্টাইল)
+          body = `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(inner)}</span>`;
         }
         if (!eqCode && !body) return '';
         // EQ সুইচ (\F \R \S \I \B \X \A \U) থাকলে ফিল্ড, নইলে সাধারণ ইটালিক স্প্যান
         const hasSwitches = /\\[FRISBXUA]\b/i.test(eqCode);
         if (mode === 'plain' || !hasSwitches) {
-          return `<span style="font-family:'Times New Roman',serif;font-size:12pt;font-style:italic;">${body}</span>`;
+          // Part-9g: অক্ষর ইটালিক, সংখ্যা খাড়া (EE-স্টাইল)
+          return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(body)}</span>`;
         }
         // Equation Editor 3.0 EQ ফিল্ড — Microsoft Word HTML-এর ৫-অংশের ফিল্ড গঠন
         return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`

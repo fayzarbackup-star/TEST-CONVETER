@@ -108,6 +108,9 @@ async function runConvert(docMath) {
   T('রেন্ডারে কাঁচা `\\F(` নেই', !/[\\]{1,2}F\(/.test(visible), visible.slice(0, 140));
   T('ভগ্নাংশ পড়ার-উপযোগ্য (1/2)', /1\/2/.test(visible), visible.slice(0, 160));
   T('সুপারস্ক্রিপ্ট `<sup>` ট্যাগে', /<sup>/.test(srcHtml), /<sup>\d/.test(srcHtml));
+  T('Part-9g: অক্ষর ইটালিক (<i>) — Equation-Editor স্টাইল', /<i>[A-Za-z]/.test(srcHtml), (srcHtml.match(/<i>[A-Za-z][^<]*<\/i>/g) || []).slice(0, 4));
+  T('Part-9g: সংখ্যা ইটালিক নয় (খাড়া)', !/<i>[0-9]/.test(srcHtml), (srcHtml.match(/<i>[0-9][^<]*<\/i>/g) || []).slice(0, 3));
+  T('Part-9g: ফাংশন-নাম খাড়া (log/sin ইটালিক নয়)', !/<i>(log|sin|cos|tan|lim)<\/i>/i.test(srcHtml));
   T('মূল প্রশ্ন-পাঠ্য রেন্ডারে আছে', visible.includes('F(x, y, z)'), visible.slice(0, 160));
 }
 
