@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "cq-booklet-10",
+    "questions": 10,
+    "columns": 9,
+    "skipFirstColumn": false,
+    "predictedDocPages": 5,
+    "reservedUsed": true,
+    "tailMoved": 1,
+    "headerLines": 5,
+    "headerHeightTw": 1784,
+    "geometry": {
+      "pageW": 16838,
+      "pageH": 11906,
+      "margin": 720,
+      "colW": 7195,
+      "colGap": 1008,
+      "rightTab": 7195
+    },
+    "structural": {
+      "rtfLandscape": true,
+      "rtfPaper": true,
+      "rtfMargins": true,
+      "rtfCols": true,
+      "rtfColumnBreaks": 8,
+      "expectedColumnBreaks": 8,
+      "rtfStemHanging": true,
+      "rtfSubIndent": true,
+      "rtfRightTab": true,
+      "rtfHeaderUnderlined": true,
+      "docxLandscape": true,
+      "docxColumnBreaks": 8,
+      "docxHanging": true,
+      "docxRightTab": true,
+      "docxSubIndent": true,
+      "docxNoShading": true,
+      "docxTableAutoWidth": true
+    },
+    "render": {
+      "doc": {
+        "bytes": 36048,
+        "error": null,
+        "pages": 5,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-10.doc/cq-booklet-10.pdf",
+        "png": "proof/cq-booklet-10.doc.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 348.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              389,
+              446,
+              468,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              79,
+              278,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 51
+      },
+      "docx": {
+        "bytes": 74835,
+        "error": null,
+        "pages": 5,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-10.docx/cq-booklet-10.pdf",
+        "png": "proof/cq-booklet-10.docx.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 142.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              389,
+              446,
+              468,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              79,
+              278,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 51
+      }
+    },
+    "structuralChecks": [
+      {
+        "check": ".doc  ল্যান্ডস্কেপ A4 (paperw16838/paperh11906)",
+        "ok": true
+      },
+      {
+        "check": ".doc  চারদিকে 0.5\" মার্জিন",
+        "ok": true
+      },
+      {
+        "check": ".doc  \\cols2\\colsx1008",
+        "ok": true
+      },
+      {
+        "check": ".doc  কলাম-ব্রেক 8 == প্ল্যান 8",
+        "ok": true
+      },
+      {
+        "check": ".doc  স্টেম হ্যাঙ্গিং 432",
+        "ok": true
+      },
+      {
+        "check": ".doc  উপ-প্রশ্ন ইনডেন্ট 864",
+        "ok": true
+      },
+      {
+        "check": ".doc  রাইট ট্যাব কলাম-প্রান্তে",
+        "ok": true
+      },
+      {
+        "check": ".doc  হেডারে সেন্টারড আন্ডারলাইন লেবেল",
+        "ok": true
+      },
+      {
+        "check": ".docx ল্যান্ডস্কেপ+cols2+1008",
+        "ok": true
+      },
+      {
+        "check": ".docx কলাম-ব্রেক 8 == .doc 8",
+        "ok": true
+      },
+      {
+        "check": ".docx 432/864 ইনডেন্ট",
+        "ok": true
+      },
+      {
+        "check": ".docx রাইট ট্যাব + শেডিংবিহীন অটো-ছক",
+        "ok": true
+      }
+    ],
+    "renderChecks": [
+      {
+        "check": "doc: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "doc: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "doc: পৃষ্ঠাসংখ্যা 5 == প্ল্যান 5",
+        "ok": true
+      },
+      {
+        "check": "doc: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "doc: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×41, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×62, র‍্যাপ-অংশ 43.2pt ×12",
+        "ok": true
+      },
+      {
+        "check": "doc: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 51টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      },
+      {
+        "check": "docx: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "docx: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "docx: পৃষ্ঠাসংখ্যা 5 == প্ল্যান 5",
+        "ok": true
+      },
+      {
+        "check": "docx: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "docx: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×41, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×62, র‍্যাপ-অংশ 43.2pt ×12",
+        "ok": true
+      },
+      {
+        "check": "docx: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 51টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "id": "cq-booklet-16",
+    "questions": 16,
+    "columns": 13,
+    "skipFirstColumn": false,
+    "predictedDocPages": 7,
+    "reservedUsed": true,
+    "tailMoved": 2,
+    "headerLines": 5,
+    "headerHeightTw": 1784,
+    "geometry": {
+      "pageW": 16838,
+      "pageH": 11906,
+      "margin": 720,
+      "colW": 7195,
+      "colGap": 1008,
+      "rightTab": 7195
+    },
+    "structural": {
+      "rtfLandscape": true,
+      "rtfPaper": true,
+      "rtfMargins": true,
+      "rtfCols": true,
+      "rtfColumnBreaks": 12,
+      "expectedColumnBreaks": 12,
+      "rtfStemHanging": true,
+      "rtfSubIndent": true,
+      "rtfRightTab": true,
+      "rtfHeaderUnderlined": true,
+      "docxLandscape": true,
+      "docxColumnBreaks": 12,
+      "docxHanging": true,
+      "docxRightTab": true,
+      "docxSubIndent": true,
+      "docxNoShading": true,
+      "docxTableAutoWidth": true
+    },
+    "render": {
+      "doc": {
+        "bytes": 56772,
+        "error": null,
+        "pages": 7,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-16.doc/cq-booklet-16.pdf",
+        "png": "proof/cq-booklet-16.doc.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 348.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              72,
+              143,
+              389,
+              468
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              79,
+              278,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 81
+      },
+      "docx": {
+        "bytes": 116777,
+        "error": null,
+        "pages": 7,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-16.docx/cq-booklet-16.pdf",
+        "png": "proof/cq-booklet-16.docx.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 142.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              72,
+              143,
+              389,
+              468
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              446,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806,
+            "col2Start": 446.25,
+            "topLineCenter": 347.6,
+            "topRightCenter": 552.7,
+            "peaks": [
+              36,
+              58,
+              389,
+              468,
+              482,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              79,
+              278,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 81
+      }
+    },
+    "structuralChecks": [
+      {
+        "check": ".doc  ল্যান্ডস্কেপ A4 (paperw16838/paperh11906)",
+        "ok": true
+      },
+      {
+        "check": ".doc  চারদিকে 0.5\" মার্জিন",
+        "ok": true
+      },
+      {
+        "check": ".doc  \\cols2\\colsx1008",
+        "ok": true
+      },
+      {
+        "check": ".doc  কলাম-ব্রেক 12 == প্ল্যান 12",
+        "ok": true
+      },
+      {
+        "check": ".doc  স্টেম হ্যাঙ্গিং 432",
+        "ok": true
+      },
+      {
+        "check": ".doc  উপ-প্রশ্ন ইনডেন্ট 864",
+        "ok": true
+      },
+      {
+        "check": ".doc  রাইট ট্যাব কলাম-প্রান্তে",
+        "ok": true
+      },
+      {
+        "check": ".doc  হেডারে সেন্টারড আন্ডারলাইন লেবেল",
+        "ok": true
+      },
+      {
+        "check": ".docx ল্যান্ডস্কেপ+cols2+1008",
+        "ok": true
+      },
+      {
+        "check": ".docx কলাম-ব্রেক 12 == .doc 12",
+        "ok": true
+      },
+      {
+        "check": ".docx 432/864 ইনডেন্ট",
+        "ok": true
+      },
+      {
+        "check": ".docx রাইট ট্যাব + শেডিংবিহীন অটো-ছক",
+        "ok": true
+      }
+    ],
+    "renderChecks": [
+      {
+        "check": "doc: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "doc: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "doc: পৃষ্ঠাসংখ্যা 7 == প্ল্যান 7",
+        "ok": true
+      },
+      {
+        "check": "doc: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "doc: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×65, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×99, র‍্যাপ-অংশ 43.2pt ×18",
+        "ok": true
+      },
+      {
+        "check": "doc: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 81টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      },
+      {
+        "check": "docx: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "docx: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "docx: পৃষ্ঠাসংখ্যা 7 == প্ল্যান 7",
+        "ok": true
+      },
+      {
+        "check": "docx: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "docx: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×65, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×99, র‍্যাপ-অংশ 43.2pt ×18",
+        "ok": true
+      },
+      {
+        "check": "docx: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 81টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "id": "cq-booklet-2",
+    "questions": 2,
+    "columns": 1,
+    "skipFirstColumn": true,
+    "predictedDocPages": 1,
+    "reservedUsed": false,
+    "tailMoved": 0,
+    "headerLines": 5,
+    "headerHeightTw": 1784,
+    "geometry": {
+      "pageW": 16838,
+      "pageH": 11906,
+      "margin": 720,
+      "colW": 7195,
+      "colGap": 1008,
+      "rightTab": 7195
+    },
+    "structural": {
+      "rtfLandscape": true,
+      "rtfPaper": true,
+      "rtfMargins": true,
+      "rtfCols": true,
+      "rtfColumnBreaks": 1,
+      "expectedColumnBreaks": 1,
+      "rtfStemHanging": true,
+      "rtfSubIndent": true,
+      "rtfRightTab": true,
+      "rtfHeaderUnderlined": true,
+      "docxLandscape": true,
+      "docxColumnBreaks": 1,
+      "docxHanging": true,
+      "docxRightTab": true,
+      "docxSubIndent": true,
+      "docxNoShading": true,
+      "docxTableAutoWidth": true
+    },
+    "render": {
+      "doc": {
+        "bytes": 6148,
+        "error": null,
+        "pages": 1,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-2.doc/cq-booklet-2.pdf",
+        "png": "proof/cq-booklet-2.doc.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 446.25,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 626.1,
+            "topRightCenter": 626.1,
+            "peaks": [
+              446,
+              468,
+              482,
+              531,
+              643,
+              799
+            ]
+          }
+        ],
+        "marksAtRightEdge": 9
+      },
+      "docx": {
+        "bytes": 13067,
+        "error": null,
+        "pages": 1,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-2.docx/cq-booklet-2.pdf",
+        "png": "proof/cq-booklet-2.docx.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 446.25,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 626.1,
+            "topRightCenter": 626.1,
+            "peaks": [
+              446,
+              468,
+              482,
+              531,
+              580,
+              799
+            ]
+          }
+        ],
+        "marksAtRightEdge": 9
+      }
+    },
+    "structuralChecks": [
+      {
+        "check": ".doc  ল্যান্ডস্কেপ A4 (paperw16838/paperh11906)",
+        "ok": true
+      },
+      {
+        "check": ".doc  চারদিকে 0.5\" মার্জিন",
+        "ok": true
+      },
+      {
+        "check": ".doc  \\cols2\\colsx1008",
+        "ok": true
+      },
+      {
+        "check": ".doc  কলাম-ব্রেক 1 == প্ল্যান 1",
+        "ok": true
+      },
+      {
+        "check": ".doc  স্টেম হ্যাঙ্গিং 432",
+        "ok": true
+      },
+      {
+        "check": ".doc  উপ-প্রশ্ন ইনডেন্ট 864",
+        "ok": true
+      },
+      {
+        "check": ".doc  রাইট ট্যাব কলাম-প্রান্তে",
+        "ok": true
+      },
+      {
+        "check": ".doc  হেডারে সেন্টারড আন্ডারলাইন লেবেল",
+        "ok": true
+      },
+      {
+        "check": ".docx ল্যান্ডস্কেপ+cols2+1008",
+        "ok": true
+      },
+      {
+        "check": ".docx কলাম-ব্রেক 1 == .doc 1",
+        "ok": true
+      },
+      {
+        "check": ".docx 432/864 ইনডেন্ট",
+        "ok": true
+      },
+      {
+        "check": ".docx রাইট ট্যাব + শেডিংবিহীন অটো-ছক",
+        "ok": true
+      }
+    ],
+    "renderChecks": [
+      {
+        "check": "doc: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "doc: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "doc: পৃষ্ঠাসংখ্যা 1 == প্ল্যান 1",
+        "ok": true
+      },
+      {
+        "check": "doc: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (446.25)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "doc: ১ম পৃষ্ঠার লেখা ২য় কলামে শুরু (x=446.25 ≥ 440.15) — ১ম কলাম ব্যাক কভার",
+        "ok": true
+      },
+      {
+        "check": "doc: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×0",
+        "ok": true
+      },
+      {
+        "check": "doc: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 9টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      },
+      {
+        "check": "docx: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "docx: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "docx: পৃষ্ঠাসংখ্যা 1 == প্ল্যান 1",
+        "ok": true
+      },
+      {
+        "check": "docx: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (446.25)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "docx: ১ম পৃষ্ঠার লেখা ২য় কলামে শুরু (x=446.25 ≥ 440.15) — ১ম কলাম ব্যাক কভার",
+        "ok": true
+      },
+      {
+        "check": "docx: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×0",
+        "ok": true
+      },
+      {
+        "check": "docx: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 9টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "id": "cq-booklet-6",
+    "questions": 6,
+    "columns": 3,
+    "skipFirstColumn": false,
+    "predictedDocPages": 2,
+    "reservedUsed": true,
+    "tailMoved": 2,
+    "headerLines": 5,
+    "headerHeightTw": 1784,
+    "geometry": {
+      "pageW": 16838,
+      "pageH": 11906,
+      "margin": 720,
+      "colW": 7195,
+      "colGap": 1008,
+      "rightTab": 7195
+    },
+    "structural": {
+      "rtfLandscape": true,
+      "rtfPaper": true,
+      "rtfMargins": true,
+      "rtfCols": true,
+      "rtfColumnBreaks": 2,
+      "expectedColumnBreaks": 2,
+      "rtfStemHanging": true,
+      "rtfSubIndent": true,
+      "rtfRightTab": true,
+      "rtfHeaderUnderlined": true,
+      "docxLandscape": true,
+      "docxColumnBreaks": 2,
+      "docxHanging": true,
+      "docxRightTab": true,
+      "docxSubIndent": true,
+      "docxNoShading": true,
+      "docxTableAutoWidth": true
+    },
+    "render": {
+      "doc": {
+        "bytes": 19791,
+        "error": null,
+        "pages": 2,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-6.doc/cq-booklet-6.pdf",
+        "png": "proof/cq-booklet-6.doc.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 348.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              389,
+              446,
+              468,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              137,
+              145,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 31
+      },
+      "docx": {
+        "bytes": 34392,
+        "error": null,
+        "pages": 2,
+        "pageSize": {
+          "w": 841.89,
+          "h": 595.304
+        },
+        "pdf": "proof/render/cq-booklet-6.docx/cq-booklet-6.pdf",
+        "png": "proof/cq-booklet-6.docx.page1.png",
+        "measure": [
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 806.01,
+            "col2Start": 446.25,
+            "topLineCenter": 142.5,
+            "topRightCenter": 626.1,
+            "peaks": [
+              36,
+              58,
+              389,
+              446,
+              468,
+              799
+            ]
+          },
+          {
+            "w": 841.889764,
+            "h": 595.303937,
+            "minX": 36.1,
+            "maxX": 395.85,
+            "col2Start": 1000000000,
+            "topLineCenter": 142.5,
+            "topRightCenter": null,
+            "peaks": [
+              36,
+              58,
+              72,
+              137,
+              145,
+              389
+            ]
+          }
+        ],
+        "marksAtRightEdge": 31
+      }
+    },
+    "structuralChecks": [
+      {
+        "check": ".doc  ল্যান্ডস্কেপ A4 (paperw16838/paperh11906)",
+        "ok": true
+      },
+      {
+        "check": ".doc  চারদিকে 0.5\" মার্জিন",
+        "ok": true
+      },
+      {
+        "check": ".doc  \\cols2\\colsx1008",
+        "ok": true
+      },
+      {
+        "check": ".doc  কলাম-ব্রেক 2 == প্ল্যান 2",
+        "ok": true
+      },
+      {
+        "check": ".doc  স্টেম হ্যাঙ্গিং 432",
+        "ok": true
+      },
+      {
+        "check": ".doc  উপ-প্রশ্ন ইনডেন্ট 864",
+        "ok": true
+      },
+      {
+        "check": ".doc  রাইট ট্যাব কলাম-প্রান্তে",
+        "ok": true
+      },
+      {
+        "check": ".doc  হেডারে সেন্টারড আন্ডারলাইন লেবেল",
+        "ok": true
+      },
+      {
+        "check": ".docx ল্যান্ডস্কেপ+cols2+1008",
+        "ok": true
+      },
+      {
+        "check": ".docx কলাম-ব্রেক 2 == .doc 2",
+        "ok": true
+      },
+      {
+        "check": ".docx 432/864 ইনডেন্ট",
+        "ok": true
+      },
+      {
+        "check": ".docx রাইট ট্যাব + শেডিংবিহীন অটো-ছক",
+        "ok": true
+      }
+    ],
+    "renderChecks": [
+      {
+        "check": "doc: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "doc: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "doc: পৃষ্ঠাসংখ্যা 2 == প্ল্যান 2",
+        "ok": true
+      },
+      {
+        "check": "doc: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "doc: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×25, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×37, র‍্যাপ-অংশ 43.2pt ×6",
+        "ok": true
+      },
+      {
+        "check": "doc: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 31টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      },
+      {
+        "check": "docx: LibreOffice রেন্ডার হলো",
+        "ok": true
+      },
+      {
+        "check": "docx: পৃষ্ঠা A4 ল্যান্ডস্কেপ 841.89×595.304pt",
+        "ok": true,
+        "detail": "প্রত্যাশিত 841.9×595.3"
+      },
+      {
+        "check": "docx: পৃষ্ঠাসংখ্যা 2 == প্ল্যান 2",
+        "ok": true
+      },
+      {
+        "check": "docx: বাম প্রান্ত ≈ 36pt অথবা কলাম-২ (36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলাম-২ শুরু ≈ 446.15pt (446.25)",
+        "ok": true
+      },
+      {
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "ok": true
+      },
+      {
+        "check": "docx: ব্যাক কভার ভরা — ১ম পৃষ্ঠার লেখা বাম কলাম থেকেই শুরু (x=36.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: হেডার-রেখা কলাম-২-এর শীর্ষে — কেন্দ্র ≈ 626pt (626.1)",
+        "ok": true
+      },
+      {
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×25, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×37, র‍্যাপ-অংশ 43.2pt ×6",
+        "ok": true
+      },
+      {
+        "check": "docx: ৪ নম্বর ধারা — কোনো লাইন নম্বরের নিচে ওঠেনি (নিষিদ্ধ ব্যান্ডে 0 শব্দ; পাওয়া 0)",
+        "ok": true
+      },
+      {
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 31টি (রাইট ট্যাব কাজ করছে)",
+        "ok": true
+      }
+    ]
+  }
+]

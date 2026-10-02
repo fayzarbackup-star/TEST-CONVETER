@@ -13,6 +13,11 @@ const require = createRequire(import.meta.url);
 const H = require('./lib/harness.js');
 
 const ROOT = H.ROOT;
+// Part-11 (TC-LAY-34): কম্বাইন্ড পত্রে CQ→MCQ বিভাজক এখন next-page *সেকশন ব্রেক*
+// (\sect\sbkpage / <w:type w:val="nextPage"/>) — কারণ MCQ অংশ পোর্ট্রেট সেটআপে বসে।
+// পৃষ্ঠা-বিভাজক গণনায় সেটিও ধরা হয়, কারণ ইচ্ছা একটাই: MCQ নতুন পৃষ্ঠায় শুরু হয়।
+const pageSepsRtf = (t) => (t.match(/\\page/g) || []).length + (t.match(/\\sect\\sbkpage/g) || []).length;
+const pageSepsXml = (t) => (t.match(/<w:br w:type="page"\/>/g) || []).length + (t.match(/<w:type w:val="nextPage"\/>/g) || []).length;
 let pass = 0, fail = 0;
 const T = (n, c, x) => { c ? pass++ : fail++; console.log((c ? '✅' : '❌') + ' ' + n + (c ? '' : '  → ' + JSON.stringify(x))); };
 
@@ -54,12 +59,12 @@ const blobText = async (b) => { if (b && typeof b.text === 'function') return aw
 
     const rtfCo = await blobText(Export.generateLegacyDoc(cx.body, 'EXAM_COMBINED', { auditNote: NOTE }));
     T('RTF-COMBINED: হেডিং ঠিক ১ বার (দ্বিগুণ নয়)', count(rtfCo, H_esc) === 1, count(rtfCo, H_esc));
-    T('RTF-COMBINED: ২টি পেজ-ব্রেক (MCQ + অডিট)', (rtfCo.match(/\\page/g) || []).length === 2, (rtfCo.match(/\\page/g) || []).length);
+    T('RTF-COMBINED: ২টি পৃষ্ঠা-বিভাজক (MCQ সেকশন-ব্রেক + অডিট)', pageSepsRtf(rtfCo) === 2, pageSepsRtf(rtfCo));
     T('RTF-COMBINED: অডিট MCQ-র পরেও নয়, সবার শেষে', rtfCo.indexOf(l1_esc) > rtfCo.indexOf(Export.formatRtfText('বহুনির্বাচনি', {})), '');
 
     const rtfCoNo = await blobText(Export.generateLegacyDoc(cx.body, 'EXAM_COMBINED', {}));
     T('RTF-COMBINED (নোট ছাড়া): হেডিং নেই', !rtfCoNo.includes(H_esc));
-    T('RTF-COMBINED (নোট ছাড়া): আগের মতোই ১টি পেজ-ব্রেক', (rtfCoNo.match(/\\page/g) || []).length === 1);
+    T('RTF-COMBINED (নোট ছাড়া): ১টি পৃষ্ঠা-বিভাজক (MCQ সেকশন-ব্রেক)', pageSepsRtf(rtfCoNo) === 1, pageSepsRtf(rtfCoNo));
 
     const rtfMq = await blobText(Export.generateLegacyDoc(mq.body, 'EXAM_MCQ', { auditNote: NOTE }));
     T('RTF-MCQ: হেডিং ১ বার', count(rtfMq, H_esc) === 1, count(rtfMq, H_esc));
@@ -94,7 +99,7 @@ const blobText = async (b) => { if (b && typeof b.text === 'function') return aw
     const res = await Export.generateCombinedExamDocx(parsedCq2, parsedMq2, { returnInnerXml: true, auditNote: NOTE });
     const xml = (res.bodyXml || '') + (res.sectPr || '');
     T('DOCX-COMBINED: হেডিং ঠিক ১ বার (CQ+MCQ মিলিয়ে)', count(xml, HEAD) === 1, count(xml, HEAD));
-    T('DOCX-COMBINED: ঠিক ২টি পেজ-ব্রেক (MCQ + অডিট)', count(xml, '<w:br w:type="page"/>') === 2, count(xml, '<w:br w:type="page"/>'));
+    T('DOCX-COMBINED: ২টি পৃষ্ঠা-বিভাজক (MCQ nextPage সেকশন + অডিট)', pageSepsXml(xml) === 2, pageSepsXml(xml));
     T('DOCX-COMBINED: অডিট MCQ কনটেন্টেরও পরে', xml.indexOf('প্রশ্ন') === 0 || true);
     T('DOCX-COMBINED: অডিট সবার শেষে (MCQ-টেক্সটের পরে)', stripXml(xml).lastIndexOf(NOTE_L1) > stripXml(xml).lastIndexOf('বলের একক'));
   } catch (e) { T('DOCX-COMBINED পরীক্ষা', false, e.message); }

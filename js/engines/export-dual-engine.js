@@ -584,6 +584,14 @@
       return rtf;
     },
 
+
+    /**
+     * Combined (CQ + MCQ) Modern Word (.docx) — Part-11 মাস্টার লেআউট।
+     * সেকশন ১ = সৃজনশীল ল্যান্ডস্কেপ ২-কলাম বুকলেট (ইনলাইন sectPr দিয়ে শেষ,
+     * w:type="nextPage"), সেকশন ২ = MCQ A4 পোর্ট্রেট (হেডার ১-কলাম + কন্টিনিউয়াস
+     * ২-কলাম বডি)। আগের সংস্করণ দুই অংশকেই একটিমাত্র ল্যান্ডস্কেপ sectPr-এ
+     * ঢালত ⇒ MCQ অংশ ল্যান্ডস্কেপে ছাপা হতো।
+     */
     async generateCombinedExamDocx(parsedCq, parsedMcq, options = {}) {
       options = this._withAuditNote(options, parsedCq, parsedMcq);
       const isBijoy = this.isBijoyFont(options);
@@ -592,26 +600,20 @@
       const childOptions = { ...options };
       delete childOptions.auditNote;
 
-      // Generate CQ xml part
+      // ---- সেকশন ১: CQ বুকলেট ----
       const cqRes = await this.generateCqExamDocx(parsedCq, { ...childOptions, returnInnerXml: true });
-      
-      // Generate MCQ xml part
+      // ---- সেকশন ২: MCQ পোর্ট্রেট (নিজস্ব হেডার/বডি সেকশনসহ) ----
       const mcqRes = await this.generateMcqExamDocx(parsedMcq, { ...childOptions, returnInnerXml: true, isCombined: true });
 
-      // Add a page break between CQ and MCQ so they are on separate sides of the paper
-      const pageBreak = `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
-      let combinedBody = cqRes.bodyXml + pageBreak + mcqRes.bodyXml;
-      
+      const cqPlan = this._cqPlan(parsedCq, options);
+      const cqSectionEnd = this._cqSectionBreakDocx(cqPlan.geometry);
+
+      let combinedBody = cqRes.bodyXml + cqSectionEnd + mcqRes.bodyXml;
       combinedBody += this._auditSectionDocx(options);
 
-      // Landscape 2-column section
-      const sectPr = `
-        <w:sectPr>
-          <w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
-          <w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
-          <w:cols w:num="2" w:space="1008"/>
-        </w:sectPr>`;
-      
+      // শেষ সেকশন = MCQ বডির পোর্ট্রেট প্রপার্টি
+      const sectPr = mcqRes.sectPr || '';
+
       if (options.returnInnerXml) {
         return { bodyXml: combinedBody, sectPr };
       }
@@ -793,118 +795,320 @@
     // -------------------------------------------------------------------------
     // 1. CREATIVE QUESTION (CQ) GENERATORS
     // -------------------------------------------------------------------------
+    // =========================================================================
+    // Part-11 — সৃজনশীল (CQ) মাস্টার লেআউট: বুকলেট প্ল্যানার অ্যাডাপ্টার
+    // জ্যামিতি ও কলাম-বণ্টনের একমাত্র উৎস js/layout-engine/cq-booklet-planner.js।
+    // RTF (.doc), DOCX (.docx) ও প্রিভিউ — তিনটেই একই plan কনজিউম করে,
+    // ফলে "preview == download" চুক্তি (Part-10) এখানেও অটুট থাকে।
+    // =========================================================================
+    _getCqPlanner() {
+      if (typeof CqBookletPlanner !== 'undefined') return CqBookletPlanner;
+      if (typeof window !== 'undefined' && window.CqBookletPlanner) return window.CqBookletPlanner;
+      if (typeof globalThis !== 'undefined' && globalThis.CqBookletPlanner) return globalThis.CqBookletPlanner;
+      if (typeof global !== 'undefined' && global.CqBookletPlanner) return global.CqBookletPlanner;
+      if (typeof require === 'function') {
+        try {
+          return require('../layout-engine/cq-booklet-planner.js');
+        } catch (e) {
+          try {
+            return require('./cq-booklet-planner.js');
+          } catch (e2) {}
+        }
+      }
+      return null;
+    },
 
+    /**
+     * Part-11: CQ বুকলেট প্ল্যান। margin / columnGap / columns / skipFirstColumn
+     * UI-অপশন প্ল্যানারে পাস হয় — নতুন কোনো জ্যামিতি এ ফাইলে গণনা করা হয় না।
+     */
+    _cqPlan(parsedData, options = {}) {
+      const planner = this._getCqPlanner();
+      if (planner && typeof planner.plan === 'function') {
+        try {
+          const p = planner.plan(parsedData, {
+            docType: 'EXAM_CQ',
+            margin: options.margin || 0.5,
+            columnGap: options.columnGap || 0.7,
+            cols: options.columns || 2,
+            rightTab: options.rightTab,
+            skipFirstColumn: options.skipFirstColumn
+          });
+          if (p && p.geometry && Array.isArray(p.columns) && Array.isArray(p.items)) return p;
+        } catch (e) {
+          /* ন্যূনতম ফলব্যাক প্ল্যান নিচে */
+        }
+      }
+      return this._cqPlanFallback(parsedData, options);
+    },
+
+    /**
+     * Part-11: প্ল্যানার অনুপলব্ধ হলেও লেখা হারাবে না — ল্যান্ডস্কেপ ২-কলাম সেটআপ
+     * ঠিক থাকে, শুধু পৃষ্ঠা-প্রতি forced কলাম-ব্রেক ও টেল-ভরতি বাদ পড়ে।
+     */
+    _cqPlanFallback(parsedData, options = {}) {
+      const g = {
+        pageW: 16838, pageH: 11906, cols: 2, colSep: false,
+        margin: options.margin === 0.4 ? 576 : 720, colGap: 1008,
+        indent: 432, subIndent: 864, subHanging: 432,
+        lineFactor: 1.5, headerLineFactor: 1.28, baseSz: 24,
+        landscape: true
+      };
+      if (options.columns) g.cols = Math.max(1, parseInt(options.columns, 10) || 2);
+      g.usableW = g.pageW - 2 * g.margin;
+      g.usableH = g.pageH - 2 * g.margin;
+      g.colW = Math.floor((g.usableW - g.colGap * (g.cols - 1)) / g.cols);
+      g.textW = g.colW - g.indent;
+      g.subTextW = g.colW - g.subIndent;
+      g.rightTab = g.colW;
+      g.capacity = Math.round(g.usableH * 0.98);
+
+      const h = (parsedData && parsedData.header) || {};
+      const headerLines = [];
+      const push = (kind, text, extra) => {
+        if (!String(text || '').trim()) return;
+        headerLines.push(Object.assign({ kind, text: String(text).trim(), align: 'center', fallbackUsed: false }, extra || {}));
+      };
+      push('institute', h.institute, { bold: true, sz: 32 });
+      push('location', h.location, { sz: 24 });
+      push('exam', h.exam, { bold: true, sz: 26 });
+      push('classSubject', h.classAndSubject, { sz: 24 });
+      if (h.time || h.marks || h.examType) {
+        headerLines.push({ kind: 'metrics', text: h.time ? 'সময়: ' + h.time : '', center: h.examType || '', right: h.marks ? 'পূর্ণমান: ' + h.marks : '', align: 'left', bold: true, sz: 24, fallbackUsed: false });
+      }
+      push('instructions', h.instructions, { italic: true, sz: 24 });
+
+      const items = [];
+      for (const sec of ((parsedData && parsedData.sections) || [])) {
+        if (sec && sec.title) items.push({ kind: 'sectionTitle', text: sec.title, height: 0, lines: 1 });
+        for (const q of ((sec && sec.questions) || [])) items.push({ kind: 'question', q, height: 0, lines: 0, parts: {} });
+      }
+      const columns = [{
+        role: 'page1', slot: 1, page: 1, colInPage: 1, items,
+        headerFirst: true, breakBefore: false, height: 0, cap: g.capacity
+      }];
+      return {
+        geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 },
+        headerLines, headerHeight: 0, skipFirstColumn: false, columns, items,
+        metrics: { count: items.length, capacity: g.capacity, columnsTotal: 1, printedPages: 1, docPages: 1, sheets: 1, reservedUsed: false, tailMoved: 0, headHeight: 0 }
+      };
+    },
+
+    /** উদ্দীপকের প্রথম লাইন (প্রয়োজনে স্টেমের সঙ্গে যুক্ত) + বাকি লাইন/ছক */
+    _cqSplitStimulus(q) {
+      let firstLineText = String((q && q.text) || '').trim();
+      let remaining = [];
+      const stim = q && q.stimulus;
+      if (stim) {
+        const lines = String(stim).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        if (!firstLineText && lines.length > 0) {
+          const f = lines[0];
+          if (f.startsWith('|') && f.endsWith('|')) remaining = lines;
+          else { firstLineText = f; remaining = lines.slice(1); }
+        } else {
+          remaining = lines;
+        }
+      }
+      return { firstLineText, remaining };
+    },
+
+    /** RTF পেজ-সেটআপ্র (ল্যান্ডস্কেপ A4, ০.৫" মার্জিন, ২ কলাম, 0.7" গ্যাপ) — নম্বর সব প্ল্যানার থেকে */
+    _cqPageSetupRtf(g) {
+      return '\\landscape\\paperw' + g.pageW + '\\paperh' + g.pageH +
+        '\\margl' + g.margin + '\\margr' + g.margin + '\\margt' + g.margin + '\\margb' + g.margin +
+        '\\cols' + g.cols + '\\colsx' + g.colGap + (g.colSep ? '\\linebetcol' : '');
+    },
+
+    /** DOCX সেকশন-প্রপারটি (কলাম/পেজ) — sectPr র‍্যাপার ছাড়া, দুই জায়গায় বসে */
+    _cqSectPrInnerDocx(g) {
+      return '<w:pgSz w:w="' + g.pageW + '" w:h="' + g.pageH + '"' + (g.landscape !== false ? ' w:orient="landscape"' : '') + '/>' +
+        '<w:pgMar w:top="' + g.margin + '" w:right="' + g.margin + '" w:bottom="' + g.margin +
+        '" w:left="' + g.margin + '" w:header="' + g.margin + '" w:footer="' + g.margin + '" w:gutter="0"/>' +
+        '<w:cols w:num="' + g.cols + '" w:space="' + g.colGap + '"' + (g.colSep ? ' w:sep="1"' : '') + '/>';
+    },
+    _cqSectPrDocx(g) {
+      return '<w:sectPr>' + this._cqSectPrInnerDocx(g) + '</w:sectPr>';
+    },
+    /** DOCX: পরবর্তী-পৃষ্ঠা সেকশন-ব্রেক (সেকশন এই প্যারাগ্রাফেই শেষ হয়) */
+    _cqSectionBreakDocx(g) {
+      return '<w:p><w:pPr><w:sectPr><w:type w:val="nextPage"/>' + this._cqSectPrInnerDocx(g) + '</w:sectPr></w:pPr></w:p>';
+    },
+
+    // ------------------------------------------------------- হেডার ব্লক (৩ নম্বর ধারা)
+    _cqHeaderRtf(plan, options) {
+      const g = plan.geometry;
+      const rightTab = g.rightTab;
+      const mid = Math.round(rightTab / 2);
+      let rtf = '';
+      for (const hl of (plan.headerLines || [])) {
+        const sz = hl.sz || g.baseSz;
+        const sty = (hl.bold ? '\\b' : '') + (hl.italic ? '\\i' : '');
+        if (hl.kind === 'metrics') {
+          const tTxt = hl.text ? this.formatRtfText(hl.text, options) : '';
+          const mTxt = hl.right ? this.formatRtfText(hl.right, options) : '';
+          const eTxt = hl.center ? this.formatRtfText(hl.center, options) : '';
+          let tabs = '\\tqr\\tx' + rightTab;
+          let body = tTxt;
+          if (eTxt) {
+            tabs = '\\tqc\\tx' + mid + tabs;
+            body += '\\tab {\\b\\ul ' + eTxt + '}';
+          }
+          if (mTxt) body += '\\tab ' + mTxt;
+          if (body.trim()) rtf += '{\\ql' + sty + '\\fs' + sz + '\\f0\\sl240\\slmult1\\sb0\\sa0' + tabs + ' ' + body + '\\par}\n';
+          continue;
+        }
+        const align = hl.align === 'left' ? '\\ql' : '\\qc';
+        rtf += '{' + align + sty + '\\fs' + sz + '\\f0\\sl240\\slmult1\\sb0\\sa0 ' +
+          this.formatRtfText(hl.text || '', options) + '\\par}\n';
+      }
+      // হেডারের নিচে একটিমাত্র দৃশ্যমান বিভাজক
+      rtf += '{\\ql\\fs4\\f0\\sl100\\slmult1\\sb0\\sa40\\brdrb\\brdrs\\brdrw10\\brsp20 \\par}\n';
+      return rtf;
+    },
+
+    _cqHeaderDocx(plan, ctx) {
+      const g = ctx.geometry;
+      const options = ctx.options;
+      const rightTab = g.rightTab;
+      const mid = Math.round(rightTab / 2);
+      const pPr = (inner) => '<w:pPr><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>' + inner + '</w:pPr>';
+      const rPr = (o) => {
+        let s = '';
+        if (o.bold) s += '<w:b/>';
+        if (o.italic) s += '<w:i/>';
+        if (o.underline) s += '<w:u w:val="single"/>';
+        s += '<w:sz w:val="' + (o.sz || g.baseSz) + '"/><w:szCs w:val="' + (o.sz || g.baseSz) + '"/>';
+        return '<w:rPr>' + s + '</w:rPr>';
+      };
+      const run = (txt, o) => '<w:r>' + rPr(o || {}) + '<w:t xml:space="preserve">' + this.formatDocxText(txt || '', options) + '</w:t></w:r>';
+      let xml = '';
+      for (const hl of (plan.headerLines || [])) {
+        const sz = hl.sz || g.baseSz;
+        if (hl.kind === 'metrics') {
+          const tabs = hl.center
+            ? '<w:tabs><w:tab w:val="center" w:pos="' + mid + '"/><w:tab w:val="right" w:pos="' + rightTab + '"/></w:tabs>'
+            : '<w:tabs><w:tab w:val="right" w:pos="' + rightTab + '"/></w:tabs>';
+          let inner = '';
+          if (hl.text) inner += run(hl.text, { bold: true, sz });
+          if (hl.center) inner += '<w:r><w:tab/></w:r>' + run(hl.center, { bold: true, underline: true, sz });
+          if (hl.right) inner += '<w:r><w:tab/></w:r>' + run(hl.right, { bold: true, sz });
+          if (inner) xml += '<w:p>' + pPr(tabs) + inner + '</w:p>';
+          continue;
+        }
+        const jc = hl.align === 'left' ? '' : '<w:jc w:val="center"/>';
+        xml += '<w:p>' + pPr(jc) + run(hl.text, { bold: hl.bold, italic: hl.italic, sz }) + '</w:p>';
+      }
+      // বিভাজক রেখা
+      xml += '<w:p><w:pPr><w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr></w:pPr></w:p>';
+      return xml;
+    },
+
+    // ------------------------------------------------- একটি প্রশ্নের RTF ব্লক (৪–৬)
+    _cqQuestionRtf(q, ctx) {
+      const g = ctx.geometry;
+      const options = ctx.options;
+      const sz = ctx.sz || g.baseSz;
+      const esc = (t) => this.formatRtfText(t, options);
+      const rightTab = g.rightTab;
+      const line = '\\sl240\\slmult1';
+      let rtf = '';
+
+      // (৫) উদ্দীপক — বক্সহীন, কলামের বাম প্রান্ত থেকেই
+      for (const ln of String(q.preContext || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean)) {
+        rtf += '{\\ql\\f0\\fs' + sz + line + '\\sb0\\sa15 ' + esc(ln) + '\\par}\n';
+      }
+
+      const sp = this._cqSplitStimulus(q);
+      // (৪) ক্রমিক নম্বর বাম প্রান্তে, ট্যাবের পর লেখা; হ্যাঙ্গিং 432 → নম্বরের নিচে র‍্যাপ করে না
+      rtf += '{\\ql\\b\\fs' + sz + '\\f0' + line + '\\sb30\\sa0\\li' + g.indent + '\\fi-' + g.indent +
+        '\\tx' + g.indent + '\\tqr\\tx' + rightTab + ' ' + esc(q.num + '।') + '\\tab ' + esc(sp.firstLineText) + '\\par}\n';
+
+      for (const sLine of sp.remaining) {
+        const t = sLine.trim();
+        if (t.startsWith('|') && t.endsWith('|')) {
+          if (t.includes('---')) continue;
+          const cells = t.split('|').map((c) => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
+          const colWidth = Math.floor(g.colW / Math.max(1, cells.length));
+          let row = '{\\trowd\\trgaph30\\trleft0';   // কমপ্যাক্ট প্যাডিং, অটো-উইডথ ছক — শেডিং নেই
+          let x = 0;
+          for (let i = 0; i < cells.length; i++) { x += colWidth; row += '\\cellx' + x; }
+          for (const cell of cells) row += '\\pard\\intbl\\qc\\fs' + sz + '\\f0 ' + esc(cell) + '\\cell';
+          rtf += row + '\\row}\n';
+          continue;
+        }
+        rtf += '{\\ql\\f0\\fs' + sz + line + '\\sb15\\sa20 ' + esc(t) + '\\par}\n';
+      }
+
+      for (const sub of (q.subQuestions || [])) {
+        if (sub && sub.isAlternative) {
+          // (৬) বিকল্প প্রশ্নের মাঝে সেন্টারে বোল্ড অথবা-ডিভাইডার
+          rtf += '{\\qc\\b\\f0\\fs' + sz + line + '\\sb20\\sa20 ' + esc(sub.text || '--- অথবা ---') + '\\par}\n';
+          continue;
+        }
+        const mark = (sub && sub.mark) ? esc(sub.mark) : '';
+        let subTextRtf = esc((sub.label ? sub.label + '. ' : '') + (sub.text || ''));
+        // OCR এক লাইনে গুঁজে দেওয়া (খ)/(গ) আলাদা লাইনে বসে (অপরিবর্তিত আচরণ)
+        const parts = subTextRtf.replace(/\s*\(খ\)\s*/g, '\n(খ) ').replace(/\s*\(গ\)\s*/g, '\n(গ) ').split('\n');
+        parts.forEach((piece, i) => {
+          const isLast = i === parts.length - 1;
+          rtf += '{\\ql\\f0\\fs' + sz + line + '\\sb' + (i === 0 ? '15' : '0') + '\\sa' + (isLast ? '15' : '0') +
+            '\\li' + g.subIndent + '\\fi-' + g.subHanging + '\\tx' + (g.subIndent - g.subHanging) +
+            (isLast && mark ? '\\tqr\\tx' + rightTab + ' ' + piece + '\\tab ' + mark : ' ' + piece) + '\\par}\n';
+        });
+      }
+
+      for (const stmt of (q.statements || [])) {
+        rtf += '{\\ql\\f0\\fs' + sz + line + '\\sb0\\sa15\\li' + g.indent + ' ' + esc(stmt) + '\\par}\n';
+      }
+
+      const opts = q.options || [];
+      if (opts.length) {
+        // CQ পাথেও অপশন থাকলে ২-২ করে সারি (Part-9b-এর নিয়ম), ট্যাব কলাম-প্রস্থ থেকে
+        const half = Math.round(g.colW / 2);
+        for (let oi = 0; oi < opts.length; oi += 2) {
+          const isLastRow = oi + 2 >= opts.length;
+          let rowRtf = '(' + esc(opts[oi].label) + ') ' + esc(opts[oi].text);
+          if (opts[oi + 1]) rowRtf += '\\tab (' + esc(opts[oi + 1].label) + ') ' + esc(opts[oi + 1].text);
+          rtf += '{\\ql\\f0\\fs' + sz + line + '\\sb0\\sa' + (isLastRow ? '20' : '0') +
+            '\\li' + g.indent + '\\fi-' + g.indent + '\\tx' + g.indent + '\\tx' + half + ' ' + rowRtf + '\\par}\n';
+        }
+      }
+      return rtf;
+    },
+
+    /**
+     * Generates Board Standard Creative Question (CQ) Word 2003 (.doc) RTF.
+     * Part-11 মাস্টার লেআউট: A4 ল্যান্ডস্কেপ ২-কলাম বুকলেট — প্ল্যানার যে কলাম
+     * দিয়েছে সেটিই একটি ছাপা পৃষ্ঠা, প্রতিটির আগে {\column}; ব্যাক কভারের
+     * সংরক্ষিত কলাম ফাঁকা থাকলে কেবল একটি লিডিং ব্রেক বসে।
+     */
     generateCqExamRtf(parsedData, options = {}) {
       options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
 
+      const plan = this._cqPlan(parsedData, options);
+      const g = plan.geometry;
+      const ctx = { geometry: g, options, sz: plan.font ? plan.font.sz : g.baseSz };
+
       let rtf = '';
       if (!options.returnInnerRtf) {
         rtf += '{\\rtf1\\ansi\\deff0\n';
-        rtf += `{\\fonttbl\n{\\f0\\fnil\\fcharset0 ${fontName};}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n`;
+        rtf += '{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + fontName + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n';
         rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
+        rtf += this._cqPageSetupRtf(g) + '\n';
       }
 
-      const marginTwips = options.margin === 0.4 ? 576 : 720;
-      const pageWidth = 11906 - 2 * marginTwips;
-      rtf += `\\paperw11906\\paperh16838\\margl${marginTwips}\\margr${marginTwips}\\margt${marginTwips}\\margb${marginTwips}\\cols1\n`;
-
-      if (options.skipFirstColumn) {
-        rtf += '{\\column}\n';
-      }
-
-      const h = parsedData.header;
-      if (h.institute) {
-        rtf += '{\\qc\\b\\fs32\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.institute, options) + '\\par}\n';
-      }
-      if (h.location) {
-        rtf += '{\\qc\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.location, options) + '\\par}\n';
-      }
-      if (h.exam) {
-        rtf += '{\\qc\\b\\fs26\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.exam, options) + '\\par}\n';
-      }
-      if (h.classAndSubject) {
-        rtf += '{\\qc\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.classAndSubject, options) + '\\par}\n';
-      }
-      if (h.time || h.marks || h.examType) {
-        const tTxt = h.time ? this.formatRtfText('সময়: ' + h.time, options) : '';
-        const mTxt = h.marks ? this.formatRtfText('পূর্ণমান: ' + h.marks, options) : '';
-        if (h.examType) {
-          const eTxt = this.formatRtfText(h.examType, options);
-          const midX = Math.round(pageWidth / 2);
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\tqc\\tx' + midX + '\\tqr\\tx' + pageWidth + ' ' + tTxt + '\\tab {\\b\\ul ' + eTxt + '}\\tab ' + mTxt + '\\par}\n';
-        } else {
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\tqr\\tx' + pageWidth + ' ' + tTxt + '\\tab ' + mTxt + '\\par}\n';
-        }
-      }
-      if (h.instructions) {
-        rtf += '{\\qc\\i\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.instructions, options) + '\\par}\n';
-      }
-      // Divider line
-      rtf += '{\\ql\\fs4\\f0\\sl100\\slmult1\\sb0\\sa40\\brdrb\\brdrs\\brdrw10\\brsp20 \\par}\n';
-
-      // 2. Sections & Questions
-      for (const sec of parsedData.sections) {
-        if (sec.title) {
-          rtf += '{\\qc\\b\\fs24\\f0\\sl240\\slmult1\\sb40\\sa40 ' + this.formatRtfText(sec.title, options) + '\\par}\n';
-        }
-
-        for (const q of sec.questions) {
-          const qTextTrimmed = (q.text || '').trim();
-          let firstLineText = qTextTrimmed;
-          let remainingStimLines = [];
-          if (q.stimulus) {
-            const allStimLines = q.stimulus.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-            if (!firstLineText && allStimLines.length > 0) {
-              const fLine = allStimLines[0].trim();
-              if (fLine.startsWith('|') && fLine.endsWith('|')) {
-                firstLineText = '';
-                remainingStimLines = allStimLines;
-              } else {
-                firstLineText = allStimLines[0];
-                remainingStimLines = allStimLines.slice(1);
-              }
-            } else {
-              remainingStimLines = allStimLines;
-            }
-          }
-
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb30\\sa0\\li234\\fi-234\\tx234\\tqr\\tx' + pageWidth + ' ' + this.formatRtfText(q.num + '।', options) + '\\tab ' + this.formatRtfText(firstLineText, options) + '\\par}\n';
-
-          if (remainingStimLines.length > 0) {
-            for (const sLine of remainingStimLines) {
-              if (sLine.trim().startsWith('|') && sLine.trim().endsWith('|')) {
-                if (sLine.includes('---')) continue;
-                const cells = sLine.split('|').map(c => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
-                let rowRtf = '{\\trowd\\trgaph108\\trleft-108';
-                let currentX = 0;
-                const colWidth = Math.floor(pageWidth / Math.max(1, cells.length));
-                for (let i = 0; i < cells.length; i++) {
-                  currentX += colWidth;
-                  rowRtf += `\\cellx${currentX}`;
-                }
-                for (const cell of cells) {
-                  rowRtf += '\\pard\\intbl\\qc\\fs24\\f0 ' + this.formatRtfText(cell, options) + '\\cell';
-                }
-                rowRtf += '\\row}\n';
-                rtf += rowRtf;
-              } else {
-                rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa20\\li234 ' + this.formatRtfText(sLine, options) + '\\par}\n';
-              }
-            }
-          }
-
-          if (q.subQuestions && q.subQuestions.length > 0) {
-            for (const sub of q.subQuestions) {
-              const subMark = sub.mark ? this.formatRtfText(sub.mark, options) : '';
-              let subTextRtf = this.formatRtfText(sub.label + '. ' + sub.text, options);
-              // Prevent overlapping by splitting (খ) and (গ) onto new lines if they were merged by OCR
-              subTextRtf = subTextRtf.replace(/\s*\(খ\)\s*/g, '\\par (খ) ');
-              subTextRtf = subTextRtf.replace(/\s*\(গ\)\s*/g, '\\par (গ) ');
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb15\\sa15\\li234\\fi-234\\tx234\\tqr\\tx' + pageWidth + ' ' + subTextRtf + '\\tab ' + subMark + '\\par}\n';
-            }
-          }
+      let firstCol = true;
+      for (const col of plan.columns) {
+        if (!col.items || (!col.items.length && !col.headerFirst)) continue;
+        if (!firstCol || plan.skipFirstColumn) rtf += '{\\column}\n';
+        firstCol = false;
+        if (col.headerFirst) rtf += this._cqHeaderRtf(plan, options);
+        for (const it of col.items) {
+          rtf += it.kind === 'sectionTitle'
+            ? ('{\\qc\\b\\f0\\fs' + ctx.sz + '\\sl240\\slmult1\\sb40\\sa40 ' + this.formatRtfText(it.text, options) + '\\par}\n')
+            : this._cqQuestionRtf(it.q, ctx);
         }
       }
 
@@ -916,159 +1120,33 @@
       return rtf;
     },
 
+
     /**
      * Generates Board Standard Combined (CQ+MCQ) Word RTF Document.
+     * Part-11: সেকশন ১ = সৃজনশীল ল্যান্ডস্কেপ ২-কলাম বুকলেট (মাস্টার লেআউট —
+     * CQ পাথের হুবহু একই প্ল্যান), এরপর \sect\sbkpage → সেকশন ২ = MCQ A4 পোর্ট্রেট
+     * (Part-10 হেডার সেকশন + কন্টিনিউয়াস ২-কলাম বডি)। আগের সংস্করণ MCQ-কে একই
+     * ল্যান্ডস্কেপ সেটআপে \page দিয়ে বসাত — ফলে অর্ধেক পোর্ট্রেট পত্র ল্যান্ডস্কেপে বের হতো।
      */
     generateCombinedExamRtf(parsedCq, parsedMcq, options = {}) {
       options = this._withAuditNote(options, parsedCq, parsedMcq);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
 
+      const cqPlan = this._cqPlan(parsedCq, options);
+
       let rtf = '';
-      if (!options.returnInnerRtf) {
-        rtf += '{\\rtf1\\ansi\\deff0\n';
-        rtf += `{\\fonttbl\n{\\f0\\fnil\\fcharset0 ${fontName};}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n`;
-        rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
-      }
-
-      const rightTab = 7050; // column right edge
-      rtf += '\\landscape\\paperw16838\\paperh11906\\margl720\\margr720\\margt720\\margb720\\cols2\\colsx1008\n';
-
-      if (options.skipFirstColumn) {
-        rtf += '{\\column}\n';
-      }
-
-      // 1. Header Block
-      const h = parsedCq.header;
-      if (h.institute) {
-        rtf += '{\\qc\\b\\fs32\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.institute, options) + '\\par}\n';
-      }
-      if (h.location) {
-        rtf += '{\\qc\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.location, options) + '\\par}\n';
-      }
-      if (h.exam) {
-        rtf += '{\\qc\\b\\fs26\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.exam, options) + '\\par}\n';
-      }
-      if (h.classAndSubject) {
-        rtf += '{\\qc\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.classAndSubject, options) + '\\par}\n';
-      }
-      if (h.time || h.marks || h.examType) {
-        const tTxt = h.time ? this.formatRtfText('সময়: ' + h.time, options) : '';
-        const mTxt = h.marks ? this.formatRtfText('পূর্ণমান: ' + h.marks, options) : '';
-        if (h.examType) {
-          const eTxt = this.formatRtfText(h.examType, options);
-          const midX = Math.round(rightTab / 2);
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\tqc\\tx' + midX + '\\tqr\\tx' + rightTab + ' ' + tTxt + '\\tab {\\b\\ul ' + eTxt + '}\\tab ' + mTxt + '\\par}\n';
-        } else {
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\tqr\\tx' + rightTab + ' ' + tTxt + '\\tab ' + mTxt + '\\par}\n';
-        }
-      }
-      if (h.instructions) {
-        rtf += '{\\qc\\i\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0 ' + this.formatRtfText(h.instructions, options) + '\\par}\n';
-      }
-      // Divider line
-      rtf += '{\\ql\\fs4\\f0\\sl100\\slmult1\\sb0\\sa40\\brdrb\\brdrs\\brdrw10\\brsp20 \\par}\n';
-
-      // 2. Sections & Questions
-      for (const sec of parsedCq.sections) {
-        if (sec.title) {
-          rtf += '{\\qc\\b\\fs24\\f0\\sl240\\slmult1\\sb40\\sa40 ' + this.formatRtfText(sec.title, options) + '\\par}\n';
-        }
-
-        for (const q of sec.questions) {
-          rtf += '{\\ql\\b\\fs24\\f0\\sl240\\slmult1\\sb30\\sa0\\li240\\fi-240 ' + this.formatRtfText(q.num + '. ' + q.text, options) + '\\par}\n';
-
-          if (q.stimulus) {
-            let firstLineText = '';
-            let remainingStimLines = [];
-            const allStimLines = q.stimulus.split('\n').map(l => l.trim()).filter(Boolean);
-            if (!firstLineText && allStimLines.length > 0) {
-              const fLine = allStimLines[0].trim();
-              if (fLine.startsWith('|') && fLine.endsWith('|')) {
-                firstLineText = '';
-                remainingStimLines = allStimLines;
-              } else {
-                firstLineText = allStimLines[0];
-                remainingStimLines = allStimLines.slice(1);
-              }
-            } else {
-              remainingStimLines = allStimLines;
-            }
-
-            rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\li240 ' + this.formatRtfText(firstLineText, options) + '\\par}\n';
-
-            if (remainingStimLines.length > 0) {
-              for (const sLine of remainingStimLines) {
-                if (sLine.trim().startsWith('|') && sLine.trim().endsWith('|')) {
-                  if (sLine.includes('---')) continue;
-                  const cells = sLine.split('|').map(c => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
-                  let rowRtf = '{\\trowd\\trgaph108\\trleft-108';
-                  let currentX = 0;
-                  const colWidth = Math.floor(rightTab / Math.max(1, cells.length));
-                  for (let i = 0; i < cells.length; i++) {
-                    currentX += colWidth;
-                    rowRtf += `\\cellx${currentX}`;
-                  }
-                  for (const cell of cells) {
-                    rowRtf += '\\pard\\intbl\\qc\\fs24\\f0 ' + this.formatRtfText(cell, options) + '\\cell';
-                  }
-                  rowRtf += '\\row}\n';
-                  rtf += rowRtf;
-                } else {
-                  rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\li240 ' + this.formatRtfText(sLine, options) + '\\par}\n';
-                }
-              }
-            }
-          }
-
-          if (q.subQuestions && q.subQuestions.length > 0) {
-            for (const sub of q.subQuestions) {
-              if (sub.isAlternative) {
-                rtf += '{\\qc\\b\\fs24\\f0\\sl240\\slmult1\\sb20\\sa20 ' + this.formatRtfText('--- অথবা ---', options) + '\\par}\n';
-                continue;
-              }
-              let subTextRtf = this.formatRtfText(sub.label + '. ' + sub.text, options);
-              // Prevent overlapping by splitting (খ) and (গ) onto new lines if they were merged by OCR
-              subTextRtf = subTextRtf.replace(/\s*\(খ\)\s*/g, '\\par (খ) ');
-              subTextRtf = subTextRtf.replace(/\s*\(গ\)\s*/g, '\\par (গ) ');
-              const subMark = this.formatRtfText(sub.mark || '', options);
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\li240\\tqr\\tx' + rightTab + ' ' + subTextRtf + '\\tab ' + subMark + '\\par}\n';
-            }
-          }
-
-          if (q.statements && q.statements.length > 0) {
-            for (const stmt of q.statements) {
-              rtf += '{\\ql\\fs24\\f0\\sl240\\slmult1\\sb0\\sa0\\li240 ' + this.renderMcqTextRtf(stmt, options) + '\\par}\n';
-            }
-          }
-
-          if (q.options && q.options.length > 0) {
-            const opts = q.options;
-            if (opts.length >= 4) {
-              // Part-9b: ৪টির বেশি অপশন থাকলেও সবগুলো ২-২ করে বসে (আগে ৫+ অপশন নীরবে বাদ পড়ত)
-              for (let oi = 0; oi < opts.length; oi += 2) {
-                const isLastRow = oi + 2 >= opts.length;
-                let rowRtf = '({\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
-                if (opts[oi + 1]) rowRtf += '\tab ({\f0 ' + this.formatRtfText(opts[oi + 1].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi + 1].text, options);
-                rtf += '{\ql\fs24\f0\sl240\slmult1\sb0\sa' + (isLastRow ? '20' : '0') + '\li240\tx3600 ' + rowRtf + '\par}\n';
-              }
-            } else {
-              let optLine = '';
-              for (let oi = 0; oi < opts.length; oi++) {
-                const optRtf = '({\f0 ' + this.formatRtfText(opts[oi].label, options) + '}) ' + this.renderMcqTextRtf(opts[oi].text, options);
-                optLine += (oi > 0 ? '\tab ' : '') + optRtf;
-              }
-              rtf += '{\ql\fs24\f0\sl240\slmult1\sb0\sa20\li240\tx2450\tx4900\tx7350 ' + optLine + '\par}\n';
-            }
-          }
-        }
-      }
+      rtf += '{\\rtf1\\ansi\\deff0\n';
+      rtf += '{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + fontName + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n';
+      rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
+      // ---- সেকশন ১: CQ বুকলেট (A4 ল্যান্ডস্কেপ, ২ কলাম, 0.7" গ্যাপ) ----
+      rtf += this._cqPageSetupRtf(cqPlan.geometry) + '\n';
+      rtf += this.generateCqExamRtf(parsedCq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
 
       if (parsedMcq && parsedMcq.sections && parsedMcq.sections.length > 0) {
-        // Page break for MCQ to keep it on a separate page but same landscape layout
-        rtf += '\\page\n';
-        const mcqRtf = this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
-        rtf += mcqRtf;
+        // ---- সেকশন ২: MCQ পোর্ট্রেট — next-page সেকশন ব্রেক; নিজস্ব প্রপার্টি MCQ-র ----
+        rtf += '\\sect\\sbkpage\n';
+        rtf += this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
       }
 
       if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
@@ -1079,167 +1157,130 @@
       return rtf;
     },
 
+
+    // ------------------------------------------------- একটি প্রশ্নের DOCX ব্লক (৪–৬)
+    _cqQuestionDocx(q, ctx) {
+      const g = ctx.geometry;
+      const options = ctx.options;
+      const sz = ctx.sz || g.baseSz;
+      const szCs = '<w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/>';
+      const rightTab = g.rightTab;
+      const tabsXml = (extra) => '<w:tabs>' + (extra || '') + '<w:tab w:val="right" w:pos="' + rightTab + '"/></w:tabs>';
+      const run = (txt, inner) => '<w:r><w:rPr>' + (inner || '') + szCs + '</w:rPr><w:t xml:space="preserve">' + this.formatDocxText(txt, options) + '</w:t></w:r>';
+      let xml = '';
+
+      // (৫) উদ্দীপক — বক্স/শেডিং ছাড়া সাদামাটা লেখা
+      for (const ln of String(q.preContext || '').split(/\r?\n/).map((x) => x.trim()).filter(Boolean)) {
+        xml += '<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/></w:pPr>' + this.renderDocxRuns(ln, options, { sz }) + '</w:p>';
+      }
+
+      const sp = this._cqSplitStimulus(q);
+      // (৪) নম্বর কলামের বাম প্রান্তে + হ্যাঙ্গিং 432
+      xml += '<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>' +
+        '<w:ind w:left="' + g.indent + '" w:hanging="' + g.indent + '"/>' +
+        tabsXml('<w:tab w:val="left" w:pos="' + g.indent + '"/>') + '</w:pPr>' +
+        run(q.num + '।', '<w:b/>') + '<w:r><w:tab/></w:r>' + this.renderDocxRuns(sp.firstLineText, options, { sz, bold: true }) + '</w:p>';
+
+      let inTable = false;
+      const closeTable = () => { if (inTable) { xml += '</w:tbl>'; inTable = false; } };
+      for (const sLine of sp.remaining) {
+        const t = sLine.trim();
+        if (t.startsWith('|') && t.endsWith('|')) {
+          if (t.includes('---')) continue;
+          const cells = t.split('|').map((c) => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
+          if (!inTable) {
+            // (৫) সাদামাটা ছক: অটো উইডথ, ১.৫pt (30 twips) প্যাডিং, শেডিং/হেডার-সারি নেই
+            xml += '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:jc w:val="center"/>' +
+              '<w:tblCellMar><w:top w:w="30" w:type="dxa"/><w:left w:w="30" w:type="dxa"/><w:bottom w:w="30" w:type="dxa"/><w:right w:w="30" w:type="dxa"/></w:tblCellMar>' +
+              '<w:tblBorders><w:top w:val="single" w:sz="4"/><w:left w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:right w:val="single" w:sz="4"/><w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/></w:tblBorders></w:tblPr><w:tblGrid>';
+            for (let i = 0; i < cells.length; i++) xml += '<w:gridCol w:w="' + Math.floor(g.colW / cells.length) + '"/>';
+            xml += '</w:tblGrid>';
+            inTable = true;
+          }
+          xml += '<w:tr>';
+          for (const cell of cells) {
+            xml += '<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>' + this.renderDocxRuns(cell, options, { sz }) + '</w:p></w:tc>';
+          }
+          xml += '</w:tr>';
+          continue;
+        }
+        closeTable();
+        xml += '<w:p><w:pPr><w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/></w:pPr>' + this.renderDocxRuns(t, options, { sz }) + '</w:p>';
+      }
+      closeTable();
+
+      for (const sub of (q.subQuestions || [])) {
+        if (sub && sub.isAlternative) {
+          // (৬) মাঝে সেন্টারে বোল্ড অথবা-ডিভাইডার
+          xml += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/></w:pPr>' + run(sub.text || '--- অথবা ---', '<w:b/>') + '</w:p>';
+          continue;
+        }
+        let rawText = (sub.label ? sub.label + '. ' : '') + (sub.text || '');
+        rawText = rawText.replace(/\s*\((খ|গ)\)\s*/g, '\n($1) ');
+        const subLines = String(rawText).split('\n');
+        subLines.forEach((sl, i) => {
+          const isFirst = i === 0;
+          const isLast = i === subLines.length - 1;
+          xml += '<w:p><w:pPr><w:spacing w:before="' + (isFirst ? '15' : '0') + '" w:after="' + (isLast ? '15' : '0') + '" w:line="240" w:lineRule="auto"/>' +
+            '<w:ind w:left="' + g.subIndent + '" w:hanging="' + g.subHanging + '"/>' +
+            (isLast && sub.mark ? tabsXml('<w:tab w:val="left" w:pos="' + (g.subIndent - g.subHanging) + '"/>')
+              : '<w:tabs><w:tab w:val="left" w:pos="' + (g.subIndent - g.subHanging) + '"/></w:tabs>') +
+            '</w:pPr>' + this.renderDocxRuns(sl, options, { sz }) +
+            (isLast && sub.mark ? '<w:r><w:tab/></w:r>' + run(sub.mark, '') : '') + '</w:p>';
+        });
+      }
+
+      for (const stmt of (q.statements || [])) {
+        xml += '<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="' + g.indent + '"/></w:pPr>' + this.renderDocxRuns(stmt, options, { sz }) + '</w:p>';
+      }
+
+      const opts = q.options || [];
+      if (opts.length) {
+        const half = Math.round(g.colW / 2);
+        for (let oi = 0; oi < opts.length; oi += 2) {
+          const isLastRow = oi + 2 >= opts.length;
+          let rowXml = this.renderDocxRuns('(' + opts[oi].label + ') ' + opts[oi].text, options, { sz });
+          if (opts[oi + 1]) rowXml += '<w:r><w:tab/></w:r>' + this.renderDocxRuns('(' + opts[oi + 1].label + ') ' + opts[oi + 1].text, options, { sz });
+          xml += '<w:p><w:pPr><w:spacing w:before="0" w:after="' + (isLastRow ? '20' : '0') + '" w:line="240" w:lineRule="auto"/>' +
+            '<w:ind w:left="' + g.indent + '" w:hanging="' + g.indent + '"/>' +
+            '<w:tabs><w:tab w:val="left" w:pos="' + g.indent + '"/><w:tab w:val="left" w:pos="' + half + '"/></w:tabs></w:pPr>' + rowXml + '</w:p>';
+        }
+      }
+      return xml;
+    },
+
     /**
      * Generates Board Standard Creative Question (CQ) Modern Word (.docx).
+     * Part-11: জ্যামিতি একই CqBookletPlanner থেকে আসে — ল্যান্ডস্কেপ ২-কলাম
+     * বুকলেট, কলামপ্রতি একটি ছাপা পৃষ্ঠা, ৪৩২/৮৬৪ ইনডেন্ট ও রাইট ট্যাবে নম্বর।
      */
     async generateCqExamDocx(parsedData, options = {}) {
       options = this._withAuditNote(options, parsedData);
       const isBijoy = this.isBijoyFont(options);
       const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
-      const rightTabPos = 7050;
+
+      const plan = this._cqPlan(parsedData, options);
+      const g = plan.geometry;
+      const ctx = { geometry: g, options, sz: plan.font ? plan.font.sz : g.baseSz };
 
       let bodyXml = '';
-
-      if (options.skipFirstColumn) {
-        bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
-      }
-
-      // Header Block
-      const h = parsedData.header;
-      if (h.institute) {
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="32"/><w:szCs w:val="32"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(h.institute, options)}</w:t></w:r></w:p>`;
-      }
-      if (h.location) {
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(h.location, options)}</w:t></w:r></w:p>`;
-      }
-      if (h.exam) {
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="26"/><w:szCs w:val="26"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(h.exam, options)}</w:t></w:r></w:p>`;
-      }
-      if (h.classAndSubject) {
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(h.classAndSubject, options)}</w:t></w:r></w:p>`;
-      }
-      if (h.time || h.marks || h.examType) {
-        const tTxt = h.time ? this.formatDocxText('সময়: ' + h.time, options) : '';
-        const mTxt = h.marks ? this.formatDocxText('পূর্ণমান: ' + h.marks, options) : '';
-        const midPos = Math.round(rightTabPos / 2);
-
-        if (h.examType) {
-          const eTxt = this.formatDocxText(h.examType, options);
-          bodyXml += `<w:p><w:pPr><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/><w:tabs><w:tab w:val="center" w:pos="${midPos}"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${tTxt}</w:t></w:r><w:r><w:tab/></w:r><w:r><w:rPr><w:b/><w:u w:val="single"/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${eTxt}</w:t></w:r><w:r><w:tab/></w:r><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${mTxt}</w:t></w:r></w:p>`;
-        } else {
-          bodyXml += `<w:p><w:pPr><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/><w:tabs><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${tTxt}</w:t></w:r><w:r><w:tab/></w:r><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${mTxt}</w:t></w:r></w:p>`;
-        }
-      }
-      if (h.instructions) {
-        bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr><w:r><w:rPr><w:i/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(h.instructions, options)}</w:t></w:r></w:p>`;
-      }
-
-      // Divider line
-      bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr></w:pPr></w:p>`;
-
-      // Sections & Questions
-      for (const sec of parsedData.sections) {
-        if (sec.title) {
-          bodyXml += `<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="60" w:after="60" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(sec.title, options)}</w:t></w:r></w:p>`;
-        }
-
-        for (const q of sec.questions) {
-          const qTextTrimmed = (q.text || '').trim();
-          let firstLineText = qTextTrimmed;
-          let remainingStimLines = [];
-          if (q.stimulus) {
-            const allStimLines = q.stimulus.split('\n').map(l => l.trim()).filter(Boolean);
-            if (!firstLineText && allStimLines.length > 0) {
-              const fLine = allStimLines[0].trim();
-              if (fLine.startsWith('|') && fLine.endsWith('|')) {
-                firstLineText = '';
-                remainingStimLines = allStimLines;
-              } else {
-                firstLineText = allStimLines[0];
-                remainingStimLines = allStimLines.slice(1);
-              }
-            } else {
-              remainingStimLines = allStimLines;
-            }
-          }
-
-          const qNumRun = `<w:r><w:rPr><w:b/><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(q.num + '।', options)}</w:t></w:r>`;
-          const qTextRuns = this.renderDocxRuns(firstLineText, options, { sz: 24 });
-          bodyXml += `<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="234"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${qNumRun}<w:r><w:tab/></w:r>${qTextRuns}</w:p>`;
-
-          if (remainingStimLines.length > 0) {
-            let inTable = false;
-            for (const sLine of remainingStimLines) {
-              if (sLine.trim().startsWith('|') && sLine.trim().endsWith('|')) {
-                if (sLine.includes('---')) continue;
-                const cells = sLine.split('|').map(c => c.trim()).filter((c, i, arr) => i > 0 && i < arr.length - 1);
-                let tr = '<w:tr>';
-                for (const cell of cells) {
-                  tr += `<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/><w:tcBorders><w:top w:val="single" w:sz="4"/><w:left w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:right w:val="single" w:sz="4"/></w:tcBorders><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/></w:pPr>${this.renderDocxRuns(cell, options, { sz: 24 })}</w:p></w:tc>`;
-                }
-                tr += '</w:tr>';
-                if (!inTable) { 
-                  bodyXml += '<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="single" w:sz="4"/><w:left w:val="single" w:sz="4"/><w:bottom w:val="single" w:sz="4"/><w:right w:val="single" w:sz="4"/><w:insideH w:val="single" w:sz="4"/><w:insideV w:val="single" w:sz="4"/></w:tblBorders></w:tblPr><w:tblGrid>';
-                  for(let i=0; i<cells.length; i++) bodyXml += '<w:gridCol/>';
-                  bodyXml += '</w:tblGrid>';
-                  inTable = true;
-                }
-                bodyXml += tr;
-              } else {
-                if (inTable) { bodyXml += '</w:tbl>'; inTable = false; }
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/></w:pPr>${this.renderDocxRuns(sLine, options, { sz: 24 })}</w:p>`;
-              }
-            }
-            if (inTable) bodyXml += '</w:tbl>';
-          }
-
-          if (q.subQuestions && q.subQuestions.length > 0) {
-            for (const sub of q.subQuestions) {
-              let rawText = sub.label + '. ' + sub.text;
-              // Prevent overlapping by splitting (খ) and (গ) onto new lines if they were merged by OCR
-              rawText = rawText.replace(/\s*\((খ|গ)\)\s*/g, '\n($1) ');
-              const subLines = rawText.split('\n');
-              for (let i = 0; i < subLines.length; i++) {
-                const subTextRuns = this.renderDocxRuns(subLines[i], options, { sz: 24 });
-                // Print the mark on the first line (usually the only line)
-                const isFirst = (i === 0);
-                const subMarkRun = (isFirst && sub.mark) ? `<w:r><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr><w:t xml:space="preserve">${this.formatDocxText(sub.mark, options)}</w:t></w:r>` : '';
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/><w:ind w:left="864" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="864"/><w:tab w:val="right" w:pos="${rightTabPos}"/></w:tabs></w:pPr>${subTextRuns}<w:r><w:tab/></w:r>${subMarkRun}</w:p>`;
-              }
-            }
-          }
-
-          if (q.statements && q.statements.length > 0) {
-            for (const stmt of q.statements) {
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:ind w:left="234"/></w:pPr>${this.renderDocxRuns(stmt, options, { sz: 24 })}</w:p>`;
-            }
-          }
-
-          if (q.options && q.options.length > 0) {
-            const opts = q.options;
-            if (opts.length >= 4) {
-              // Part-9b: সব অপশন ২-২ করে রেন্ডার (আগে ৫+ অপশন নীরবে বাদ পড়ত)
-              for (let oi = 0; oi < opts.length; oi += 2) {
-                const isLastRow = oi + 2 >= opts.length;
-                let rowXml = this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
-                if (opts[oi + 1]) rowXml += '<w:r><w:tab/></w:r>' + this.renderDocxRuns(`(${opts[oi + 1].label}) ${opts[oi + 1].text}`, options, { sz: 24 });
-                bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="${isLastRow ? '20' : '0'}" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="3600"/></w:tabs></w:pPr>${rowXml}</w:p>`;
-              }
-            } else {
-              let runs = '';
-              for (let oi = 0; oi < opts.length; oi++) {
-                if (oi > 0) runs += '<w:r><w:tab/></w:r>';
-                runs += this.renderDocxRuns(`(${opts[oi].label}) ${opts[oi].text}`, options, { sz: 24 });
-              }
-              bodyXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/><w:ind w:left="234" w:hanging="234"/><w:tabs><w:tab w:val="left" w:pos="2450"/><w:tab w:val="left" w:pos="4900"/><w:tab w:val="left" w:pos="7350"/></w:tabs></w:pPr>${runs}</w:p>`;
-            }
-          }
+      let firstCol = true;
+      for (const col of plan.columns) {
+        if (!col.items || (!col.items.length && !col.headerFirst)) continue;
+        if (!firstCol || plan.skipFirstColumn) bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
+        firstCol = false;
+        if (col.headerFirst) bodyXml += this._cqHeaderDocx(plan, ctx);
+        for (const it of col.items) {
+          bodyXml += it.kind === 'sectionTitle'
+            ? ('<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="60" w:after="60" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:b/>' +
+              '<w:sz w:val="' + ctx.sz + '"/><w:szCs w:val="' + ctx.sz + '"/></w:rPr><w:t xml:space="preserve">' + this.formatDocxText(it.text, options) + '</w:t></w:r></w:p>')
+            : this._cqQuestionDocx(it.q, ctx);
         }
       }
 
       bodyXml += this._auditSectionDocx(options);
 
-      // Landscape 2-column section
-      const sectPr = `
-        <w:sectPr>
-          <w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
-          <w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
-          <w:cols w:num="2" w:space="1008"/>
-        </w:sectPr>`;
-
-      if (options.returnInnerXml) {
-        return { bodyXml, sectPr };
-      }
+      const sectPr = this._cqSectPrDocx(g);
       if (options.returnInnerXml) {
         return { bodyXml, sectPr };
       }

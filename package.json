@@ -6,6 +6,8 @@
   "scripts": {
     "test:layout": "node tests/run-regression.js",
     "test:layout:update": "node tests/run-regression.js --update",
+    "test:mcq-layout": "node tests/mcq-layout.test.mjs",
+    "test:cq-layout": "node tests/cq-layout.test.mjs",
     "test:keys": "node tests/key-ledger.test.js",
     "test:proxy": "node tests/proxy-worker.test.mjs",
     "test:policy": "node tests/proxy-failure-policy.test.js",

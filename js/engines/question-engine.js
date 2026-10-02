@@ -108,7 +108,7 @@
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (/শ্রেণি|বিষয়/i.test(cleanLine)) {
           let cLine = cleanLine;
-          const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
+          const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
           if (examSubMatch) {
             result.header.examType = examSubMatch[1].trim();
             cLine = cLine.replace(examSubMatch[0], '').trim();
@@ -119,23 +119,23 @@
         } else if ((cleanLine.startsWith('[') && cleanLine.endsWith(']')) || /^\[?বিশেষ\s*দ্রষ্টব্য/i.test(cleanLine)) {
           result.header.instructions = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if (!cleanLine.startsWith('[') && /বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা/i.test(cleanLine) && !/সময়|পূর্ণমান/.test(cleanLine)) {
-          const examSubMatch = cleanLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
+        } else if (!cleanLine.startsWith('[') && /বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা|সৃজনশীল\s*অভ[িী]ক্ষা/i.test(cleanLine) && !/সময়|পূর্ণমান/.test(cleanLine)) {
+          const examSubMatch = cleanLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
           if (examSubMatch) {
             result.header.examType = examSubMatch[1].trim();
           } else {
             result.header.examType = cleanLine.trim();
           }
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if ((/সময়/i.test(cleanLine) || /পূর্ণমান|মান/i.test(cleanLine)) && (!result.header.time || !result.header.marks)) {
+        } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)/i.test(cleanLine) || /পূর্ণমান|মান/i.test(cleanLine)) && (!result.header.time || !result.header.marks)) {
           let cLine = cleanLine;
-          const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
+          const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
           if (examSubMatch) {
             result.header.examType = examSubMatch[1].trim();
             cLine = cLine.replace(examSubMatch[0], ' ');
           }
 
-          let tMatch = cLine.match(/সময়[ঃ:\-]\s*([^;\n|]+?)(?=(?:পূর্ণমান|সৃজনশীল|বহুনির্বাচন|মান|$))/i);
+          let tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[\u0983:\-]\s*([^;\n|]+?)(?=(?:পূর্ণমান|সৃজনশীল|বহুনির্বাচন|মান|$))/i);
           // Part-10 (খ.২ লাইন ৫): "সময়: ৩০ মিনিট  |  পূর্ণমানঃ ৩০" — বিবরেটরসহ একই
           // লাইনে দুটোই থাকায় strict lookahead সময় বাদ দিত; MCQ-তে শিথিল প্যাটার্ন।
           if (!tMatch && isMcqParse) {
@@ -501,6 +501,42 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       }
     },
 
+    /**
+     * Part-11: CQ বুকলেট প্ল্যানার লোডার (একই মডিউল এক্সপোর্ট-ইঞ্জিন ও প্রিভিউ ব্যবহার করে)।
+     */
+    _getCqPlanner() {
+      if (typeof CqBookletPlanner !== 'undefined') return CqBookletPlanner;
+      if (typeof window !== 'undefined' && window.CqBookletPlanner) return window.CqBookletPlanner;
+      if (typeof globalThis !== 'undefined' && globalThis.CqBookletPlanner) return globalThis.CqBookletPlanner;
+      if (typeof global !== 'undefined' && global.CqBookletPlanner) return global.CqBookletPlanner;
+      if (typeof require === 'function') {
+        try { return require('../layout-engine/cq-booklet-planner.js'); } catch (e) {
+          try { return require('./cq-booklet-planner.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
+    /** Part-11: প্রিভিউও একই জ্যামিতি/কলাম-বণ্টন মানে — preview == download */
+    _cqLayoutPlan(parsedData, options = {}) {
+      const planner = this._getCqPlanner();
+      if (!planner || typeof planner.plan !== 'function') return null;
+      try {
+        const p = planner.plan(parsedData, {
+          docType: 'EXAM_CQ',
+          margin: options.marginInches || options.margin || 0.5,
+          columnGap: options.columnGapInches || options.columnGap || 0.7,
+          cols: options.columns || 2,
+          rightTab: options.rightTab,
+          skipFirstColumn: options.skipFirstColumn
+        });
+        return (p && p.geometry && Array.isArray(p.columns)) ? p : null;
+      } catch (e) {
+        return null;
+      }
+    },
+
+
     renderMcqOptions(options, renderOpts = {}) {
       if (!options || options.length === 0) return '';
 
@@ -640,7 +676,9 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
 
         html += `</div>`;
       } else {
-        // CQ Question Item: Hanging indent so question number (১।) is on left, text/stimulus strictly to the right
+        // CQ Question Item — Part-11: প্রিভিউর ইনডেন্ট/মার্ক-অবস্থান একই CqBookletPlanner
+        // জ্যামিতি থেকে আসে (432 dxa হ্যাঙ্গিং স্টেম, 864 dxa উপ-প্রশ্ন, নম্বর ডান প্রান্তে),
+        // ফলে স্ক্রিনে যা দেখা যায় তা-ই Word 2003 (.doc) ও .docx-তে ছাপা হয়।
         const firstLineText = (q.text || '').trim();
         let displayStimulus = q.stimulus || '';
         let stimFirstLine = '';
@@ -657,28 +695,45 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         }
 
         const displayText = firstLineText || stimFirstLine;
+        const G = renderOpts && renderOpts.cqGeom;
+        const tw = (v) => +(v / 20).toFixed(2);   // twips → pt (প্রিভিউর inline styling)
+        const stemCss = G ? `padding-left: ${tw(G.indent)}pt; text-indent: -${tw(G.indent)}pt;` : 'display: flex; align-items: flex-start;';
+        const numCss = G
+          ? `margin-right: ${tw(G.indent)}pt; font-weight: 700;`
+          : 'margin-right: 8px; flex-shrink: 0; min-width: 24px;';
+        const stimulusPad = G ? `padding-left: 0; margin: 2px 0 !important;` : `padding-left: 32px !important; margin: 2px 0 !important;`;
 
-        html += `<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">`;
-        html += `<div class="cq-q-row" style="display: flex; align-items: flex-start;">`;
-        html += `<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">${this.escape(q.num)}।</span>`;
-        html += `<span class="cq-text text-justify flex-1">${this.richText(displayText)}</span>`;
+        html += `<div class="cq-q-item${G ? ' cq-booklet-item' : ''}" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">`;
+        html += `<div class="cq-q-row${G ? ' cq-print-row' : ''}" style="${stemCss}">`;
+        html += `<span class="cq-num font-bold" style="${numCss}">${this.escape(q.num)}।</span>`;
+        html += `<span class="cq-text${G ? '' : ' text-justify flex-1'}">${this.richText(displayText)}</span>`;
         html += `</div>`;
 
         if (stimRemaining) {
-          html += `<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">`;
+          html += `<div class="cq-stimulus text-justify" style="${stimulusPad} font-size: 12pt; line-height: 1.35;">`;
           html += this.richTextBlock(stimRemaining);
           html += `</div>`;
         }
 
         if (q.subQuestions && q.subQuestions.length > 0) {
-          html += `<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">`;
+          const subsPad = G ? `padding-left: 0; margin: 3px 0 0 0 !important;` : `padding-left: 32px !important; margin: 3px 0 0 0 !important;`;
+          html += `<div class="cq-subs" style="${subsPad}">`;
           for (const sub of q.subQuestions) {
             if (sub.isAlternative) {
-              html += `<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>`;
+              html += `<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">${this.escape(sub.text || '--- অথবা ---')}</div>`;
+              continue;
+            }
+            if (G) {
+              // হ্যাঙ্গিং 432 (43.2−21.6) + ডান-প্রান্তে নম্বর (প্রিন্টের রাইট ট্যাবের সমতুল্য)
+              html += `<div class="cq-sub-row cq-print-row" style="padding-left: ${tw(G.subIndent)}pt; text-indent: -${tw(G.subHanging)}pt; font-size: 12pt; margin: 2px 0;">`;
+              if (sub.mark) html += `<span class="cq-sub-mark" style="float: right; margin-left: 8pt; font-weight: 600;">${this.escape(sub.mark)}</span>`;
+              html += `<span class="cq-sub-lbl font-bold" style="margin-right: ${tw(G.subIndent - G.subHanging)}pt;">${this.escape(sub.label)}.</span>`;
+              html += `<span class="cq-sub-text">${this.richText(sub.text)}</span>`;
+              html += `</div>`;
               continue;
             }
             html += `<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">`;
-            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(sub.label)}.</span><span class="cq-sub-txt">${this.richText(sub.text)}</span></div>`;
+            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(sub.label)}.</span><span class="cq-sub-text">${this.richText(sub.text)}</span></div>`;
             html += `<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">${this.escape(sub.mark)}</div>`;
             html += `</div>`;
           }
@@ -826,93 +881,53 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         }
       }
 
-      // CASE A: BOOKLET MODE (A4 Landscape, 1st Column Skip, 2 Sheets)
-      if (skipFirstColumn && isLandscape) {
-        // Sheet 1: Col 1 is Skipped (Page 4), Col 2 has Header + first items
-        // Typically Header + 2 CQ questions or ~8 items fill Col 2 of Sheet 1
-        const sheet1Col2Items = [];
-        const remainingItems = [];
-
-        let count = 0;
-        for (const item of allItems) {
-          if (count < 3) {
-            sheet1Col2Items.push(item);
-            if (item.type === 'QUESTION') count++;
-          } else {
-            remainingItems.push(item);
-          }
-        }
-
-        // Divide remaining items across Sheet 2 (Col 1 & Col 2)
-        const half = Math.ceil(remainingItems.length / 2);
-        const sheet2Col1Items = remainingItems.slice(0, half);
-        const sheet2Col2Items = remainingItems.slice(half);
+      // CASE A: BOOKLET MODE — Part-11: প্ল্যান-চালিত। কলাম-ভাগ, ব্যাক-কভার সংরক্ষণ ও
+      // ইনডেন্ট সব এখানে নতুন করে গণনা করা হয় না — একই CqBookletPlanner-এর
+      // plan.columns ব্যবহার হয় যা Word 2003 (.doc) ও .docx রেন্ডারার কনজিউম করে।
+      const cqPlan = isLandscape ? this._cqLayoutPlan(parsedData, options) : null;
+      if (isLandscape && cqPlan && Array.isArray(cqPlan.columns) && cqPlan.columns.length) {
+        const BND = '০১২৩৪৫৬৭৮৯';
+        const bn = (v) => String(v).split('').map((d) => (d >= '0' && d <= '9' ? BND[+d] : d)).join('');
+        const slots = [];
+        if (cqPlan.skipFirstColumn) slots.push(null);      // সংরক্ষিত ব্যাক কভার (খালি = কনটেন্ট নয়)
+        for (const col of cqPlan.columns) slots.push(col);
+        if (slots.length % 2) slots.push(null);
+        const gapPt = +(cqPlan.geometry.colGap / 20).toFixed(1);
+        const cqPlanner = this._getCqPlanner();
+        const headerModel = (cqPlanner && cqPlanner.headerPreviewModel) ? cqPlanner.headerPreviewModel(cqPlan) : parsedData.header;
+        const renderBookletItem = (it) => (it.kind === 'sectionTitle'
+          ? `<div class="font-bold text-center py-0.5 my-1" style="font-size: ${fontSize}; line-height: 1.35;">${this.escape(it.text)}</div>`
+          : this.renderQuestionItem(it.q, { cqGeom: cqPlan.geometry }));
 
         let html = `<div class="${fontClass} dense-zero-gap">`;
-
-        // === SHEET 1 ===
-        html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ১ (বুকলেট ফ্রন্ট ও ব্যাক — কলাম ১: পৃষ্ঠা ৪ / ব্যাক কভার, কলাম ২: পৃষ্ঠা ১ / ফ্রন্ট কভার)</div>`;
-        html += `<div class="paper-sheet size-a4-landscape ${marginClass} mb-8 page-break-indicator">`;
-        html += `<div class="grid grid-cols-2 gap-x-5 h-full ${fontClass} dense-zero-gap" ${editableAttr} ${styleAttr}>`;
-
-        // Sheet 1 Column 1: Skipped Box (Page 4)
-        html += `<div class="qp-col-skip-box" style="min-height: 480px; height: 100%;">`;
-        html += `<i class="fas fa-book-open text-4xl text-slate-300 mb-3"></i>`;
-        html += `<div class="font-bold text-slate-700 text-sm mb-1">[ ১ম কলাম স্কিপ করা হয়েছে ]</div>`;
-        html += `<div class="text-xs text-slate-500 max-w-xs leading-relaxed">বুকলেট ফোল্ডের নিয়ম অনুযায়ী এটি প্রশ্নপত্রের পৃষ্ঠা ৪ (ব্যাক কভার)। শিটটি মাঝ বরাবর ভাঁজ করলে এটি পেছনে থাকবে।</div>`;
-        html += `<div class="mt-4 px-3 py-1 bg-emerald-50 text-emerald-700 font-bold text-xs rounded border border-emerald-200">২য় কলাম থেকে বিদ্যালয়ের নাম ও প্রশ্নপত্র শুরু ➜</div>`;
-        html += `</div>`;
-
-        // Sheet 1 Column 2: Header + Questions (Page 1)
-        html += `<div class="flex flex-col justify-start">`;
-        html += this.renderHeaderBlock(parsedData.header);
-        for (const it of sheet1Col2Items) {
-          if (it.type === 'SECTION_TITLE') {
-            html += `<div class="font-bold text-center bg-slate-100 py-0.5 my-1 border-y border-slate-300" style="font-size: ${fontSize}; line-height: ${lineSpacing};">${this.escape(it.title)}</div>`;
-          } else {
-            html += this.renderQuestionItem(it.data);
-          }
-        }
-        html += `</div>`;
-
-        html += `</div>`; // end grid
-        html += `</div>`; // end sheet 1
-
-        // === SHEET 2 ===
-        if (remainingItems.length > 0) {
-          html += `<div class="sheet-label"><i class="fas fa-book-open text-emerald-600"></i> শীট ২ (বুকলেট ইনসাইড — কলাম ১: পৃষ্ঠা ২, কলাম ২: পৃষ্ঠা ৩)</div>`;
-          html += `<div class="paper-sheet size-a4-landscape ${marginClass}">`;
-          html += `<div class="grid grid-cols-2 gap-x-5 h-full ${fontClass} dense-zero-gap" ${editableAttr} ${styleAttr}>`;
-
-          // Sheet 2 Column 1: Page 2
-          html += `<div class="flex flex-col justify-start">`;
-          for (const it of sheet2Col1Items) {
-            if (it.type === 'SECTION_TITLE') {
-              html += `<div class="font-bold text-center bg-slate-100 py-0.5 my-1 border-y border-slate-300" style="font-size: ${fontSize}; line-height: ${lineSpacing};">${this.escape(it.title)}</div>`;
-            } else {
-              html += this.renderQuestionItem(it.data);
+        for (let si = 0; si < slots.length; si += 2) {
+          const sheetNo = si / 2 + 1;
+          const isLastSheet = si + 2 >= slots.length;
+          html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ${bn(sheetNo)} (A4 ল্যান্ডস্কেপ, ২ কলাম) — ${bn(2 * sheetNo - 1)}য় কলাম: ${sheetNo === 1 ? 'ব্যাক কভার' : 'পৃষ্ঠা ' + bn(2 * sheetNo - 1)} · ${bn(2 * sheetNo)}য় কলাম: ${sheetNo === 1 ? 'ফ্রন্ট কভার (পৃষ্ঠা ১)' : 'পৃষ্ঠা ' + bn(2 * sheetNo)}</div>`;
+          html += `<div class="paper-sheet size-a4-landscape ${marginClass}${isLastSheet ? '' : ' mb-8 page-break-indicator'}">`;
+          html += `<div class="grid grid-cols-2 h-full ${fontClass} dense-zero-gap" style="column-gap: ${gapPt}pt;" ${editableAttr} ${styleAttr}>`;
+          for (const col of [slots[si], slots[si + 1]]) {
+            if (!col) {
+              html += `<div class="qp-col-skip-box" style="min-height: 200px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #94a3b8; font-size: 10pt; padding: 10px;">`;
+              html += `<div style="font-weight: 700; color: #475569; font-size: 11pt; margin-bottom: 4px;">[ ব্যাক কভার — ${bn(2 * sheetNo - 1)}য় কলাম সংরক্ষিত ]</div>`;
+              html += `<div>প্রশ্ন উপচে গেলে স্বয়ংক্রিয়ভাবে এই কলামেই বসবে; না হলে ফাঁকা থাকবে (একতলে ভাঁজ করার নিয়ম)।</div>`;
+              html += `</div>`;
+              continue;
             }
+            html += `<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="${col.page}" data-col="${col.colInPage}">`;
+            if (col.headerFirst) html += this.renderHeaderBlock(headerModel);
+            for (const it of (col.items || [])) html += renderBookletItem(it);
+            html += `</div>`;
           }
-          html += `</div>`;
-
-          // Sheet 2 Column 2: Page 3
-          html += `<div class="flex flex-col justify-start border-l border-slate-300 pl-5">`;
-          for (const it of sheet2Col2Items) {
-            if (it.type === 'SECTION_TITLE') {
-              html += `<div class="font-bold text-center bg-slate-100 py-0.5 my-1 border-y border-slate-300" style="font-size: ${fontSize}; line-height: ${lineSpacing};">${this.escape(it.title)}</div>`;
-            } else {
-              html += this.renderQuestionItem(it.data);
-            }
-          }
-          html += `</div>`;
-
-          html += `</div>`; // end grid
-          html += `</div>`; // end sheet 2
+          html += `</div></div>`;
         }
-
         html += `</div>`;
         return html;
       }
+
+      // CqBookletPlanner অনুপলব্ধ হলে (স্ক্রিপ্ট লোড হয়নি) নিচের CASE B-র
+      // সাধারণ ২-কলাম ফ্লোতে পড়ে যায় — লেখা তবু হারায় না, শুধু বুকলেট
+      // ইম্পোজিশন (পৃষ্ঠা-প্রতি কলাম) বাদ পড়ে।
 
       // CASE B: STANDARD 2-COLUMN QUESTION PAPER (MCQ or Single Sheet CQ)
       const isMcq = allItems.some(i => i.type === 'QUESTION' && i.data.options && i.data.options.length > 0);

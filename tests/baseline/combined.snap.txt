@@ -272,28 +272,28 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">জুল</span>
+<span class="cq-sub-text">জুল</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">নিউটন</span>
+<span class="cq-sub-text">নিউটন</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">ওয়াট</span>
+<span class="cq-sub-text">ওয়াট</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">প্যাসকেল</span>
+<span class="cq-sub-text">প্যাসকেল</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
 </div>
@@ -308,28 +308,28 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
-<span class="cq-sub-txt">W = F / S</span>
+<span class="cq-sub-text">W = F / S</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-txt">W = F * S</span>
+<span class="cq-sub-text">W = F * S</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-txt">W = m * a</span>
+<span class="cq-sub-text">W = m * a</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-txt">W = v / t</span>
+<span class="cq-sub-text">W = v / t</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
 </div>
@@ -342,9 +342,14 @@
 ===== DOCX_XML =====
 <!-- CQ PART -->
 <w:p>
+<w:r>
+<w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
 <w:pPr>
-<w:jc w:val="center"/>
 <w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -366,10 +371,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -395,10 +400,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -424,10 +429,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -453,10 +458,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -482,7 +487,6 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -510,10 +514,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -539,10 +543,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -567,10 +571,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -595,10 +599,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -623,10 +627,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -651,10 +655,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="234" w:hanging="234"/>
+<w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="234"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -680,10 +684,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -716,10 +720,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -752,10 +756,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -788,10 +792,10 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="234"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="864"/>
-<w:tab w:val="right" w:pos="7050"/>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
