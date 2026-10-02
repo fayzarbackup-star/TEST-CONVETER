@@ -85,7 +85,40 @@
       const totalQCount = totalQuestionMatches.length;
       const mcqClusterMatches = t.match(/[ক-ঘ][\)\.]\s+[^\n]+[ক-ঘ][\)\.]/g) || [];
       const mcqCount = mcqClusterMatches.length;
-      const isStrictMcq = (mcqCount >= 18) || (totalQCount >= 3 && mcqCount >= totalQCount * 0.85);
+
+      // Part-10 (ক.১–ক.২): ব্লক-ভিত্তিক বিশুদ্ধ MCQ শনাক্তকরণ।
+      // আগের গণনা শুধু *একই লাইনে* অপশন থাকা ক্লাস্টার ধরত (`ক. x খ. y`);
+      // OCR/মার্কডাউনের সবচেয়ে সাধারণ ফর্ম — প্রতি লাইনে একটি করে অপশন —
+      // গণনার বাইরে থাকায় ২৫–৩০ প্রশ্নের বিশুদ্ধ MCQ প্রশ্নপত্রও EXAM_GENERAL
+      // -এ যেত। এখন প্রশ্ন-ব্লক ধরে ধরে গনা হয় (১০+ বিশুদ্ধ MCQ ব্লক → পূর্ণ
+      // MCQ ফরম্যাট; ২৫–৩০টি হলেও স্বয়ংক্রিয়ভাবে একই পাথ)।
+      let mcqBlockCount = 0;
+      let numberedBlockCount = 0;
+      {
+        const parts = t.split(/(?=^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\]])/m);
+        for (const bp of parts) {
+          if (!/^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\]]/.test(bp)) continue;
+          numberedBlockCount++;
+          const lines = bp.split('\n').slice(1);
+          let optLines = 0;
+          let cqish = 0;
+          for (const ln of lines) {
+            const m = ln.match(/^[\t ]*([কখগঘঙচছ])\s*[.):।\]]\s*(.+)$/);
+            if (!m) continue;
+            const txt = m[2].trim();
+            if (!txt) continue;
+            optLines++;
+            // CQ সাব-প্রশ্নের স্বাক্ষর — মার্ক-ব্র্যাকেট, অতীতকালী ক্রিয়া-শেষ, অথবা
+            // দীর্ঘ নির্দেশনামূলক বাক্য। MCQ বিকল্প সাধারণত সংক্ষিপ্ত নাম/বাঁধা উত্তর।
+            if (/\[[^\]]*\]/.test(ln) ||
+                /(?:করো|কর|দাও|দিাও|লিখ|নির্ণয়|ব্যাখ্যা|বর্ণনা|প্রমাণ|হিসাব|উত্তর দিন)\s*[।.]?\s*$/.test(txt) ||
+                /উদ্দীপক|সূত্র|মান নির্ণয়|তালিকা|চিত্র|সংক্ষেপে/i.test(txt)) cqish++;
+          }
+          if (optLines >= 2 && cqish === 0) mcqBlockCount++;
+        }
+      }
+      const isPureMcqPaper = (mcqBlockCount >= 10 && numberedBlockCount > 0 && mcqBlockCount >= numberedBlockCount * 0.85);
+      const isStrictMcq = (mcqCount >= 18) || (totalQCount >= 3 && mcqCount >= totalQCount * 0.85) || isPureMcqPaper;
 
       // Combined CQ + MCQ Detection (Highest Priority for Exam Papers)
       const hasCqMarkers = /(?:সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|ক\-বিভাগ|খ\-বিভাগ)/i.test(t) ||

@@ -1,0 +1,625 @@
+[
+  {
+    "id": "mcq-header-fallback",
+    "questions": 14,
+    "fontPt": 12,
+    "predictedPages": 1,
+    "files": {},
+    "formats": {
+      "docx": {
+        "file": "proof/out/mcq-header-fallback.docx",
+        "bytes": 37156,
+        "error": null,
+        "pdf": "proof/render/mcq-header-fallback.docx/mcq-header-fallback.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-header-fallback.docx/page-1.png",
+        "pngCopy": "proof/mcq-header-fallback.docx.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 275.454,
+            "rightStart": 304.95,
+            "rightEnd": 554.376,
+            "crossing": 0,
+            "bottomY": 574.546764,
+            "topY": 35.678764,
+            "gutter": 29.5,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 29.5,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 275.45,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 22,
+          "topY": 107.222764,
+          "bottomY": 507.072764,
+          "pitch": 19.04
+        },
+        "col2": {
+          "lines": 24,
+          "topY": 107.222764,
+          "bottomY": 556.822764,
+          "pitch": 19.55
+        },
+        "bodyTopY": 101,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      },
+      "doc": {
+        "file": "proof/out/mcq-header-fallback.doc",
+        "bytes": 9907,
+        "error": null,
+        "pdf": "proof/render/mcq-header-fallback.doc/mcq-header-fallback.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-header-fallback.doc/page-1.png",
+        "pngCopy": "proof/mcq-header-fallback.doc.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 275.454,
+            "rightStart": 304.95,
+            "rightEnd": 554.376,
+            "crossing": 0,
+            "bottomY": 535.846764,
+            "topY": 35.746764,
+            "gutter": 29.5,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 29.5,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 275.45,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 22,
+          "topY": 100.722764,
+          "bottomY": 484.722764,
+          "pitch": 18.29
+        },
+        "col2": {
+          "lines": 24,
+          "topY": 100.722764,
+          "bottomY": 518.122764,
+          "pitch": 18.15
+        },
+        "bodyTopY": 95,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      }
+    },
+    "predictedSplit": [
+      {
+        "page": 1,
+        "col1": 7,
+        "col2": 7,
+        "h1": 7700,
+        "h2": 8420
+      }
+    ]
+  },
+  {
+    "id": "mcq-long-options",
+    "questions": 14,
+    "fontPt": 12,
+    "predictedPages": 1,
+    "files": {},
+    "formats": {
+      "docx": {
+        "file": "proof/out/mcq-long-options.docx",
+        "bytes": 44115,
+        "error": null,
+        "pdf": "proof/render/mcq-long-options.docx/mcq-long-options.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-long-options.docx/page-1.png",
+        "pngCopy": "proof/mcq-long-options.docx.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 288.61,
+            "rightStart": 304.95,
+            "rightEnd": 554.408,
+            "crossing": 0,
+            "bottomY": 793.096764,
+            "topY": 35.678764,
+            "gutter": 16.34,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 16.34,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 288.61,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 38,
+          "topY": 111.146764,
+          "bottomY": 775.372764,
+          "pitch": 17.95
+        },
+        "col2": {
+          "lines": 36,
+          "topY": 111.146764,
+          "bottomY": 759.672764,
+          "pitch": 18.53
+        },
+        "bodyTopY": 105,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      },
+      "doc": {
+        "file": "proof/out/mcq-long-options.doc",
+        "bytes": 18125,
+        "error": null,
+        "pdf": "proof/render/mcq-long-options.doc/mcq-long-options.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-long-options.doc/page-1.png",
+        "pngCopy": "proof/mcq-long-options.doc.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 288.61,
+            "rightStart": 304.95,
+            "rightEnd": 554.408,
+            "crossing": 0,
+            "bottomY": 788.496764,
+            "topY": 35.746764,
+            "gutter": 16.34,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 16.34,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 288.61,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 39,
+          "topY": 104.646764,
+          "bottomY": 770.772764,
+          "pitch": 17.53
+        },
+        "col2": {
+          "lines": 35,
+          "topY": 104.646764,
+          "bottomY": 719.572764,
+          "pitch": 18.09
+        },
+        "bodyTopY": 99,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      }
+    },
+    "predictedSplit": [
+      {
+        "page": 1,
+        "col1": 6,
+        "col2": 8,
+        "h1": 12360,
+        "h2": 12760
+      }
+    ]
+  },
+  {
+    "id": "mcq-mixed-options",
+    "questions": 6,
+    "fontPt": 12,
+    "predictedPages": 1,
+    "files": {},
+    "formats": {
+      "docx": {
+        "file": "proof/out/mcq-mixed-options.docx",
+        "bytes": 20552,
+        "error": null,
+        "pdf": "proof/render/mcq-mixed-options.docx/mcq-mixed-options.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-mixed-options.docx/page-1.png",
+        "pngCopy": "proof/mcq-mixed-options.docx.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 286.85,
+            "rightStart": 304.95,
+            "rightEnd": 554.376,
+            "crossing": 0,
+            "bottomY": 394.446764,
+            "topY": 35.678764,
+            "gutter": 18.1,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 18.1,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 286.85,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 15,
+          "topY": 107.222764,
+          "bottomY": 376.722764,
+          "pitch": 19.25
+        },
+        "col2": {
+          "lines": 13,
+          "topY": 107.222764,
+          "bottomY": 357.572764,
+          "pitch": 20.86
+        },
+        "bodyTopY": 101,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      },
+      "doc": {
+        "file": "proof/out/mcq-mixed-options.doc",
+        "bytes": 6038,
+        "error": null,
+        "pdf": "proof/render/mcq-mixed-options.doc/mcq-mixed-options.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-mixed-options.doc/page-1.png",
+        "pngCopy": "proof/mcq-mixed-options.doc.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 286.7,
+            "rightStart": 304.95,
+            "rightEnd": 554.376,
+            "crossing": 0,
+            "bottomY": 389.846764,
+            "topY": 35.746764,
+            "gutter": 18.25,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 18.25,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 286.7,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 17,
+          "topY": 100.722764,
+          "bottomY": 372.122764,
+          "pitch": 16.96
+        },
+        "col2": {
+          "lines": 13,
+          "topY": 100.722764,
+          "bottomY": 318.872764,
+          "pitch": 18.18
+        },
+        "bodyTopY": 95,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      }
+    },
+    "predictedSplit": [
+      {
+        "page": 1,
+        "col1": 3,
+        "col2": 3,
+        "h1": 5100,
+        "h2": 4380
+      }
+    ]
+  },
+  {
+    "id": "mcq-pure-28",
+    "questions": 33,
+    "fontPt": 12,
+    "predictedPages": 2,
+    "files": {},
+    "formats": {
+      "docx": {
+        "file": "proof/out/mcq-pure-28.docx",
+        "bytes": 84933,
+        "error": null,
+        "pdf": "proof/render/mcq-pure-28.docx/mcq-pure-28.pdf",
+        "pages": 2,
+        "png": "proof/render/mcq-pure-28.docx/page-1.png",
+        "pngCopy": "proof/mcq-pure-28.docx.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 279.666,
+            "rightStart": 304.95,
+            "rightEnd": 554.408,
+            "crossing": 0,
+            "bottomY": 799.016764,
+            "topY": 35.678764,
+            "gutter": 25.28,
+            "bodyStartX": 36.1
+          },
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 286,
+            "rightStart": 304.95,
+            "rightEnd": 557.46,
+            "crossing": 0,
+            "bottomY": 601.596764,
+            "topY": 37.846764,
+            "gutter": 18.95,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 25.28,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 279.67,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 37,
+          "topY": 113.396764,
+          "bottomY": 782.672764,
+          "pitch": 18.59
+        },
+        "col2": {
+          "lines": 33,
+          "topY": 113.396764,
+          "bottomY": 705.572764,
+          "pitch": 18.51
+        },
+        "bodyTopY": 107,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      },
+      "doc": {
+        "file": "proof/out/mcq-pure-28.doc",
+        "bytes": 30164,
+        "error": null,
+        "pdf": "proof/render/mcq-pure-28.doc/mcq-pure-28.pdf",
+        "pages": 2,
+        "png": "proof/render/mcq-pure-28.doc/page-1.png",
+        "pngCopy": "proof/mcq-pure-28.doc.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 279.666,
+            "rightStart": 304.95,
+            "rightEnd": 554.408,
+            "crossing": 0,
+            "bottomY": 795.316764,
+            "topY": 35.746764,
+            "gutter": 25.28,
+            "bodyStartX": 36.1
+          },
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 286,
+            "rightStart": 304.95,
+            "rightEnd": 557.46,
+            "crossing": 0,
+            "bottomY": 601.596764,
+            "topY": 37.846764,
+            "gutter": 18.95,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 25.28,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 279.67,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 38,
+          "topY": 107.796764,
+          "bottomY": 778.972764,
+          "pitch": 18.14
+        },
+        "col2": {
+          "lines": 32,
+          "topY": 107.796764,
+          "bottomY": 666.372764,
+          "pitch": 18.02
+        },
+        "bodyTopY": 102,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      }
+    },
+    "predictedSplit": [
+      {
+        "page": 1,
+        "col1": 11,
+        "col2": 8,
+        "h1": 12100,
+        "h2": 12760
+      },
+      {
+        "page": 2,
+        "col1": 7,
+        "col2": 7,
+        "h1": 11300,
+        "h2": 10580
+      }
+    ]
+  },
+  {
+    "id": "mcq-shrink-21",
+    "questions": 21,
+    "fontPt": 11,
+    "predictedPages": 1,
+    "files": {},
+    "formats": {
+      "docx": {
+        "file": "proof/out/mcq-shrink-21.docx",
+        "bytes": 54342,
+        "error": null,
+        "pdf": "proof/render/mcq-shrink-21.docx/mcq-shrink-21.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-shrink-21.docx/page-1.png",
+        "pngCopy": "proof/mcq-shrink-21.docx.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 282.236,
+            "rightStart": 304.95,
+            "rightEnd": 557.25,
+            "crossing": 0,
+            "bottomY": 788.888764,
+            "topY": 35.695764,
+            "gutter": 22.71,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 22.71,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 282.24,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 38.1,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 40,
+          "topY": 107.463764,
+          "bottomY": 772.641764,
+          "pitch": 17.06
+        },
+        "col2": {
+          "lines": 34,
+          "topY": 107.463764,
+          "bottomY": 670.141764,
+          "pitch": 17.05
+        },
+        "bodyTopY": 101,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      },
+      "doc": {
+        "file": "proof/out/mcq-shrink-21.doc",
+        "bytes": 16501,
+        "error": null,
+        "pdf": "proof/render/mcq-shrink-21.doc/mcq-shrink-21.pdf",
+        "pages": 1,
+        "png": "proof/render/mcq-shrink-21.doc/page-1.png",
+        "pngCopy": "proof/mcq-shrink-21.doc.page1.png",
+        "measure": [
+          {
+            "pageW": 595.303937,
+            "pageH": 841.889764,
+            "leftStart": 36.1,
+            "leftEnd": 278.716,
+            "rightStart": 304.95,
+            "rightEnd": 554.408,
+            "crossing": 0,
+            "bottomY": 801.596764,
+            "topY": 35.746764,
+            "gutter": 26.23,
+            "bodyStartX": 36.1
+          }
+        ],
+        "gutterPt": 26.23,
+        "col2StartPt": 304.95,
+        "col2EdgePt": 327,
+        "expectedCol2StartPt": 304.85,
+        "expectedCol1EndPt": 290.45,
+        "col1EndPt": 278.72,
+        "leftMarginPt": 36.1,
+        "rightEdgePt": 40.9,
+        "crossingWords": 0,
+        "col1": {
+          "lines": 41,
+          "topY": 102.691764,
+          "bottomY": 784.941764,
+          "pitch": 17.06
+        },
+        "col2": {
+          "lines": 36,
+          "topY": 103.446764,
+          "bottomY": 696.691764,
+          "pitch": 16.95
+        },
+        "bodyTopY": 97,
+        "pagePt": {
+          "w": 595.303937,
+          "h": 841.889764
+        }
+      }
+    },
+    "predictedSplit": [
+      {
+        "page": 1,
+        "col1": 12,
+        "col2": 9,
+        "h1": 12120,
+        "h2": 12720
+      }
+    ]
+  }
+]

@@ -1354,3 +1354,29 @@ body.fullscreen-preview #preview-section {
     print-color-adjust: exact;
   }
 }
+
+/* ===================================================
+   Part-10: MCQ মাস্টার লেআউট — হ্যাঙ্গিং ইনডেন্ট সমতা
+   (Word এক্সপোর্টের 432 dxa = 0.3" ট্যাবের সঙ্গে হুবহু মিল)
+   =================================================== */
+/* ক্রমিক নম্বরের পর নির্দিষ্ট ফাঁকা (ট্যাব) — লেখা সর্বদা 0.3" রেখা থেকে শুরু */
+.mcq-num {
+  min-width: 0.3in;
+  margin-right: 0 !important;
+}
+
+/* বিকল্পগুলো ও নম্বরের নিচের বিস্তারিত লেখা একই উল্লম্ব রেখায় (গ.৪) */
+.mcq-options-row,
+.mcq-stimulus-row {
+  padding-left: 0.3in !important;
+}
+
+/* ৪-কলাম অপশন গ্রিড: স্লটসমূহ গাণিতিকভাবে সমান (minmax(0,1fr) + সমান gap) */
+.mcq-grid {
+  grid-auto-flow: row;
+}
+
+.mcq-opt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

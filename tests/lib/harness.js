@@ -36,6 +36,7 @@ function loadEngines() {
   g.FayzarThemeConfig = g.ThemeConfig;
   reg('FayzarDocxBuilder', 'js/layout-engine/docx-builder.js');
   g.DocxBuilder = g.FayzarDocxBuilder;
+  reg('McqLayoutPlanner', 'js/layout-engine/mcq-layout-planner.js');
   reg('SchemaValidator', 'js/layout-engine/schema-validator.js');
   g.FayzarSchemaValidator = g.SchemaValidator;
 

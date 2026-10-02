@@ -71,6 +71,10 @@
 
       let bodyStartIndex = 0;
 
+      // Part-10: MCQ হেডার-উন্নতি শুধু EXAM_MCQ আর্কিটাইপে প্রযোজ্য — EXAM_CQ /
+      // EXAM_MATH / EXAM_GENERAL পাথ স্বেচ্ছায় অছুয়িত (ফ্রোজেন চুক্তি)।
+      const isMcqParse = (parseOptions && parseOptions.docType) === 'EXAM_MCQ';
+
       // Extract header lines from top
       for (let i = 0; i < Math.min(8, lines.length); i++) {
         const line = lines[i];
@@ -83,11 +87,21 @@
             /^#{1,6}\s*(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
           break; // Questions have started, header is complete
         }
-        if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine)) {
+        if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine) || (isMcqParse && /\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2(?:\u09df|\u09af\u09bc)/i.test(cleanLine))) {
           result.header.institute = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (!result.header.location && /ফুলবাড়ী|দিনাজপুর|ঢাকা|উপজেলা|জেলা/i.test(cleanLine) && !/শ্রেণি|বিষয়|সময়/.test(cleanLine)) {
           result.header.location = cleanLine;
+          bodyStartIndex = Math.max(bodyStartIndex, i + 1);
+        } else if (isMcqParse && !result.header.location && result.header.institute && i >= 1 &&
+                   lines[i - 1].replace(/^[\*\#\-\s]+/, '').trim() === result.header.institute &&
+                   /[,।.]|কিলোমিটার|রোড|গ্রাম|থানা|উপজেলা|জেলা|বিভাগ|পোস্ট|পেট|সড়ক/.test(cleanLine) &&
+                   cleanLine.length <= 70 && !/পরীক্ষা|শ্রেণি|বিষয়|সময়|পূর্ণমান|বিদ্যালয়|স্কুল|কলেজ|মাদরাসা/.test(cleanLine)) {
+          // Part-10 (খ.২): OCR/মার্কডাউনের ক্রম — প্রতিষ্ঠান-লাইনের ঠিক পরের লাইনটাই ঠিকানা।
+          // পুরনো নিয়ম শুধু কয়েকটি জেলার নাম চিনত, তাই 'কোতোয়ালী, রংপুর'-এর মতো ঠিকানা
+          // থাকতেও 'ঠিকানা লিখুন' বসত। নিয়মটি সচেতনভাবে কেবল EXAM_MCQ-তে (CQ/Math অছুয়িত)।
+          result.header.location = cleanLine;
+          bodyStartIndex = Math.max(bodyStartIndex, i + 1);
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (!result.header.exam && /পরীক্ষা|মূল্যায়ন|টার্ম|সেমিস্টার|নির্বাচনী/i.test(cleanLine) && !/বহুনির্বাচন|নৈর্ব্যক্তিক/.test(cleanLine)) {
           result.header.exam = cleanLine;
@@ -121,7 +135,12 @@
             cLine = cLine.replace(examSubMatch[0], ' ');
           }
 
-          const tMatch = cLine.match(/সময়[ঃ:\-]\s*([^;\n|]+?)(?=(?:পূর্ণমান|সৃজনশীল|বহুনির্বাচন|মান|$))/i);
+          let tMatch = cLine.match(/সময়[ঃ:\-]\s*([^;\n|]+?)(?=(?:পূর্ণমান|সৃজনশীল|বহুনির্বাচন|মান|$))/i);
+          // Part-10 (খ.২ লাইন ৫): "সময়: ৩০ মিনিট  |  পূর্ণমানঃ ৩০" — বিবরেটরসহ একই
+          // লাইনে দুটোই থাকায় strict lookahead সময় বাদ দিত; MCQ-তে শিথিল প্যাটার্ন।
+          if (!tMatch && isMcqParse) {
+            tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[:\u0983-]\s*([^;\n]+?)(?=\s*[:|\u0964]?\s*(?:\u09aa\u09c2\u09b0\u09cd\u09a3\u09ae\u09be\u09a8|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2|\u09ac\u09b9\u09c1\u09a8\u09bf\u09b0\u09cd\u09ac\u09be\u099a\u09a8|\u09ae\u09be\u09a8)|$)/i);
+          }
           const mMatch = cLine.match(/(?:পূর্ণমান|মান)[ঃ:\-]?\s*([^\n;]+)/i);
           if (tMatch && !result.header.time) result.header.time = tMatch[1].trim();
           if (mMatch && !result.header.marks) result.header.marks = mMatch[1].trim();
@@ -409,6 +428,79 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
      * Renders MCQ Options in 4-Column or Auto 2-Column layout.
      * Guaranteed 4 columns for short text and Roman combined options; collapses to 2 columns if longer or forced.
      */
+    /* =====================================================================
+     * Part-10: MCQ মাস্টার লেআউট — প্রিভিউ ও এক্সপোর্ট একই জ্যামিতি প্ল্যান
+     * ব্যবহার করে (McqLayoutPlanner)। preview == download চুক্তি এখান থেকেই।
+     * ===================================================================== */
+    _getMcqPlanner() {
+      if (typeof McqLayoutPlanner !== 'undefined') return McqLayoutPlanner;
+      if (typeof window !== 'undefined' && window.McqLayoutPlanner) return window.McqLayoutPlanner;
+      if (typeof globalThis !== 'undefined' && globalThis.McqLayoutPlanner) return globalThis.McqLayoutPlanner;
+      if (typeof global !== 'undefined' && global.McqLayoutPlanner) return global.McqLayoutPlanner;
+      if (typeof require === 'function') {
+        try { return require('../layout-engine/mcq-layout-planner.js'); } catch (e1) {
+          try { return require('./mcq-layout-planner.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
+    /** Part-10 (খ.৩): হেডার অটো-প্লেসহোল্ডার — তথ্য না মিললেও কাঠামো অটুট থাকে */
+    MCQ_HEADER_FALLBACK: {
+      institute: 'আপনার প্রতিষ্ঠান এর নাম',
+      location: 'ঠিকানা লিখুন',
+      exam: 'পরীক্ষার নাম লিখুন',
+      classSubject: 'শ্রেণিঃ ................  |  বিষয়ঃ ................',
+      time: 'সময়: ................',
+      marks: 'পূর্ণমানঃ ................'
+    },
+
+    /** প্রিভিউ/এক্সপোর্ট দুই পথেই একই ফলব্যাক টেক্সট বসে */
+    applyMcqHeaderFallbacks(header) {
+      const FB = this.MCQ_HEADER_FALLBACK;
+      const h = header || {};
+      return {
+        institute: h.institute || FB.institute,
+        location: h.location || FB.location,
+        exam: h.exam || FB.exam,
+        classAndSubject: h.classAndSubject || FB.classSubject,
+        examType: h.examType || '',
+        // সময়/পূর্ণমান কাঁচা মান হিসেবেই রাখা হয় — রেন্ডারার নিজে 'সময়: '/'পূর্ণমানঃ '
+        // প্রিফিক্স বসায় (ডাবল-প্রিফিক্স এড়াতে)। প্লেসহোল্ডারে ডট বসে।
+        time: h.time || '................',
+        marks: h.marks || '................',
+        instructions: h.instructions || '',
+        fallbackUsed: {
+          institute: !h.institute,
+          location: !h.location,
+          exam: !h.exam,
+          classAndSubject: !h.classAndSubject,
+          time: !h.time,
+          marks: !h.marks
+        }
+      };
+    },
+
+    /** Part-10: জ্যামিতি প্ল্যান (প্রিভিউ) — প্ল্যানার না পেলে null → পুরনো পাথ চলবে */
+    _mcqLayoutPlan(parsedData, options = {}) {
+      const planner = this._getMcqPlanner();
+      if (!planner || typeof planner.plan !== 'function') return null;
+      try {
+        const p = planner.plan(parsedData, {
+          docType: 'EXAM_MCQ',
+          margin: options.marginInches || options.margin || 0.5,
+          columnGap: options.columnGapInches || 0.2,
+          colSep: options.colSep !== false,
+          layoutMode: options.layoutMode || 'AUTO',
+          forceSz: options.forceSz,
+          maxShrinkOverflow: options.maxShrinkOverflow
+        });
+        return (p && p.geometry && Array.isArray(p.pages)) ? p : null;
+      } catch (e) {
+        return null;
+      }
+    },
+
     renderMcqOptions(options, renderOpts = {}) {
       if (!options || options.length === 0) return '';
 
@@ -420,6 +512,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       if (renderOpts.forceTwoColumns || (!isRoman && (maxLen > 14 || totalLen > 48))) {
         gridClass = maxLen > 25 ? 'mcq-grid-1' : 'mcq-grid-2';
       }
+      // Part-10 (ঘ.১–ঘ.২): প্ল্যানার পরিমাপ করে যে গ্রিড ঠিক করেছে, প্রিভিউ সেটিই মানে —
+      // ৪টি ছোট বিকল্প সমান দূরত্বে এক লাইনে, বড় হলে ২, আরও বড় হলে ১।
+      const planCols = renderOpts.gridCols || (renderOpts.planItem && renderOpts.planItem.grid ? renderOpts.planItem.grid.cols : 0);
+      if (planCols >= 1 && planCols <= 4) gridClass = 'mcq-grid-' + planCols;
 
       let html = `<div class="mcq-grid ${gridClass}">`;
       for (const opt of options) {
@@ -598,7 +694,12 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     /**
      * Renders Header Block (School Name, Address, Exam, Subject, Time, Marks, Instructions).
      */
-    renderHeaderBlock(header) {
+    renderHeaderBlock(header, renderOpts = {}) {
+      // Part-10 (খ.৩): MCQ প্রিভিউতে অটো-প্লেসহোল্ডার — হেডার কখনো ভাঙে না।
+      // (EXAM_CQ/অন্যান্য আর্কিটাইপের আচরণ অপরিবর্তিত — ফ্রোজেন চুক্তি।)
+      const useFb = !!(renderOpts && (renderOpts.fallback || renderOpts.docType === 'EXAM_MCQ'));
+      if (useFb && header) header = this.applyMcqHeaderFallbacks(header);
+      const pmLabel = useFb ? 'পূর্ণমানঃ ' : 'পূর্ণমান: ';
       let html = `<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">`;
       if (header.institute) {
         html += `<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">${this.escape(header.institute)}</h1>`;
@@ -620,7 +721,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       } else {
         html += `<div style="text-align: center; flex: 1;"></div>`;
       }
-      html += `<div style="text-align: right; flex: 1; white-space: nowrap;">${header.marks ? 'পূর্ণমান: ' + this.escape(header.marks) : ''}</div>`;
+      html += `<div style="text-align: right; flex: 1; white-space: nowrap;">${header.marks ? pmLabel + this.escape(header.marks) : ''}</div>`;
       html += `</div>`;
 
       if (header.instructions) {
@@ -817,6 +918,58 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const isMcq = allItems.some(i => i.type === 'QUESTION' && i.data.options && i.data.options.length > 0);
       const allQuestions = allItems.filter(i => i.type === 'QUESTION');
       const N = allQuestions.length;
+
+      // Part-10: MCQ মাস্টার লেআউট প্রিভিউ — একই Geometry Plan ব্যবহার করে যা
+      // Word 2003 (.doc) ও আধুনিক (.docx) রেন্ডারার ব্যবহার করে। ফলে
+      // "preview == download" অনড় থাকে: ২-কলাম, কলাম লাইন, ০.৩" হ্যাঙ্গিং
+      // ইনডেন্ট, সমান দূরত্বের অপশন গ্রিড, ১-পৃষ্ঠা ফিট সংকোচন ও কলাম ব্যালান্স।
+      if (isMcq && !isLandscape && !allItems.some((i) => i.type === 'SECTION_TITLE')) {
+        const plan = this._mcqLayoutPlan(parsedData, options);
+        if (plan && plan.items && plan.pages) {
+          const effFontSize = options.fontSize ? options.fontSize : (plan.font.pt + 'pt');
+          const ratio = Math.round((plan.metrics.lineH / ((plan.font.sz / 2) * 20)) * 100) / 100;
+          const mcqStyle = `line-height: ${ratio}; font-size: ${effFontSize};`;
+          const renderCol = (idxList) => {
+            let s = '';
+            for (const i of (idxList || [])) {
+              const it = plan.items[i];
+              if (!it || !allQuestions[it.index]) continue;
+              s += this.renderQuestionItem(allQuestions[it.index].data, {
+                planItem: it,
+                gridCols: it.grid && it.grid.cols ? it.grid.cols : 0,
+                szHalf: plan.font.sz
+              });
+            }
+            return s;
+          };
+
+          const pages = plan.pages.length ? plan.pages : [{ page: 1, col1: [], col2: [] }];
+          let html = `<div class="${fontClass} dense-zero-gap">`;
+          for (let pi = 0; pi < pages.length; pi++) {
+            const pg = pages[pi];
+            const isLast = pi === pages.length - 1;
+            if (pi === 0) {
+              html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি${plan.font.shrunk ? ' (ফন্ট ' + plan.font.pt + 'pt-এ সংকুচিত করে ১ পৃষ্ঠায় ফিট করা হয়েছে)' : ''}</div>`;
+              html += `<div class="paper-sheet size-a4-portrait ${marginClass}${isLast ? '' : ' mb-4 page-break-indicator'}">${this.renderCropMarks()}`;
+              html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait" ${editableAttr} style="${mcqStyle}">`;
+              html += this.renderHeaderBlock(parsedData.header, { docType: 'EXAM_MCQ', fallback: true });
+            } else {
+              html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ${pi + 1} — অবশিষ্ট প্রশ্ন ২ কলামে উচ্চতা-ব্যালান্সড</div>`;
+              html += `<div class="paper-sheet size-a4-portrait ${marginClass}${isLast ? '' : ' mb-4 page-break-indicator'}">${this.renderCropMarks()}`;
+              html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait" ${editableAttr} style="${mcqStyle}">`;
+              const runningTitle = (parsedData.header.classAndSubject || 'বহুনির্বাচনি অভীক্ষা') + ' - পৃষ্ঠা ' + (pi + 1);
+              html += `<div class="text-center font-bold text-xs text-slate-700 border-b border-slate-400 pb-1 mb-2">${this.escape(runningTitle)}</div>`;
+            }
+            html += `<div class="qp-columns qp-columns-flex" style="display: flex; column-gap: 0.2in;">`;
+            html += `<div style="flex: 1; border-right: 1px solid #000000; padding-right: 0.1in;">${renderCol(pg.col1)}</div>`;
+            html += `<div style="flex: 1; padding-left: 0.1in;">${renderCol(pg.col2)}</div>`;
+            html += `</div></div></div>`;
+            if (!isLast) html += this.renderPageBreak();
+          }
+          html += `</div>`;
+          return html;
+        }
+      }
 
       // Intelligent MCQ Adaptive Page Balancing (Modes A, B, C)
       if (isMcq && !isLandscape) {

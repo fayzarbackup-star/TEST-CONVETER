@@ -1,0 +1,2730 @@
+# fixture: mcq-long-options
+# docType: EXAM_MCQ
+
+===== CLASSIFIER =====
+{
+  "type": "EXAM_MCQ"
+}
+
+===== PARSED =====
+{
+  "header": {
+    "classAndSubject": "শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান",
+    "exam": "বার্ষিক পরীক্ষা — ২০২৬",
+    "examType": "",
+    "institute": "দিনাজপুর জিলা স্কুল",
+    "instructions": "",
+    "location": "কোতোয়ালী, দিনাজপুর",
+    "marks": "৪০",
+    "time": "৪০ মিনিট"
+  },
+  "sections": [
+    {
+      "marks": "",
+      "questions": [
+        {
+          "num": "১",
+          "options": [
+            {
+              "label": "ক",
+              "text": "কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়"
+            },
+            {
+              "label": "খ",
+              "text": "শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়"
+            },
+            {
+              "label": "গ",
+              "text": "উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে"
+            },
+            {
+              "label": "ঘ",
+              "text": "গতি বাড়লে বস্তুর ভর কমে যায়"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?"
+        },
+        {
+          "num": "২",
+          "options": [
+            {
+              "label": "ক",
+              "text": "ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে"
+            },
+            {
+              "label": "খ",
+              "text": "ঘর্ষণ সবসময় গতির দিকে কাজ করে"
+            },
+            {
+              "label": "গ",
+              "text": "মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি"
+            },
+            {
+              "label": "ঘ",
+              "text": "ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "ঘর্ষণ সম্পর্কে নিচের কোন উক্তিটি সঠিক?"
+        },
+        {
+          "num": "৩",
+          "options": [
+            {
+              "label": "ক",
+              "text": "সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়"
+            },
+            {
+              "label": "খ",
+              "text": "সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়"
+            },
+            {
+              "label": "গ",
+              "text": "উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়"
+            },
+            {
+              "label": "ঘ",
+              "text": "অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?"
+        },
+        {
+          "num": "৪",
+          "options": [
+            {
+              "label": "ক",
+              "text": "প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ"
+            },
+            {
+              "label": "খ",
+              "text": "বাংলাদেশে কোনো প্রাকৃতিক গ্যাস নেই"
+            },
+            {
+              "label": "গ",
+              "text": "উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই"
+            },
+            {
+              "label": "ঘ",
+              "text": "দেশের সব জ্বালানি বিদেশ থেকে আসে"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "বাংলাদেশের প্রাকৃতিক সম্পদ সম্পর্কে সঠিক উক্তিটি কোনটি?"
+        },
+        {
+          "num": "৫",
+          "options": [
+            {
+              "label": "ক",
+              "text": "হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ"
+            },
+            {
+              "label": "খ",
+              "text": "সফটওয়্যার হলো নির্দেশনার সমষ্টি"
+            },
+            {
+              "label": "গ",
+              "text": "উভয়ই"
+            },
+            {
+              "label": "ঘ",
+              "text": "কোনোটই নয়"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "নিচের কোনটি সঠিক?"
+        },
+        {
+          "num": "৬",
+          "options": [
+            {
+              "label": "ক",
+              "text": "মাইক্রোসফট এক্সেল"
+            },
+            {
+              "label": "খ",
+              "text": "মাইক্রোসফট ওয়ার্ড"
+            },
+            {
+              "label": "গ",
+              "text": "অ্যাডোব রিডার"
+            },
+            {
+              "label": "ঘ",
+              "text": "উইনজিপ"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "কোনটি স্প্রেডশিট সফটওয়্যার?"
+        },
+        {
+          "num": "৭",
+          "options": [
+            {
+              "label": "ক",
+              "text": "এটি নন-ভোলাটাইল স্টোরেজ"
+            },
+            {
+              "label": "খ",
+              "text": "এটি কেবল স্থায়ী তথ্য রাখে না"
+            },
+            {
+              "label": "গ",
+              "text": "বিদ্যুৎ গেলে সব তথ্য মুছে যায়"
+            },
+            {
+              "label": "ঘ",
+              "text": "এটি প্রসেসর নয়"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "মেমোরি কার্ডের ক্ষেত্রে কোনটি সত্য?"
+        },
+        {
+          "num": "৮",
+          "options": [
+            {
+              "label": "ক",
+              "text": "শুধু-text সাধারণ ফাইল"
+            },
+            {
+              "label": "খ",
+              "text": "ছবি ফাইল"
+            },
+            {
+              "label": "গ",
+              "text": "ভিডিও ফাইল"
+            },
+            {
+              "label": "ঘ",
+              "text": "সংগীত ফাইল"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?"
+        },
+        {
+          "num": "৯",
+          "options": [
+            {
+              "label": "ক",
+              "text": "Ctrl+A"
+            },
+            {
+              "label": "খ",
+              "text": "Ctrl+C"
+            },
+            {
+              "label": "গ",
+              "text": "Ctrl+V"
+            },
+            {
+              "label": "ঘ",
+              "text": "Ctrl+Z"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?"
+        },
+        {
+          "num": "১০",
+          "options": [
+            {
+              "label": "ক",
+              "text": "সেন্ট্রাল প্রসেসিং বিল্ডিং"
+            },
+            {
+              "label": "খ",
+              "text": "প্রিন্টার বিল্ডিং"
+            },
+            {
+              "label": "গ",
+              "text": "মেমোরি বিল্ডিং"
+            },
+            {
+              "label": "ঘ",
+              "text": "ইনপুট বিল্ডিং"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
+        },
+        {
+          "num": "১১",
+          "options": [
+            {
+              "label": "ক",
+              "text": "ফটোশপ"
+            },
+            {
+              "label": "খ",
+              "text": "পাওয়ারপয়েন্ট"
+            },
+            {
+              "label": "গ",
+              "text": "অ্যাকসেস"
+            },
+            {
+              "label": "ঘ",
+              "text": "নোটপ্যাড"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
+        },
+        {
+          "num": "১২",
+          "options": [
+            {
+              "label": "ক",
+              "text": "গিগাহার্টজ"
+            },
+            {
+              "label": "খ",
+              "text": "গিগাবাইট"
+            },
+            {
+              "label": "গ",
+              "text": "গিগাবিট"
+            },
+            {
+              "label": "ঘ",
+              "text": "গিগামিটার"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "নিচের কোনটি প্রসেসরের গতির একক?"
+        },
+        {
+          "num": "১৩",
+          "options": [
+            {
+              "label": "ক",
+              "text": "মাদারবোর্ড"
+            },
+            {
+              "label": "খ",
+              "text": "প্রসেসর"
+            },
+            {
+              "label": "গ",
+              "text": "মনিটর"
+            },
+            {
+              "label": "ঘ",
+              "text": "পাওয়ার সাপ্লাই"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "সিস্টেম ইউনিটের ভেতরে কোনটি থাকে না?"
+        },
+        {
+          "num": "১৪",
+          "options": [
+            {
+              "label": "ক",
+              "text": "ইনপুট → প্রসেসিং → আউটপুট"
+            },
+            {
+              "label": "খ",
+              "text": "আউটপুট → প্রসেসিং → ইনপুট"
+            },
+            {
+              "label": "গ",
+              "text": "প্রসেসিং → ইনপুট → আউটপুট"
+            },
+            {
+              "label": "ঘ",
+              "text": "ইনপুট → আউটপুট → প্রসেসিং"
+            }
+          ],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [],
+          "text": "সঠিক ক্রমটি কোনটি?"
+        }
+      ],
+      "title": ""
+    }
+  ]
+}
+
+===== STRUCTURE =====
+{
+  "marks": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "numbering": [
+    "১",
+    "২",
+    "৩",
+    "৪",
+    "৫",
+    "৬",
+    "৭",
+    "৮",
+    "৯",
+    "১০",
+    "১১",
+    "১২",
+    "১৩",
+    "১৪"
+  ],
+  "questionCount": 14,
+  "questions": [
+    {
+      "hasStimulus": false,
+      "num": "১",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংর"
+    },
+    {
+      "hasStimulus": false,
+      "num": "২",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "ঘর্ষণ সম্পর্কে নিচের কোন উক্তিটি সঠিক?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৩",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যা"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৪",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "বাংলাদেশের প্রাকৃতিক সম্পদ সম্পর্কে সঠিক"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৫",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "নিচের কোনটি সঠিক?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৬",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "কোনটি স্প্রেডশিট সফটওয়্যার?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৭",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "মেমোরি কার্ডের ক্ষেত্রে কোনটি সত্য?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৮",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধ"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৯",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১০",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১১",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১২",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "নিচের কোনটি প্রসেসরের গতির একক?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১৩",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "সিস্টেম ইউনিটের ভেতরে কোনটি থাকে না?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১৪",
+      "optionCount": 4,
+      "section": 0,
+      "subs": [],
+      "textHead": "সঠিক ক্রমটি কোনটি?"
+    }
+  ],
+  "sections": 1
+}
+
+===== HTML =====
+<div class="font-kalpurush dense-zero-gap">
+<div class="sheet-label">
+<i class="fas fa-file-word text-blue-600">
+</i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি</div>
+<div class="paper-sheet size-a4-portrait margin-standard">
+<div class="word-crop-marks no-print">
+<div class="crop-tl">
+</div>
+<div class="crop-tr">
+</div>
+<div class="crop-bl">
+</div>
+<div class="crop-br">
+</div>
+</div>
+<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="line-height: 1.5; font-size: 12pt;">
+<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">দিনাজপুর জিলা স্কুল</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">কোতোয়ালী, দিনাজপুর</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">বার্ষিক পরীক্ষা — ২০২৬</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</div>
+<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ৪০ মিনিট</div>
+<div style="text-align: center; flex: 1;">
+</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমানঃ ৪০</div>
+</div>
+</div>
+<div class="qp-columns qp-columns-flex" style="display: flex; column-gap: 0.2in;">
+<div style="flex: 1; border-right: 1px solid #000000; padding-right: 0.1in;">
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১.</span>
+<span class="mcq-text">বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">গতি বাড়লে বস্তুর ভর কমে যায়</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">২.</span>
+<span class="mcq-text">ঘর্ষণ সম্পর্কে নিচের কোন উক্তিটি সঠিক?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">ঘর্ষণ সবসময় গতির দিকে কাজ করে</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৩.</span>
+<span class="mcq-text">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৪.</span>
+<span class="mcq-text">বাংলাদেশের প্রাকৃতিক সম্পদ সম্পর্কে সঠিক উক্তিটি কোনটি?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">বাংলাদেশে কোনো প্রাকৃতিক গ্যাস নেই</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">দেশের সব জ্বালানি বিদেশ থেকে আসে</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৫.</span>
+<span class="mcq-text">নিচের কোনটি সঠিক?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">সফটওয়্যার হলো নির্দেশনার সমষ্টি</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">উভয়ই</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">কোনোটই নয়</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৬.</span>
+<span class="mcq-text">কোনটি স্প্রেডশিট সফটওয়্যার?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">মাইক্রোসফট এক্সেল</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">মাইক্রোসফট ওয়ার্ড</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">অ্যাডোব রিডার</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">উইনজিপ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div style="flex: 1; padding-left: 0.1in;">
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৭.</span>
+<span class="mcq-text">মেমোরি কার্ডের ক্ষেত্রে কোনটি সত্য?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">এটি নন-ভোলাটাইল স্টোরেজ</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">এটি কেবল স্থায়ী তথ্য রাখে না</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">বিদ্যুৎ গেলে সব তথ্য মুছে যায়</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">এটি প্রসেসর নয়</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৮.</span>
+<span class="mcq-text">ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">শুধু-text সাধারণ ফাইল</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">ছবি ফাইল</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">ভিডিও ফাইল</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">সংগীত ফাইল</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">৯.</span>
+<span class="mcq-text">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-2">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">Ctrl+A</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">Ctrl+C</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">Ctrl+V</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">Ctrl+Z</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১০.</span>
+<span class="mcq-text">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">সেন্ট্রাল প্রসেসিং বিল্ডিং</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">প্রিন্টার বিল্ডিং</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">মেমোরি বিল্ডিং</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">ইনপুট বিল্ডিং</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১১.</span>
+<span class="mcq-text">কোনটি ইমেজ এডিটিং সফটওয়্যার?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-2">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">ফটোশপ</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">পাওয়ারপয়েন্ট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">অ্যাকসেস</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">নোটপ্যাড</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১২.</span>
+<span class="mcq-text">নিচের কোনটি প্রসেসরের গতির একক?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-2">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">গিগাহার্টজ</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">গিগাবাইট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">গিগাবিট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">গিগামিটার</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১৩.</span>
+<span class="mcq-text">সিস্টেম ইউনিটের ভেতরে কোনটি থাকে না?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-2">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">মাদারবোর্ড</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">প্রসেসর</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">মনিটর</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">পাওয়ার সাপ্লাই</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mcq-q-item">
+<div class="mcq-q-row">
+<span class="mcq-num">১৪.</span>
+<span class="mcq-text">সঠিক ক্রমটি কোনটি?</span>
+</div>
+<div class="mcq-options-row">
+<div class="mcq-grid mcq-grid-1">
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
+<span class="mcq-opt-text">ইনপুট → প্রসেসিং → আউটপুট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
+<span class="mcq-opt-text">আউটপুট → প্রসেসিং → ইনপুট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
+<span class="mcq-opt-text">প্রসেসিং → ইনপুট → আউটপুট</span>
+</div>
+<div class="mcq-opt">
+<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
+<span class="mcq-opt-text">ইনপুট → আউটপুট → প্রসেসিং</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">দিনাজপুর জিলা স্কুল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কোতোয়ালী, দিনাজপুর</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বার্ষিক পরীক্ষা </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">— </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">২০২৬</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="right" w:pos="10366"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ৪০ মিনিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমানঃ ৪০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="40" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:sectPr>
+<w:type w:val="continuous"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/>
+<w:cols w:num="1"/>
+</w:sectPr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বিজ্ঞানের ভাষায়</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">—</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) গতি বাড়লে বস্তুর ভর কমে যায়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘর্ষণ সম্পর্কে নিচের কোন উক্তিটি সঠিক?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) ঘর্ষণ সবসময় গতির দিকে কাজ করে</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৪।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বাংলাদেশের প্রাকৃতিক সম্পদ সম্পর্কে সঠিক উক্তিটি কোনটি?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রাকৃতিক গ্যাস, কাচ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">-</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) বাংলাদেশে কোনো প্রাকৃতিক গ্যাস নেই</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) দেশের সব জ্বালানি বিদেশ থেকে আসে</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের কোনটি সঠিক?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) সফটওয়্যার হলো নির্দেশনার সমষ্টি</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) উভয়ই</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) কোনোটই নয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৬।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কোনটি স্প্রেডশিট সফটওয়্যার?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) মাইক্রোসফট এক্সেল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) মাইক্রোসফট ওয়ার্ড</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) অ্যাডোব রিডার</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) উইনজিপ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৭।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">মেমোরি কার্ডের ক্ষেত্রে কোনটি সত্য?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">এটি নন</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">-</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ভোলাটাইল স্টোরেজ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) এটি কেবল স্থায়ী তথ্য রাখে না</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) বিদ্যুৎ গেলে সব তথ্য মুছে যায়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) এটি প্রসেসর নয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৮।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ফাইল এক্সটেনশন অনুযায়ী .</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">txt </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ফাইলটি কী ধরনের?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">শুধু</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">-text </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সাধারণ ফাইল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) ছবি ফাইল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) ভিডিও ফাইল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) সংগীত ফাইল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৯।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl+A</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl+C</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl+V</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) Ctrl+Z</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১০।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) সেন্ট্রাল প্রসেসিং বিল্ডিং</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) প্রিন্টার বিল্ডিং</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) মেমোরি বিল্ডিং</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) ইনপুট বিল্ডিং</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কোনটি ইমেজ এডিটিং সফটওয়্যার?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) ফটোশপ</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) পাওয়ারপয়েন্ট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) অ্যাকসেস</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) নোটপ্যাড</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের কোনটি প্রসেসরের গতির একক?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) গিগাহার্টজ</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) গিগাবাইট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) গিগাবিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) গিগামিটার</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সিস্টেম ইউনিটের ভেতরে কোনটি থাকে না?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) মাদারবোর্ড</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) প্রসেসর</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) মনিটর</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) পাওয়ার সাপ্লাই</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১৪।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সঠিক ক্রমটি কোনটি?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ইনপুট </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রসেসিং </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আউটপুট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আউটপুট </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রসেসিং </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ইনপুট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রসেসিং </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ইনপুট </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আউটপুট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ইনপুট </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আউটপুট </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">→ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">প্রসেসিং</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:type w:val="continuous"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="432" w:footer="432" w:gutter="0"/>
+<w:cols w:num="2" w:space="288" w:sep="1"/>
+</w:sectPr>
+
+===== RTF =====
+[object Blob]
