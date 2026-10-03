@@ -227,10 +227,14 @@
       }
 
       // Step 2: Parse (with Graceful Fallback)
+      // Part-13.1: Studio-এডিট-ব্রিজ — প্রি-পার্সড ও এডিটেড parsedData এলে পুনঃপার্স নয়;
+      // এতে প্রিভিউতে হাতে-করা এডিট (প্রশ্ন/উপ-প্রশ্ন/অপশন/মার্ক) হুবহু এক্সপোর্টে যায়।
       let parsedData = null;
       let parserError = null;
 
-      try {
+      if (options.parsedData && options.parsedData.__fzDocType === docType) {
+        parsedData = options.parsedData;
+      } else try {
         parsedData = this._parseByDocType(docType, text, options);
       } catch (err) {
         parserError = err;
@@ -240,6 +244,8 @@
       if (!parsedData) {
         parsedData = this._buildFallbackData(text, docType);
       }
+      // পার্স-উৎস চিহ্নিতকরণ — ভুল docType-এর parsedData কখনো ব্যবহার হবে না
+      if (parsedData && !parsedData.__fzDocType) parsedData.__fzDocType = docType;
 
       // Step 3: Render (HTML Preview vs Word Document Export)
       let content = null;

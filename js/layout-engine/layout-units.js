@@ -29,6 +29,15 @@
   const MARGIN_MAP = { none: 0, narrow: 576, normal: 720, moderate: 1080, wide: 1440 };
   const GAP_MAP = { none: 0, tight: 144, narrow: 216, normal: 288, wide: 576, booklet: 1008 };
 
+  /** Part-12.2: Studio-UI-র মার্জিন-ক্লাস ('margin-*') → টুইপ — প্রিভিউ ও এক্সপোর্টের একক সূত্র */
+  const MARGIN_CLASS_MAP = {
+    'margin-narrow': 576,     // ০.৪"
+    'margin-standard': 720,   // ০.৫"
+    'margin-normal': 1080,    // ০.৭৫"
+    'margin-wide': 1440,      // ১.০"
+    'margin-stamp': 1440      // স্ট্যাম্প/লিগ্যাল ডিফল্ট
+  };
+
   /** একক → টুইপ গুণক */
   const UNIT = { in: 1440, inch: 1440, inches: 1440, '"': 1440, cm: 566.929, mm: 56.6929, pt: 20, pc: 240, tw: 1, twips: 1, dxa: 1 };
 
@@ -103,11 +112,23 @@
   global.FayzarLayoutUnits = {
     TWIPS_PER_INCH,
     MARGIN_MAP,
+    MARGIN_CLASS_MAP,
     GAP_MAP,
     clamp,
     finiteOr,
     toTwips,
-    margin: (v, fb) => toTwips(v, fb === undefined ? 720 : fb, MARGIN_MAP, 2880),
+    margin: (v, fb) => {
+      // UI-ক্লাস-নাম ('margin-wide' …) এখানেও স্বীকৃত — এক্সপোর্ট-পাথে কখনো যেন ফলব্যাকে না পড়ে
+      const key = String(v === undefined || v === null ? '' : v).trim().toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(MARGIN_CLASS_MAP, key)) return clamp(MARGIN_CLASS_MAP[key], 0, 2880);
+      return toTwips(v, fb === undefined ? 720 : fb, MARGIN_MAP, 2880);
+    },
+    /** UI-ক্লাস-সচেতন মার্জিন-রেজলভার (Studio-কন্ট্রোলার এটাই ডাকে) */
+    marginClass: (v, fb) => {
+      const key = String(v === undefined || v === null ? '' : v).trim().toLowerCase();
+      if (Object.prototype.hasOwnProperty.call(MARGIN_CLASS_MAP, key)) return clamp(MARGIN_CLASS_MAP[key], 0, 2880);
+      return toTwips(v, fb === undefined ? 720 : fb, MARGIN_MAP, 2880);
+    },
     gap: (v, fb) => toTwips(v, fb === undefined ? 288 : fb, GAP_MAP, 2880),
     // hi = ৪৩২০ (৩") — হ্যাঙ্গিং/সাব-ইনডেন্ট এতেই সীমাবদ্ধ; raw-twips (যেমন ৮৬৪) অক্ষুণ্ন
     indent: (v, fb) => toTwips(v, fb === undefined ? 432 : fb, null, 4320),

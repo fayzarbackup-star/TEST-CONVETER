@@ -69,35 +69,40 @@
 .paper-sheet.size-a4-portrait {
   width: 210mm;
   min-height: 297mm;
-  padding: 10mm 12mm;
+  padding: 0.5in;            /* Part-12.2: ডিফল্ট = ৭২০ টুইপ (margin-standard) */
 }
 
 /* Standard A4 Landscape */
 .paper-sheet.size-a4-landscape {
   width: 297mm;
   min-height: 210mm;
-  padding: 8mm 10mm;
+  padding: 0.5in;            /* Part-12.2: CQ বুকলেট-ডিফল্টও ৭২০ টুইপ */
 }
 
 /* Legal Portrait (for Deeds & Stamp) */
 .paper-sheet.size-legal-portrait {
   width: 216mm;
   min-height: 356mm;
-  padding: 15mm 15mm;
+  padding: 1in 0.75in;       /* Part-12.2: স্ট্যাম্প/লিগ্যাল ডিফল্ট (margin-stamp) */
 }
 
 /* User-Configurable Margins */
+/* Part-12.2: মান এখন Word-টুইপের সঙ্গে হুবহু (০.৪/০.৫/০.৭৫/১ ইঞ্চি = 576/720/1080/1440)
+   — আগে mm-মান ছিল (8/10, 10/12, 15, 20mm) ও লেবেলের সাথেও বেমিল ⇒ প্রিভিউ ≠ ডাউনলোড। */
 .paper-sheet.margin-narrow {
-  padding: 8mm 10mm !important;
+  padding: 0.4in !important;
 }
 .paper-sheet.margin-standard {
-  padding: 10mm 12mm !important;
+  padding: 0.5in !important;
 }
 .paper-sheet.margin-normal {
-  padding: 15mm 15mm !important;
+  padding: 0.75in !important;
 }
 .paper-sheet.margin-wide {
-  padding: 20mm 20mm !important;
+  padding: 1in !important;
+}
+.paper-sheet.margin-stamp {
+  padding: 1in 0.75in !important;
 }
 
 /* ===================================================
@@ -621,25 +626,31 @@ body.theme-office-dark {
   border-color: #8a8886;
   opacity: 0.55;
 }
-.margin-standard .crop-tl { top: 10mm; left: 12mm; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-standard .crop-tr { top: 10mm; right: 12mm; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
-.margin-standard .crop-bl { bottom: 10mm; left: 12mm; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-standard .crop-br { bottom: 10mm; right: 12mm; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-standard .crop-tl { top: 0.5in; left: 0.5in; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-standard .crop-tr { top: 0.5in; right: 0.5in; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-standard .crop-bl { bottom: 0.5in; left: 0.5in; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-standard .crop-br { bottom: 0.5in; right: 0.5in; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
 
-.margin-narrow .crop-tl { top: 8mm; left: 10mm; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-narrow .crop-tr { top: 8mm; right: 10mm; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
-.margin-narrow .crop-bl { bottom: 8mm; left: 10mm; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-narrow .crop-br { bottom: 8mm; right: 10mm; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-narrow .crop-tl { top: 0.4in; left: 0.4in; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-narrow .crop-tr { top: 0.4in; right: 0.4in; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-narrow .crop-bl { bottom: 0.4in; left: 0.4in; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-narrow .crop-br { bottom: 0.4in; right: 0.4in; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
 
-.margin-normal .crop-tl { top: 15mm; left: 15mm; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-normal .crop-tr { top: 15mm; right: 15mm; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
-.margin-normal .crop-bl { bottom: 15mm; left: 15mm; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-normal .crop-br { bottom: 15mm; right: 15mm; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-normal .crop-tl { top: 0.75in; left: 0.75in; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-normal .crop-tr { top: 0.75in; right: 0.75in; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-normal .crop-bl { bottom: 0.75in; left: 0.75in; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-normal .crop-br { bottom: 0.75in; right: 0.75in; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
 
-.margin-wide .crop-tl { top: 20mm; left: 20mm; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-wide .crop-tr { top: 20mm; right: 20mm; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
-.margin-wide .crop-bl { bottom: 20mm; left: 20mm; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
-.margin-wide .crop-br { bottom: 20mm; right: 20mm; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-wide .crop-tl { top: 1in; left: 1in; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-wide .crop-tr { top: 1in; right: 1in; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-wide .crop-bl { bottom: 1in; left: 1in; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-wide .crop-br { bottom: 1in; right: 1in; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+
+/* Part-12.2: স্ট্যাম্প/লিগ্যাল মার্জিনের ক্রপ-অফসেট (আগে কোনো নিয়মই ছিল না) */
+.margin-stamp .crop-tl { top: 1in; left: 0.75in; border-top: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-stamp .crop-tr { top: 1in; right: 0.75in; border-top: 1px solid #8a8886; border-right: 1px solid #8a8886; }
+.margin-stamp .crop-bl { bottom: 1in; left: 0.75in; border-bottom: 1px solid #8a8886; border-left: 1px solid #8a8886; }
+.margin-stamp .crop-br { bottom: 1in; right: 0.75in; border-bottom: 1px solid #8a8886; border-right: 1px solid #8a8886; }
 
 @media print {
   .word-crop-marks { display: none !important; }

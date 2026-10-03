@@ -3146,7 +3146,10 @@ function initUnifiedConverterEngine() {
             format: requestedFormat,
             paperSize: 'a4-landscape',
             orientation: 'landscape',
-            margin: 0.5
+            // Part-12.2: আগে এখানে হার্ডকোড মান (০.৫) ছিল ⇒ UI-র মার্জিন-সিলেক্ট
+            // (ai-target-page-margin) এই পাথে উপেক্ষিত হত। এখন সিলেক্টের মানই যায়
+            // (layout-units canonical নাম চেনে: normal/narrow/moderate/wide)।
+            margin: (document.getElementById('ai-target-page-margin') || {}).value || 'normal'
           };
           let blob;
           if (typeof ExportDualEngine !== 'undefined') {

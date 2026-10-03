@@ -448,6 +448,16 @@
     /**
      * Generates Word 2003 (.doc) binary/RTF Blob.
      */
+    /**
+     * Part-13.1: Studio-এডিট-ব্রিজ — parsedData আগেই দেওয়া থাকলে পুনঃপার্স বাদ।
+     * __fzDocType মিল না হলে (ভুল docType/পুরনো data) নিরাপদে সাধারণ পার্সে ফিরে যায়।
+     */
+    _resolveParsed(rawText, docType, options, qEngine) {
+      const pd = options && options.parsedData;
+      if (pd && pd.__fzDocType === docType) return pd;
+      return qEngine.parseQuestionPaper(rawText, { docType });
+    },
+
     generateLegacyDoc(rawText, docType = 'EXAM_CQ', options = {}) {
       rawText = stripOcrArtifacts(String(rawText || ''));
       let qEngine = this._getQuestionEngine();
@@ -463,7 +473,7 @@
       }
 
       if (qEngine && (docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL')) {
-        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
+        const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         const rtf = this.generateCqExamRtf(parsed, options);
@@ -471,7 +481,7 @@
       }
 
       if (qEngine && docType === 'EXAM_MCQ') {
-        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
+        const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         const rtf = this.generateMcqExamRtf(parsed, options);
@@ -644,14 +654,14 @@
       }
 
       if (qEngine && (docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL')) {
-        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
+        const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         return await this.generateCqExamDocx(parsed, options);
       }
 
       if (qEngine && docType === 'EXAM_MCQ') {
-        const parsed = qEngine.parseQuestionPaper(rawText, { docType });
+        const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
         return await this.generateMcqExamDocx(parsed, options);

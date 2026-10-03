@@ -210,7 +210,7 @@
       * প্রতিটি উপ-ধারা, তালিকা আইটেম বা অনুচ্ছেদ অবশ্যই তার নিজস্ব আলাদা নতুন লাইনে (Enter / newline) থাকবে।
 
 12. ROMAN NUMERALS & MCQ FORMATTING (রোমান সংখ্যা ও বহুনির্বাচনী প্রশ্ন):
-    - Preserve ALL original question numbers, sub-question letters, and option labels exactly as they appear. Do NOT renumber, re-sequence, or change any numbering.
+    - MANDATORY SEQUENTIAL RENUMBERING (ধারাবাহিক ক্রমিক নম্বর ১ থেকে শুরু): প্রতিটি বিভাগের (বহুনির্বাচনী, সৃজনশীল, সংক্ষিপ্ত প্রশ্ন) প্রশ্নসমূহ অবশ্যই ১।, ২।, ৩।, ৪। ... ক্রমানুসারে সাজাবেন। বই, টেস্ট পেপার বা গাইডের বিচ্ছিন্ন নম্বর (যেমন: ৭২, ৭৩, ৪৪, ৪৭ ইত্যাদি) প্রশ্নপত্রে রাখা সম্পূর্ণ নিষিদ্ধ! বহুনির্বাচনী প্রশ্নের ক্রমিক অবশ্যই ১।, ২।, ৩। ... থেকে ধারাবাহিকভাবে শুরু হবে।
     - CRITICAL: NEVER wrap roman numerals in asterisks (*i.*, *ii.*, *iii.*, *i* ও *ii* etc. are strictly forbidden ❌).
     - বহুনির্বাচনীর ক্ষেত্রে ক্রমিক নম্বরের নিচে রোমান সংখ্যা বা স্টেটমেন্টের (i., ii., iii., iv. অথবা ১., ২., ৩.) প্রতিটি লাইনের শুরুতে অবশ্যই ১টি করে ট্যাব (\t) যুক্ত করবেন:
       \ti. সোডিয়াম
@@ -225,7 +225,7 @@
       * OPTIONS DIGITS FIDELITY: বহুনির্বাচনীর বিকল্পে সংখ্যাগুলো যদি ইংরেজি ডিজিটে (যেমন: 1, 2, 9, 10 বা 0, 1, 2, 3 বা 0, 2, 4, 6) লেখা থাকে, তবে বিকল্পের সংখ্যাগুলো অবশ্যই ইংরেজিতেই (\tক. 1\tখ. 2\tগ. 9\tঘ. 10) উপস্থাপন করবেন। কোনো অবস্থাতেই সেগুলোকে বাংলায় (১, ২, ৯, ১০ ❌) অনুবাদ করা সম্পূর্ণ নিষিদ্ধ!
 
 13. CREATIVE QUESTIONS & PLAIN SCORE MARKS (সৃজনশীল প্রশ্নপত্র ও ব্র্যাকেটবিহীন নম্বর):
-    - QUESTION NUMBER PRESERVATION (ক্রমিক নম্বর অক্ষত রাখা): মূল ছবিতে প্রশ্নের ক্রমিক নম্বর ও উপ-প্রশ্ন নম্বর যেভাবে আছে (যেমন: ৪।, ৫।, ৭। বা ক., খ., গ., ঘ.) ঠিক সেভাবেই হুবহু লিখবেন। নিজে থেকে কোনো নম্বর সিরিয়াল (১, ২, ৩) বানাবেন না বা সিরিয়াল ঠিক করবেন না।
+    - MANDATORY SEQUENTIAL RENUMBERING (সৃজনশীল প্রশ্নের ক্রমিক ১ থেকে শুরু) & QUESTION NUMBER PRESERVATION: মূল ছবিতে বা গাইডের পাতার এলোমেলো প্রশ্ন নম্বর (যেমন: ২৪, ৩, ১০, ১৩, ৪৭ ইত্যাদি) হুবহু রাখা সম্পূর্ণ নিষেধ! প্রতিটি সেকশনের সৃজনশীল প্রশ্নের ক্রমিক নম্বর ১ থেকে আবার শুরু করে অবশ্যই ১।, ২।, ৩।, ৪। ... হিসেবে ক্রমানুসারে শুরু করবেন। উপ-প্রশ্নগুলো যথারীতি ক., খ., গ., ঘ. থাকবে।
     - Format sub-questions (উদ্দীপক, ১।, ক., খ., গ., ঘ.) cleanly and beautifully.
     - PLAIN SCORE MARKS (NO BRACKETS): Do NOT use square brackets [] or parentheses () for question marks/scores! Write ONLY plain numbers (যেমন: ১, ২, ৩, ৪ বা ১০) preceded by a tab (\t) or space e.g. ক. ...\t১, খ. ...\t২, গ. ...\t৩, ঘ. ...\t৪ or \t১০. NEVER use [১], [২], (১), (২) brackets!
 
@@ -237,8 +237,8 @@
       * এগুলোর ক্ষেত্রে শুধুমাত্র পেজ ডিজাইন ও ২-কলাম ফরম্যাট প্রযোজ্য হবে, ভেতরের প্রশ্নগুলোকে কৃত্রিম সৃজনশীলে বদলানো যাবে না।
 
 15. SHORT QUESTIONS (সংক্ষিপ্ত ও অতি সংক্ষিপ্ত প্রশ্নপত্র):
-    - সংক্ষিপ্ত প্রশ্ন, অতি সংক্ষিপ্ত প্রশ্ন বা এক কথায় উত্তরের ক্ষেত্রেও ক্রমিক নম্বর সতন্ত্রভাবে ১., ২., ৩., ... থেকে শুরু করতে হবে।
-      * সীমাবদ্ধতা (Part-12): এটি কেবল তখনই, যখন মূল পৃষ্ঠায় সত্যিই নম্বরের ক্রম বিচ্ছিন্ন/ভাঙা (৭।, ২।, ৯।) অথবা নম্বর নেই। নইলে নিয়ম ১৩-এর "QUESTION NUMBER PRESERVATION" প্রাধান্য পাবে — মূল যে নম্বর, হুবহু সে নম্বর; ১ থেকে আবার শুরু করে ক্রম পাল্টানো যাবে না (প্রশ্নপত্র জুড়ে খাতা-নম্বর ও রেফারেন্স নষ্ট হয়)।
+    - সংক্ষিপ্ত প্রশ্ন, অতি সংক্ষিপ্ত প্রশ্ন বা এক কথায় উত্তরের ক্ষেত্রেও ক্রমিক নম্বর প্রতিটি সেকশনে স্বতন্ত্রভাবে ১।, ২।, ৩।, ৪। ... থেকে ক্রমানুসারে শুরু করতে হবে। বই বা গাইডের খণ্ডিত নম্বর বসানো সম্পূর্ণ নিষেধ।
+
 
 16. TABLES & GRIDS (টেবিল ও ছক):
     - Transcribe all tables into complete, standard Markdown tables.
@@ -3921,6 +3921,17 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
 
           if (!docBlob) {
             throw new Error('Word 2003 (.doc) ফাইল প্রস্তুত করা যায়নি');
+          }
+
+          try {
+            let htmlText = await docBlob.text();
+            if (htmlText && (htmlText.includes('<html') || htmlText.includes('<!DOCTYPE'))) {
+              htmlText = htmlText.replace(/['"]?Cambria Math['"]?/gi, "'Times New Roman'");
+              htmlText = htmlText.replace(/line-height:\s*1\.00;?/gi, 'mso-line-height-rule:exactly;line-height:14.0pt;');
+              docBlob = new Blob([htmlText], { type: 'application/msword;charset=utf-8' });
+            }
+          } catch (postErr) {
+            console.warn('Word 2003 doc line-height hardening warning:', postErr);
           }
 
           triggerDownload(docBlob, `${baseName}${suffix}_Word2003.doc`);

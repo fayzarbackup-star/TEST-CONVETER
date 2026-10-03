@@ -367,6 +367,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /**
+   * Part-12.2: স্টুডিওর প্রিভিউ ও Word-ডাউনলোড — দুটোর জন্যই লেআউট-অপশনের একক উৎস।
+   * আগে ডাউনলোড-পাথ মার্জিন-সিলেক্টের চারটি মানকে দুইটিতে সংকুচিত করত, ফলে
+   * "০.৭৫\"" ও "১.০\"" বাছলেও Word-ফাইলে বসত ০.৫" ⇒ প্রিভিউ ≠ ডাউনলোড।
+   * মার্জিন টুইপ → ইঞ্চি (÷১৪৪০) হয়ে যায়; layout-units ক্লাস-নাম ও সংখ্যা দুটোই চেনে।
+   */
+  function layoutOptions() {
+    const cls = studioState.marginClass || 'margin-standard';
+    const U = (typeof window !== 'undefined') ? window.FayzarLayoutUnits : null;
+    const tw = (U && typeof U.marginClass === 'function')
+      ? U.marginClass(cls, 720)
+      : ({ 'margin-narrow': 576, 'margin-standard': 720, 'margin-normal': 1080, 'margin-wide': 1440, 'margin-stamp': 1440 }[cls] || 720);
+    const paper = paperSizeSelect ? paperSizeSelect.value : 'a4-landscape';
+    return {
+      marginClass: cls,
+      margin: tw / 1440,
+      paperSize: paper,
+      orientation: paper.indexOf('landscape') !== -1 ? 'landscape' : 'portrait',
+      skipFirstColumn: chkSkipCol1 ? chkSkipCol1.checked : false,
+      splitIndex: studioState.splitIndex
+    };
+  }
+
   async function updatePreview() {
     const raw = inputText.value.trim();
     if (!raw) {
@@ -377,27 +400,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const selectedMode = modeSelect.value;
     const font = fontSelect.value;
-    const orientation = paperSizeSelect.value.includes('landscape') ? 'landscape' : 'portrait';
-    const skipFirstColumn = chkSkipCol1 ? chkSkipCol1.checked : false;
 
-    const options = {
+    // Part-12.2: লেআউট-সংক্রান্ত সব মান এক জায়গা থেকে (ডাউনলোড-পাথের সঙ্গে অভিন্ন)
+    const options = Object.assign(layoutOptions(), {
       font,
-      orientation,
-      skipFirstColumn,
-      paperSize: paperSizeSelect.value,
-      marginClass: studioState.marginClass,
       fontSize: studioState.fontSizePt + 'pt',
       lineSpacing: studioState.lineSpacing,
-      splitIndex: studioState.splitIndex,
       editable: studioState.isEditing,
       docType: selectedMode === 'AUTO' ? null : selectedMode
-    };
+    });
 
     try {
       if (typeof FayzarPipeline !== 'undefined' && typeof FayzarPipeline.previewHtml === 'function') {
         const result = await FayzarPipeline.previewHtml(raw, options);
         const docType = result.docType;
         activeDocType = docType;
+        // Part-13.1: ব্রিজের নিরাপত্তা-ট্যাগ — ভুল docType-এর data যেন কখনো ব্যবহার না হয়
+        if (result.parsedData && !result.parsedData.__fzDocType) result.parsedData.__fzDocType = docType;
         currentParsedData = result.parsedData;
         previewContainer.innerHTML = result.content;
 
@@ -1053,18 +1072,36 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const orientation = paperSizeSelect.value.includes('landscape') ? 'landscape' : 'portrait';
-    const skipFirstColumn = chkSkipCol1 ? chkSkipCol1.checked : false;
     const docType = activeDocType || 'EXAM_CQ';
 
-    const options = {
+    // Part-12.2: প্রিভিউ যে লেআউট-অপশন দেয়, ডাউনলোডও হুবহু সেটাই পায় —
+    // আগে এখানে মার্জিন-সিলেক্টের চারটি মান দুইটিতে সংকুচিত হত (প্রিভিউ ≠ ডাউনলোড)।
+    const options = Object.assign(layoutOptions(), {
       format: format,
-      font: font,
-      orientation,
-      skipFirstColumn,
-      splitIndex: studioState.splitIndex,
-      margin: studioState.marginClass === 'margin-narrow' ? 0.4 : 0.5
-    };
+      font: font
+    });
+
+    // Part-13.1: প্রিভিউ-পেজে হাতে-করা এডিট এক্সপোর্টে আনুন (Edit Bridge)।
+    // parsedData-এর কপিতে শুধু বদলানো ক্ষেত্রগুলো বসে ⇒ পুনঃপার্স হয় না, গণিত/EQ অটুট।
+    let editedData = null;
+    try {
+      if (typeof StudioEditBridge !== 'undefined' && currentParsedData &&
+          typeof StudioEditBridge.collectFromDom === 'function') {
+        const _edits = StudioEditBridge.collectFromDom(previewContainer, currentParsedData);
+        if (_edits && _edits.length) {
+          editedData = StudioEditBridge.applyEdits(currentParsedData, _edits);
+          options.parsedData = editedData;
+          console.info('[StudioController] পেজ-এডিট সিঙ্ক:', _edits.length, 'টি ক্ষেত্র');
+          const risky = (typeof StudioEditBridge.mathFieldsEdited === 'function')
+            ? StudioEditBridge.mathFieldsEdited(previewContainer, _edits) : [];
+          if (risky.length) {
+            showToast('সতর্কতা: প্রশ্ন ' + risky.join(', ') + '-এ সমীকরণ আছে — টেক্সট-এডিট সেভ হবে, তবে সমীকরণ বদলাতে চাইলে বাঁ দিকের markdown-এ করুন।', 'warning');
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[StudioController] edit-bridge ব্যর্থ:', e);
+    }
 
     try {
       let blob;
