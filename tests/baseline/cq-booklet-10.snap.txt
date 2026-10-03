@@ -2197,11 +2197,6 @@
 </w:r>
 </w:p>
 <w:p>
-<w:r>
-<w:br w:type="column"/>
-</w:r>
-</w:p>
-<w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
@@ -2519,11 +2514,6 @@
 </w:r>
 </w:p>
 <w:p>
-<w:r>
-<w:br w:type="column"/>
-</w:r>
-</w:p>
-<w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
@@ -2838,11 +2828,6 @@
 <w:szCs w:val="24"/>
 </w:rPr>
 <w:t xml:space="preserve">৪</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:r>
-<w:br w:type="column"/>
 </w:r>
 </w:p>
 <w:p>
@@ -3493,11 +3478,6 @@
 </w:r>
 </w:p>
 <w:p>
-<w:r>
-<w:br w:type="column"/>
-</w:r>
-</w:p>
-<w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
@@ -3815,11 +3795,6 @@
 </w:r>
 </w:p>
 <w:p>
-<w:r>
-<w:br w:type="column"/>
-</w:r>
-</w:p>
-<w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
@@ -4134,11 +4109,6 @@
 <w:szCs w:val="24"/>
 </w:rPr>
 <w:t xml:space="preserve">৪</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:r>
-<w:br w:type="column"/>
 </w:r>
 </w:p>
 <w:p>

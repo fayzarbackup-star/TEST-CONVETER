@@ -102,7 +102,58 @@
         .join('');
     }
 
-    _ommlToLegacyEqHtml(node, mode = 'eqfield') {
+    /** Part-13.4 (রিপোর্ট-২): বিজয় টার্গেটে বাংলা-ইউনিকোড → SutonnyMJ (ANSI) — শুধু বাংলা রেঞ্জ */
+    _toTargetScript(text, opts) {
+      const s = String(text == null ? '' : text);
+      if (!s || !opts || !opts.preserveSutonny || opts.direction === 'all_unicode') return s;
+      let BC = null;
+      try {
+        if (typeof BanglaConverter !== 'undefined' && BanglaConverter) BC = BanglaConverter;
+        else if (typeof window !== 'undefined' && window.BanglaConverter) BC = window.BanglaConverter;
+        else if (typeof globalThis !== 'undefined' && globalThis.BanglaConverter) BC = globalThis.BanglaConverter;
+      } catch (e) { BC = null; }
+      if (!BC || typeof BC.unicodeToBijoy !== 'function') return s;
+      return s.replace(/[\u0980-\u09FF]+/g, (m) => { try { return BC.unicodeToBijoy(m); } catch (e) { return m; } });
+    }
+
+    /**
+     * Part-13.4 (রিপোর্ট-৩): EQ ফিল্ড-কোডের `\S\up4(...)`/`\S\do4(...)` আর্গুমেন্টকে
+     * স্পষ্ট ছোট সাইজ-স্প্যানে মুড়ে দেয় (৮pt = ১২pt-এর ৬৭%)। ৯k-এর নীতিই প্রযোজ্য:
+     * EQ-ফিল্ডের দৃশ্যমান রূপ নির্ধারিত হয় ফিল্ড-কোড-রানের ফরম্যাটিং থেকে।
+     */
+    _wrapEqScriptSizes(html, scriptPt) {
+      const s = String(html == null ? '' : html);
+      if (!s) return s;
+      const pt = scriptPt || '8.0';
+      const open = "<span style='font-size:" + pt + "pt'>";
+      let out = '', i = 0;
+      while (i < s.length) {
+        if (s[i] === '\\' && s.startsWith('\\S\\', i)) {
+          const m = /^\\S\\(up|do)\d*\(/.exec(s.slice(i));
+          if (m) {
+            const start = i + m[0].length;
+            let depth = 1, j = start;
+            while (j < s.length && depth > 0) {
+              const ch = s[j];
+              if (ch === '<') { const gt = s.indexOf('>', j); if (gt < 0) break; j = gt + 1; continue; }
+              if (ch === '(') depth += 1;
+              else if (ch === ')') { depth -= 1; if (depth === 0) break; }
+              j += 1;
+            }
+            if (depth === 0) {
+              out += s.slice(i, start) + open + s.slice(start, j) + '</span>' + s.slice(j, j + 1);
+              i = j + 1;
+              continue;
+            }
+          }
+        }
+        out += s[i];
+        i += 1;
+      }
+      return out;
+    }
+
+    _ommlToLegacyEqHtml(node, mode = 'eqfield', opts = null) {
       try {
         if (!node) return '';
         const EqC = (typeof EquationConverter !== 'undefined') ? EquationConverter
@@ -111,6 +162,10 @@
         if (EqC && typeof EqC._parseOmmlNode === 'function') {
           try { eqCode = String(EqC._parseOmmlNode(node) || '').replace(/\s+/g, ' ').trim(); } catch (e) { eqCode = ''; }
         }
+        // Part-13.4 (রিপোর্ট-২): বিজয় .doc-এ ফিল্ড-কোডের ভেতরের বাংলা ডিজিট (৩/৫) →
+        // SutonnyMJ ANSI (3/5) — নইলে Word-এ ভগ্নাংশের অঙ্ক/হর ফন্ট-মিসম্যাচ দেখায়
+        eqCode = this._toTargetScript(eqCode, opts);
+
         // দৃশ্যমান ফলাফল-টেক্সট: পড়ার-উপযোগী ম্যাথ (1/2, √(27), x²) —
         // কাঁচা EQ সুইচ (\S\up4(3), \F(1,2)) কখনো যেন চোখে না পড়ে। Word নিজে ফিল্ড
         // পুনঃগণনা করে আসল সমীকরণ আঁকে; অন্য ভিউয়ারে এই পাঠ্যটাই দেখায়।
@@ -122,6 +177,7 @@
           body = EqC.formatEqCodeToWordHtml(eqCode, 12, true);
         }
         if (!body) body = this._escapeHtml(eqCode);
+        body = this._toTargetScript(body, opts);   // Part-13.4: বিজয়-টার্গেটে বাংলা → ANSI
         if (body) {
           // ^2 → <sup>2</sup>, _3 → <sub>3</sub> (পাঠ্য আগেই HTML-escape করা, তাই নিরাপদ)
           const inner = body
@@ -129,7 +185,11 @@
             .replace(/\^\s*([0-9A-Za-z+\-]{1,6})/g, '<sup>$1</sup>')
             .replace(/_\s*([0-9A-Za-z+\-]{1,6})/g, '<sub>$1</sub>');
           // Part-9g: পুরোটা ইটালিক নয় — কেবল অক্ষর ইটালিক, সংখ্যা/চিহ্ন খাড়া (EE-স্টাইল)
-          body = `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(inner)}</span>`;
+          // Part-13.4 (রিপোর্ট-৩): ঘাত/পদ স্পষ্ট ৮pt-এ (১২pt-এর ৬৭%)
+          const _inner2 = inner
+            .replace(/<sup>/g, "<sup style='font-size:8.0pt;vertical-align:super;'>")
+            .replace(/<sub>/g, "<sub style='font-size:8.0pt;vertical-align:sub;'>");
+          body = `<span style="font-family:'Times New Roman',serif;font-size:12pt;">${this._styleMathLetters(_inner2)}</span>`;
         }
         if (!eqCode && !body) return '';
         // EQ সুইচ (\F \R \S \I \B \X \A \U) থাকলে ফিল্ড, নইলে সাধারণ ইটালিক স্প্যান
@@ -154,7 +214,7 @@
             + `</span>`;
         }
         return `<span style="font-family:'Times New Roman',serif;font-size:12pt;">`
-          + `<!--[if supportFields]><span class="MsoFieldCode"><span style='mso-element:field-begin'></span><span style='mso-spacerun:yes'>&nbsp;</span>EQ ${this._styleEqCodeLetters(eqCode)} <span style='mso-element:field-end'></span></span><![endif]-->`
+          + `<!--[if supportFields]><span class="MsoFieldCode"><span style='mso-element:field-begin'></span><span style='mso-spacerun:yes'>&nbsp;</span>EQ ${this._wrapEqScriptSizes(this._styleEqCodeLetters(eqCode))} <span style='mso-element:field-end'></span></span><![endif]-->`
           + `</span>`;
       } catch (e) { return ''; }
     }
@@ -861,7 +921,7 @@
             // ট্যাগ বোঝে না — 9c-তে `.doc`-এ OMML পাঠানোর পর ব্যবহারকারীর Word 2003 ক্র্যাশ করত।
             // তাই 2003-নেটিভ Equation Editor 3.0 (EQ) ফিল্ড; docMath:'plain' দিলে ফিল্ড ছাড়া পাঠ্য।
             // `.docx` আগের মতোই OMML-ই রাখে (আধুনিক Word-এ নেটিভ/এডিটযোগ্য)।
-            mathHtml = this._ommlToLegacyEqHtml(child, (opts && opts.docMath) || 'eqfield');
+            mathHtml = this._ommlToLegacyEqHtml(child, (opts && opts.docMath) || 'eqfield', opts);   // Part-13.4
             if (mathHtml) {
               runsHtml.push(mathHtml);
               runCount++;

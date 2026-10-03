@@ -3599,7 +3599,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         for (const seg of segments) {
           const boldPrefix = bold ? '\\b ' : '';
           const boldSuffix = bold ? '\\b0 ' : '';
-          const subPrefix = mRun.isSubscript ? '\\sub ' : (mRun.isSuperscript ? '\\super ' : '');
+          // Part-13.4 (রিপোর্ট-৩): ঘাত/পদের সাইজ ~৬৭% (১২pt → ৮pt) — নইলে ফুল-সাইজ
+          const scriptFs = Math.max(12, Math.round(fontSizeHalfPt * 0.67));
+          const subPrefix = mRun.isSubscript ? ('\\sub\\fs' + scriptFs + ' ') : (mRun.isSuperscript ? ('\\super\\fs' + scriptFs + ' ') : '');
           const subSuffix = (mRun.isSubscript || mRun.isSuperscript) ? '\\nosupersub ' : '';
 
           if (seg.type === 'english' || !isBijoy) {

@@ -810,6 +810,10 @@
 </m:e>
 <m:sub>
 <m:r>
+<w:rPr>
+<w:sz w:val="16"/>
+<w:szCs w:val="16"/>
+</w:rPr>
 <m:t xml:space="preserve">1</m:t>
 </m:r>
 </m:sub>
@@ -832,6 +836,10 @@
 </m:e>
 <m:sub>
 <m:r>
+<w:rPr>
+<w:sz w:val="16"/>
+<w:szCs w:val="16"/>
+</w:rPr>
 <m:t xml:space="preserve">1</m:t>
 </m:r>
 </m:sub>

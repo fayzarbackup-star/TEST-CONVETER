@@ -181,8 +181,9 @@ const MCQ = [
   let rtfSup = Export.generateLegacyDoc('৩। `$x^2 + y_3$` লেখ।', 'EXAM_CQ', {});
   if (rtfSup && rtfSup.text) rtfSup = await rtfSup.text();
   const SUP = String(rtfSup);
-  T('Part-9f: সুপারস্ক্রিপ্ট → {\\super ...}', /\{\\super /.test(SUP), SUP.slice(0, 120));
-  T('Part-9f: সাবস্ক্রিপ্ট → {\\sub ...}', /\{\\sub /.test(SUP), SUP.slice(0, 120));
+  // Part-13.4: ঘাত/পদ এখন স্পষ্ট ৮pt সাইজসহ (\fs16) — ডিফল্ট-সাইজ পাওয়ার ফিক্স
+  T('Part-9f+13.4: সুপারস্ক্রিপ্ট → {\\super\\fs16 ...}', /\{\\super(?:\\fs\d+)? /.test(SUP), SUP.slice(0, 120));
+  T('Part-9f+13.4: সাবস্ক্রিপ্ট → {\\sub\\fs16 ...}', /\{\\sub(?:\\fs\d+)? /.test(SUP), SUP.slice(0, 120));
   T('Part-9f: কাঁচা EQ সুইচ (`\\S\\up`/`\\S\\do`) পাঠ্যে নেই', !/[\\]{1,2}S[\\]{1,2}(up|do)/.test(SUP), SUP.slice(0, 120));
 
   // (ঘ) Part-9f: docx-to-doc-engine — `.doc`-এ OMML নয়, 2003-নেটিভ EQ ফিল্ড

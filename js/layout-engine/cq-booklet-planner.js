@@ -399,14 +399,19 @@
           colInPage: (flowIdx % 2) + 1,
           items: bins[i].items,
           headerFirst: i === 0,
-          breakBefore: flowIdx > 0,          // প্রতিটি কলামই একটি ছাপা পৃষ্ঠা → নির্দিষ্ট ব্রেক
+          breakBefore: false,                // Part-13.4: নিচে ঠিক হবে (প্রাকৃতিক প্রবাহ)
           height: colCap - bins[i].left,
           cap: colCap
         });
       }
 
       const skipFirstColumn = reserve && !back.length;
-      if (!reserve) for (const c of columns) c.breakBefore = false;   // ক্রমাগত ফ্লো — জোরি কলাম-ব্রেক বসবে না
+      // Part-13.4 (রিপোর্ট-১): MCQ-র মতো প্রাকৃতিক প্রবাহ — mid-flow কৃত্রিম কলাম-ব্রেক বন্ধ।
+      // ব্রেক কেবল: (ক) ব্যাক-কভারের পরে flow শুরুর আগে, (খ) skipFirstColumn হলে লিডিং ব্রেক।
+      for (const c of columns) c.breakBefore = false;
+      const firstFlow = columns.find((c) => c.role === 'page1');
+      if (firstFlow) firstFlow.breakBefore = !!(back.length) || skipFirstColumn;
+      if (!reserve) for (const c of columns) c.breakBefore = false;   // ক্রমাগত ফ্লো
       const flowColumns = columns.length + (skipFirstColumn ? 1 : 0);
       return {
         geometry: g,

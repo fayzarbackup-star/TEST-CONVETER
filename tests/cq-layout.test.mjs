@@ -117,7 +117,9 @@ console.log('\n— (গ) TC-LAY-31: বুকলেট ইম্পোজিশ�
   T('ব্যাক কভারের পরেই ফ্রন্ট কভার (হেডারসহ), slot ক্রম ০,১,২…',
     p6.columns.map((c) => c.slot).join(',') === '0,1,2' && p6.columns[1].role === 'page1' && p6.columns[1].headerFirst === true,
     p6.columns.map((c) => c.slot + ':' + c.role));
-  T('প্রতিটি কলামই একটি ছাপা পৃষ্ঠা → ব্রেক ছাড়া শুধু প্রথমটি', p6.columns.every((c, i) => c.breakBefore === (i > 0)));
+  // Part-13.4: প্রাকৃতিক প্রবাহ — mid-flow কৃত্রিম ব্রেক বন্ধ; ব্রেক কেবল ব্যাক-কভারের পরে flow-শুরুতে
+  T('Part-13.4: ব্রেক কেবল লিডিং (ব্যাক-কভার-পরবর্তী) — mid-flow ব্রেক নেই',
+    p6.columns.every((c, i) => c.breakBefore === (i === 1)), p6.columns.map((c) => c.role + ':' + c.breakBefore));
   T('docPages = ceil(ফ্লো-কলাম/২)', p6.metrics.docPages === Math.ceil((p6.columns.length + (p6.skipFirstColumn ? 1 : 0)) / 2), p6.metrics);
 
   const p10 = planOf('cq-booklet-10');

@@ -86,6 +86,17 @@
       // 4. Clean up spaces
       s = s.replace(/\s+/g, ' ').trim();
 
+      // Part-13.4 (রিপোর্ট-২): বিজয় (.doc) টার্গেটে EQ কোডের ভেতরের বাংলা ডিজিট/টেক্সট
+      // SutonnyMJ (ANSI) কোডে রূপান্তর — নইলে ফিল্ডের ভেতরে ইউনিকোড গ্লিফ (৩/৫) থেকে যায়,
+      // যা SutonnyMJ লেখার সঙ্গে বেমানান।
+      if (isU2B) {
+        var _BC = (typeof BanglaConverter !== 'undefined') ? BanglaConverter
+          : (typeof globalThis !== 'undefined' && globalThis.BanglaConverter) ? globalThis.BanglaConverter : null;
+        if (_BC && typeof _BC.unicodeToBijoy === 'function') {
+          try { s = s.replace(/[\u0980-\u09FF]+/g, function (m) { return _BC.unicodeToBijoy(m); }); } catch (e) {}
+        }
+      }
+
       return s;
     }
 
@@ -1700,6 +1711,33 @@
       return '<span class="eq-rendered" style="font-family:\'Times New Roman\',serif;' + sizeStyle + '">' + render(s) + '</span>';
     }
     /**
+     * Part-13.4 (রিপোর্ট-৩): OMML-এর সুপার/সাবস্ক্রিপ্ট-রানে স্পষ্ট ছোট সাইজ ইনজেক্ট।
+     * OMML-এ রান-সাইজ না থাকলে Word ঘাত/পদকে বেস-সাইজেই আঁকে (বড় দেখায়)।
+     * ডিফল্ট 16 (৮pt) = ২৪ (১২pt)-এর ৬৭% — Word-এর নিজস্ব স্ক্রিপ্ট-অনুপাত।
+     */
+    static _applyOmmlScriptSizes(xml, scriptHalfPt) {
+      const s = String(xml == null ? '' : xml);
+      if (!s) return s;
+      const sz = String(scriptHalfPt || 16);
+      const re = /<\/?(?:m:sup|m:sub)>|<m:r>/g;
+      let out = '', last = 0, depth = 0, m;
+      while ((m = re.exec(s)) !== null) {
+        const tag = m[0];
+        out += s.slice(last, m.index);
+        last = m.index + tag.length;
+        if (tag === '<m:sup>' || tag === '<m:sub>') { depth += 1; out += tag; }
+        else if (tag === '</m:sup>' || tag === '</m:sub>') { depth = Math.max(0, depth - 1); out += tag; }
+        else {
+          out += tag;
+          if (depth > 0 && !s.startsWith('<w:rPr', last)) {
+            out += '<w:rPr><w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/></w:rPr>';
+          }
+        }
+      }
+      return out + s.slice(last);
+    }
+
+    /**
      * Converts a LaTeX string directly into Word OpenXML OMML (<m:oMath>).
      * Eliminates Equation Editor 3.0 popup, eliminates "Word equation too large to convert" error.
      */
@@ -1944,7 +1982,8 @@
         return res;
       }
 
-      return '<m:oMath>' + parseChunk(s) + '</m:oMath>';
+      // Part-13.4 (রিপোর্ট-৩): ঘাত/পদের সাইজ ৬৭% (৮pt) — নইলে Word ফুল-সাইজে আঁকে
+      return '<m:oMath>' + EquationConverter._applyOmmlScriptSizes(parseChunk(s), 16) + '</m:oMath>';
     }
 
     /**

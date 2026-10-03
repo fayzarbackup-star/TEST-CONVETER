@@ -285,8 +285,9 @@
           }
           if (_eqOut) {
             let rtfSafe = this.escapeUnicodeRtf(_eqOut);
-            rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super $1}');
-            rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub $1}');
+            const _hp = this._scriptHalfPt(options);   // Part-13.4 (রিপোর্ট-৩)
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super\\fs' + _hp + ' $1}');
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub\\fs' + _hp + ' $1}');
             if (docMathMode === 'plain' || !/\\[FRIBXA]\b/i.test(_eqOut)) {
               // সরল রাশি / plain মোড → ফিল্ড ছাড়া ইটালিক পাঠ্য (সব Word-এ পড়া যায়)
               out += '{\\f1 ' + rtfSafe + '}';
@@ -1012,6 +1013,18 @@
     },
 
     /** Part-13.3: প্রশ্ন-ব্লকের শেষ spacing (১২pt বিরতি) — শেষ \\sa<N> বদলায় */
+    /** Part-13.4 (রিপোর্ট-৩): সুপার/সাবস্ক্রিপ্টের অর্ধ-পয়েন্ট (১২pt base → 8pt = 16) */
+    _scriptHalfPt(options) {
+      const o = options || {};
+      let hp = 24;
+      const fh = Number(o.fontSizeHalfPt);
+      const f = parseFloat(o.fontSize);
+      if (Number.isFinite(fh) && fh >= 16) hp = fh;
+      else if (Number.isFinite(f) && f > 0) hp = Math.round(f * 2);
+      else if (Number.isFinite(Number(o.sz)) && Number(o.sz) >= 16) hp = Number(o.sz);
+      return Math.max(12, Math.round(hp * 0.67));
+    },
+
     _bumpLastSpacingRtf(str, val) {
       const s = String(str == null ? '' : str);
       const idx = s.lastIndexOf('\\sa');
@@ -1223,7 +1236,7 @@
       let firstCol = true;
       for (const col of plan.columns) {
         if (!col.items || (!col.items.length && !col.headerFirst)) continue;
-        if (!firstCol || plan.skipFirstColumn) rtf += '{\\column}\n';
+        if (col.breakBefore) rtf += '{\\column}\n';
         firstCol = false;
         if (col.headerFirst) rtf += this._cqHeaderRtf(plan, options);
         for (const it of col.items) {
@@ -1390,7 +1403,7 @@
       let firstCol = true;
       for (const col of plan.columns) {
         if (!col.items || (!col.items.length && !col.headerFirst)) continue;
-        if (!firstCol || plan.skipFirstColumn) bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
+        if (col.breakBefore) bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
         firstCol = false;
         if (col.headerFirst) bodyXml += this._cqHeaderDocx(plan, ctx);
         for (const it of col.items) {

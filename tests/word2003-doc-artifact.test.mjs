@@ -178,7 +178,8 @@ async function runConvert(docMath) {
   T('cached: ফিল্ড-ফলাফলে <span> ক্যাশ আছে', cnt(html, /field-separator'><\/span><!\[endif\]--><span/g) > 0);
   T('cached: অক্ষর ইটালিক (<i>)', /<i>[A-Za-z]/.test(html), (html.match(/<i>[A-Za-z][^<]*<\/i>/g) || []).slice(0, 3));
   T('cached: সংখ্যা ইটালিক নয় (খাড়া)', !/<i>[0-9]/.test(html));
-  T('cached: সুপারস্ক্রিপ্ট `<sup>` ট্যাগে', /<sup>\d/.test(html));
+  // Part-13.4: <sup>-এ স্পষ্ট ৮pt সাইজ (style অ্যাট্রিবিউট সহ)
+  T('cached: সুপারস্ক্রিপ্ট `<sup>` ট্যাগে (৮pt সাইজসহ)', /<sup[^>]*>\d/.test(html));
 }
 
 // ---------- ৩) 'plain' মোড: ফিল্ড ছাড়া (সব Word-এ পড়া যায়) ----------
