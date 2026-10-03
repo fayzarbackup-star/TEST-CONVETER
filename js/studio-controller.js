@@ -450,6 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     applyEditModeState();
+    if (typeof attachFigureControls === 'function') attachFigureControls();
     updateRulerMargin(studioState.marginClass);
     updateStatusBar();
     updateWordDocTitle();
@@ -491,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyEditModeState() {
     previewContainer.classList.toggle('editing-active', studioState.isEditing);
 
-    const editables = previewContainer.querySelectorAll('.question-paper, .paper-sheet, .stamp-document, .gov-app-document, .cert-document');
+    const editables = previewContainer.querySelectorAll('.question-paper, .paper-sheet, .sheet, .stamp-document, .gov-app-document, .cert-document, .cq-column, .mcq-col, [class*="section"]');
     editables.forEach(el => {
       el.setAttribute('contenteditable', studioState.isEditing ? 'true' : 'false');
       el.setAttribute('spellcheck', 'false');
@@ -517,6 +518,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (statEditIndicator) statEditIndicator.classList.add('hidden');
     }
   }
+
+  // Seamless click-to-edit: clicking inside document turns on edit mode instantly
+  previewContainer.addEventListener('click', (e) => {
+    if (!studioState.isEditing && !e.target.closest('.figure-toolbar')) {
+      studioState.isEditing = true;
+      applyEditModeState();
+    }
+  });
 
   function updateRulerMargin(marginClass) {
     const rulerHLeft = document.getElementById('ruler-h-margin-left');
@@ -1469,6 +1478,342 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     } catch (err) {}
   }
+
+
+  // =========================================================================
+  // Studio v4.0: Math & Symbol Palette + Geometry Diagrams Tools
+  // =========================================================================
+  let lastSavedRange = null;
+
+  function saveCurrentSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      lastSavedRange = sel.getRangeAt(0).cloneRange();
+    }
+  }
+
+  // Track selection changes inside document
+  if (previewContainer) {
+    previewContainer.addEventListener('mouseup', saveCurrentSelection);
+    previewContainer.addEventListener('keyup', saveCurrentSelection);
+    previewContainer.addEventListener('touchend', saveCurrentSelection);
+  }
+
+  function insertContentAtCaret(htmlOrText, isHtml = false) {
+    // 1. If text area is focused
+    if (document.activeElement === inputText) {
+      const start = inputText.selectionStart;
+      const end = inputText.selectionEnd;
+      const val = inputText.value;
+      inputText.value = val.substring(0, start) + htmlOrText + val.substring(end);
+      inputText.selectionStart = inputText.selectionEnd = start + htmlOrText.length;
+      inputText.dispatchEvent(new Event('input'));
+      return;
+    }
+
+    // 2. If selection is inside previewContainer
+    const sel = window.getSelection();
+    let range = lastSavedRange;
+    if (sel && sel.rangeCount > 0) {
+      const curRange = sel.getRangeAt(0);
+      if (previewContainer && previewContainer.contains(curRange.commonAncestorContainer)) {
+        range = curRange;
+      }
+    }
+
+    if (!range && previewContainer) {
+      // Fallback: append to first editable element
+      const firstEditable = previewContainer.querySelector('[contenteditable="true"]');
+      if (firstEditable) {
+        range = document.createRange();
+        range.selectNodeContents(firstEditable);
+        range.collapse(false);
+      }
+    }
+
+    if (range) {
+      range.deleteContents();
+      if (isHtml) {
+        const temp = document.createElement('div');
+        temp.innerHTML = htmlOrText;
+        const frag = document.createDocumentFragment();
+        let node;
+        let lastNode = null;
+        while ((node = temp.firstChild)) {
+          lastNode = frag.appendChild(node);
+        }
+        range.insertNode(frag);
+        if (lastNode) {
+          range.setStartAfter(lastNode);
+          range.collapse(true);
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      } else {
+        const textNode = document.createTextNode(htmlOrText);
+        range.insertNode(textNode);
+        range.setStartAfter(textNode);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      saveCurrentSelection();
+      AutoSave.markDirty();
+      HistoryManager.snapshot();
+      attachFigureControls();
+    }
+  }
+
+  // --- Math Symbols Database ---
+  const MATH_SYMBOLS = {
+    basic: [
+      { sym: '$\\frac{১}{২}$', name: '১/২', display: '½' },
+      { sym: '$\\frac{৩}{৫}$', name: '৩/৫', display: '⅗' },
+      { sym: '$\\frac{a}{b}$', name: 'ভগ্নাংশ a/b', display: 'a/b' },
+      { sym: '$\\sqrt{x}$', name: 'বর্গমূল', display: '√' },
+      { sym: '$\\sqrt[3]{x}$', name: 'ঘনমূল', display: '∛' },
+      { sym: '$\\pm$', name: 'প্লাস-মাইনাস', display: '±' },
+      { sym: '$\\times$', name: 'গুণ চিহ্ন', display: '×' },
+      { sym: '$\\div$', name: 'ভাগ চিহ্ন', display: '÷' },
+      { sym: '$\\approx$', name: 'প্রায় সমান', display: '≈' },
+      { sym: '$\\neq$', name: 'সমান নয়', display: '≠' },
+      { sym: '$\\le$', name: 'ছোট বা সমান', display: '≤' },
+      { sym: '$\\ge$', name: 'বড় বা সমান', display: '≥' },
+      { sym: '%', name: 'শতকরা', display: '%' },
+      { sym: '$\\infty$', name: 'অসীম', display: '∞' },
+      { sym: '$\\therefore$', name: 'অতএব', display: '∴' },
+      { sym: '$\\because$', name: 'যেহেতু', display: '∵' }
+    ],
+    algebra: [
+      { sym: '$x^2$', name: 'বর্গ x²', display: 'x²' },
+      { sym: '$x^3$', name: 'ঘন x³', display: 'x³' },
+      { sym: '$x^4$', name: 'চতুর্থ ঘাত', display: 'x⁴' },
+      { sym: '$x^n$', name: 'n-তম ঘাত', display: 'xⁿ' },
+      { sym: '$x_1$', name: 'সাবস্ক্রিপ্ট ১', display: 'x₁' },
+      { sym: '$x_2$', name: 'সাবস্ক্রিপ্ট ২', display: 'x₂' },
+      { sym: '$x_n$', name: 'সাবস্ক্রিপ্ট n', display: 'xₙ' },
+      { sym: '$(a+b)^2$', name: 'সূত্র', display: '(a+b)²' },
+      { sym: '$a^2-b^2$', name: 'বর্গের অন্তর', display: 'a²-b²' },
+      { sym: '$\\sum$', name: 'সমষ্টি (Sum)', display: '∑' },
+      { sym: '$\\prod$', name: 'গুণফল', display: '∏' },
+      { sym: '$\\propto$', name: 'সমানুপাতিক', display: '∝' },
+      { sym: '$\\log_{10}$', name: 'লগ', display: 'log₁₀' },
+      { sym: '$\\ln$', name: 'স্বাভাবিক লগ', display: 'ln' }
+    ],
+    geometry: [
+      { sym: '$\\angle$', name: 'কোণ চিহ্ন', display: '∠' },
+      { sym: '$\\angle A$', name: 'কোণ A', display: '∠A' },
+      { sym: '$\\angle ABC$', name: 'কোণ ABC', display: '∠ABC' },
+      { sym: '$\\triangle$', name: 'ত্রিভুজ চিহ্ন', display: '△' },
+      { sym: '$\\triangle ABC$', name: 'ত্রিভুজ ABC', display: '△ABC' },
+      { sym: '$90^\\circ$', name: '৯০ ডিগ্রি', display: '90°' },
+      { sym: '$^\\circ$', name: 'ডিগ্রি চিহ্ন', display: '°' },
+      { sym: '$\\perp$', name: 'লম্ব চিহ্ন', display: '⊥' },
+      { sym: '$\\parallel$', name: 'সমান্তরাল', display: '∥' },
+      { sym: '$\\cong$', name: 'সর্বসম', display: '≅' },
+      { sym: '$\\sim$', name: 'সদৃশ', display: '∼' },
+      { sym: '$\\pi$', name: 'পাই', display: 'π' },
+      { sym: '$\\theta$', name: 'থিটা', display: 'θ' },
+      { sym: '$\\alpha$', name: 'আলফা', display: 'α' },
+      { sym: '$\\beta$', name: 'বিটা', display: 'β' },
+      { sym: '$\\gamma$', name: 'গামা', display: 'γ' },
+      { sym: '$\\sin\\theta$', name: 'সাইন', display: 'sin θ' },
+      { sym: '$\\cos\\theta$', name: 'কোসাইন', display: 'cos θ' },
+      { sym: '$\\tan\\theta$', name: 'ট্যানজেন্ট', display: 'tan θ' }
+    ],
+    sets: [
+      { sym: '$\\in$', name: 'উপাদান', display: '∈' },
+      { sym: '$\\notin$', name: 'উপাদান নয়', display: '∉' },
+      { sym: '$\\subset$', name: 'উপসেট', display: '⊂' },
+      { sym: '$\\subseteq$', name: 'উপসেট বা সমান', display: '⊆' },
+      { sym: '$\\cap$', name: 'ছেদ (Inter)', display: '∩' },
+      { sym: '$\\cup$', name: 'সংযোগ (Union)', display: '∪' },
+      { sym: '$\\emptyset$', name: 'ফাঁকা সেট', display: '∅' },
+      { sym: '$\\mathbb{N}$', name: 'স্বাভাবিক সংখ্যা', display: 'ℕ' },
+      { sym: '$\\mathbb{Z}$', name: 'পূর্ণসংখ্যা', display: 'ℤ' },
+      { sym: '$\\mathbb{R}$', name: 'বাস্তব সংখ্যা', display: 'ℝ' }
+    ]
+  };
+
+  const modalMathSymbols = document.getElementById('modal-math-symbols');
+  const btnQuickInsertMath = document.getElementById('btn-quick-insert-math');
+  const btnRibbonInsertMath = document.getElementById('btn-ribbon-insert-math');
+  const btnMathModalClose = document.getElementById('btn-math-modal-close');
+  const mathGridContainer = document.getElementById('math-grid-container');
+
+  function renderMathCategory(cat) {
+    if (!mathGridContainer) return;
+    mathGridContainer.innerHTML = '';
+    const list = MATH_SYMBOLS[cat] || MATH_SYMBOLS.basic;
+    list.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'math-symbol-btn';
+      btn.innerHTML = `<span class="sym-display">${item.display}</span><span class="sym-name">${item.name}</span>`;
+      btn.title = item.name + ' (' + item.sym + ')';
+      btn.addEventListener('click', () => {
+        insertContentAtCaret(' ' + item.sym + ' ');
+        showToast(`চিহ্ন '${item.display}' ইনসার্ট হয়েছে!`, 'success');
+      });
+      mathGridContainer.appendChild(btn);
+    });
+  }
+
+  function openMathModal() {
+    saveCurrentSelection();
+    if (modalMathSymbols) {
+      modalMathSymbols.classList.remove('hidden');
+      renderMathCategory('basic');
+    }
+  }
+
+  if (btnQuickInsertMath) btnQuickInsertMath.addEventListener('click', openMathModal);
+  if (btnRibbonInsertMath) btnRibbonInsertMath.addEventListener('click', openMathModal);
+  if (btnMathModalClose && modalMathSymbols) {
+    btnMathModalClose.addEventListener('click', () => modalMathSymbols.classList.add('hidden'));
+  }
+
+  // Math tab buttons
+  const mathTabBtns = document.querySelectorAll('.math-tab-btn');
+  mathTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      mathTabBtns.forEach(b => {
+        b.classList.remove('active', 'bg-purple-100', 'text-purple-700', 'border-b-2', 'border-purple-600');
+        b.classList.add('text-slate-600');
+      });
+      btn.classList.add('active', 'bg-purple-100', 'text-purple-700', 'border-b-2', 'border-purple-600');
+      btn.classList.remove('text-slate-600');
+      const cat = btn.getAttribute('data-math-cat');
+      renderMathCategory(cat);
+    });
+  });
+
+  // --- Geometry Diagrams & Figures Logic ---
+  const modalDiagrams = document.getElementById('modal-diagrams');
+  const btnQuickInsertDiagram = document.getElementById('btn-quick-insert-diagram');
+  const btnRibbonInsertDiagram = document.getElementById('btn-ribbon-insert-diagram');
+  const btnDiagramModalClose = document.getElementById('btn-diagram-modal-close');
+  const btnUploadLocalDiagram = document.getElementById('btn-upload-local-diagram');
+  const inputFileDiagramHidden = document.getElementById('input-file-diagram-hidden');
+
+  function openDiagramModal() {
+    saveCurrentSelection();
+    if (modalDiagrams) modalDiagrams.classList.remove('hidden');
+  }
+
+  if (btnQuickInsertDiagram) btnQuickInsertDiagram.addEventListener('click', openDiagramModal);
+  if (btnRibbonInsertDiagram) btnRibbonInsertDiagram.addEventListener('click', openDiagramModal);
+  if (btnDiagramModalClose && modalDiagrams) {
+    btnDiagramModalClose.addEventListener('click', () => modalDiagrams.classList.add('hidden'));
+  }
+
+  // Upload custom local image
+  if (btnUploadLocalDiagram && inputFileDiagramHidden) {
+    btnUploadLocalDiagram.addEventListener('click', () => inputFileDiagramHidden.click());
+    inputFileDiagramHidden.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const dataUrl = evt.target.result;
+        const figureHtml = `<div class="studio-figure-wrapper" style="text-align: center; margin: 8px auto;" contenteditable="false">
+          <img src="${dataUrl}" alt="চিত্র" style="max-width: 180px; height: auto;" />
+          <div class="figure-toolbar no-print">
+            <button data-fig-act="sz-sm">ছোট</button>
+            <button data-fig-act="sz-md">মাঝারি</button>
+            <button data-fig-act="sz-lg">বড়</button>
+            <span>|</span>
+            <button data-fig-act="al-left">বামে</button>
+            <button data-fig-act="al-center">মাঝে</button>
+            <button data-fig-act="al-right">ডানে</button>
+            <span>|</span>
+            <button data-fig-act="delete" class="btn-del">✕ মুছুন</button>
+          </div>
+        </div>&nbsp;`;
+        insertContentAtCaret(figureHtml, true);
+        if (modalDiagrams) modalDiagrams.classList.add('hidden');
+        showToast('ছবি সফলভাবে ইনসার্ট হয়েছে!', 'success');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+  }
+
+  // Click on preset geometry diagrams
+  const presetCards = document.querySelectorAll('.diagram-preset-card');
+  presetCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const svg = card.querySelector('svg');
+      if (!svg) return;
+      const svgCode = svg.outerHTML;
+      const figureHtml = `<div class="studio-figure-wrapper" style="text-align: center; margin: 8px auto;" contenteditable="false">
+        ${svgCode}
+        <div class="figure-toolbar no-print">
+          <button data-fig-act="sz-sm">ছোট</button>
+          <button data-fig-act="sz-md">মাঝারি</button>
+          <button data-fig-act="sz-lg">বড়</button>
+          <span>|</span>
+          <button data-fig-act="al-left">বামে</button>
+          <button data-fig-act="al-center">মাঝে</button>
+          <button data-fig-act="al-right">ডানে</button>
+          <span>|</span>
+          <button data-fig-act="delete" class="btn-del">✕ মুছুন</button>
+        </div>
+      </div>&nbsp;`;
+      insertContentAtCaret(figureHtml, true);
+      if (modalDiagrams) modalDiagrams.classList.add('hidden');
+      showToast('জ্যামিতিক চিত্র ইনসার্ট হয়েছে!', 'success');
+    });
+  });
+
+  // Figure toolbar actions
+  function attachFigureControls() {
+    if (!previewContainer) return;
+    const wrappers = previewContainer.querySelectorAll('.studio-figure-wrapper');
+    wrappers.forEach(wrapper => {
+      const target = wrapper.querySelector('img, svg');
+      wrapper.querySelectorAll('.figure-toolbar button').forEach(btn => {
+        // Remove existing listener clone
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const act = newBtn.getAttribute('data-fig-act');
+          if (act === 'delete') {
+            wrapper.remove();
+            showToast('চিত্র মোছা হয়েছে।', 'info');
+          } else if (act === 'sz-sm' && target) {
+            target.style.width = '120px';
+            target.style.maxWidth = '120px';
+          } else if (act === 'sz-md' && target) {
+            target.style.width = '180px';
+            target.style.maxWidth = '180px';
+          } else if (act === 'sz-lg' && target) {
+            target.style.width = '260px';
+            target.style.maxWidth = '260px';
+          } else if (act === 'al-left') {
+            wrapper.style.display = 'block';
+            wrapper.style.textAlign = 'left';
+            wrapper.style.margin = '6px 0';
+          } else if (act === 'al-center') {
+            wrapper.style.display = 'block';
+            wrapper.style.textAlign = 'center';
+            wrapper.style.margin = '6px auto';
+          } else if (act === 'al-right') {
+            wrapper.style.display = 'block';
+            wrapper.style.textAlign = 'right';
+            wrapper.style.margin = '6px 0 6px auto';
+          }
+          AutoSave.markDirty();
+        });
+      });
+    });
+  }
+
+  // Run on initial load
+  setTimeout(() => {
+    applyEditModeState();
+    attachFigureControls();
+  }, 300);
 
   // Initial history snapshot
   HistoryManager.snapshot();
