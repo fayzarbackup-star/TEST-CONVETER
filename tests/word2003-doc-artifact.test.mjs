@@ -22,16 +22,28 @@ import { fileURLToPath } from 'url';
 // হার্ডকোডেড ছিল, ফলে অন্য মেশিন/CI-তে টেস্টটি চালানোই যেত না (ফাইল নেই → crash)।
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let chromium = null;
-for (const from of [path.join(ROOT, 'package.json'), path.join(os.homedir(), 'qa', 'package.json')]) {
+for (const from of [path.join(ROOT, 'package.json'), path.join(ROOT, 'scratch', 'test_env', 'package.json'), path.join(os.homedir(), 'qa', 'package.json')]) {
   try { chromium = createRequire(from)('playwright').chromium; break; } catch (e) { /* পরের প্রোফাইল */ }
 }
 if (!chromium) {
   console.log('\u23e9\ufe0f  playwright/Chromium নেই — Word-2003 ব্রাউজার-গেট এড়ানো হলো (npm i -D playwright && npx playwright install chromium; তারপর node tests/word2003-doc-artifact.test.mjs)');
   process.exit(0);
 }
+// Part-12.1: ফিক্সচার-রেজলিউশন — ফ্রেশ ক্লোনে crateh হওয়া বন্ধ।
+//   ক্রম: env override → রিপো-ফিক্সচার (math-equations.input.md থেকে জেনারেট) → পুরনো sandbox → render-ডির।
+//   আগে ডিফল্ট ছিল `proof/render/cq-booklet-6.docx` — এটি qa-স্ক্রিপ্টের কাজের ডির (gitignore-করা),
+//   ফ্রেশ ক্লোনে থাকে না ⇒ Playwright থাকা সত্ত্বেও টেস্ট ENOENT-এ ক্র্যাশ করত (গেটগুলো অচল)।
 const FIXTURE_LEGACY = path.join(os.homedir(), 'probe', 'live3', 'height_cq9e.live.docx');
+const FIXTURE_REPO = path.join(ROOT, 'tests', 'fixtures', 'word2003-math.docx');
 const FIXTURE = process.env.FAYZAR_TEST_DOCX ||
-  (fs.existsSync(FIXTURE_LEGACY) ? FIXTURE_LEGACY : path.join(ROOT, 'proof', 'render', 'cq-booklet-6.docx'));
+  (fs.existsSync(FIXTURE_REPO) ? FIXTURE_REPO
+    : fs.existsSync(FIXTURE_LEGACY) ? FIXTURE_LEGACY
+    : path.join(ROOT, 'proof', 'render', 'cq-booklet-6.docx'));
+if (!fs.existsSync(FIXTURE)) {
+  console.log('\u23e9\ufe0f  ফিক্সচার নেই (' + FIXTURE + ') — Word-2003 আর্টিফ্যাক্ট-গেট এড়ানো হলো');
+  console.log('   ফিক্সচার বানাতে: node qa/mk-math-fixture.mjs   ( বা FAYZAR_TEST_DOCX=<path> দিন )');
+  process.exit(0);
+}
 const OUTDIR = process.env.FAYZAR_OUTDIR || path.join(os.tmpdir(), 'fayzar-word2003-artifact');
 fs.mkdirSync(OUTDIR, { recursive: true });
 const NEEDS_X27 = /height_cq9e/.test(FIXTURE);   // পুরনো ফিক্সারেই '27' রাশিটি আছে
@@ -181,9 +193,20 @@ async function runConvert(docMath) {
 
 // ---------- ৪) `.docx` পাথ অপরিবর্তিত (OMML অটুট) ----------
 {
-  const { execSync } = await import('child_process');
-  const xml = execSync(`cd /tmp && rm -rf dxchk9i && mkdir dxchk9i && cd dxchk9i && unzip -o -q ${FIXTURE} word/document.xml && grep -o "<m:oMath" word/document.xml | wc -l`).toString().trim();
-  T('.docx (ইনপুট) এখনও OMML ধরে রাখে', Number(xml) > 0, xml);
+  let oMathCount = 0;
+  try {
+    const JSZip = createRequire(import.meta.url)(path.join(ROOT, 'js', 'jszip.min.js'));
+    const zip = await JSZip.loadAsync(fs.readFileSync(FIXTURE));
+    const docXml = await zip.file('word/document.xml').async('string');
+    oMathCount = cnt(docXml, /<m:oMath\b/g);
+  } catch (e) {
+    try {
+      const { execSync } = await import('child_process');
+      const xml = execSync(`unzip -p "${FIXTURE}" word/document.xml | grep -o "<m:oMath" | wc -l`, { stdio: 'pipe' }).toString().trim();
+      oMathCount = Number(xml) || 0;
+    } catch (_) {}
+  }
+  T('.docx (ইনপুট) এখনও OMML ধরে রাখে', oMathCount > 0, oMathCount);
 }
 
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);

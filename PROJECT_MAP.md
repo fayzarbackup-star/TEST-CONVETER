@@ -274,6 +274,13 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 | 6 | OCR প্রম্পটে উত্তর/সমাধান আসা বন্ধ ও সেকশন অনুযায়ী নম্বর রিসেট | js/ai-ocr-engine.js (STRICT QUESTION-ONLY) | ✅ Fixed |
 | 7 | টেস্ট রানার সমন্বয় (১৬টি টেস্ট স্যুইট, ৬৫৩টি গেট) | tests/run-all.mjs, tests/part12-hardening.test.mjs | ✅ 653/653 PASS |
 
+### Part-12.1 Release (২০২৬-১০-০৩)
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | Word-2003 আর্টিফ্যাক্ট ফিক্সচার সমাধান (ENOENT রোধ) | tests/fixtures/word2003-math.docx, qa/mk-math-fixture.mjs | ✅ Fixed |
+| 2 | Word-2003 Chromium টেস্ট ক্রস-প্ল্যাটফর্ম রান | tests/word2003-doc-artifact.test.mjs (JSZip ও লোকাল Playwright) | ✅ 30/30 PASS |
+| 3 | মাস্টার টেস্ট রানার আপডেট (৬৮৩টি গেট) | tests/run-all.mjs | ✅ 683/683 PASS |
+
 ### পূর্ববর্তী ফিক্স (২০২৬-০৯-২৮)
 
 | # | সমস্যা | ফাইল | Status |
