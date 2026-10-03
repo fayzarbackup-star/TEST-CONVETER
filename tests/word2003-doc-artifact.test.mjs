@@ -12,17 +12,29 @@
  *             খাড়া; কোডের **অক্ষর হুবহু অপরিবর্তিত** (ফরম্যাটিং কেবল রান-লেভেলে)।
  */
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import http from 'http';
 import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
 
-const require = createRequire('/home/user/qa/package.json');
-const { chromium } = require('playwright');
-
-const ROOT = '/home/user/repo_p2';
-const FIXTURE = '/home/user/probe/live3/height_cq9e.live.docx';
-const OUTDIR = '/home/user/probe/live3f/word2003fix';
+// Part-12 (অডিট ৫): সব পথ রিপো-আপেক্ষ — আগে '/home/user/repo_p2' ও '/home/user/probe/…'
+// হার্ডকোডেড ছিল, ফলে অন্য মেশিন/CI-তে টেস্টটি চালানোই যেত না (ফাইল নেই → crash)।
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+let chromium = null;
+for (const from of [path.join(ROOT, 'package.json'), path.join(os.homedir(), 'qa', 'package.json')]) {
+  try { chromium = createRequire(from)('playwright').chromium; break; } catch (e) { /* পরের প্রোফাইল */ }
+}
+if (!chromium) {
+  console.log('\u23e9\ufe0f  playwright/Chromium নেই — Word-2003 ব্রাউজার-গেট এড়ানো হলো (npm i -D playwright && npx playwright install chromium; তারপর node tests/word2003-doc-artifact.test.mjs)');
+  process.exit(0);
+}
+const FIXTURE_LEGACY = path.join(os.homedir(), 'probe', 'live3', 'height_cq9e.live.docx');
+const FIXTURE = process.env.FAYZAR_TEST_DOCX ||
+  (fs.existsSync(FIXTURE_LEGACY) ? FIXTURE_LEGACY : path.join(ROOT, 'proof', 'render', 'cq-booklet-6.docx'));
+const OUTDIR = process.env.FAYZAR_OUTDIR || path.join(os.tmpdir(), 'fayzar-word2003-artifact');
 fs.mkdirSync(OUTDIR, { recursive: true });
+const NEEDS_X27 = /height_cq9e/.test(FIXTURE);   // পুরনো ফিক্সারেই '27' রাশিটি আছে
 
 let pass = 0, fail = 0;
 const T = (n, c, x) => { c ? pass++ : fail++; console.log((c ? '✅' : '❌') + ' ' + n + (c ? '' : '  → ' + JSON.stringify(x))); };
@@ -134,7 +146,7 @@ async function runConvert(docMath) {
 
   const vis = html.replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ');
   T('.doc-এ কাঁচা LaTeX/`$` নেই', cnt(vis, /\$|\\(frac|sqrt|vec|overline)\b/g) === 0);
-  T('.doc-এ সমীকরণের রাশি কোডে অটুট (x, 27)', /27/.test(html) && /\\F\(/.test(html));
+  T('.doc-এ সমীকরণের রাশি কোডে অটুট' + (NEEDS_X27 ? ' (x, 27)' : ''), (NEEDS_X27 ? /27/.test(html) : /[0-9]/.test(html)) && /\\F\(/.test(html));
 
   // সিমুলেটেড "Word compute" ভিউ: supportFields কমেন্ট খুলে দিলে কেবল EQ কোড দেখা যায়, ডুপ নয়
   const sim = html.replace(/<!--\[if supportFields\]>/g, '').replace(/<!\[endif\]-->/g, '');

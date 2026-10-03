@@ -17,32 +17,25 @@
      * Normalizes text and parses it into structured exam paper components.
      */
     /**
+     * Part-12 (ট্রায়াজ ২): সাব-প্রশ্নের লাইন-শেষ থেকে প্রকৃত নম্বর তোলা।
+     * `... ৩`, `... ৩ নম্বর`, `... [৩]`, `... (মান: ৩)` — যা টেক্সটে লেখা আছে সেটাই নেওয়া
+     * হয়; না থাকলে খালি। আগে লেবেল থেকে নম্বর *কল্পনা* করা হতো (ক→১, খ→২, গ→৩, ঘ→৪),
+     * ফলে বাক্সে ভুল নম্বর বসত এবং প্রশ্নের শেষ শব্দটি মনে হতো নম্বর।
+     */
+    _cqMarkTail(text) {
+      const s = String(text == null ? '' : text).trim();
+      const m = s.match(/[ 	]+[([]?\s*(?:(?:মান|মার্ক)[:ঃ]?\s*)?([০-৯\d]+)\s*(?:নম্বর|মার্ক|মান)?[)\]]?\s*$/);
+      if (!m) return { text: s, mark: '' };
+      const head = s.slice(0, m.index).replace(/[\s\t]+$/, '').trim();
+      if (!head) return { text: s, mark: '' };
+      return { text: head, mark: m[1] };
+    },
+
+    /**
      * Part-9j: একটি CQ-লাইন থেকে সাব-প্রশ্ন ভাগ করা।
      * সীমা = লাইন-শুরু, ট্যাব, বা ২+ স্পেস — তাই `গ. সা. গু.` (এক স্পেসে বসা সংক্ষেপ)
      * ভাঙে না, কিন্তু `ক. লেখা\t২\tখ. লেখা\t৮` ঠিকঠাক তিন টুকরো হয়।
      */
-    /**
-     * সাব-প্রশ্নের লাইনশেষ থেকে মার্ক তোলা — একমাত্র উৎস (single source of truth)।
-     * সমর্থিত ফরম্যাট:  ` ১০` · `\t৪` · `[১]` · `(৩)` · `［২］` · `（৪）` · `মান: ৫` · `Marks: 5`
-     * বহু-অঙ্কের মার্ক (১০, ১৫) অক্ষুণ্ন থাকে এবং মার্কটি টেক্সট থেকে **কেটে** দেওয়া হয়,
-     * নইলে একই নম্বর প্রশ্নের ভেতরে ও মার্ক-কলামে দুইবার ছাপা হতো।
-     * মার্ক না থাকলে `''` ফেরত — কখনোই অনুমান করে বসানো হয় না।
-     */
-    _extractMark(rawText) {
-      let text = String(rawText == null ? '' : rawText).trim();
-      const patterns = [
-        /\s*[\[\uFF3B]\s*([\u09E6-\u09EF\d]{1,3})\s*[\]\uFF3D]\s*$/,          // [১] ［১০］
-        /\s*[\(\uFF08]\s*([\u09E6-\u09EF\d]{1,3})\s*[\)\uFF09]\s*$/,          // (৩) （৪）
-        /\s*(?:মান|নম্বর|Marks?|Mark)\s*[:ঃ]?\s*([\u09E6-\u09EF\d]{1,3})\s*$/i,   // মান: ৫
-        /[\s\t]+([\u09E6-\u09EF\d]{1,3})\s*$/                                    // ... ১০
-      ];
-      for (const re of patterns) {
-        const m = text.match(re);
-        if (m) return { text: text.slice(0, text.length - m[0].length).trim(), mark: m[1] };
-      }
-      return { text, mark: '' };
-    },
-
     _cqSubLineParts(line) {
       const s = String(line);
       const marks = [];
@@ -53,9 +46,8 @@
       const parts = [];
       for (let i = 0; i < marks.length; i++) {
         const end = (i + 1 < marks.length) ? marks[i + 1].start : s.length;
-        const _em = this._extractMark(s.slice(marks[i].textStart, end));
-        const text = _em.text, mark = _em.mark;
-        if (text) parts.push({ label: marks[i].label, text, mark });
+        const tk = this._cqMarkTail(s.slice(marks[i].textStart, end).trim());
+        if (tk.text) parts.push({ label: marks[i].label, text: tk.text, mark: tk.mark });
       }
       return parts;
     },
@@ -107,11 +99,6 @@
             /^#{1,6}\s*(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
           break; // Questions have started, header is complete
         }
-        // সোর্স-ফিডেলিটি: `[উদ্দীপক ১]` ধরনের ব্লক মানেই বডি শুরু — এর পরের অনুচ্ছেদ
-        // হেডার-স্ক্যানে গেলে পুরো উদ্দীপক গিলে ফেলত (bodyStartIndex এগিয়ে যেত)।
-        if (/^\[\s*(?:উদ্দীপক|দৃশ্যকল্প|অনুচ্ছেদ|চিত্র|ছক|সারণি|তথ্য|নিচের)/.test(cleanLine)) {
-          break;
-        }
         if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine) || (isMcqParse && /\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2(?:\u09df|\u09af\u09bc)/i.test(cleanLine))) {
           result.header.institute = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -141,7 +128,9 @@
           }
           result.header.classAndSubject = (result.header.classAndSubject ? result.header.classAndSubject + '  |  ' : '') + cLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if ((cleanLine.startsWith('[') && cleanLine.endsWith(']')) || /^\[?বিশেষ\s*দ্রষ্টব্য/i.test(cleanLine)) {
+        } else if (((cleanLine.startsWith('[') && cleanLine.endsWith(']')) || /^\[?বিশেষ\s*দ্রষ্টব্য/i.test(cleanLine)) &&
+                   // Part-12: `[উদ্দীপক ১]` নির্দেশনা নয় — উদ্দীপক-ব্লকের মার্কার, body-তে থাকবে
+                   !/^\[?\s*(?:নিচের\s+)?উদ্দীপক/i.test(cleanLine)) {
           result.header.instructions = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (!cleanLine.startsWith('[') && /বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা|সৃজনশীল\s*অভ[িী]ক্ষা/i.test(cleanLine) && !/সময়|পূর্ণমান/.test(cleanLine)) {
@@ -152,12 +141,14 @@
             result.header.examType = cleanLine.trim();
           }
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        // `মান` শব্দ-সীমা ছাড়া খুঁজলে "মানুষ"/"মানচিত্র"-ও ম্যাচ করত ⇒ বডির অনুচ্ছেদ
-        // হেডার ভেবে গিলে ফেলা হতো এবং header.marks-এ আবর্জনা ঢুকত। এখন লেবেলের পরে
-        // বিভাজক ও অঙ্ক — দুটোই বাধ্যতামূলক।
-        } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)\s*[\u0983:\-]/i.test(cleanLine) ||
-                    /(?:^|[\s|(\[])(?:পূর্ণ\s*মান|পূর্ণমান|মোট\s*মান|মান)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\d]/i.test(cleanLine)) &&
-                   (!result.header.time || !result.header.marks)) {
+        } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)/i.test(cleanLine) || /পূর্ণমান|মান/i.test(cleanLine)) && (!result.header.time || !result.header.marks) &&
+                   // Part-12 (অডিট ৩-এর মূল কারণ): 'মান' শব্দের অংশ থাকলেই এই শাখাটি
+                   // উদ্দীপকের অনুচ্ছেদটি হেডার-মান মনে করে খেয়ে ফেলত ⇒ প্রথম উদ্দীপক হারাত
+                   // (নমুনা: 'গ্রামের মানুষ চিন্তিত হয়ে পড়ে।')। এখন কেবল মান/সময় সংখ্যাসহ
+                   // মেটালাইন ধরা হয়; বাকি লাইন body-তে থাকে।
+                   (/সম(?:য়|য)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\dA-Za-z]/.test(cleanLine) || /(?:পূর্ণমান|মান)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\d]/.test(cleanLine)) &&
+                   // Part-12: `বিভাগ: গণিত ... মান: ২০` শিরোনাম-লাইন — হেডার নয়, body-তে রাখা হয়
+                   !/^\**\s*(?:বিভাগ|অংশ)\s*[ঃ:\-]/.test(cleanLine)) {
           let cLine = cleanLine;
           const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
           if (examSubMatch) {
@@ -171,7 +162,7 @@
           if (!tMatch && isMcqParse) {
             tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[:\u0983-]\s*([^;\n]+?)(?=\s*[:|\u0964]?\s*(?:\u09aa\u09c2\u09b0\u09cd\u09a3\u09ae\u09be\u09a8|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2|\u09ac\u09b9\u09c1\u09a8\u09bf\u09b0\u09cd\u09ac\u09be\u099a\u09a8|\u09ae\u09be\u09a8)|$)/i);
           }
-          const mMatch = cLine.match(/(?:পূর্ণ\s*মান|পূর্ণমান|মোট\s*মান|(?:^|[\s|(\[])মান)\s*[ঃ:\-]?\s*([\u09E6-\u09EF\d][^\n;|]*)/i);
+          const mMatch = cLine.match(/(?:পূর্ণমান|মান)[ঃ:\-]?\s*([^\n;]+)/i);
           if (tMatch && !result.header.time) result.header.time = tMatch[1].trim();
           if (mMatch && !result.header.marks) result.header.marks = mMatch[1].trim();
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -187,9 +178,45 @@
       let currentSection = { title: '', marks: '', questions: [] };
       let currentQuestion = null;
       let pendingPreContext = '';
+      let pendingStimulus = '';      // Part-12 (অডিট ৩): `[উদ্দীপক ১]` ব্লকের চলমান টেক্সট
+      let stimulusOpen = false;
 
       for (let i = 0; i < bodyLines.length; i++) {
         const line = bodyLines[i];
+
+        // Part-12 (অডিট ৩): `[উদ্দীপক ১]` / `উদ্দীপক: ১` মার্কার। আগে এই লাইনটি
+        // কোনো শাখায় ধরা পড়ত না ⇒ আগের প্রশ্নের বডিতে যুক্ত হতো, আর পরের প্রশ্নের
+        // উদ্দীপক ভুল জায়গায় বসত (নমুনা: প্রথম উদ্দীপক হারানো, দ্বিতীয়টি Q4-এ আটকানো)।
+        {
+          const bm2 = line.match(/^\s*[\[(]\s*(?:উদ্দীপক|নিচের উদ্দীপক)\s*[#:\u0983]?\s*([\u09E6-\u09EF\d]*)\s*[\])]\s*(.*)$/);
+          const bm3 = line.match(/^\s*(?:উদ্দীপক)\s*[:\u0983]\s*([\u09E6-\u09EF\d]+)\s*$/);
+          if (bm2 || bm3) {
+            const num = (bm2 ? bm2[1] : bm3[1]) || '';
+            const rest = (bm2 && bm2[2] ? String(bm2[2]).trim() : '');
+            // উৎসের `উদ্দীপক ১` লেবেলটি হারায় না (HEAD-এ এটি বন্ধনিসহ ছাপা হতো) —
+            // এখন বন্ধনীবিহীন পরিচ্ছন্ন লেবেল হিসেবে উদ্দীপকের প্রথম লাইনে থাকে।
+            const label = num ? 'উদ্দীপক ' + num : '';
+            const blk = [label, rest].filter(Boolean).join('\n');
+            if (currentQuestion && !currentQuestion.stimulus) currentQuestion.stimulus = blk;
+            pendingStimulus = blk;
+            stimulusOpen = true;
+            continue;
+          }
+          if (stimulusOpen) {      // মার্কার স্পষ্টভাবে ব্লক খোলে ⇒ খোলা প্রশ্ন থাকলেও লাইনগুলো উদ্দীপকে যায়
+            const t = line.trim();
+            const isNextQ = /^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-:\u0983.]*)?[\u09E6-\u09EF\d]+[\u0964.)]/.test(t);
+            // Part-12: সেকশন-বিভাজক/বিভাগ-শিরোনাম উদ্দীপকে জমা হয় না (combined পেপারে
+            // `---SECTION_BREAK:MCQ---` প্রথম উদ্দীপকের সঙ্গে মিশে গিয়েছিল)
+            const isBoundary = isNextQ || /SECTION[\s_\-]*BREAK/i.test(t) || /^[\-–—=*#\s]+$/.test(t) ||
+              /^#{0,6}\s*(?:বিভাগ|অংশ|সেকশন|Section)\b/.test(t) || /(?:বিভাগ|অংশ)[\u0983:\-]/.test(t);
+            if (!t) { stimulusOpen = false; continue; }        // ফাঁকা লাইন ব্লক শেষ করে
+            if (!isBoundary) {
+              pendingStimulus += (pendingStimulus ? '\n' : '') + t;
+              continue;
+            }
+            stimulusOpen = false;
+          }
+        }
 
         // Section Title Detection
         if (/(?:বিভাগ|অংশ)[ঃ:\-]|সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|বহুনির্বাচনি|নৈর্ব্যক্তিক/i.test(line) && line.length < 75) {
@@ -200,19 +227,14 @@
           if (currentSection.questions.length > 0 || currentSection.title) {
             result.sections.push(currentSection);
           }
-          currentSection = { title: line, marks: '', questions: [] };
-          continue;
-        }
-
-        // সোর্স-ফিডেলিটি: `[উদ্দীপক ২]` / `[দৃশ্যকল্প]` / `[চিত্র]` ধরনের ব্লক শুরু হলে সেটি
-        // **পরের** প্রশ্নের উদ্দীপক — আগের প্রশ্নের শেষে জুড়ে দিলে ছাপা ভুল জায়গায় হতো।
-        // তাই চলমান প্রশ্ন বন্ধ করে লাইনটি pendingPreContext-এ জমা রাখা হয় (ক্রম অক্ষুণ্ন)।
-        if (/^\[\s*(?:উদ্দীপক|দৃশ্যকল্প|অনুচ্ছেদ|চিত্র|ছক|সারণি|তথ্য|নিচের)/.test(line.trim())) {
-          if (currentQuestion) {
-            currentSection.questions.push(currentQuestion);
-            currentQuestion = null;
-          }
-          pendingPreContext += (pendingPreContext ? '\n' : '') + line;
+          // Part-12 (অডিট ১-এর সহ-তথ্য): `বিভাগ: গণিত মান: ২০` — শিরোনামের সঙ্গে
+          // লেগে-থাকা পূর্ণমান এখন আলাদা ফিল্ডে (আগে পুরো লাইনটি শিরোনাম হতো)।
+          const secTail = line.match(/(?:মান|মার্ক)[\u0983:\u09df]\s*([\u09E6-\u09EF\d]+)\s*$/);
+          currentSection = {
+            title: secTail ? line.slice(0, secTail.index).replace(/[\s,;:\u0964\-–]+$/, '') : line,
+            marks: secTail ? secTail[1] : '',
+            questions: []
+          };
           continue;
         }
 
@@ -231,6 +253,17 @@
         // `প্রশ্ন` শব্দ থাকলে রেগেক্স ফেল করত ⇒ প্রশ্নটি parse-ই হতো না, নিঃশব্দে হারিয়ে যেত।
         const qStartMatch = line.match(/^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-–—:ঃ.]*)?([\u09E6-\u09EF\d]+)[।.)]\s*(.*)$/);
         if (qStartMatch) {
+          // Part-12 (ট্রায়াজ ৩): `১. ক.` `১. খ.` … — একই নম্বরের লেবেল-সারিগুলো আলাদা
+          // প্রশ্ন নয়; খোলা প্রশ্নের সাব-প্রশ্ন হিসেবে জমা হয় (আগে প্রতি লাইনে নতুন প্রশ্ন
+          // তৈরি হয়ে ৪টি চ্যাপ্টা প্রশ্নের তালিকা হতো, উদ্দীপক আলাদা ব্লক থাকায় হারাত)।
+          if (currentQuestion && String(currentQuestion.num) === String(qStartMatch[1])) {
+            const dupLbl = qStartMatch[2].trim().match(/^([\u0995\u0996\u0997\u0998\u0999\u099a])[\.\u0983\u0964\-\u2013\u2014]\s*(.+)$/);
+            if (dupLbl) {
+              const tk2 = this._cqMarkTail(dupLbl[2]);
+              currentQuestion.subQuestions.push({ label: dupLbl[1], text: tk2.text, mark: tk2.mark });
+              continue;
+            }
+          }
           if (currentQuestion) {
             currentSection.questions.push(currentQuestion);
           }
@@ -238,12 +271,34 @@
             num: qStartMatch[1],
             text: qStartMatch[2].trim(),
             preContext: pendingPreContext,
-            stimulus: '',
+            stimulus: pendingStimulus,
             statements: [],
             subQuestions: [],
             options: []
           };
           pendingPreContext = '';
+          // Part-12 (ট্রায়াজ ৩): `১. নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও।`
+          // স্টেম নয় — এটি ঐ নম্বরের সাব-প্রশ্নগুলোর সাধারণ উদ্দীপক। আগে এটি স্বাধীন
+          // "প্রশ্ন" হয়ে ৮টি চ্যাপ্টা প্রশ্নের তালিকা বানাত; এখন ২টি গ্রুপ (প্রতিটিতে ৪টি
+          // সাব-প্রশ্ন + নিজস্ব উদ্দীপক) তৈরি হয়।
+          if (!currentQuestion.stimulus && /^নিচের\s*(?:উদ্দীপক|অনুচ্ছেদ|তথ্য|ছক|চিত্র)/i.test(currentQuestion.text) &&
+              /(?:পড়|উত্তর দাও|লক্ষ্য কর|দেখো)/i.test(currentQuestion.text)) {
+            currentQuestion.stimulus = currentQuestion.text;
+            currentQuestion.text = '';
+          }
+          // Part-12 (ট্রায়াজ ৩): `১. ক. <বিষয়বস্তু> ৩` — নম্বরের সঙ্গে লেবেল একই লাইনে
+          // এলে সেটিকে স্বতন্ত্র প্রশ্ন না করে ঐ নম্বরের প্রথম সাব-প্রশ্ন করা হয়।
+          if (!/MCQ/i.test(String((parseOptions && parseOptions.docType) || ''))) {
+            const inlineSub = currentQuestion.text.match(/^([\u0995\u0996\u0997\u0998\u0999\u099a])[\.\u0983:\u0964\-\u2013\u2014]\s*(.+)$/);
+            if (inlineSub) {
+              const tk = this._cqMarkTail(inlineSub[2]);
+              currentQuestion.subQuestions.push({ label: inlineSub[1], text: tk.text, mark: tk.mark });
+              currentQuestion.text = '';
+            }
+          }
+          // উদ্দীপক একবারই ছাপা হয় (দুই প্রশ্নে ডুপ্লিকেট এড়াতে মার্কার খরচ হলো)
+          stimulusOpen = false;
+          pendingStimulus = '';
           continue;
         }
 
@@ -273,11 +328,11 @@
         if (!_isMcqCtx && currentQuestion && (!currentQuestion.options || currentQuestion.options.length === 0)) {
           const brSub = line.match(/^\(?\s*([কখগঘ])\s*\)\s*(.+)$/);
           if (brSub) {
-            const _bm = this._extractMark(brSub[2]);
+            const bt = this._cqMarkTail(brSub[2]);
             currentQuestion.subQuestions.push({
               label: brSub[1],
-              text: _bm.text,
-              mark: _bm.mark
+              text: bt.text,
+              mark: bt.mark          // Part-12: উৎসে নম্বর না থাকলে খালি — কল্পনা করা হয় না
             });
             continue;
           }
@@ -296,8 +351,7 @@
               currentQuestion.subQuestions.push({
                 label: part.label,
                 text: part.text,
-                // মার্ক না থাকলে খালিই থাকবে — অনুমান করে বসানো নিষিদ্ধ
-                mark: part.mark
+                mark: part.mark || ''      // Part-12: কল্পিত ডিফল্ট (ক→১ খ→২ …) বাদ
               });
             }
             continue;
@@ -334,24 +388,29 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
 
         if (isMergedCqSub && currentQuestion) {
           for (const opt of mcqOpts) {
-            const _om = this._extractMark(opt.text);
+            let text = opt.text.trim();
+            const markMatch = text.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
+            let mark = '';
+            if (markMatch) {
+              mark = markMatch[1];
+              text = text.substring(0, text.length - markMatch[0].length).trim();
+            }
             currentQuestion.subQuestions.push({
               label: opt.label,
-              text: _om.text,
-              mark: _om.mark
+              text: text,
+              mark: mark || (opt.label === 'ক' ? '১' : opt.label === 'খ' ? '২' : opt.label === 'গ' ? '৩' : '৪')
             });
           }
           continue;
         }
 
         // 3. Sub-question for CQ (ক., খ., গ., ঘ. - separated by dot, colon, or dari; NOT bracket ')')
-        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.+)$/);
+        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.*?)(?:[\s\t]*([\u09E6-\u09EF\d]+))?\s*$/);
         if (subMatch && !isMcqDoc && currentQuestion && currentQuestion.options.length === 0 && (!currentQuestion.statements || currentQuestion.statements.length === 0)) {
-          const _sm = this._extractMark(subMatch[2]);
           currentQuestion.subQuestions.push({
             label: subMatch[1],
-            text: _sm.text,
-            mark: _sm.mark
+            text: subMatch[2].trim(),
+            mark: subMatch[3] || (subMatch[1] === 'ক' ? '১' : subMatch[1] === 'খ' ? '২' : subMatch[1] === 'গ' ? '৩' : '৪')
           });
           continue;
         }
@@ -378,6 +437,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           continue;
         }
 
+        // Part-12: পাইপলাইন-নিয়ন্ত্রণ লাইন (`---SECTION_BREAK:MCQ---`, `[LAYOUT: …]`) কনটেন্টে
+        // জোড়া লাগে না — main.js / doc-classifier এগুলো উপরেই আলাদা করে; এখানে এসে গেলে উপেক্ষা।
+        if (/^\s*[-\u2013\u2014=*\s]*SECTION[\s_\-]*BREAK[\s\S]*$/i.test(line) || /^\s*\[LAYOUT:/i.test(line)) continue;
+
         // Append to question text / stimulus (strip leading > if present)
         if (currentQuestion) {
           const cleanStim = line.replace(/^>\s?/, '');
@@ -391,24 +454,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             // এখন প্রশ্নের টেক্সটে যোগ হয়, হারায় না।
             currentQuestion.text = (currentQuestion.text ? currentQuestion.text + ' ' : '') + cleanStim;
           }
-        } else {
-          // সোর্স-ফিডেলিটি গার্ড: প্রথম প্রশ্ন-নম্বরের আগে (বা দুই প্রশ্নের মাঝে) আসা যেকোনো
-          // লাইন আগে কোনো শাখাই ধরত না — নিঃশব্দে হারিয়ে যেত (যেমন প্রথম উদ্দীপকের অনুচ্ছেদ)।
-          // এখন তা পরের প্রশ্নের preContext-এ, সোর্সের হুবহু ক্রমে, সংরক্ষিত হয়।
-          pendingPreContext += (pendingPreContext ? '\n' : '') + line.replace(/^>\s?/, '');
         }
       }
 
       if (currentQuestion) {
         currentSection.questions.push(currentQuestion);
-      }
-      // ফাইলের শেষে কোনো প্রশ্নের সাথে যুক্ত না-হওয়া লেখা পড়ে থাকলে সেটিও হারাতে দেওয়া হয় না
-      if (!currentQuestion && pendingPreContext.trim()) {
-        currentSection.questions.push({
-          num: '', text: '', preContext: pendingPreContext,
-          stimulus: '', statements: [], subQuestions: [], options: []
-        });
-        pendingPreContext = '';
       }
       if (currentSection.questions.length > 0 || currentSection.title) {
         result.sections.push(currentSection);
@@ -744,20 +794,23 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         const displayText = firstLineText || stimFirstLine;
         const G = renderOpts && renderOpts.cqGeom;
         const tw = (v) => +(v / 20).toFixed(2);   // twips → pt (প্রিভিউর inline styling)
+        // Part-12 (ট্রায়াজ ১): প্রিভিউর line-height প্ল্যানের lineFactor (১.৫) থেকে আসে —
+        // RTF-এর \sl (.fs × ১.৫) ও DOCX-এর w:line (২৪০ × ১.৫) হুবহু এই রেশিওতে লক করা।
+        const lh = (G && Number.isFinite(+G.lineRenderCssRatio)) ? String(+G.lineRenderCssRatio) : '1.35';
         const stemCss = G ? `padding-left: ${tw(G.indent)}pt; text-indent: -${tw(G.indent)}pt;` : 'display: flex; align-items: flex-start;';
         const numCss = G
           ? `margin-right: ${tw(G.indent)}pt; font-weight: 700;`
           : 'margin-right: 8px; flex-shrink: 0; min-width: 24px;';
         const stimulusPad = G ? `padding-left: 0; margin: 2px 0 !important;` : `padding-left: 32px !important; margin: 2px 0 !important;`;
 
-        html += `<div class="cq-q-item${G ? ' cq-booklet-item' : ''}" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">`;
+        html += `<div class="cq-q-item${G ? ' cq-booklet-item' : ''}" style="margin-bottom: 6px; font-size: 12pt; line-height: ${lh};">`;
         html += `<div class="cq-q-row${G ? ' cq-print-row' : ''}" style="${stemCss}">`;
         html += `<span class="cq-num font-bold" style="${numCss}">${this.escape(q.num)}।</span>`;
         html += `<span class="cq-text${G ? '' : ' text-justify flex-1'}">${this.richText(displayText)}</span>`;
         html += `</div>`;
 
         if (stimRemaining) {
-          html += `<div class="cq-stimulus text-justify" style="${stimulusPad} font-size: 12pt; line-height: 1.35;">`;
+          html += `<div class="cq-stimulus text-justify" style="${stimulusPad} font-size: 12pt; line-height: ${lh};">`;
           html += this.richTextBlock(stimRemaining);
           html += `</div>`;
         }
@@ -802,18 +855,20 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const useFb = !!(renderOpts && (renderOpts.fallback || renderOpts.docType === 'EXAM_MCQ'));
       if (useFb && header) header = this.applyMcqHeaderFallbacks(header);
       const pmLabel = useFb ? 'পূর্ণমানঃ ' : 'পূর্ণমান: ';
+      // Part-12: বুকেলেট প্রিভিউতে হেডারের লাইন-বক্সও প্ল্যান-রেশিওতে (RTF s32+\sl480)
+      const hlh = (renderOpts && renderOpts.cqGeom && Number.isFinite(+renderOpts.cqGeom.lineRenderCssRatio)) ? String(+renderOpts.cqGeom.lineRenderCssRatio) : '1.2';
       let html = `<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">`;
       if (header.institute) {
-        html += `<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">${this.escape(header.institute)}</h1>`;
+        html += `<h1 class="qp-institute font-black" style="margin: 0; line-height: ${hlh}; font-size: 16pt;">${this.escape(header.institute)}</h1>`;
       }
       if (header.location) {
-        html += `<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">${this.escape(header.location)}</div>`;
+        html += `<div class="qp-location font-semibold" style="margin: 0; line-height: ${hlh}; font-size: 12pt;">${this.escape(header.location)}</div>`;
       }
       if (header.exam) {
-        html += `<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">${this.escape(header.exam)}</div>`;
+        html += `<div class="qp-exam font-bold" style="margin: 0; line-height: ${hlh}; font-size: 13pt;">${this.escape(header.exam)}</div>`;
       }
       if (header.classAndSubject) {
-        html += `<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">${this.escape(header.classAndSubject)}</div>`;
+        html += `<div class="qp-class-subject font-semibold" style="margin: 0; line-height: ${hlh}; font-size: 12pt;">${this.escape(header.classAndSubject)}</div>`;
       }
 
       html += `<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">`;
@@ -962,7 +1017,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
               continue;
             }
             html += `<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="${col.page}" data-col="${col.colInPage}">`;
-            if (col.headerFirst) html += this.renderHeaderBlock(headerModel);
+            if (col.headerFirst) html += this.renderHeaderBlock(headerModel, { cqGeom: cqPlan.geometry });
             for (const it of (col.items || [])) html += renderBookletItem(it);
             html += `</div>`;
           }

@@ -30,6 +30,7 @@ function loadEngines() {
   };
 
   // Layout engine helpers first (export-dual-engine resolves them via globals)
+  reg('FayzarLayoutUnits', 'js/layout-engine/layout-units.js');   // Part-12: শেয়ার্ড একক-নরমালাইজার
   reg('TextRunProcessor', 'js/layout-engine/text-run-processor.js');
   reg('EquationConverter', 'js/equation-converter.js');
   reg('ThemeConfig', 'js/layout-engine/theme-config.js');
@@ -37,6 +38,7 @@ function loadEngines() {
   reg('FayzarDocxBuilder', 'js/layout-engine/docx-builder.js');
   g.DocxBuilder = g.FayzarDocxBuilder;
   reg('McqLayoutPlanner', 'js/layout-engine/mcq-layout-planner.js');
+  reg('CqBookletPlanner', 'js/layout-engine/cq-booklet-planner.js');   // Part-12
   reg('SchemaValidator', 'js/layout-engine/schema-validator.js');
   g.FayzarSchemaValidator = g.SchemaValidator;
 

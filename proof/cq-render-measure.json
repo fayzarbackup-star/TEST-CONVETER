@@ -52,17 +52,17 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 348.5,
+            "topLineCenter": 354.6,
             "topRightCenter": 626.1,
             "peaks": [
-              36,
               58,
+              73,
               389,
               446,
               468,
-              799
+              483
             ]
           },
           {
@@ -71,14 +71,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -88,14 +88,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -105,14 +105,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -122,19 +122,19 @@
             "minX": 36.1,
             "maxX": 395.85,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
+              73,
               79,
-              278,
+              141,
               389
             ]
           }
         ],
-        "marksAtRightEdge": 51
+        "marksAtRightEdge": 52
       },
       "docx": {
         "bytes": 74835,
@@ -151,17 +151,17 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": 626.1,
             "peaks": [
-              36,
               58,
+              73,
               389,
               446,
               468,
-              799
+              483
             ]
           },
           {
@@ -170,14 +170,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -187,14 +187,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -204,14 +204,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -221,19 +221,19 @@
             "minX": 36.1,
             "maxX": 395.85,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
+              73,
               79,
-              278,
+              141,
               389
             ]
           }
         ],
-        "marksAtRightEdge": 51
+        "marksAtRightEdge": 52
       }
     },
     "structuralChecks": [
@@ -309,7 +309,7 @@
         "ok": true
       },
       {
-        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -321,7 +321,7 @@
         "ok": true
       },
       {
-        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×41, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×62, র‍্যাপ-অংশ 43.2pt ×12",
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×43, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×59, র‍্যাপ-অংশ 43.2pt ×26",
         "ok": true
       },
       {
@@ -329,7 +329,7 @@
         "ok": true
       },
       {
-        "check": "doc: কলামের ডান প্রান্তে নম্বর 51টি (রাইট ট্যাব কাজ করছে)",
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 52টি (রাইট ট্যাব কাজ করছে)",
         "ok": true
       },
       {
@@ -354,7 +354,7 @@
         "ok": true
       },
       {
-        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -366,7 +366,7 @@
         "ok": true
       },
       {
-        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×41, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×62, র‍্যাপ-অংশ 43.2pt ×12",
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×43, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×59, র‍্যাপ-অংশ 43.2pt ×26",
         "ok": true
       },
       {
@@ -374,7 +374,7 @@
         "ok": true
       },
       {
-        "check": "docx: কলামের ডান প্রান্তে নম্বর 51টি (রাইট ট্যাব কাজ করছে)",
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 52টি (রাইট ট্যাব কাজ করছে)",
         "ok": true
       }
     ]
@@ -432,15 +432,15 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 348.5,
+            "topLineCenter": 354.6,
             "topRightCenter": 626.1,
             "peaks": [
               36,
               58,
-              72,
-              143,
+              73,
+              120,
               389,
               468
             ]
@@ -451,14 +451,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -468,14 +468,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -485,14 +485,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -500,16 +500,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806,
+            "maxX": 806.03,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -517,16 +517,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806,
+            "maxX": 806.03,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -534,21 +534,21 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 395.85,
+            "maxX": 395.88,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
+              73,
               79,
-              278,
+              141,
               389
             ]
           }
         ],
-        "marksAtRightEdge": 81
+        "marksAtRightEdge": 88
       },
       "docx": {
         "bytes": 116777,
@@ -565,15 +565,15 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": 626.1,
             "peaks": [
               36,
               58,
-              72,
-              143,
+              73,
+              120,
               389,
               468
             ]
@@ -584,14 +584,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -601,14 +601,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -618,14 +618,14 @@
             "minX": 36.1,
             "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -633,16 +633,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806,
+            "maxX": 806.03,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
               36,
               58,
               446,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -650,16 +650,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806,
+            "maxX": 806.03,
             "col2Start": 446.25,
-            "topLineCenter": 347.6,
-            "topRightCenter": 552.7,
+            "topLineCenter": 385.9,
+            "topRightCenter": 591,
             "peaks": [
-              36,
               58,
+              73,
               389,
               468,
-              482,
+              483,
               799
             ]
           },
@@ -667,21 +667,21 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 395.85,
+            "maxX": 395.88,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
+              73,
               79,
-              278,
+              141,
               389
             ]
           }
         ],
-        "marksAtRightEdge": 81
+        "marksAtRightEdge": 88
       }
     },
     "structuralChecks": [
@@ -757,7 +757,7 @@
         "ok": true
       },
       {
-        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -769,7 +769,7 @@
         "ok": true
       },
       {
-        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×65, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×99, র‍্যাপ-অংশ 43.2pt ×18",
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×68, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×89, র‍্যাপ-অংশ 43.2pt ×40",
         "ok": true
       },
       {
@@ -777,7 +777,7 @@
         "ok": true
       },
       {
-        "check": "doc: কলামের ডান প্রান্তে নম্বর 81টি (রাইট ট্যাব কাজ করছে)",
+        "check": "doc: কলামের ডান প্রান্তে নম্বর 88টি (রাইট ট্যাব কাজ করছে)",
         "ok": true
       },
       {
@@ -802,7 +802,7 @@
         "ok": true
       },
       {
-        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -814,7 +814,7 @@
         "ok": true
       },
       {
-        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×65, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×99, র‍্যাপ-অংশ 43.2pt ×18",
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×68, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×89, র‍্যাপ-অংশ 43.2pt ×40",
         "ok": true
       },
       {
@@ -822,7 +822,7 @@
         "ok": true
       },
       {
-        "check": "docx: কলামের ডান প্রান্তে নম্বর 81টি (রাইট ট্যাব কাজ করছে)",
+        "check": "docx: কলামের ডান প্রান্তে নম্বর 88টি (রাইট ট্যাব কাজ করছে)",
         "ok": true
       }
     ]
@@ -880,16 +880,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 446.25,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
             "topLineCenter": 626.1,
             "topRightCenter": 626.1,
             "peaks": [
               446,
               468,
-              482,
-              531,
-              643,
+              483,
+              486,
+              631,
               799
             ]
           }
@@ -911,16 +911,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 446.25,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
             "topLineCenter": 626.1,
             "topRightCenter": 626.1,
             "peaks": [
               446,
               468,
-              482,
-              531,
-              580,
+              483,
+              486,
+              631,
               799
             ]
           }
@@ -1001,7 +1001,7 @@
         "ok": true
       },
       {
-        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -1013,7 +1013,7 @@
         "ok": true
       },
       {
-        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×0",
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×2",
         "ok": true
       },
       {
@@ -1046,7 +1046,7 @@
         "ok": true
       },
       {
-        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -1058,7 +1058,7 @@
         "ok": true
       },
       {
-        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×0",
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×9, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×10, র‍্যাপ-অংশ 43.2pt ×2",
         "ok": true
       },
       {
@@ -1124,16 +1124,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 348.5,
+            "topLineCenter": 354.6,
             "topRightCenter": 626.1,
             "peaks": [
-              36,
               58,
+              73,
               389,
-              446,
               468,
+              483,
               799
             ]
           },
@@ -1143,14 +1143,14 @@
             "minX": 36.1,
             "maxX": 395.85,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
-              137,
-              145,
+              73,
+              79,
+              141,
               389
             ]
           }
@@ -1172,16 +1172,16 @@
             "w": 841.889764,
             "h": 595.303937,
             "minX": 36.1,
-            "maxX": 806.01,
+            "maxX": 806,
             "col2Start": 446.25,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": 626.1,
             "peaks": [
-              36,
               58,
+              73,
               389,
-              446,
               468,
+              483,
               799
             ]
           },
@@ -1191,14 +1191,14 @@
             "minX": 36.1,
             "maxX": 395.85,
             "col2Start": 1000000000,
-            "topLineCenter": 142.5,
+            "topLineCenter": 180.9,
             "topRightCenter": null,
             "peaks": [
               36,
               58,
-              72,
-              137,
-              145,
+              73,
+              79,
+              141,
               389
             ]
           }
@@ -1279,7 +1279,7 @@
         "ok": true
       },
       {
-        "check": "doc: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "doc: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -1291,7 +1291,7 @@
         "ok": true
       },
       {
-        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×25, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×37, র‍্যাপ-অংশ 43.2pt ×6",
+        "check": "doc: ইনডেন্ট স্তর — নম্বর 0pt ×26, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×36, র‍্যাপ-অংশ 43.2pt ×14",
         "ok": true
       },
       {
@@ -1324,7 +1324,7 @@
         "ok": true
       },
       {
-        "check": "docx: ডান মার্জিন ≈ 36pt (35.89)",
+        "check": "docx: ডান মার্জিন ≈ 36pt (35.9)",
         "ok": true
       },
       {
@@ -1336,7 +1336,7 @@
         "ok": true
       },
       {
-        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×25, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×37, র‍্যাপ-অংশ 43.2pt ×6",
+        "check": "docx: ইনডেন্ট স্তর — নম্বর 0pt ×26, স্টেম/উপ-প্রশ্ন-লেবেল 21.6pt ×36, র‍্যাপ-অংশ 43.2pt ×14",
         "ok": true
       },
       {

@@ -112,6 +112,12 @@
   const modelCooldowns = new Map(); // Tracks models with 429 quota exhaustion (model -> expireTimestamp)
 
   const GEMINI_PROMPT = `You are an elite Bengali Document Composer & LaTeX formatting specialist. Extract and compose a COMPLETE document from the provided images using STRICT MARKDOWN formatting.
+0.0 STRICT QUESTION-ONLY EXTRACTION (প্রশ্নপত্র, উত্তরমালা নয় — সর্বোচ্চ অগ্রাধিকার):
+   - এই টুলের আউটপুট শুধু প্রশ্নপত্র। উৎস পৃষ্ঠায় উত্তর/সমাধানের অংশ থাকলেও তা অনুলিপি করবেন না এবং নিজের থেকে তৈরিও করবেন না।
+   - বাদ যাবে: "উত্তর: …", "সমাধান: …", "Answer: …", Solution/Explanation ব্লক, গাণিতিক work-out-এর ধাপ (যদি প্রশ্নের অংশ না হয়), উত্তরমালা/হেড-শিট, মূল্যায়ন চার্ট বা নম্বর বণ্টন-টেবিল।
+   - যে লাইন প্রশ্নের নির্দেশনা ("সঠিক উত্তরটি লিখ:", "নিচের থেকে বেছে নাও:", "যুক্তি দেখাও:") সেগুলো প্রশ্নের অংশ — অক্ষুণ্ন রাখবেন।
+   - আউটপুটে কোনো 'answers', 'solutions' বা উত্তরের ফিল্ড/অনুচ্ছেদ থাকবে না; থাকলে তা ফাঁকা রাখবেন না — সম্পূর্ণ বাদ দেবেন।
+
 
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
@@ -232,6 +238,7 @@
 
 15. SHORT QUESTIONS (সংক্ষিপ্ত ও অতি সংক্ষিপ্ত প্রশ্নপত্র):
     - সংক্ষিপ্ত প্রশ্ন, অতি সংক্ষিপ্ত প্রশ্ন বা এক কথায় উত্তরের ক্ষেত্রেও ক্রমিক নম্বর সতন্ত্রভাবে ১., ২., ৩., ... থেকে শুরু করতে হবে।
+      * সীমাবদ্ধতা (Part-12): এটি কেবল তখনই, যখন মূল পৃষ্ঠায় সত্যিই নম্বরের ক্রম বিচ্ছিন্ন/ভাঙা (৭।, ২।, ৯।) অথবা নম্বর নেই। নইলে নিয়ম ১৩-এর "QUESTION NUMBER PRESERVATION" প্রাধান্য পাবে — মূল যে নম্বর, হুবহু সে নম্বর; ১ থেকে আবার শুরু করে ক্রম পাল্টানো যাবে না (প্রশ্নপত্র জুড়ে খাতা-নম্বর ও রেফারেন্স নষ্ট হয়)।
 
 16. TABLES & GRIDS (টেবিল ও ছক):
     - Transcribe all tables into complete, standard Markdown tables.
@@ -319,6 +326,12 @@
     - If the re-check found nothing to change, still append: [এআই অডিট নোট ও পরিবর্তনসমূহ: মূল ফাইলের সাথে সম্পূর্ণ যাচাইকৃত; কোনো অনুমান বা সংশোধন করা হয়নি।]`;
 
   const GEMINI_VERIFY_PROMPT = `You are the Chief Examination Paper Auditor, Proofreader, and Senior Bengali Question Typist.
+0.0 STRICT QUESTION-ONLY EXTRACTION (প্রশ্নপত্র, উত্তরমালা নয় — সর্বোচ্চ অগ্রাধিকার):
+   - এই টুলের আউটপুট শুধু প্রশ্নপত্র। উৎস পৃষ্ঠায় উত্তর/সমাধানের অংশ থাকলেও তা অনুলিপি করবেন না এবং নিজের থেকে তৈরিও করবেন না।
+   - বাদ যাবে: "উত্তর: …", "সমাধান: …", "Answer: …", Solution/Explanation ব্লক, গাণিতিক work-out-এর ধাপ (যদি প্রশ্নের অংশ না হয়), উত্তরমালা/হেড-শিট, মূল্যায়ন চার্ট বা নম্বর বণ্টন-টেবিল।
+   - যে লাইন প্রশ্নের নির্দেশনা ("সঠিক উত্তরটি লিখ:", "নিচের থেকে বেছে নাও:", "যুক্তি দেখাও:") সেগুলো প্রশ্নের অংশ — অক্ষুণ্ন রাখবেন।
+   - আউটপুটে কোনো 'answers', 'solutions' বা উত্তরের ফিল্ড/অনুচ্ছেদ থাকবে না; থাকলে তা ফাঁকা রাখবেন না — সম্পূর্ণ বাদ দেবেন।
+
 You are given:
 1. The ORIGINAL source images / document pages (attached as media).
 2. The PREVIOUSLY EXTRACTED draft text of the document / exam paper (provided in text).
@@ -413,7 +426,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     // ⚠️ Worker-এর PROXY_TOKEN-এর সাথে হুবহু মিলতে হবে। এটি ক্লায়েন্টে থাকা শেয়ারড সিক্রেট —
     // ক্যাজুয়াল অপব্যবহার ঠেকায়, কিন্তু ডিটারমিনড অ্যাটাকার পড়ে ফেলতে পারে; তাই Worker-এ
     // রেট-লিমিট + Origin allowlist অবশ্যই রাখুন (fayzar-ocr-proxy/README.md দেখুন)।
-    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) || '40jclzkNXxkaji5MkXaosxKn7JDnrxLzOYMYN6wCYJAx',
+    // Part-12 (অডিট ৪): কঠোর মান সোর্স-এ লেগে থাকলে রোটেশন/ডিপ্লয়মেন্ট-ভেদে বদলানো যায় না।
+    // অগ্রাধিকার: localStorage override → বিল্ড-টাইম globalThis.FAYZAR_PROXY_TOKEN → পুরনো ফলব্যাক।
+    // প্রকৃত সুরক্ষা Worker-এর পাশে (env/secret) থাকাই উচিত; ক্লায়েন্ট-সাইড শেয়ারড গেট তাই অস্থায়ী।
+    PROXY_TOKEN: (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_proxy_token')) ||
+      (typeof globalThis !== 'undefined' && globalThis.FAYZAR_PROXY_TOKEN) ||
+      '40jclzkNXxkaji5MkXaosxKn7JDnrxLzOYMYN6wCYJAx',
     ANON_KEY: 'cloudflare_proxy', // পুরোনো নাম — শুধু ব্যাকওয়ার্ড কম্প্যাটিবিলিটির জন্য
     ENABLED: true, 
     CHUNK_PAGES: 3, // Safe limit for Edge Function payload (around 6MB-10MB max)
@@ -2200,7 +2218,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       activePrompt += `\n\n### MULTI-PAGE COVERAGE MANDATE (HIGHEST PRIORITY — OVERRIDES OTHER FORMAT RULES):\n` +
         `- There are exactly ${bnTotal} source pages in this request. You MUST produce output for EVERY page, in order, none skipped.\n` +
         `- Start each source page's section with this exact marker on its own line (Bengali numerals): ===== পৃষ্ঠা <N>/${bnTotal} =====\n` +
-        `- Inside each page section, transcribe that page's full visible content (questions, answers/solutions, tables, figure placeholders) exactly per the rules above.\n` +
+        `- Inside each page section, transcribe that page's question-side visible content (questions, tables, figure placeholders) exactly per the rules above — NO answer/solution text (see rule 0.0).\n` +
         `- Do NOT stop before page ${bnTotal}. If space feels tight, write more compactly — but never omit content or pages.\n` +
         `- At the very end, on its own line: MANIFEST: <comma-separated Bengali page numbers you fully transcribed>`;
     }

@@ -107,8 +107,8 @@ const twoStim = [
 
 const p2 = engines.Pipeline._parseByDocType('EXAM_CQ', twoStim, {});
 const qs2 = (p2.sections || []).flatMap((s) => s.questions || []);
-const holder1 = qs2.find((q) => String(q.preContext || '').includes('প্রথম উদ্দীপকের'));
-const holder2 = qs2.find((q) => String(q.preContext || '').includes('দ্বিতীয় উদ্দীপকের'));
+const holder1 = qs2.find((q) => (String(q.preContext || '') + String(q.stimulus || '')).includes('প্রথম উদ্দীপকের'));
+const holder2 = qs2.find((q) => (String(q.preContext || '') + String(q.stimulus || '')).includes('দ্বিতীয় উদ্দীপকের'));
 
 T('প্রথম উদ্দীপক সংরক্ষিত আছে', !!holder1);
 T('প্রথম উদ্দীপক প্রশ্ন ১-এর সাথে', holder1 && holder1.num === '১', holder1 && holder1.num);
@@ -130,8 +130,8 @@ T('"মানুষ" শব্দ দেখে header.marks-এ আবর্জ�
   !String(pt.header.marks || '').includes('চিন্তিত'), pt.header.marks);
 T('বডির অনুচ্ছেদ header.instructions-এ যায় না',
   !String(pt.header.instructions || '').includes('উদ্দীপক'), pt.header.instructions);
-T('অনুচ্ছেদটি প্রশ্নের preContext-এ আছে',
-  (pt.sections || []).flatMap((s) => s.questions || []).some((q) => String(q.preContext || '').includes('চিন্তিত')));
+T('অনুচ্ছেদটি প্রশ্নের preContext/stimulus-এ আছে',
+  (pt.sections || []).flatMap((s) => s.questions || []).some((q) => (String(q.preContext || '') + String(q.stimulus || '')).includes('চিন্তিত')));
 
 // প্রকৃত পূর্ণমান হেডার ঠিকই ধরা পড়ে
 const okHead = ['সময়: ২ ঘণ্টা | পূর্ণমান: ৭০', '', '১। ক. প্রশ্ন? ১'].join('\n');

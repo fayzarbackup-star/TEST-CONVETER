@@ -113,6 +113,43 @@
     return measure(label === '()' ? '' : label, sz) + (label ? measure(' ', sz) : 0) + measure(o.text, sz);
   }
 
+  /**
+   * Part-12: দৈর্ঘ্য-ইউনিট রিজলভার — js/layout-engine/layout-units.js লোড থাকলে
+   * সেই একমাত্র অ্যালগরিদম, না থাকলে এখানেই সমতুল্য সংস্করণ (গেটে মিল যাচাই করা হয়)।
+   * উদ্দেশ্য একটাই: জ্যামিতিতে কখনোই NaN/Infinity ঢুকবে না — কারণ UI থেকে আসা
+   * 'normal'/'narrow'/'moderate'/'wide' স্ট্রিং parseFloat-এ NaN ⇒ OpenXML-এ
+   * <w:pgMar w:top=\"NaN\"/> ⇒ Word ফাইল করাপ্ট বলে প্রত্যাখ্যান করে।
+   */
+  function layoutUnits() {
+    if (typeof global !== 'undefined' && global.FayzarLayoutUnits) return global.FayzarLayoutUnits;
+    const MARGIN = { none: 0, narrow: 576, normal: 720, moderate: 1080, wide: 1440 };
+    const GAP = { none: 0, tight: 144, narrow: 216, normal: 288, wide: 576, booklet: 1008 };
+    const fin = (v, fb) => { const n = Number(v); return Number.isFinite(n) ? n : fb; };
+    const bnDigits = (v) => (typeof v !== 'string' ? v : v.replace(/[\u09e6-\u09ef]/g, (c) => String('\u09e6\u09e7\u09e8\u09e9\u09ea\u09eb\u09ec\u09ed\u09ee\u09ef'.indexOf(c))));
+    const cl = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+    const tw = (v, fb, map, hi) => {
+      hi = hi || 22000;   // raw-twips ইনপুট (যেমন rightTab ৭০৫০) যেন কেটে না যায়
+      const f = cl(Math.round(fin(fb, 720)), 0, hi);
+      if (v === null || v === undefined || v === false || v === '') return f;
+      if (typeof v === 'number') return Number.isFinite(v) ? cl(Math.round(Math.abs(v) > 6 ? v : v * 1440), 0, hi) : f;
+      const key = String(v).trim().toLowerCase();
+      if (map && Object.prototype.hasOwnProperty.call(map, key)) return cl(map[key], 0, hi);
+      if (Object.prototype.hasOwnProperty.call(MARGIN, key)) return cl(MARGIN[key], 0, hi);
+      const n = parseFloat(key);
+      if (!Number.isFinite(n)) return f;
+      return cl(Math.round(Math.abs(n) > 6 ? n : n * 1440), 0, hi);
+    };
+    return {
+      margin: (v, fb) => tw(v, fb === undefined ? 720 : fb, MARGIN, 2880),
+      gap: (v, fb) => tw(v, fb === undefined ? 288 : fb, GAP, 2880),
+      indent: (v, fb) => tw(v, fb === undefined ? 432 : fb, null, 4320),
+      twips: (v, fb) => tw(v, fb, null, 20000),
+      count: (v, fb, lo, hi) => cl(Math.round(fin(parseFloat(bnDigits(v)), fb)), lo, hi),
+      linePitchTwips: (sz, factor) => cl(Math.round((cl(Math.round(fin(sz, 24)), 8, 96) / 2) * 20 * cl(fin(factor, 1.5), 0.8, 3)), 40, 2000),
+      docxLineRule: (factor) => Math.round(240 * cl(fin(factor, 1.5), 0.8, 3))
+    };
+  }
+
   const McqLayoutPlanner = {
     version: '10.0.0',
 
@@ -125,7 +162,12 @@
       colGap: 288,           // ০.২" কলাম বিচ্ছেদ (গ.৩)
       colSep: true,          // দৃশ্যমান কলাম লাইন (গ.২)
       indent: 432,           // হ্যাঙ্গিং ইনডেন্ট ০.৩" (মাস্টার চুক্তি §১)
-      lineFactor: 1.50,      // single-spacing ≈ ১.৩৪ × ফন্ট সাইজ (বাংলা ফন্টের বৃহৎ
+      lineFactor: 1.50,
+      // Part-12 (ট্রায়াজ ১): রেন্ডার-রেশিও — RTF/DOCX সব প্যারাগ্রাফে 'single'-এর গুণক
+      // (1 = নিজ ফন্টের প্রাকৃতিক লাইন); ১.৫ শুধু ক্যাপাসিটি মডেলের নিরাপত্তা-ধারনা,
+      // প্রিভিউর CSS line-height কিন্তু রেন্ডারের সঙ্গে মিলে (1.34 ≈ বাংলা ফন্ট single)।
+      lineRenderFactor: 1,
+      lineRenderCssRatio: 1.34,      // single-spacing ≈ ১.৩৪ × ফন্ট সাইজ (বাংলা ফন্টের বৃহৎ
                            // ascent/descent — Word 2003-এর \\sl240\slmult1 এর বাস্তব মান
                            // LibreOffice রেন্ডারে ক্যালিব্রেটেড)
       headerLineFactor: 1.28,
@@ -158,13 +200,16 @@
      */
     geometry(options = {}) {
       const g = Object.assign({}, this.GEOMETRY);
-      if (options.margin) g.margin = Math.round(parseFloat(options.margin) * 1440);
-      if (options.columnGap) g.colGap = Math.round(parseFloat(options.columnGap) * 1440);
-      if (options.indent) g.indent = Math.round(parseFloat(options.indent) * 1440);
-      if (options.cols) g.cols = Math.max(1, parseInt(options.cols, 10) || 2);
-      if (options.pageWidth) g.pageW = Math.round(options.pageWidth);
-      if (options.pageHeight) g.pageH = Math.round(options.pageHeight);
-      if (options.baseSz) g.baseSz = Math.round(options.baseSz);
+      // Part-12: দৈর্ঘ্য নরমালাইজেশন — UI থেকে 'normal'/'narrow'… স্ট্রিং এলেও NaN হবে না
+      const U = layoutUnits();
+      g.margin = U.margin(options.margin, g.margin);
+      g.colGap = U.gap(options.columnGap, g.colGap);
+      g.indent = U.indent(options.indent, g.indent);
+      if (options.cols) g.cols = U.count(options.cols, 2, 1, 6);
+      if (options.pageWidth) g.pageW = U.count(options.pageWidth, g.pageW, 3000, 40000);
+      if (options.pageHeight) g.pageH = U.count(options.pageHeight, g.pageH, 3000, 40000);
+      if (options.baseSz) g.baseSz = U.count(options.baseSz, g.baseSz, 12, 96);
+      if (options.fillRatio) g.fillRatio = Number.isFinite(parseFloat(options.fillRatio)) ? Math.min(1, Math.max(0.5, parseFloat(options.fillRatio))) : g.fillRatio;
       if (options.colSep !== undefined) g.colSep = !!options.colSep;
 
       g.usableW = g.pageW - 2 * g.margin;                       // ১০৪৬৬
@@ -177,6 +222,10 @@
       g.stops4 = [g.indent, g.indent + g.slot4, g.indent + g.slot4 * 2, g.indent + g.slot4 * 3];
       g.stops2 = [g.indent, g.indent + g.slot2];
       g.stops3 = [g.indent, g.indent + Math.floor(g.textW / 3), g.indent + Math.floor(g.textW / 3) * 2];
+      // শেষ ডিফেন্স: NaN/Infinity জ্যামিতি থেকে বের হতে পারবে না (OpenXML ক্র্যাশ রোধ)
+      ['margin', 'colGap', 'indent', 'colW', 'textW', 'usableW', 'usableH', 'pageW', 'pageH', 'baseSz', 'slot4', 'slot2']
+        .forEach((k) => { const n = Number(g[k]); if (!Number.isFinite(n) || n <= 0) g[k] = Math.round(Number.isFinite(this.GEOMETRY[k]) ? this.GEOMETRY[k] : 720); });
+      if (g.cols < 1) g.cols = 2;
       return g;
     },
 

@@ -96,6 +96,43 @@
     return String(txt == null ? '' : txt).split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
   }
 
+  /**
+   * Part-12: দৈর্ঘ্য-ইউনিট রিজলভার — js/layout-engine/layout-units.js লোড থাকলে
+   * সেই একমাত্র অ্যালগরিদম, না থাকলে এখানেই সমতুল্য সংস্করণ (গেটে মিল যাচাই করা হয়)।
+   * উদ্দেশ্য একটাই: জ্যামিতিতে কখনোই NaN/Infinity ঢুকবে না — কারণ UI থেকে আসা
+   * 'normal'/'narrow'/'moderate'/'wide' স্ট্রিং parseFloat-এ NaN ⇒ OpenXML-এ
+   * <w:pgMar w:top=\"NaN\"/> ⇒ Word ফাইল করাপ্ট বলে প্রত্যাখ্যান করে।
+   */
+  function layoutUnits() {
+    if (typeof global !== 'undefined' && global.FayzarLayoutUnits) return global.FayzarLayoutUnits;
+    const MARGIN = { none: 0, narrow: 576, normal: 720, moderate: 1080, wide: 1440 };
+    const GAP = { none: 0, tight: 144, narrow: 216, normal: 288, wide: 576, booklet: 1008 };
+    const fin = (v, fb) => { const n = Number(v); return Number.isFinite(n) ? n : fb; };
+    const bnDigits = (v) => (typeof v !== 'string' ? v : v.replace(/[\u09e6-\u09ef]/g, (c) => String('\u09e6\u09e7\u09e8\u09e9\u09ea\u09eb\u09ec\u09ed\u09ee\u09ef'.indexOf(c))));
+    const cl = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+    const tw = (v, fb, map, hi) => {
+      hi = hi || 22000;   // raw-twips ইনপুট (যেমন rightTab ৭০৫০) যেন কেটে না যায়
+      const f = cl(Math.round(fin(fb, 720)), 0, hi);
+      if (v === null || v === undefined || v === false || v === '') return f;
+      if (typeof v === 'number') return Number.isFinite(v) ? cl(Math.round(Math.abs(v) > 6 ? v : v * 1440), 0, hi) : f;
+      const key = String(v).trim().toLowerCase();
+      if (map && Object.prototype.hasOwnProperty.call(map, key)) return cl(map[key], 0, hi);
+      if (Object.prototype.hasOwnProperty.call(MARGIN, key)) return cl(MARGIN[key], 0, hi);
+      const n = parseFloat(key);
+      if (!Number.isFinite(n)) return f;
+      return cl(Math.round(Math.abs(n) > 6 ? n : n * 1440), 0, hi);
+    };
+    return {
+      margin: (v, fb) => tw(v, fb === undefined ? 720 : fb, MARGIN, 2880),
+      gap: (v, fb) => tw(v, fb === undefined ? 288 : fb, GAP, 2880),
+      indent: (v, fb) => tw(v, fb === undefined ? 432 : fb, null, 4320),
+      twips: (v, fb) => tw(v, fb, null, 20000),
+      count: (v, fb, lo, hi) => cl(Math.round(fin(parseFloat(bnDigits(v)), fb)), lo, hi),
+      linePitchTwips: (sz, factor) => cl(Math.round((cl(Math.round(fin(sz, 24)), 8, 96) / 2) * 20 * cl(fin(factor, 1.5), 0.8, 3)), 40, 2000),
+      docxLineRule: (factor) => Math.round(240 * cl(fin(factor, 1.5), 0.8, 3))
+    };
+  }
+
   global.CqBookletPlanner = {
     // ------------------------------------------------------------- ধ্রুবক/জ্যামিতি
     GEOMETRY: {
@@ -110,6 +147,11 @@
       subHanging: 432,
       lineFactor: 1.50,
       headerLineFactor: 1.28,
+      // Part-12 (ট্রায়াজ ১): রেন্ডার-রেশিও — RTF/DOCX সব প্যারাগ্রাফে 'single'-এর গুণক
+      // (1 = নিজ ফন্টের প্রাকৃতিক লাইন); ১.৫ শুধু ক্যাপাসিটি মডেলের নিরাপত্তা-ধারনা,
+      // প্রিভিউর CSS line-height কিন্তু রেন্ডারের সঙ্গে মিলে (1.34 ≈ বাংলা ফন্ট single)।
+      lineRenderFactor: 1,
+      lineRenderCssRatio: 1.34,
       baseSz: 24,            // ১২pt
       fillRatio: 0.98,       // প্রতি কলামে নিরাপত্তা মার্জিন
       balanceSlack: 0.90     // শেষ পৃষ্ঠার দুই কলাম ব্যালান্সের শর্ত (Part-10 ঙ.৩ থেকে)
@@ -125,14 +167,20 @@
     geometry(options) {
       const o = options || {};
       const g = Object.assign({}, this.GEOMETRY);
-      if (o.margin) g.margin = Math.round(parseFloat(o.margin) * 1440);
-      if (o.columnGap) g.colGap = Math.round(parseFloat(o.columnGap) * 1440);
-      if (o.indent) g.indent = Math.round(parseFloat(o.indent) * 1440);
-      if (o.subIndent) g.subIndent = Math.round(parseFloat(o.subIndent) * 1440);
-      if (o.cols) g.cols = Math.max(1, parseInt(o.cols, 10) || 2);
-      if (o.pageWidth) g.pageW = Math.round(o.pageWidth);
-      if (o.pageHeight) g.pageH = Math.round(o.pageHeight);
-      if (o.baseSz) g.baseSz = Math.round(o.baseSz);
+      // Part-12: সব দৈর্ঘ্য U দিয়েই আসে — স্ট্রিং ('normal'), ইঞ্চি, টুইপ, একক-সহ
+      // যা-ই আসুক আউটপুট সর্বদা সসীম টুইপ (NaN জ্যামিতিতে ঢোকে না)।
+      const U = layoutUnits();
+      g.margin = U.margin(o.margin, g.margin);
+      g.colGap = U.gap(o.columnGap, g.colGap);
+      g.indent = U.indent(o.indent, g.indent);
+      g.subIndent = U.indent(o.subIndent, g.subIndent);
+      if (o.cols) g.cols = U.count(o.cols, 2, 1, 6);
+      if (o.pageWidth) g.pageW = U.count(o.pageWidth, g.pageW, 3000, 40000);
+      if (o.pageHeight) g.pageH = U.count(o.pageHeight, g.pageH, 3000, 40000);
+      if (o.baseSz) g.baseSz = U.count(o.baseSz, g.baseSz, 12, 96);
+      if (o.lineFactor) g.lineFactor = Number.isFinite(parseFloat(o.lineFactor)) ? Math.min(3, Math.max(0.8, parseFloat(o.lineFactor))) : g.lineFactor;
+      if (o.headerLineFactor) g.headerLineFactor = Number.isFinite(parseFloat(o.headerLineFactor)) ? Math.min(3, Math.max(0.8, parseFloat(o.headerLineFactor))) : g.headerLineFactor;
+      if (o.fillRatio) g.fillRatio = Number.isFinite(parseFloat(o.fillRatio)) ? Math.min(1, Math.max(0.5, parseFloat(o.fillRatio))) : g.fillRatio;
       if (o.colSep !== undefined) g.colSep = !!o.colSep;
       if (o.landscape === false) { const w = g.pageW; g.pageW = g.pageH; g.pageH = w; }
 
@@ -142,8 +190,13 @@
       g.colW = Math.floor((g.usableW - g.colGap * (g.cols - 1)) / g.cols);   // ৭১৯৫
       g.textW = g.colW - g.indent;                                            // ৬৭৬৩
       g.subTextW = g.colW - g.subIndent;                                      // ৬৩৩১
-      g.rightTab = o.rightTab ? Math.round(o.rightTab) : g.colW;              // কলামের ডান প্রান্ত
+      // rightTab = পুরো কলাম-প্রস্থ (৭১৯০+) পর্যন্ত — তাই indent-এর ৩" ক্যাপ নয়, twips()
+      g.rightTab = o.rightTab ? Math.round(U.twips(o.rightTab, g.colW)) : g.colW;   // কলামের ডান প্রান্ত
       g.capacity = Math.round(g.usableH * g.fillRatio);
+      // শেষ ডিফেন্স: কোনোভাবেই NaN/Infinity জ্যামিতি থেকে বের হওয়া যাবে না
+      ['margin', 'colGap', 'indent', 'subIndent', 'colW', 'textW', 'subTextW', 'rightTab', 'capacity', 'usableW', 'usableH', 'pageW', 'pageH', 'baseSz']
+        .forEach((k) => { const n = Number(g[k]); if (!Number.isFinite(n) || n <= 0) g[k] = Math.round(Number.isFinite(this.GEOMETRY[k]) ? this.GEOMETRY[k] : 720); });
+      if (g.cols < 1) g.cols = 2;
       return g;
     },
 

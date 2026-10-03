@@ -25,38 +25,32 @@
         {
           "num": "১",
           "options": [],
-          "preContext": "[উদ্দীপক ১]\nএকটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "ক. বেগ কী?"
-        },
-        {
-          "num": "১",
-          "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "খ. সমত্বরণ বলতে কী বোঝায়?"
-        },
-        {
-          "num": "১",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "গ. উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।"
-        },
-        {
-          "num": "১",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "---SECTION_BREAK:MCQ---",
-          "subQuestions": [],
-          "text": "ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।"
+          "stimulus": "উদ্দীপক ১\nএকটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "বেগ কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "সমত্বরণ বলতে কী বোঝায়?"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।"
+            }
+          ],
+          "text": ""
         }
       ],
       "title": ""
@@ -133,54 +127,29 @@
 ===== STRUCTURE =====
 {
   "marks": [
-    "",
-    "",
-    "",
-    "",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅",
     "ক:∅,খ:∅,গ:∅,ঘ:∅",
     "ক:∅,খ:∅,গ:∅,ঘ:∅"
   ],
   "numbering": [
     "১",
     "১",
-    "১",
-    "১",
-    "১",
     "২"
   ],
-  "questionCount": 6,
+  "questionCount": 3,
   "questions": [
-    {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "ক. বেগ কী?"
-    },
-    {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "খ. সমত্বরণ বলতে কী বোঝায়?"
-    },
-    {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "গ. উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় "
-    },
     {
       "hasStimulus": true,
       "num": "১",
       "optionCount": 0,
       "section": 0,
-      "subs": [],
-      "textHead": "ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিক"
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": ""
     },
     {
       "hasStimulus": false,
@@ -236,31 +205,46 @@
 </div>
 </div>
 <div class="qp-columns two-columns">
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ১]<br>একটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">ক. বেগ কী?</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ১</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">বেগ কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">খ. সমত্বরণ বলতে কী বোঝায়?</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">সমত্বরণ বলতে কী বোঝায়?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">গ. উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</span>
 </div>
-<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">---SECTION_BREAK:MCQ---</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
 </div>
 <div class="font-bold text-center bg-slate-100 py-0.5 my-1 border-y border-slate-300" style="font-size: 12pt; line-height: 1.35;">বহুনির্বাচনি প্রশ্ন:</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
@@ -364,20 +348,36 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
 </w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">[উদ্দীপক ১]</w:t>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -390,24 +390,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -419,24 +407,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -448,24 +424,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -477,24 +441,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -502,19 +454,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:pPr>
-<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
-</w:pPr>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
-</w:rPr>
-<w:t xml:space="preserve">---SECTION_BREAK:MCQ---</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -870,7 +809,29 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="40" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="0"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -880,12 +841,13 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">[উদ্দীপক ১]</w:t>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="40" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="0"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -901,137 +863,57 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
-<w:tabs>
-<w:tab w:val="left" w:pos="432"/>
-</w:tabs>
+<w:ind w:left="432"/>
 </w:pPr>
 <w:r>
 <w:rPr>
-<w:b/>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">ক. বেগ কী?</w:t>
+<w:t xml:space="preserve">(ক) বেগ কী?</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
-<w:tabs>
-<w:tab w:val="left" w:pos="432"/>
-</w:tabs>
+<w:ind w:left="432"/>
 </w:pPr>
 <w:r>
 <w:rPr>
-<w:b/>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">খ. সমত্বরণ বলতে কী বোঝায়?</w:t>
+<w:t xml:space="preserve">(খ) সমত্বরণ বলতে কী বোঝায়?</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
-<w:tabs>
-<w:tab w:val="left" w:pos="432"/>
-</w:tabs>
+<w:ind w:left="432"/>
 </w:pPr>
 <w:r>
 <w:rPr>
-<w:b/>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">গ. উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</w:t>
+<w:t xml:space="preserve">(গ) উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
-<w:tabs>
-<w:tab w:val="left" w:pos="432"/>
-</w:tabs>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
 </w:pPr>
 <w:r>
 <w:rPr>
-<w:b/>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:pPr>
-<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="0"/>
-</w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:i/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
-</w:rPr>
-<w:t xml:space="preserve">---SECTION_BREAK:MCQ---</w:t>
+<w:t xml:space="preserve">(ঘ) গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
 </w:r>
 </w:p>
 <w:p>

@@ -25,74 +25,62 @@
         {
           "num": "১",
           "options": [],
-          "preContext": "[উদ্দীপক ১]\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "ক. গ্রামের বটগাছটিকে মানুষ কী মনে করত?"
-        },
-        {
-          "num": "১",
-          "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "খ. গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।"
-        },
-        {
-          "num": "১",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "গ. উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?"
-        },
-        {
-          "num": "১",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।"
-        },
-        {
-          "num": "২",
-          "options": [],
-          "preContext": "[উদ্দীপক ২]\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "ক. শফিকের বাবা পেশায় কী?"
+          "stimulus": "উদ্দীপক ১\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "গ্রামের বটগাছটিকে মানুষ কী মনে করত?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।"
+            }
+          ],
+          "text": ""
         },
         {
           "num": "২",
           "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "খ. তিনি চাষাবাদে কী ব্যবহার করেন?"
-        },
-        {
-          "num": "২",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "গ. শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?"
-        },
-        {
-          "num": "২",
-          "options": [],
-          "preContext": "",
-          "statements": [],
-          "stimulus": "",
-          "subQuestions": [],
-          "text": "ঘ. আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।"
+          "stimulus": "উদ্দীপক ২\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "শফিকের বাবা পেশায় কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "তিনি চাষাবাদে কী ব্যবহার করেন?"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।"
+            }
+          ],
+          "text": ""
         }
       ],
       "title": ""
@@ -103,90 +91,40 @@
 ===== STRUCTURE =====
 {
   "marks": [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
+    "ক:∅,খ:∅,গ:∅,ঘ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅"
   ],
   "numbering": [
     "১",
-    "১",
-    "১",
-    "১",
-    "২",
-    "২",
-    "২",
     "২"
   ],
-  "questionCount": 8,
+  "questionCount": 2,
   "questions": [
     {
-      "hasStimulus": false,
+      "hasStimulus": true,
       "num": "১",
       "optionCount": 0,
       "section": 0,
-      "subs": [],
-      "textHead": "ক. গ্রামের বটগাছটিকে মানুষ কী মনে করত?"
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": ""
     },
     {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "খ. গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার "
-    },
-    {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "গ. উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কো"
-    },
-    {
-      "hasStimulus": false,
-      "num": "১",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণ"
-    },
-    {
-      "hasStimulus": false,
+      "hasStimulus": true,
       "num": "২",
       "optionCount": 0,
       "section": 0,
-      "subs": [],
-      "textHead": "ক. শফিকের বাবা পেশায় কী?"
-    },
-    {
-      "hasStimulus": false,
-      "num": "২",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "খ. তিনি চাষাবাদে কী ব্যবহার করেন?"
-    },
-    {
-      "hasStimulus": false,
-      "num": "২",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "গ. শফিকের বাবার মতো কৃষকদের দেশের অর্থনী"
-    },
-    {
-      "hasStimulus": false,
-      "num": "২",
-      "optionCount": 0,
-      "section": 0,
-      "subs": [],
-      "textHead": "ঘ. আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে "
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": ""
     }
   ],
   "sections": 1
@@ -216,54 +154,86 @@
 </div>
 </div>
 <div class="qp-columns two-columns">
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ১]<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">ক. গ্রামের বটগাছটিকে মানুষ কী মনে করত?</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ১</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">গ্রামের বটগাছটিকে মানুষ কী মনে করত?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">খ. গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">গ. উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
-<span class="cq-text text-justify flex-1">ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</span>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ২]<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">ক. শফিকের বাবা পেশায় কী?</span>
-</div>
-</div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">খ. তিনি চাষাবাদে কী ব্যবহার করেন?</span>
-</div>
-</div>
-<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
-<div class="cq-q-row" style="display: flex; align-items: flex-start;">
-<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">গ. শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?</span>
 </div>
 </div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
-<span class="cq-text text-justify flex-1">ঘ. আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ২</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">শফিকের বাবা পেশায় কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">তিনি চাষাবাদে কী ব্যবহার করেন?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -286,20 +256,36 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
 </w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">[উদ্দীপক ১]</w:t>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -312,24 +298,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -341,24 +315,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -370,24 +332,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -399,6 +349,23 @@
 </w:p>
 <w:p>
 <w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432" w:hanging="432"/>
 <w:tabs>
@@ -412,7 +379,7 @@
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 </w:rPr>
-<w:t xml:space="preserve">১।</w:t>
+<w:t xml:space="preserve">২।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -423,25 +390,12 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</w:t>
+<w:t xml:space="preserve">উদ্দীপক ২</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
-</w:pPr>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">[উদ্দীপক ২]</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -454,24 +408,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -483,24 +425,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -512,24 +442,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -541,24 +459,12 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
-<w:r>
-<w:rPr>
-<w:b/>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২।</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>

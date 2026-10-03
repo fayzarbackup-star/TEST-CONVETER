@@ -169,7 +169,8 @@
             layoutMode: options.layoutMode || 'AUTO',
             lineFactor: options.lineFactor,
             baseSz: options.baseSz,
-            maxShrinkOverflow: options.maxShrinkOverflow
+            maxShrinkOverflow: options.maxShrinkOverflow,
+            forceMargin: !!options.forceMargin   // Part-10 পিন তুলে UI-মার্জিন চাইলে (ট্রায়াজ ২)
           });
           if (p && p.geometry && Array.isArray(p.pages) && Array.isArray(p.items)) return p;
         } catch (e) {
@@ -185,7 +186,11 @@
         pageW: 11906, pageH: 16838, margin: 720, cols: 2, colGap: 288, colSep: true,
         indent: 432, lineFactor: 1.34, headerLineFactor: 1.28, baseSz: 24
       };
-      if (options.margin) G.margin = Math.round(parseFloat(options.margin) * 1440) || G.margin;
+      // Part-12: 'narrow'/'normal' জাতীয় UI-নামও ধরা হয় (NaN কখনো বসে না)
+      if (options.margin !== undefined && options.margin !== null && options.margin !== '') {
+        G.margin = global.FayzarLayoutUnits ? global.FayzarLayoutUnits.margin(options.margin, G.margin)
+          : (Math.round(parseFloat(options.margin) * 1440) || G.margin);
+      }
       G.usableW = G.pageW - 2 * G.margin;
       G.usableH = G.pageH - 2 * G.margin;
       G.colW = Math.floor((G.usableW - G.colGap * (G.cols - 1)) / G.cols);
@@ -260,7 +265,7 @@
         .replace(/^রর\./g, 'ii.')
         .replace(/^র\./g, 'i.');
 
-      const runs = trp.processTextRuns(norm, { isBijoy, generateOmml: false });
+      const runs = this._collapseRunGaps(trp.processTextRuns(norm, { isBijoy, generateOmml: false }));
       if (!runs || runs.length === 0) return '';
 
       let out = '';
@@ -366,7 +371,7 @@
         .replace(/^রর\./g, 'ii.')
         .replace(/^র\./g, 'i.');
 
-      const runs = trp.processTextRuns(norm, { isBijoy, generateOmml: true });
+      const runs = this._collapseRunGaps(trp.processTextRuns(norm, { isBijoy, generateOmml: true }));
       if (!runs || runs.length === 0) return '';
 
       let xml = '';
@@ -846,10 +851,76 @@
      * Part-11: প্ল্যানার অনুপলব্ধ হলেও লেখা হারাবে না — ল্যান্ডস্কেপ ২-কলাম সেটআপ
      * ঠিক থাকে, শুধু পৃষ্ঠা-প্রতি forced কলাম-ব্রেক ও টেল-ভরতি বাদ পড়ে।
      */
+    /**
+     * Part-12 (ট্রায়াজ ১): RTF-এর \sl সেই প্যারাগ্রাফের নিজস্ব \fs থেকে গণনা হওয়া চাই।
+     * আগে প্রায় সব প্যারাগ্রাফে \sl240 (১২pt) হার্ডকোডেড ছিল — \fs32 (১৬pt) হেডারে
+     * বা ১১pt-এ সংকুচিত MCQ লাইনেও। Word 2003 + সুতন্নীএমজে "at least" লাইনবক্সকে
+     * ফন্ট-মেট্রিক দেখে নিজে থেকেই বড় করত ⇒ অসম লাইন-গ্যাপ ও অস্বাভাবিক লম্বা কার্সার।
+     * এখন লাইন-বক্স = নিজের সাইজ × প্ল্যানের lineFactor (১.৫)। DOCX (w:line,
+     * lineRule="auto" = ফন্ট-আপেক্ষিক গুণক) ও প্রিভিউ (line-height: 1.5) একই রেশিওতে
+     * থাকে ⇒ প্রিভিউ ≈ ডাউনলোড, আর বড় অক্ষরেও লাইন কাটা পড়ে না।
+     */
+    _fixRtfSpacing(rtf, factor) {
+      let s = String(rtf == null ? '' : rtf);
+      // ডিফল্ট গুণক ১.০ = নিজ ফন্টের single লাইন — প্রতিটি প্যারাগ্রাফে একই রেশিও।
+      // আগে \fs32 হেডারে \sl240 (০.৭৫×) আর ১১pt-এ সংকুচিত MCQ লাইনে ১.০৯× মিশে
+      // লাইন-গ্যাপ অসম হতো ও কার্সার অস্বাভাবিক লম্বা দেখাত; এখন সবই এক রেশিও।
+      // proportional (\slmult1) রাখা হয় — absolute (\slmult0) নিলে বাংলা অক্ষরের নিচের
+      // অংশ কেটে যেত; প্ল্যানের ক্যাপাসিটি মডেল (lineFactor ১.৫) রেন্ডারের চেয়ে বড়ই
+      // থাকে ⇒ পৃষ্ঠা-সংখ্যার চুক্তি (TC-LAY-29/৩৩) অক্ষুণ্ন।
+      const f = Number.isFinite(parseFloat(factor)) ? Math.min(2, Math.max(0.9, parseFloat(factor))) : 1;
+      const mult = Math.round(240 * f);
+      s = s.replace(/\\fs(\d+)((?:\\f\d+)?)\\sl(\d+)\\slmult(\d)/g, (whole, sz, fslot, sl, mm) =>
+        // ১২০-এর নিচে = হেয়ারলাইন/ডিভাইডার লাইন ⇒ সেগুলোর নিজস্ব সরু পিচই থাকে
+        (+sl < 120 ? whole : '\\fs' + sz + fslot + '\\sl' + mult + '\\slmult1'));
+      // \sb/\sa স্ট্যান্ডার্ড সীমায় (৯pt = ১৮০ টুইপ) — বড় before/after লাইন-ছন্দ ভাঙে
+      s = s.replace(/\\s([ba])(\d{3,})/g, (whole, k, v) => '\\s' + k + Math.min(parseInt(v, 10), 180));
+      return s;
+    },
+
+    /** Part-12: DOCX-তে একই নীতি — w:line = ২৪০ × lineFactor; \sb/\sa ক্ল্যাম্প */
+    _fixDocxSpacing(xml, factor) {
+      let s = String(xml == null ? '' : xml);
+      // DOCX-তেও একই নীতি: সব প্যারাগ্রাফে lineRule="auto" (ফন্ট-আপেক্ষিক) + একই গুণক
+      // ⇒ ১২pt/১৬pt/১১pt সবই লাইন-তাল সমান; exact/atLeast বন্ধ (ক্লিপ ও ফোলা দেখা গেছে)।
+      const f = Number.isFinite(parseFloat(factor)) ? Math.min(2, Math.max(0.9, parseFloat(factor))) : 1;
+      const line = Math.round(240 * f);
+      s = s.replace(/w:line="([0-9]+)" w:lineRule="(auto|atLeast|exact)"/g, (whole, v, rule) =>
+        (+v < 120 ? whole : 'w:line="' + line + '" w:lineRule="auto"'));
+      s = s.replace(/w:lineRule="(auto|atLeast|exact)" w:line="([0-9]+)"/g, (whole, rule, v) =>
+        (+v < 120 ? whole : 'w:lineRule="auto" w:line="' + line + '"'));
+      s = s.replace(/ w:(before|after)="(\d{3,})"/g, (whole, k, v) => ' w:' + k + '="' + Math.min(parseInt(v, 10), 180) + '"');
+      // সমীকরণ-জোনের শেষে ঝুলে-থাকা স্পেস Word-এর ম্যাথ-অটো-স্পেসিং-এর ওপর চাপে
+      // ⇒ \pi r^2 জাতীয় রাশিতে অস্বাভাবিক ফাঁকা (ট্রায়াজ ৫)
+      s = s.replace(/(<m:t[^>]*>)([^<]*?)\s+(<\/m:t>)(?=<\/m:r><m:r>)/g, '$1$2$3');
+      return s;
+    },
+
+    /** Part-12 (ট্রায়াজ ৫): বাংলা রান ↔ সমীকরণ রানের সীমানায় ডাবল-স্পেস রেখে দেওয়া হয় না */
+    _collapseRunGaps(runs) {
+      if (!Array.isArray(runs) || runs.length < 2) return runs;
+      const out = runs.map((r) => Object.assign({}, r));
+      const txtOf = (r) => (r && r.type === 'math'
+        ? String(r.cleanLatex != null ? r.cleanLatex : (r.value != null ? r.value : ''))
+        : String((r && (r.text != null ? r.text : r.value)) || ''));
+      for (let i = 1; i < out.length; i++) {
+        const prev = out[i - 1], cur = out[i];
+        if (prev.type !== 'math' && cur.type !== 'math') continue;
+        if (/\s$/.test(txtOf(prev)) && /^\s/.test(txtOf(cur))) {
+          const nv = txtOf(cur).replace(/^\s+/, '');
+          if (cur.type === 'math') { cur.cleanLatex = nv; cur.value = nv; }
+          else { cur.text = nv; if (cur.value != null) cur.value = nv; }
+        }
+      }
+      return out;
+    },
+
     _cqPlanFallback(parsedData, options = {}) {
       const g = {
         pageW: 16838, pageH: 11906, cols: 2, colSep: false,
-        margin: options.margin === 0.4 ? 576 : 720, colGap: 1008,
+        margin: (global.FayzarLayoutUnits ? global.FayzarLayoutUnits.margin(options.margin, 720)
+          : (Number.isFinite(parseFloat(options.margin)) ? (Math.round(parseFloat(options.margin) * 1440) || 720) : 720)),
+        colGap: (global.FayzarLayoutUnits ? global.FayzarLayoutUnits.gap(options.columnGap, 1008) : 1008),
         indent: 432, subIndent: 864, subHanging: 432,
         lineFactor: 1.5, headerLineFactor: 1.28, baseSz: 24,
         landscape: true
@@ -1117,7 +1188,7 @@
       if (!options.returnInnerRtf) {
         rtf += '}\n';
       }
-      return rtf;
+      return this._fixRtfSpacing(rtf, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১)
     },
 
 
@@ -1280,6 +1351,7 @@
 
       bodyXml += this._auditSectionDocx(options);
 
+      bodyXml = this._fixDocxSpacing(bodyXml, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১+৫)
       const sectPr = this._cqSectPrDocx(g);
       if (options.returnInnerXml) {
         return { bodyXml, sectPr };
@@ -1322,7 +1394,7 @@
       const marginTwips = g.margin;
       const pageWidth = g.usableW;
       const indent = g.indent;
-      const lineRtf = '\\sl240\\slmult1';
+      const lineRtf = '\\sl240\\slmult1';  // Part-12: single লাইন (পোস্ট-পাস সব প্যারাগ্রাফে একই রেশিও লক করে)
 
       // ---- Section 1: হেডার ব্লক — ১-কলাম, সেন্টারড, ৫ লাইন (খ.২–খ.৩) ----
       rtf += `\\paperw${g.pageW}\\paperh${g.pageH}\\margl${marginTwips}\\margr${marginTwips}\\margt${marginTwips}\\margb${marginTwips}\\cols1\n`;
@@ -1428,7 +1500,7 @@
       if (!options.returnInnerRtf) {
         rtf += '}\n';
       }
-      return rtf;
+      return this._fixRtfSpacing(rtf, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১)
     },
 
     /**
@@ -1574,6 +1646,7 @@
           <w:cols w:num="${g.cols}" w:space="${g.colGap}"${g.colSep ? ' w:sep="1"' : ''}/>
         </w:sectPr>`;
 
+      bodyXml = this._fixDocxSpacing(bodyXml, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১+৫)
       if (options.returnInnerXml) {
         return { bodyXml, sectPr };
       }

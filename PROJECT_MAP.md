@@ -43,6 +43,7 @@
 | **ইউনিফাইড সেন্ট্রাল গেটওয়ে (Pipeline Master)** | `js/layout-engine/fayzar-pipeline.js` | 🚀 **CENTRAL GATEWAY:** ক্লাসফাই, পার্স এবং রেন্ডার (HTML ও Word) সমন্বিত সিঙ্গেল-এন্ট্রি মাস্টার গেটওয়ে (`FayzarPipeline.process`) ও গ্রেসফুল ফলব্যাক ম্যানেজার |
 | **এমসিকিউ মাস্টার লেআউট প্ল্যানার** | `js/layout-engine/mcq-layout-planner.js` | 📐 **PART-10:** বহুনির্বাচনী প্রশ্নের ২-কলাম, ০.২" গ্যাপ, ডিভাইডার লাইন, ১-কলাম হেডার প্লেসহোল্ডার, ৪/২/১ অপশন গ্রিড ও স্মার্ট পেজ-ফিট প্ল্যানার |
 | **সৃজনশীল বুকলেট মাস্টার লেআউট প্ল্যানার** | `js/layout-engine/cq-booklet-planner.js` | 📐 **PART-11:** সৃজনশীল প্রশ্নপত্র (CQ) বুকলেটের A4 ল্যান্ডস্কেপ ২-কলাম, ০.৭" গ্যাপ, ইম্পোজিশন (slot০ সংরক্ষিত ব্যাক কভার + slot১ ফ্রন্ট কভার), ১/২/৩/৪ শীট ভাঁজ ও .doc ≡ .docx ≡ প্রিভিউ সমতা প্ল্যানার |
+| **শেয়ার্ড লেআউট ইউনিট ও নর্মালাইজার** | `js/layout-engine/layout-units.js` | 📏 **PART-12:** ইঞ্চি/পয়েন্ট/টুইপস রূপান্তর, UI মার্জিন ম্যাপ (normal, narrow, moderate, wide), কলাম গ্যাপ, ইনডেন্ট ও পিচ ইউটিলিটি সহ পূর্ণাঙ্গ NaN-রোধী একক সুরক্ষক (`FayzarLayoutUnits`) |
 | **রুটিন ও সময়সূচি ইঞ্জিন** | `js/engines/routine-engine.js` | ক্লাস ও পরীক্ষার সময়সূচি, পিরিয়ড ছক এবং ল্যান্ডস্কেপ টেবিল লেআউট পার্সার ও জেনারেটর |
 | **জীবনবৃত্তান্ত ও সিভি ইঞ্জিন** | `js/engines/cv-engine.js` | পেশাদার জীবনবৃত্তান্ত (Bio-data), শিক্ষাগত যোগ্যতা টেবিল, অভিজ্ঞতা ও ব্যক্তিগত তথ্য পার্সার |
 | **এআই ওসিআর ইঞ্জিন** | `js/ai-ocr-engine.js` | জেমিনি ৩ ফ্ল্যাশ প্রিভিউ (`gemini-3-flash-preview`) ও ৩.৮ ফ্ল্যাশ স্ট্যান্ডবাই OCR, 0ms সরাসরি স্ট্রিমিং, ৬০ সে. আইডল কিপ-অ্যালাইভ, কাস্টম ইউজার স্কোপ নির্দেশনা (`ai-custom-directive-input`), ১৮০ সে. মাল্টি-পেজ উইন্ডো, স্বয়ংক্রিয় লেআউট ট্যাগস (`[LAYOUT: ...]`) ও শতভাগ নির্ভুল ভেরবাটিম সুরক্ষা |
@@ -248,9 +249,10 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 | `fayzar-ocr-proxy/wrangler.toml` | ডিপ্লয় কনফিগ (KV binding `FAYZAR_OCR_KEYS`) |
 | `fayzar-ocr-proxy/README.md` | ডিপ্লয় ধাপ, এন্ডপয়েন্ট ও কুলডাউন নীতি |
 | `tests/key-ledger.test.js` | ৩৩টি অফলাইন ইউনিট টেস্ট (নকল ঘড়ি) — `npm run test:keys` |
-| `tests/cq-marks-integrity.test.mjs` | ১৪টি টেস্ট — CQ মার্ক দুইবার ছাপা বন্ধ + মার্ক আবিষ্কার নিষিদ্ধ (`npm run test:cq-marks`) |
-| `tests/source-fidelity.test.mjs` | ২৪টি টেস্ট — সোর্সের কোনো লাইন হারায় না, উদ্দীপক সঠিক প্রশ্নে, হেডার বডি গেলে না (`npm run test:fidelity`) |
 | `tests/proxy-worker.test.mjs` | ১৬টি Worker ইন্টিগ্রেশন টেস্ট (নকল KV + নকল Gemini) — `npm run test:proxy` |
+| `tests/part12-hardening.test.mjs` | ৫৬টি হার্ডেনিং টেস্ট (NaN-ফ্রি এক্সপোর্ট, ইউনিট ম্যাপিং, সিঙ্গেল স্পেসিং, প্রম্পট রুলস) |
+| `tests/source-fidelity.test.mjs` | ২৪টি সোর্স-ফিডেলিটি টেস্ট (উদ্দীপক রক্ষা, হেডার সুরক্ষা, ক্রম সংরক্ষণ) |
+| `tests/run-all.mjs` | মাস্টার টেস্ট রানার (১৬টি স্যুইট, ৬৫৩টি গেট ১০০% অফলাইন ও অটোমেটেড) — `npm test` |
 | index.html → সেটিংস → "কি মনিটর" | `/status` থেকে লাইভ টেবিল: অবস্থা, আজকের ব্যবহার, সফল/ব্যর্থ, কাউন্টডাউন, CSV এক্সপোর্ট |
 
 কুলডাউন নীতি: `RPM` = Google-এর `RetryInfo.retryDelay`, `RPD` = Pacific মধ্যরাত,
@@ -259,7 +261,20 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 
 ---
 
-## ⚠️ Fix Log (২০২৬-০৯-২৮)
+## ⚠️ Fix Log & Part Releases
+
+### Part-12 Release (২০২৬-১০-০৩)
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | Modern Word ওপেনিং ক্র্যাশ (NaN মার্জিন ও কলাম পজিশন) | js/layout-engine/layout-units.js, cq-booklet-planner.js, mcq-layout-planner.js, export-dual-engine.js | ✅ Fixed (0 Errors in Word COM) |
+| 2 | Word 2003 (.doc RTF) অস্বাভাবিক লাইন স্পেসিং ও বড় কার্সার (\sl অমিল) | js/engines/export-dual-engine.js (\sl240\slmult1, w:line="240" auto) | ✅ Fixed |
+| 3 | সৃজনশীল প্রশ্নের গায়ে নম্বর ও মার্কের ভুল অনুমান (ক→১, খ→২) | js/engines/question-engine.js (_cqMarkTail(), [১], (৩), মান: ৫) | ✅ Fixed |
+| 4 | উদ্দীপক হারানো রোধ ও সোর্স ক্রম রক্ষা ([উদ্দীপক N] হ্যান্ডলিং) | js/engines/question-engine.js, tests/source-fidelity.test.mjs | ✅ Fixed |
+| 5 | ম্যাথ ও পাই (\pi) স্পেসিং ও OMML ট্রেইলিং স্পেস | js/engines/export-dual-engine.js | ✅ Fixed |
+| 6 | OCR প্রম্পটে উত্তর/সমাধান আসা বন্ধ ও সেকশন অনুযায়ী নম্বর রিসেট | js/ai-ocr-engine.js (STRICT QUESTION-ONLY) | ✅ Fixed |
+| 7 | টেস্ট রানার সমন্বয় (১৬টি টেস্ট স্যুইট, ৬৫৩টি গেট) | tests/run-all.mjs, tests/part12-hardening.test.mjs | ✅ 653/653 PASS |
+
+### পূর্ববর্তী ফিক্স (২০২৬-০৯-২৮)
 
 | # | সমস্যা | ফাইল | Status |
 | - | ------ | ---- | ------ |

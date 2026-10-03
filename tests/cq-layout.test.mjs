@@ -189,7 +189,7 @@ let rtf6 = '', xml6 = '', html6 = '';
     (rtf10.match(/\\trowd/g) || []).length === 2 * P10.sections.reduce((a, x) => a + x.questions.length, 0),
     [(rtf10.match(/\\trowd/g) || []).length, 2 * P10.sections.reduce((a, x) => a + x.questions.length, 0)]);
   const altN6 = plan6.items.reduce((a, it) => a + ((it.q.subQuestions || []).filter((sq) => sq && sq.isAlternative).length), 0);
-  const altRe = /\{\\qc\\b\\f0\\fs24\\sl240\\slmult1\\sb20\\sa20/g;
+  const altRe = /\{\\qc\\b\\f0\\fs24\\sl[0-9]+\\slmult[0-9]\\sb20\\sa20/g;   // Part-12: পিচ প্ল্যান-নির্ভর
   T('.doc  অথবা-ডিভাইডার সেন্টারে বোল্ড (পার্স-গণনার সমান সংখ্যক)',
     altN6 > 0 && (rtf6.match(altRe) || []).length === altN6, [(rtf6.match(altRe) || []).length, altN6]);
 
@@ -211,7 +211,7 @@ let rtf6 = '', xml6 = '', html6 = '';
   T('.docx  প্রতিটি টেবিল-সারি একবারই (<w:tr> ×2/প্রশ্ন)',
     (xml10.match(/<w:tr>/g) || []).length === 2 * P10.sections.reduce((a, x) => a + x.questions.length, 0),
     [(xml10.match(/<w:tr>/g) || []).length, 2 * P10.sections.reduce((a, x) => a + x.questions.length, 0)]);
-  const altRe10 = /\{\\qc\\b\\f0\\fs24\\sl240\\slmult1\\sb20\\sa20/g;
+  const altRe10 = /\{\\qc\\b\\f0\\fs24\\sl[0-9]+\\slmult[0-9]\\sb20\\sa20/g;
   T('.docx  অথবা-ডিভাইডার সেন্টারড বোল্ড সংখ্যা .doc-এর সমান',
     (xml10.match(/<w:jc w:val="center"\/><w:spacing w:before="40"/g) || []).length === (rtf10.match(altRe10) || []).length,
     [(xml10.match(/<w:jc w:val="center"\/><w:spacing w:before="40"/g) || []).length, (rtf10.match(altRe10) || []).length]);
@@ -302,11 +302,33 @@ console.log('\n— (ছ) TC-LAY-35: ইনভ্যারিয়েন্ট �
   T('MCQ পাথ অক্ষত (Part-10: পোর্ট্রেট + 0.2" গ্যাপ + কলাম লাইন)',
     /\\paperw11906\\paperh16838/.test(mcqRtf) && /\\cols2\\colsx288\\linebetcol/.test(mcqRtf));
   T('CQ রেন্ডারে MCQ-র হেডার ফলব্যাক (' + 'আপনার প্রতিষ্ঠান এর নাম' + ') ঢোকে না', !rtf6.includes('আপনার প্রতিষ্ঠান এর নাম'));
+  // — Part-12 (ট্রায়াজ ১): সব প্যারাগ্রাফে একই লাইন-রেশিও (single-এর গুণক); হেয়ারলাইন অক্ষুণ্ন
+  {
+    const B0 = String.fromCharCode(92);
+    const flat = String(rtf6).split(B0 + B0).join(B0);
+    const slRe = new RegExp(B0 + B0 + 'fs([0-9]+)(?:' + B0 + B0 + 'f[0-9]+)?' + B0 + B0 + 'sl([0-9]+)' + B0 + B0 + 'slmult([0-9])', 'g');
+    const sls = [...flat.matchAll(slRe)].map((m) => [+m[1], +m[2], +m[3]]);
+    const wantMult = Math.round(240 * (geo.lineRenderFactor || 1));
+    T('Part-12 .doc: প্রতিটি \\sl = ' + wantMult + ' (single) + \\slmult1; \sl<১২০ হেয়ারলাইন বাদে',
+      sls.length > 8 && sls.every(([, v, mm]) => (v === wantMult && mm === 1) || v < 120),
+      [...new Set(sls.map(([, v, mm]) => 'sl' + v + '/m' + mm))].join(' '));
+    const sp = [...flat.matchAll(new RegExp(B0 + B0 + 's([ba])([0-9]+)', 'g'))];
+    T('Part-12 .doc: \\sb/\\sa \u2264 ১৮০ (৯pt) — বড় before/after লাইন-ছন্দ ভাঙে', sp.length > 0 && sp.every((m) => +m[2] <= 180), sp.length);
+    const dl = [...new Set(String(xml6).match(/w:line="[0-9]+" w:lineRule="[a-zA-Z]+"/g) || [])];
+    T('Part-12 .docx: সব প্যারাগ্রাফেই w:line="' + wantMult + '" + auto (ডিভাইডার ১০০ বাদে)',
+      dl.length > 0 && dl.every((v) => v === 'w:line="' + wantMult + '" w:lineRule="auto"' || v.startsWith('w:line="100"')),
+      dl.join(' | '));
+    T('Part-12 প্রিভিউ: line-height প্ল্যানের রেন্ডার-রেশিও (' + (geo.lineRenderCssRatio || 1.34) + ') থেকে আসে',
+      Number.isFinite(+geo.lineRenderCssRatio) && +geo.lineRenderCssRatio > 1 && +geo.lineRenderCssRatio <= 1.5,
+      geo.lineRenderCssRatio);
+  }
   const frozen = ['js/engines/docx-to-doc-engine.js', 'js/engines/bangla-converter-engine.js', 'js/equation-converter.js', 'js/doc-binary-engine.js'];
   const touched = (() => { try { const out = execFileSync('git', ['diff','--name-only','HEAD'], { cwd: ROOT, encoding: 'utf8' }); return out.split('\n').filter(Boolean); } catch (e) { return []; } })();
   T('ফ্রোজেন ইঞ্জিন স্পর্শ করা হয়নি: ' + frozen.map((f) => path.basename(f)).join(', '),
     touched.length === 0 || frozen.every((f) => !touched.includes(f)), touched.filter((f) => frozen.includes(f)));
-  const allowed = ['js/engines/export-dual-engine.js', 'js/engines/question-engine.js', 'js/layout-engine/cq-booklet-planner.js'];
+  // Part-12: ai-ocr-engine.js-এ পরিবর্তন কেবল প্রম্পট-টেক্সতে (উত্তর/সমাধান-নিষেধ + নম্বর-
+  // সংরক্ষণের সীমাবদ্ধতা) — কোনো ইঞ্জিন-লজিকা/নেটওয়ার্ক কোড বদলানো হয়নি।
+  const allowed = ['js/engines/export-dual-engine.js', 'js/engines/question-engine.js', 'js/layout-engine/cq-booklet-planner.js', 'js/ai-ocr-engine.js', 'js/layout-engine/mcq-layout-planner.js', 'js/layout-engine/layout-units.js'];
   const jsTouched = touched.filter((f) => f.startsWith('js/') && !f.startsWith('js/layout-engine/') && !allowed.includes(f));
   T('কোড-পরিবর্তন হোয়াইটলিস্টে (export/question engine + layout-engine)', jsTouched.length === 0, jsTouched);
 }
