@@ -3923,17 +3923,6 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             throw new Error('Word 2003 (.doc) ফাইল প্রস্তুত করা যায়নি');
           }
 
-          try {
-            let htmlText = await docBlob.text();
-            if (htmlText && (htmlText.includes('<html') || htmlText.includes('<!DOCTYPE'))) {
-              htmlText = htmlText.replace(/['"]?Cambria Math['"]?/gi, "'Times New Roman'");
-              htmlText = htmlText.replace(/line-height:\s*1\.00;?/gi, 'mso-line-height-rule:exactly;line-height:14.0pt;');
-              docBlob = new Blob([htmlText], { type: 'application/msword;charset=utf-8' });
-            }
-          } catch (postErr) {
-            console.warn('Word 2003 doc line-height hardening warning:', postErr);
-          }
-
           triggerDownload(docBlob, `${baseName}${suffix}_Word2003.doc`);
           showToast(`ওয়ার্ড ২০০৩ (.doc - সুতন্নিএমজে) সফলভাবে ডাউনলোড হয়েছে!`, 'success');
           return;

@@ -30,7 +30,7 @@
         case 'creative-cq':
           specificInstructions = `
 1. QUESTION NUMBERING & MARKS ALIGNMENT:
-   - MANDATORY SEQUENTIAL RENUMBERING: Use Bengali sequential numbering with '।' (১।, ২।, ৩।, ... ১০।). Never preserve fragmented book/guide numbers (e.g. ২৪, ৪৭). Always start cleanly from ১।
+   - Use Bengali sequential numbering with '।' (e.g. ১।, ২।, ৩।, ... ১০।).
    - For creative sub-questions, use '(ক)', '(খ)', '(গ)', '(ঘ)'.
    - Put the full marks in square brackets at the very right of the line (e.g. [১], [২], [৩], [৪] or [১০]).
    - For creative stimulus/passage, prefix with 'উদ্দীপক:' or format as a blockquote '> উদ্দীপক লেখা...'.
@@ -53,7 +53,7 @@
         case 'mcq-grid':
           specificInstructions = `
 1. MCQ QUESTION & 4-OPTION STRUCTURE:
-   - MANDATORY SEQUENTIAL RENUMBERING: Each question starts sequentially from ১: ১।, ২।, ৩।, ... (Never preserve fragmented guide numbers).
+   - Each question starts with: ১।, ২।, ৩।, ...
    - Exactly 4 options per question on the next line or same line formatted as:
      (ক) অপশন ১  (খ) অপশন ২  (গ) অপশন ৩  (ঘ) অপশন ৪
    - If options contain mathematical symbols or numbers, keep digits accurate.
