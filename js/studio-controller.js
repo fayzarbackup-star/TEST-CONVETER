@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', () => {
     isEditing: false,
     isFullscreen: false,
     theme: 'theme-office-light',
-    zoom: 100
+    zoom: 100,
+    figures: {}          // Part-14.0: id → { dataUrl, pxW, pxH, cssW, align } — চিত্র-স্টোর
   };
 
   let currentParsedData = null;
@@ -181,7 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fontSize: studioState.fontSizePt,
         lineSpacing: studioState.lineSpacing,
         marginClass: studioState.marginClass,
-        splitIndex: studioState.splitIndex
+        splitIndex: studioState.splitIndex,
+        figures: JSON.parse(JSON.stringify(studioState.figures || {}))   // Part-14.0
       };
       // Discard forward history
       if (this.pointer < this.stack.length - 1) {
@@ -216,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
       studioState.lineSpacing = state.lineSpacing;
       studioState.marginClass = state.marginClass;
       studioState.splitIndex = state.splitIndex;
+      studioState.figures = state.figures ? JSON.parse(JSON.stringify(state.figures)) : {};   // Part-14.0
       if (selectFontSize) selectFontSize.value = state.fontSize;
       if (lblFontSize) lblFontSize.textContent = state.fontSize + 'pt';
       if (selectLineSpacing) selectLineSpacing.value = state.lineSpacing;
@@ -250,9 +253,22 @@ document.addEventListener('DOMContentLoaded', () => {
           marginClass: studioState.marginClass,
           splitIndex: studioState.splitIndex,
           theme: studioState.theme,
+          figures: studioState.figures || {},        // Part-14.0 (P0-3): reload-এ চিত্রও ফেরে
           savedAt: Date.now()
         };
-        localStorage.setItem(this.KEY, JSON.stringify(session));
+        try {
+          localStorage.setItem(this.KEY, JSON.stringify(session));
+        } catch (quotaErr) {
+          // সেশন-কোটা শেষ: আগে টেক্সট-সেটিংস বাঁচাই (চিত্র বাদ), তারপর ব্যবহারকারীকে জানাই
+          try {
+            const lean = Object.assign({}, session);
+            delete lean.figures;
+            localStorage.setItem(this.KEY, JSON.stringify(lean));
+            if (typeof showToast === 'function') {
+              showToast('সেশন-সীমা (localStorage) পূর্ণ — টেক্সট সেভ হলো, চিত্রগুলো মেমোরিতে আছে (রিলোডে হারাবেন)।', 'warning');
+            }
+          } catch (e2) { /* localStorage unavailable */ }
+        }
         this.dirty = false;
         this.updateIndicator(true);
       } catch(e) { /* localStorage unavailable */ }
@@ -273,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (session.lineSpacing) studioState.lineSpacing = session.lineSpacing;
         if (session.marginClass) studioState.marginClass = session.marginClass;
         if (session.splitIndex) studioState.splitIndex = session.splitIndex;
+        if (session.figures && typeof session.figures === 'object') studioState.figures = session.figures;   // Part-14.0
         if (selectFontSize && session.fontSize) selectFontSize.value = session.fontSize;
         if (lblFontSize && session.fontSize) lblFontSize.textContent = session.fontSize + 'pt';
         if (selectLineSpacing && session.lineSpacing) selectLineSpacing.value = session.lineSpacing;
@@ -419,6 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (result.parsedData && !result.parsedData.__fzDocType) result.parsedData.__fzDocType = docType;
         currentParsedData = result.parsedData;
         previewContainer.innerHTML = result.content;
+        // Part-14.0 (P0-1/P0-3): ডকুমেন্ট-ডেটায় ফিগার-স্টোর পিন — typing/re-render-এ চিত্র টেকে
+        if (currentParsedData) currentParsedData.__figures = studioState.figures;
+        if (typeof applyFiguresToPreview === 'function') applyFiguresToPreview();
 
         if (selectedMode === 'AUTO') {
           detectedBadge.textContent = getDocTypeBanglaLabel(docType);
@@ -1127,6 +1147,26 @@ document.addEventListener('DOMContentLoaded', () => {
         blob = ExportDualEngine.generateWordDoc(raw, docType, options);
       }
 
+      // Part-14.0 (P0-1): মার্কার → বাস্তব চিত্র — .docx: media+<w:drawing>; .doc: RTF পিকচার
+      try {
+        if (typeof StudioFigurePipeline !== 'undefined' && StudioFigurePipeline.hasMarkers(raw)) {
+          const figStore = StudioFigurePipeline.collectStore(editedData || currentParsedData, studioState.figures);
+          if (StudioFigurePipeline.countFigures(figStore)) {
+            const _figStats = {};
+            blob = (format === 'docx')
+              ? await StudioFigurePipeline.injectIntoDocx(blob, figStore, { stats: _figStats })
+              : await StudioFigurePipeline.injectIntoRtf(blob, figStore, { stats: _figStats });
+            const _missed = (_figStats.found || 0) - (_figStats.replaced || 0);
+            if (_missed > 0) {
+              showToast('সতর্কতা: ' + _missed + 'টি চিত্র ফাইলে বসানো যায়নি — টেক্সটবক্সে মার্কারটি ঠিক আছে কি না দেখুন।', 'warning');
+            }
+          }
+        }
+      } catch (figErr) {
+        console.warn('[StudioController] figure-inject ব্যর্থ:', figErr);
+        showToast('চিত্র যুক্ত করা যায়নি — ফাইলটি ছবি ছাড়া ডাউনলোড হলো (' + (figErr && figErr.message ? figErr.message : figErr) + ')', 'warning');
+      }
+
       const ext = format === 'docx' ? 'docx' : 'doc';
       const fontSuffix = font === 'bijoy' ? 'Bijoy' : 'Unicode';
       // Auto-generate meaningful filename
@@ -1485,83 +1525,263 @@ document.addEventListener('DOMContentLoaded', () => {
   // =========================================================================
   let lastSavedRange = null;
 
+  // Part-14.0: শেষ কার্সর-টার্গেট (টেক্সটবক্স না প্রিভিউ) — P0-4 গার্ডের ভিত্তি
+  let _lastCaretTarget = null;          // { kind:'textarea', at, end } | { kind:'preview', range }
+  let _figDelegated = false;
+
+  function rememberTextareaCaret() {
+    if (!inputText || typeof inputText.selectionStart !== 'number') return;
+    _lastCaretTarget = { kind: 'textarea', at: inputText.selectionStart, end: inputText.selectionEnd };
+  }
+  if (inputText) {
+    ['click', 'keyup', 'focus', 'select'].forEach((ev) => inputText.addEventListener(ev, rememberTextareaCaret));
+  }
+
   function saveCurrentSelection() {
     const sel = window.getSelection();
     if (sel && sel.rangeCount > 0) {
-      lastSavedRange = sel.getRangeAt(0).cloneRange();
+      const r = sel.getRangeAt(0);
+      lastSavedRange = r.cloneRange();
+      if (previewContainer && previewContainer.contains(r.commonAncestorContainer)) {
+        _lastCaretTarget = { kind: 'preview', range: r.cloneRange() };
+      }
     }
   }
 
-  // Track selection changes inside document
-  if (previewContainer) {
-    previewContainer.addEventListener('mouseup', saveCurrentSelection);
-    previewContainer.addEventListener('keyup', saveCurrentSelection);
-    previewContainer.addEventListener('touchend', saveCurrentSelection);
-  }
-
-  function insertContentAtCaret(htmlOrText, isHtml = false) {
-    // 1. If text area is focused
-    if (document.activeElement === inputText) {
-      const start = inputText.selectionStart;
-      const end = inputText.selectionEnd;
-      const val = inputText.value;
-      inputText.value = val.substring(0, start) + htmlOrText + val.substring(end);
-      inputText.selectionStart = inputText.selectionEnd = start + htmlOrText.length;
-      inputText.dispatchEvent(new Event('input'));
-      return;
+  // ───────────────────────── ভ্যালিড-টার্গেট (P0-4) ─────────────────────────
+  /**
+   * ইনসার্ট-টার্গেট: (১) এখন সত্যিই ফোকাসড টেক্সটবক্স-ক্যারেট (২) প্রিভিউয়ের লাইভ
+   * সিলেকশন — নইলে null।
+   *
+   * Part-14.0 (P0-4): আগের সংস্করণে "স্মৃত" ক্যারেট (টেক্সটবক্স ব্লার হওয়ার পরেও) ও
+   * পুরনো সেভড-রেঞ্জকেও বৈধ ধরা হত ⇒ কার্সর ছাড়াই চিহ্ন/চিত্র বসে যেত আর
+   * মিথ্যা "ইনসার্ট হয়েছে!" টোস্ট আসত। এখন স্টেল কিছুই বৈধ নয়; কিবোর্ড-ফোকাস
+   * ধরে রাখতে রিবন/মডাল-বোতামে mousedown-preventDefault করা হয়েছে (নিচে দেখুন)।
+   */
+  function resolveInsertTarget() {
+    if (inputText && document.activeElement === inputText && typeof inputText.selectionStart === 'number') {
+      return { kind: 'textarea', at: inputText.selectionStart, end: inputText.selectionEnd };
     }
-
-    // 2. If selection is inside previewContainer
     const sel = window.getSelection();
-    let range = lastSavedRange;
+    let range = null;
     if (sel && sel.rangeCount > 0) {
-      const curRange = sel.getRangeAt(0);
-      if (previewContainer && previewContainer.contains(curRange.commonAncestorContainer)) {
-        range = curRange;
-      }
+      const r = sel.getRangeAt(0);
+      if (previewContainer && previewContainer.contains(r.commonAncestorContainer)) range = r;
     }
-
-    if (!range && previewContainer) {
-      // Fallback: append to first editable element
-      const firstEditable = previewContainer.querySelector('[contenteditable="true"]');
-      if (firstEditable) {
-        range = document.createRange();
-        range.selectNodeContents(firstEditable);
-        range.collapse(false);
-      }
+    if (!range && _lastCaretTarget && _lastCaretTarget.kind === 'preview' && _lastCaretTarget.range &&
+        previewContainer && previewContainer.contains(_lastCaretTarget.range.commonAncestorContainer) &&
+        document.activeElement && previewContainer.contains(document.activeElement)) {
+      range = _lastCaretTarget.range;   // স্মৃত রেঞ্জ কেবল ফোকাস এখনও প্রিভিউয়ে থাকলে
     }
-
     if (range) {
-      range.deleteContents();
-      if (isHtml) {
-        const temp = document.createElement('div');
-        temp.innerHTML = htmlOrText;
-        const frag = document.createDocumentFragment();
-        let node;
-        let lastNode = null;
-        while ((node = temp.firstChild)) {
-          lastNode = frag.appendChild(node);
-        }
-        range.insertNode(frag);
-        if (lastNode) {
-          range.setStartAfter(lastNode);
-          range.collapse(true);
-          sel.removeAllRanges();
-          sel.addRange(range);
-        }
-      } else {
-        const textNode = document.createTextNode(htmlOrText);
-        range.insertNode(textNode);
-        range.setStartAfter(textNode);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-      saveCurrentSelection();
-      AutoSave.markDirty();
-      HistoryManager.snapshot();
-      attachFigureControls();
+      let el = range.commonAncestorContainer;
+      el = (el && el.nodeType === 1) ? el : (el ? el.parentElement : null);
+      return { kind: 'preview', range: range, fieldEl: el ? el.closest('.cq-text, .cq-stimulus, .cq-sub-text, .mcq-text, .mcq-opt-text, .cert-body, .stamp-body, .paper-sheet') : null };
     }
+    // Part-14.0 (P0-4): স্টেল টেক্সটবক্স-ক্যারেট বা পুরনো lastSavedRange আর বৈধ টার্গেট নয়।
+    return null;
+  }
+
+  function insertTextIntoTextarea(text, at, end) {
+    const val = inputText.value;
+    const a = Math.max(0, Math.min(at == null ? val.length : at, val.length));
+    const b = Math.max(a, Math.min(end == null ? a : end, val.length));
+    inputText.value = val.slice(0, a) + text + val.slice(b);
+    inputText.selectionStart = inputText.selectionEnd = a + text.length;
+    _lastCaretTarget = { kind: 'textarea', at: a + text.length };
+    inputText.dispatchEvent(new Event('input', { bubbles: true }));   // debounce → re-render + history + autosave
+  }
+
+  /**
+   * টেক্সট/HTML ইনসার্ট — সত্যি সফল হলে true, নইলে false (নীরব ব্যর্থতা বন্ধ)
+   */
+  function insertAtTarget(htmlOrText, isHtml = false) {
+    const t = resolveInsertTarget();
+    if (!t) return false;
+    if (t.kind === 'textarea') {
+      insertTextIntoTextarea(htmlOrText, t.at, t.end);
+      return true;
+    }
+    const sel = window.getSelection();
+    const range = t.range;
+    range.deleteContents();
+    if (isHtml) {
+      const temp = document.createElement('div');
+      temp.innerHTML = htmlOrText;
+      const frag = document.createDocumentFragment();
+      let node, lastNode = null;
+      while ((node = temp.firstChild)) lastNode = frag.appendChild(node);
+      range.insertNode(frag);
+      if (lastNode) { range.setStartAfter(lastNode); range.collapse(true); }
+    } else {
+      const textNode = document.createTextNode(htmlOrText);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.collapse(true);
+    }
+    if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+    saveCurrentSelection();
+    AutoSave.markDirty();
+    HistoryManager.snapshot();
+    return true;
+  }
+
+  /**
+   * পুরনো-API সামঞ্জস্য (ভ্যালিড-টার্গেট ছাড়া এখন কিছুই বসে না)।
+   *
+   * Part-14.0 (P0-3-সংশ্লিষ্ট): প্রিভিউ-ফিল্ডে টেক্সট (যেমন অঙ্ক-চিহ্ন) বসালে সেটি
+   * আর কেবল DOM-এ বসে না — সোর্স-টেক্সটবক্সে ওই ফিল্ডের ভিতরে বসে। ফলে re-render-এ
+   * মুছে যায় না এবং এক্সপোর্টেও যায় (প্রিভিউ == ডাউনলোড)। HTML (ফিগার) আলাদা পথে।
+   */
+  function insertContentAtCaret(htmlOrText, isHtml = false) {
+    const t = resolveInsertTarget();
+    if (!t) return false;
+    if (!isHtml && t.kind === 'preview' && t.fieldEl) {
+      const pos = fieldSourceIndex(t.fieldEl);
+      if (pos >= 0) {
+        insertTextIntoTextarea(' ' + String(htmlOrText) + ' ', pos, pos);
+        return true;
+      }
+    }
+    return insertAtTarget(htmlOrText, isHtml);
+  }
+
+  // ───────────────────────── ফিগার-মডেল (P0-1 / P0-3) ─────────────────────────
+  function figurePipeline() {
+    return (typeof StudioFigurePipeline !== 'undefined') ? StudioFigurePipeline : null;
+  }
+
+  /** এলিমেন্ট থেকে (ফিগার-র্যাপার/টুলবার/মার্কার ছাড়া) পরিষ্কার টেক্সট */
+  function cleanFieldText(el) {
+    if (!el) return '';
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('.studio-figure-wrapper, .figure-toolbar').forEach((n) => n.remove());
+    const t = clone.textContent || '';
+    const FP = figurePipeline();
+    return FP ? FP.stripMarkers(t) : t.replace(/QZFIG\d+QZ/g, ' ');
+  }
+
+  /** প্রিভিউ-ফিল্ডের লেখা সোর্স-টেক্সটে কোথায় — সেখানে মার্কার বসবে (P0-3-সামঞ্জস্য) */
+  function fieldSourceIndex(fieldEl) {
+    if (!fieldEl || !inputText) return -1;
+    const domText = cleanFieldText(fieldEl);
+    if (!domText) return -1;
+    const raw = inputText.value;
+    const probes = [domText, domText.slice(0, 28), domText.slice(0, 14), domText.slice(-14)];
+    for (const p of probes) {
+      const probe = String(p || '').trim();
+      if (probe.length < 4) continue;
+      const i = raw.indexOf(probe);
+      if (i >= 0) return i + probe.length;
+    }
+    return -1;
+  }
+
+  function buildFigureElement(fig) {
+    const wrap = document.createElement('div');
+    wrap.className = 'studio-figure-wrapper';
+    wrap.setAttribute('data-fig-id', String(fig.id));
+    wrap.setAttribute('contenteditable', 'false');
+    wrap.style.textAlign = fig.align || 'center';
+    wrap.style.margin = '8px auto';
+    const img = document.createElement('img');
+    img.src = fig.dataUrl;
+    img.alt = fig.name || 'চিত্র';
+    img.style.width = (fig.cssW || 180) + 'px';
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    const tb = document.createElement('div');
+    tb.className = 'figure-toolbar no-print';
+    tb.innerHTML = '<button data-fig-act="sz-sm">ছোট</button><button data-fig-act="sz-md">মাঝারি</button>'
+      + '<button data-fig-act="sz-lg">বড়</button><span>|</span>'
+      + '<button data-fig-act="al-left">বামে</button><button data-fig-act="al-center">মাঝে</button>'
+      + '<button data-fig-act="al-right">ডানে</button><span>|</span>'
+      + '<button data-fig-act="delete" class="btn-del">✕ মুছুন</button>';
+    wrap.appendChild(img);
+    wrap.appendChild(tb);
+    return wrap;
+  }
+
+  /** রেন্ডারের পরে: QZFIGnQZ মার্কার → চিত্র-র্যাপার (প্রিভিউ = সোর্স-মার্কার-নির্ভর ⇒ re-render-নিরাপদ) */
+  function applyFiguresToPreview() {
+    if (!previewContainer) return;
+    const figs = studioState.figures || {};
+    if (!Object.keys(figs).length) return;
+    const walker = document.createTreeWalker(previewContainer, NodeFilter.SHOW_TEXT, null);
+    const hits = [];
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      if (n.nodeValue && /QZFIG\d+QZ/.test(n.nodeValue)) hits.push(n);
+    }
+    hits.forEach((n) => {
+      const parts = String(n.nodeValue).split(/(QZFIG\d+QZ)/);
+      const frag = document.createDocumentFragment();
+      parts.forEach((piece) => {
+        const m = /^QZFIG(\d+)QZ$/.exec(piece);
+        const fig = m ? figs[parseInt(m[1], 10)] : null;
+        if (fig && fig.dataUrl) frag.appendChild(buildFigureElement(fig));
+        else if (piece) frag.appendChild(document.createTextNode(piece));
+      });
+      if (n.parentNode) n.parentNode.replaceChild(frag, n);
+    });
+    attachFigureControls();
+  }
+
+  function removeMarkerFromSource(id) {
+    if (!inputText) return;
+    const marker = 'QZFIG' + id + 'QZ';
+    if (inputText.value.indexOf(marker) === -1) return;
+    inputText.value = inputText.value.replace(new RegExp('\\s*' + marker + '\\s*', 'g'), ' ');
+    inputText.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  /**
+   * ফিগার ইনসার্ট: রাস্টারাইজ → স্টোরে রাখা → সোর্সে মার্কার।
+   * ভ্যালিড টার্গেট না থাকলে কিছুই হয় না (সত্যি গাইডেন্স-টোস্ট)।
+   */
+  async function insertFigureFromElement(el, label) {
+    const FP = figurePipeline();
+    if (!FP) { showToast('ফিগার-পাইপলাইন লোড হয়নি (studio-figure-pipeline.js)।', 'error'); return false; }
+    const target = resolveInsertTarget();
+    if (!target) {
+      showToast(NO_CARET_MSG, 'warning');
+      return false;
+    }
+    let rec;
+    try {
+      rec = await FP.rasterizeElement(el, { maxPx: FP.FIG_MAX_PX });
+    } catch (err) {
+      showToast('চিত্র প্রস্তুত করা যায়নি: ' + (err && err.message ? err.message : err), 'error');
+      return false;
+    }
+    let id = 1;
+    Object.keys(studioState.figures || {}).forEach((k) => { const n = parseInt(k, 10) || 0; if (n >= id) id = n + 1; });
+    studioState.figures[id] = {
+      id: id,
+      dataUrl: rec.dataUrl,
+      mime: rec.mime,
+      pxW: rec.pxW,
+      pxH: rec.pxH,
+      cssW: 180,
+      cssH: rec.cssH,
+      align: 'center',
+      name: label || ('চিত্র ' + id)
+    };
+    const marker = ' ' + FP.markerFor(id) + ' ';
+    if (target.kind === 'textarea') {
+      insertTextIntoTextarea(marker, target.at, target.end);
+    } else {
+      const pos = fieldSourceIndex(target.fieldEl);
+      if (pos >= 0) insertTextIntoTextarea(marker, pos, pos);
+      else {
+        const raw = inputText.value.replace(/\s+$/, '');
+        inputText.value = raw + (raw ? '\n' : '') + marker.trim();
+        inputText.dispatchEvent(new Event('input', { bubbles: true }));
+        showToast('সঠিক স্থান শনাক্ত করা যায়নি — চিত্রটি ডকুমেন্টের শেষে যোগ হলো।', 'warning');
+      }
+    }
+    AutoSave.markDirty();
+    return true;
   }
 
   // --- Math Symbols Database ---
@@ -1635,6 +1855,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
+  // Part-14.0 (P0-4): কার্সর/সিলেকশন ছাড়া ইনসার্ট নিষিদ্ধ — একটাই গাইডেন্স-বার্তা
+  const NO_CARET_MSG = 'আগে ডকুমেন্টে কার্সর রাখুন — বাঁ দিকের টেক্সটবক্সে ক্লিক করে কার্সর দিন, '
+    + 'নয়তো প্রিভিউ-পেজের প্রশ্নে ক্লিক করুন। তারপর চিহ্ন/চিত্র বোতাম চাপুন।';
+
+  // Part-14.0 (P0-4): রিবন/মডাল-বোতামে ক্লিক করলে ফোকাস-চুরি বন্ধ ⇒ টেক্সটবক্সের
+  // ক্যারেট/প্রিভিউ-সিলেকশন অটুট থাকে (নইলে বৈধ-টার্গেট হারিয়ে গাইডেন্স দেখাত)।
+  const _FOCUS_KEEP_SEL = '#btn-ribbon-insert-math, #btn-ribbon-insert-diagram, '
+    + '#btn-quick-insert-math, #btn-quick-insert-diagram, #btn-upload-local-diagram, '
+    + '.math-symbol-btn, .math-tab-btn, .diagram-preset-card';
+  document.addEventListener('mousedown', (e) => {
+    const t = e.target;
+    if (t && t.closest && t.closest(_FOCUS_KEEP_SEL)) e.preventDefault();
+  }, true);
+
   const modalMathSymbols = document.getElementById('modal-math-symbols');
   const btnQuickInsertMath = document.getElementById('btn-quick-insert-math');
   const btnRibbonInsertMath = document.getElementById('btn-ribbon-insert-math');
@@ -1651,8 +1885,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.innerHTML = `<span class="sym-display">${item.display}</span><span class="sym-name">${item.name}</span>`;
       btn.title = item.name + ' (' + item.sym + ')';
       btn.addEventListener('click', () => {
-        insertContentAtCaret(' ' + item.sym + ' ');
-        showToast(`চিহ্ন '${item.display}' ইনসার্ট হয়েছে!`, 'success');
+        // Part-14.0 (P0-4): সত্যি ইনসার্ট না হলে সফল-টোস্ট নয় — গাইডেন্স দেখাই
+        const ok = insertContentAtCaret(' ' + item.sym + ' ');
+        if (ok) showToast(`চিহ্ন '${item.display}' ইনসার্ট হয়েছে!`, 'success');
+        else showToast(NO_CARET_MSG, 'warning');
       });
       mathGridContainer.appendChild(btn);
     });
@@ -1713,25 +1949,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (evt) => {
+      reader.onload = async (evt) => {
         const dataUrl = evt.target.result;
-        const figureHtml = `<div class="studio-figure-wrapper" style="text-align: center; margin: 8px auto;" contenteditable="false">
-          <img src="${dataUrl}" alt="চিত্র" style="max-width: 180px; height: auto;" />
-          <div class="figure-toolbar no-print">
-            <button data-fig-act="sz-sm">ছোট</button>
-            <button data-fig-act="sz-md">মাঝারি</button>
-            <button data-fig-act="sz-lg">বড়</button>
-            <span>|</span>
-            <button data-fig-act="al-left">বামে</button>
-            <button data-fig-act="al-center">মাঝে</button>
-            <button data-fig-act="al-right">ডানে</button>
-            <span>|</span>
-            <button data-fig-act="delete" class="btn-del">✕ মুছুন</button>
-          </div>
-        </div>&nbsp;`;
-        insertContentAtCaret(figureHtml, true);
-        if (modalDiagrams) modalDiagrams.classList.add('hidden');
-        showToast('ছবি সফলভাবে ইনসার্ট হয়েছে!', 'success');
+        // Part-14.0: ক্যানভাসে রাস্টারাইজ → ফিগার-স্টোর → সোর্সে মার্কার (P0-1/P0-3)
+        const probe = new Image();
+        const ready = new Promise((res) => { probe.onload = () => res(true); probe.onerror = () => res(false); });
+        probe.src = dataUrl;
+        const loaded = await ready;
+        const ok = loaded ? await insertFigureFromElement(probe, file.name || 'ছবি') : false;
+        if (ok) {
+          if (modalDiagrams) modalDiagrams.classList.add('hidden');
+          showToast('ছবি সফলভাবে ইনসার্ট হয়েছে!', 'success');
+        } else if (!loaded) {
+          showToast('ছবিটি পড়া যায়নি (ফাইল নষ্ট হতে পারে)।', 'error');
+        }
       };
       reader.readAsDataURL(file);
       e.target.value = '';
@@ -1741,72 +1972,65 @@ document.addEventListener('DOMContentLoaded', () => {
   // Click on preset geometry diagrams
   const presetCards = document.querySelectorAll('.diagram-preset-card');
   presetCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const svg = card.querySelector('svg');
-      if (!svg) return;
-      const svgCode = svg.outerHTML;
-      const figureHtml = `<div class="studio-figure-wrapper" style="text-align: center; margin: 8px auto;" contenteditable="false">
-        ${svgCode}
-        <div class="figure-toolbar no-print">
-          <button data-fig-act="sz-sm">ছোট</button>
-          <button data-fig-act="sz-md">মাঝারি</button>
-          <button data-fig-act="sz-lg">বড়</button>
-          <span>|</span>
-          <button data-fig-act="al-left">বামে</button>
-          <button data-fig-act="al-center">মাঝে</button>
-          <button data-fig-act="al-right">ডানে</button>
-          <span>|</span>
-          <button data-fig-act="delete" class="btn-del">✕ মুছুন</button>
-        </div>
-      </div>&nbsp;`;
-      insertContentAtCaret(figureHtml, true);
-      if (modalDiagrams) modalDiagrams.classList.add('hidden');
-      showToast('জ্যামিতিক চিত্র ইনসার্ট হয়েছে!', 'success');
+    card.addEventListener('click', async () => {
+      const label = (card.querySelector('span') || {}).textContent || 'জ্যামিতিক চিত্র';
+      const liveSvg = card.querySelector('svg');
+      if (!liveSvg || typeof StudioFigurePipeline === 'undefined') return;
+      // অফ-স্ক্রিন ক্লোন — প্রিভিউ-এ না বসিয়ে সরাসরি রাস্টারাইজ (ফিগার-মডেলই সত্য)
+      const work = liveSvg.cloneNode(true);
+      work.setAttribute('width', liveSvg.getAttribute('width') || '70');
+      work.setAttribute('height', liveSvg.getAttribute('height') || '60');
+      work.style.position = 'fixed';
+      work.style.left = '-9999px';
+      document.body.appendChild(work);
+      let ok = false;
+      try { ok = await insertFigureFromElement(work, String(label).trim()); }
+      finally { work.remove(); }
+      if (ok) {
+        if (modalDiagrams) modalDiagrams.classList.add('hidden');
+        showToast('জ্যামিতিক চিত্র ইনসার্ট হয়েছে!', 'success');
+      }
     });
   });
 
-  // Figure toolbar actions
+  // Figure toolbar actions — একবার-বাঁধা ডেলিগেশন (আগে প্রতি রেন্ডারে সব বোতাম clone হত)
   function attachFigureControls() {
-    if (!previewContainer) return;
-    const wrappers = previewContainer.querySelectorAll('.studio-figure-wrapper');
-    wrappers.forEach(wrapper => {
-      const target = wrapper.querySelector('img, svg');
-      wrapper.querySelectorAll('.figure-toolbar button').forEach(btn => {
-        // Remove existing listener clone
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
-        newBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const act = newBtn.getAttribute('data-fig-act');
-          if (act === 'delete') {
-            wrapper.remove();
-            showToast('চিত্র মোছা হয়েছে।', 'info');
-          } else if (act === 'sz-sm' && target) {
-            target.style.width = '120px';
-            target.style.maxWidth = '120px';
-          } else if (act === 'sz-md' && target) {
-            target.style.width = '180px';
-            target.style.maxWidth = '180px';
-          } else if (act === 'sz-lg' && target) {
-            target.style.width = '260px';
-            target.style.maxWidth = '260px';
-          } else if (act === 'al-left') {
-            wrapper.style.display = 'block';
-            wrapper.style.textAlign = 'left';
-            wrapper.style.margin = '6px 0';
-          } else if (act === 'al-center') {
-            wrapper.style.display = 'block';
-            wrapper.style.textAlign = 'center';
-            wrapper.style.margin = '6px auto';
-          } else if (act === 'al-right') {
-            wrapper.style.display = 'block';
-            wrapper.style.textAlign = 'right';
-            wrapper.style.margin = '6px 0 6px auto';
-          }
-          AutoSave.markDirty();
-        });
-      });
-    });
+    if (!previewContainer || _figDelegated) return;
+    _figDelegated = true;
+    previewContainer.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest('.figure-toolbar button') : null;
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const wrap = btn.closest('.studio-figure-wrapper');
+      const id = wrap ? parseInt(wrap.getAttribute('data-fig-id') || '0', 10) : 0;
+      const fig = (id && studioState.figures) ? studioState.figures[id] : null;
+      const act = btn.getAttribute('data-fig-act');
+      const img = wrap ? wrap.querySelector('img') : null;
+
+      if (act === 'delete') {
+        if (fig) delete studioState.figures[id];
+        removeMarkerFromSource(id);
+        if (wrap) wrap.remove();
+        showToast('চিত্র মোছা হয়েছে।', 'info');
+        AutoSave.markDirty();
+        HistoryManager.snapshot();
+        return;
+      }
+      if (!fig || !wrap) return;
+      if (act === 'sz-sm') fig.cssW = 120;
+      else if (act === 'sz-md') fig.cssW = 180;
+      else if (act === 'sz-lg') fig.cssW = 260;
+      else if (act === 'al-left') fig.align = 'left';
+      else if (act === 'al-center') fig.align = 'center';
+      else if (act === 'al-right') fig.align = 'right';
+      if (img) img.style.width = (fig.cssW || 180) + 'px';
+      wrap.style.display = 'block';
+      wrap.style.textAlign = fig.align || 'center';
+      wrap.style.margin = fig.align === 'left' ? '6px 0' : (fig.align === 'right' ? '6px 0 6px auto' : '6px auto');
+      AutoSave.markDirty();
+      HistoryManager.snapshot();
+    }, true);
   }
 
   // Run on initial load
@@ -1814,6 +2038,22 @@ document.addEventListener('DOMContentLoaded', () => {
     applyEditModeState();
     attachFigureControls();
   }, 300);
+
+  // Part-14.0 (P1): Esc/ব্যাকড্রপ-ক্লিকে মডাল বন্ধ
+  function closeStudioModals() {
+    ['modal-math-symbols', 'modal-diagrams'].forEach((idStr) => {
+      const el = document.getElementById(idStr);
+      if (el) el.classList.add('hidden');
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') closeStudioModals();
+  });
+  [modalMathSymbols, modalDiagrams].forEach((m) => {
+    if (!m) return;
+    m.addEventListener('mousedown', (e) => { if (e.target === m) closeStudioModals(); });
+    m.addEventListener('click', (e) => { if (e.target === m) closeStudioModals(); });
+  });
 
   // Initial history snapshot
   HistoryManager.snapshot();

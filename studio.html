@@ -203,6 +203,13 @@
       <button id="qa-btn-redo" class="quick-access-btn" title="পুনরায় করুন (Redo Ctrl+Y)">
         <i class="fas fa-arrow-rotate-right"></i>
       </button>
+      <!-- Part-14.0: JS-তে রেফারেন্স থাকা দুইটি বোতাম এখন সত্যিই আছে (P1) -->
+      <button id="btn-quick-insert-math" class="quick-access-btn text-purple-200" title="গাণিতিক প্রতীক, চিহ্ন ও সূত্রাবলী">
+        <i class="fas fa-square-root-variable"></i>
+      </button>
+      <button id="btn-quick-insert-diagram" class="quick-access-btn text-amber-200" title="জ্যামিতি চিত্র, রেখাচিত্র ও ছবি">
+        <i class="fas fa-shapes"></i>
+      </button>
 
       <!-- Blank OMR Sheet -->
       <button id="btn-make-omr" class="quick-access-btn text-amber-300 ml-1" title="ব্ল্যাঙ্ক OMR শিট তৈরি করুন">
@@ -1240,6 +1247,7 @@
 <script src="js/layout-engine/fayzar-pipeline.js"></script>
 
   <!-- Main Controller -->
+  <script src="js/engines/studio-figure-pipeline.js"></script>
   <script src="js/studio-controller.js"></script>
 </body>
 </html>

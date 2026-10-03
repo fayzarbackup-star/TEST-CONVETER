@@ -123,10 +123,48 @@
   // ───────────────────────── DOM helpers ─────────────────────────
   function isEl(n) { return !!(n && n.nodeType === 1); }
 
+  /**
+   * Part-14.0 (P0-2): চিত্র-র্যাপার/টুলবার বাদ দিয়ে ফিল্ডের টেক্সট।
+   * আগে DOM-এ বসানো SVG-র শীর্ষবিন্দু-লেবেল (A/B/C) innerText-এ ঢুকে
+   * "প্রশ্ন এডিট হয়েছে" ভেবে parsedData-তে ছাপা হত (নীরব দূষণ)।
+   */
+  function textWithoutFigures(el) {
+    if (!isEl(el)) return '';
+    if (!el.querySelector || !el.querySelector('.studio-figure-wrapper, .figure-toolbar')) {
+      return (el.innerText != null && el.innerText !== '') ? el.innerText : el.textContent;
+    }
+    try {
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll('.studio-figure-wrapper, .figure-toolbar').forEach(function (n) { n.remove(); });
+      return clone.textContent || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  /** @@FIGn@@ মার্কার ছাড়া টেক্সট (তুলনার জন্য) */
+  function stripFigMarkers(s) {
+    return String(s == null ? '' : s).replace(/QZFIG\d+QZ/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /** মূল মানে থাকা মার্কার অটুট — নইলে প্রিভিউ-টেক্সটএডিটে চিত্র হারায় (P0-3) */
+  function preserveFigMarkers(value, original) {
+    const orig = String(original == null ? '' : original).match(/QZFIG\d+QZ/g) || [];
+    if (!orig.length) return value;
+    const have = new Set(String(value == null ? '' : value).match(/QZFIG\d+QZ/g) || []);
+    const missing = orig.filter(function (mk) { return !have.has(mk); });
+    if (!missing.length) return value;
+    return String(value == null ? '' : value).replace(/\s+$/, '') + ' ' + missing.join(' ');
+  }
+
+  /** একলাইন-মানে মার্কার-সচেতন মান */
+  function fieldValue(el, original) {
+    return preserveFigMarkers(oneLine(textWithoutFigures(el)), original);
+  }
+
   function nodeText(el) {
     if (!isEl(el)) return '';
-    const t = (el.innerText != null && el.innerText !== '') ? el.innerText : el.textContent;
-    return cmp(t);
+    return cmp(stripFigMarkers(textWithoutFigures(el)));
   }
 
   /**
@@ -173,7 +211,7 @@
         const cur = nodeText(stemEl);
         const orig = stemHasOwnText ? cmp(q.text) : cmp(firstLine(q.stimulus));
         if (cur !== orig) {
-          const value = oneLine(stemEl.innerText != null ? stemEl.innerText : stemEl.textContent);
+          const value = fieldValue(stemEl, stemHasOwnText ? q.text : q.stimulus);
           if (stemHasOwnText) {
             local[P + '.text'] = value;
           } else if (q.stimulus != null) {
@@ -193,7 +231,7 @@
         const restOrig = stemHasOwnText ? cmp(q.stimulus) : cmp(stimLines.slice(1).join('\n'));
         const cur = nodeText(stimEl);
         if (cur !== restOrig) {
-          const value = multiLine(stimEl.innerText != null ? stimEl.innerText : stimEl.textContent);
+          const value = multiLine(preserveFigMarkers(textWithoutFigures(stimEl), q.stimulus));
           if (stemHasOwnText) {
             local[P + '.stimulus'] = value;
           } else {
@@ -215,7 +253,7 @@
           const tEl = row.querySelector('.cq-sub-text');
           if (tEl) {
             const cur = nodeText(tEl);
-            if (cur !== cmp(sub.text)) local[SP + '.text'] = oneLine(tEl.innerText != null ? tEl.innerText : tEl.textContent);
+            if (cur !== cmp(sub.text)) local[SP + '.text'] = fieldValue(tEl, sub.text);
           }
           const mEl = row.querySelector('.cq-sub-mark');
           if (mEl) {
@@ -240,7 +278,7 @@
           const tEl = o.querySelector('.mcq-opt-text');
           if (tEl) {
             const cur = nodeText(tEl);
-            if (cur !== cmp(opt.text)) local[OP + '.text'] = oneLine(tEl.innerText != null ? tEl.innerText : tEl.textContent);
+            if (cur !== cmp(opt.text)) local[OP + '.text'] = fieldValue(tEl, opt.text);
           }
           const lEl = o.querySelector('.mcq-opt-label');
           if (lEl) {
@@ -300,7 +338,10 @@
     applyEdits: applyEdits,
     allQuestions: allQuestions,
     collectFromDom: collectFromDom,
-    mathFieldsEdited: mathFieldsEdited
+    mathFieldsEdited: mathFieldsEdited,
+    textWithoutFigures: textWithoutFigures,
+    stripFigMarkers: stripFigMarkers,
+    preserveFigMarkers: preserveFigMarkers
   };
 
   global.StudioEditBridge = api;
