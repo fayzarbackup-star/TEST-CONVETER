@@ -21,6 +21,28 @@
      * সীমা = লাইন-শুরু, ট্যাব, বা ২+ স্পেস — তাই `গ. সা. গু.` (এক স্পেসে বসা সংক্ষেপ)
      * ভাঙে না, কিন্তু `ক. লেখা\t২\tখ. লেখা\t৮` ঠিকঠাক তিন টুকরো হয়।
      */
+    /**
+     * সাব-প্রশ্নের লাইনশেষ থেকে মার্ক তোলা — একমাত্র উৎস (single source of truth)।
+     * সমর্থিত ফরম্যাট:  ` ১০` · `\t৪` · `[১]` · `(৩)` · `［২］` · `（৪）` · `মান: ৫` · `Marks: 5`
+     * বহু-অঙ্কের মার্ক (১০, ১৫) অক্ষুণ্ন থাকে এবং মার্কটি টেক্সট থেকে **কেটে** দেওয়া হয়,
+     * নইলে একই নম্বর প্রশ্নের ভেতরে ও মার্ক-কলামে দুইবার ছাপা হতো।
+     * মার্ক না থাকলে `''` ফেরত — কখনোই অনুমান করে বসানো হয় না।
+     */
+    _extractMark(rawText) {
+      let text = String(rawText == null ? '' : rawText).trim();
+      const patterns = [
+        /\s*[\[\uFF3B]\s*([\u09E6-\u09EF\d]{1,3})\s*[\]\uFF3D]\s*$/,          // [১] ［১০］
+        /\s*[\(\uFF08]\s*([\u09E6-\u09EF\d]{1,3})\s*[\)\uFF09]\s*$/,          // (৩) （৪）
+        /\s*(?:মান|নম্বর|Marks?|Mark)\s*[:ঃ]?\s*([\u09E6-\u09EF\d]{1,3})\s*$/i,   // মান: ৫
+        /[\s\t]+([\u09E6-\u09EF\d]{1,3})\s*$/                                    // ... ১০
+      ];
+      for (const re of patterns) {
+        const m = text.match(re);
+        if (m) return { text: text.slice(0, text.length - m[0].length).trim(), mark: m[1] };
+      }
+      return { text, mark: '' };
+    },
+
     _cqSubLineParts(line) {
       const s = String(line);
       const marks = [];
@@ -31,10 +53,8 @@
       const parts = [];
       for (let i = 0; i < marks.length; i++) {
         const end = (i + 1 < marks.length) ? marks[i + 1].start : s.length;
-        let text = s.slice(marks[i].textStart, end).trim();
-        let mark = '';
-        const mm = text.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
-        if (mm) { mark = mm[1]; text = text.slice(0, text.length - mm[0].length).trim(); }
+        const _em = this._extractMark(s.slice(marks[i].textStart, end));
+        const text = _em.text, mark = _em.mark;
         if (text) parts.push({ label: marks[i].label, text, mark });
       }
       return parts;
@@ -231,14 +251,11 @@
         if (!_isMcqCtx && currentQuestion && (!currentQuestion.options || currentQuestion.options.length === 0)) {
           const brSub = line.match(/^\(?\s*([কখগঘ])\s*\)\s*(.+)$/);
           if (brSub) {
-            let bTxt = brSub[2].trim();
-            let bMark = '';
-            const bm = bTxt.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
-            if (bm) { bMark = bm[1]; bTxt = bTxt.substring(0, bTxt.length - bm[0].length).trim(); }
+            const _bm = this._extractMark(brSub[2]);
             currentQuestion.subQuestions.push({
               label: brSub[1],
-              text: bTxt,
-              mark: bMark || (brSub[1] === 'ক' ? '১' : brSub[1] === 'খ' ? '২' : brSub[1] === 'গ' ? '৩' : '৪')
+              text: _bm.text,
+              mark: _bm.mark
             });
             continue;
           }
@@ -253,12 +270,12 @@
             /^[কখগঘ][\.\:।\-]\s/.test(line)) {
           const cqParts = this._cqSubLineParts(line);
           if (cqParts.length) {
-            const _fkDefault = { 'ক': '১', 'খ': '২', 'গ': '৩', 'ঘ': '৪' };
             for (const part of cqParts) {
               currentQuestion.subQuestions.push({
                 label: part.label,
                 text: part.text,
-                mark: part.mark || _fkDefault[part.label] || ''
+                // মার্ক না থাকলে খালিই থাকবে — অনুমান করে বসানো নিষিদ্ধ
+                mark: part.mark
               });
             }
             continue;
@@ -295,29 +312,24 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
 
         if (isMergedCqSub && currentQuestion) {
           for (const opt of mcqOpts) {
-            let text = opt.text.trim();
-            const markMatch = text.match(/[\s\t]+([\u09E6-\u09EF\d]+)\s*$/);
-            let mark = '';
-            if (markMatch) {
-              mark = markMatch[1];
-              text = text.substring(0, text.length - markMatch[0].length).trim();
-            }
+            const _om = this._extractMark(opt.text);
             currentQuestion.subQuestions.push({
               label: opt.label,
-              text: text,
-              mark: mark || (opt.label === 'ক' ? '১' : opt.label === 'খ' ? '২' : opt.label === 'গ' ? '৩' : '৪')
+              text: _om.text,
+              mark: _om.mark
             });
           }
           continue;
         }
 
         // 3. Sub-question for CQ (ক., খ., গ., ঘ. - separated by dot, colon, or dari; NOT bracket ')')
-        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.*?)(?:[\s\t]*([\u09E6-\u09EF\d]+))?\s*$/);
+        const subMatch = line.match(/^([কখগঘ]|[abcdABCD])[\.\:।\-]\s*(.+)$/);
         if (subMatch && !isMcqDoc && currentQuestion && currentQuestion.options.length === 0 && (!currentQuestion.statements || currentQuestion.statements.length === 0)) {
+          const _sm = this._extractMark(subMatch[2]);
           currentQuestion.subQuestions.push({
             label: subMatch[1],
-            text: subMatch[2].trim(),
-            mark: subMatch[3] || (subMatch[1] === 'ক' ? '১' : subMatch[1] === 'খ' ? '২' : subMatch[1] === 'গ' ? '৩' : '৪')
+            text: _sm.text,
+            mark: _sm.mark
           });
           continue;
         }

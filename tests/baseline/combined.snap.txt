@@ -73,22 +73,22 @@
           "subQuestions": [
             {
               "label": "ক",
-              "mark": "১",
+              "mark": "",
               "text": "জুল"
             },
             {
               "label": "খ",
-              "mark": "২",
+              "mark": "",
               "text": "নিউটন"
             },
             {
               "label": "গ",
-              "mark": "৩",
+              "mark": "",
               "text": "ওয়াট"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
+              "mark": "",
               "text": "প্যাসকেল"
             }
           ],
@@ -103,22 +103,22 @@
           "subQuestions": [
             {
               "label": "ক",
-              "mark": "১",
+              "mark": "",
               "text": "W = F / S"
             },
             {
               "label": "খ",
-              "mark": "২",
+              "mark": "",
               "text": "W = F * S"
             },
             {
               "label": "গ",
-              "mark": "৩",
+              "mark": "",
               "text": "W = m * a"
             },
             {
               "label": "ঘ",
-              "mark": "৪",
+              "mark": "",
               "text": "W = v / t"
             }
           ],
@@ -137,8 +137,8 @@
     "",
     "",
     "",
-    "ক:১,খ:২,গ:৩,ঘ:৪",
-    "ক:১,খ:২,গ:৩,ঘ:৪"
+    "ক:∅,খ:∅,গ:∅,ঘ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅"
   ],
   "numbering": [
     "১",
@@ -188,10 +188,10 @@
       "optionCount": 0,
       "section": 1,
       "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
       ],
       "textHead": "বলের একক কী?"
     },
@@ -201,10 +201,10 @@
       "optionCount": 0,
       "section": 1,
       "subs": [
-        "ক:১",
-        "খ:২",
-        "গ:৩",
-        "ঘ:৪"
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
       ],
       "textHead": "কাজের সমীকরণ কোনটি?"
     }
@@ -274,28 +274,32 @@
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
 <span class="cq-sub-text">জুল</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
 <span class="cq-sub-text">নিউটন</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
 <span class="cq-sub-text">ওয়াট</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
 <span class="cq-sub-text">প্যাসকেল</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 </div>
 </div>
@@ -310,28 +314,32 @@
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
 <span class="cq-sub-text">W = F / S</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
 <span class="cq-sub-text">W = F * S</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
 <span class="cq-sub-text">W = m * a</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
 <span class="cq-sub-text">W = v / t</span>
 </div>
-<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
 </div>
 </div>
 </div>
@@ -546,7 +554,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -557,16 +564,6 @@
 </w:rPr>
 <w:t xml:space="preserve">ক. জুল</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -574,7 +571,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -585,16 +581,6 @@
 </w:rPr>
 <w:t xml:space="preserve">খ. নিউটন</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -602,7 +588,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -613,16 +598,6 @@
 </w:rPr>
 <w:t xml:space="preserve">গ. ওয়াট</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">৩</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -630,7 +605,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -640,16 +614,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">ঘ. প্যাসকেল</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">৪</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -687,7 +651,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -706,16 +669,6 @@
 </w:rPr>
 <w:t xml:space="preserve">W = F / S</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">১</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -723,7 +676,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -742,16 +694,6 @@
 </w:rPr>
 <w:t xml:space="preserve">W = F * S</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">২</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -759,7 +701,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -778,16 +719,6 @@
 </w:rPr>
 <w:t xml:space="preserve">W = m * a</w:t>
 </w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">৩</w:t>
-</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -795,7 +726,6 @@
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
-<w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -813,16 +743,6 @@
 <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
 </w:rPr>
 <w:t xml:space="preserve">W = v / t</w:t>
-</w:r>
-<w:r>
-<w:tab/>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-</w:rPr>
-<w:t xml:space="preserve">৪</w:t>
 </w:r>
 </w:p>
 <w:sectPr>
@@ -1133,7 +1053,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ক) জুল ১</w:t>
+<w:t xml:space="preserve">(ক) জুল</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1147,7 +1067,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) নিউটন ২</w:t>
+<w:t xml:space="preserve">(খ) নিউটন</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1161,7 +1081,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) ওয়াট ৩</w:t>
+<w:t xml:space="preserve">(গ) ওয়াট</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1175,7 +1095,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) প্যাসকেল ৪</w:t>
+<w:t xml:space="preserve">(ঘ) প্যাসকেল</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1235,15 +1155,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
 </w:rPr>
-<w:t xml:space="preserve">) W = F / S </w:t>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">১</w:t>
+<w:t xml:space="preserve">) W = F / S</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1273,15 +1185,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
 </w:rPr>
-<w:t xml:space="preserve">) W = F * S </w:t>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">২</w:t>
+<w:t xml:space="preserve">) W = F * S</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1311,15 +1215,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
 </w:rPr>
-<w:t xml:space="preserve">) W = m * a </w:t>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">৩</w:t>
+<w:t xml:space="preserve">) W = m * a</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1349,15 +1245,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
 </w:rPr>
-<w:t xml:space="preserve">) W = v / t </w:t>
-</w:r>
-<w:r>
-<w:rPr>
-<w:sz w:val="24"/>
-<w:szCs w:val="24"/>
-<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
-</w:rPr>
-<w:t xml:space="preserve">৪</w:t>
+<w:t xml:space="preserve">) W = v / t</w:t>
 </w:r>
 </w:p>
 <w:sectPr>
