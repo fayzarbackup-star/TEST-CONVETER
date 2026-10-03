@@ -8,10 +8,11 @@
     "test:layout:update": "node tests/run-regression.js --update",
     "test:mcq-layout": "node tests/mcq-layout.test.mjs",
     "test:cq-layout": "node tests/cq-layout.test.mjs",
-    "test:cq-marks": "node tests/cq-marks-integrity.test.mjs",
+    "test:fidelity": "node tests/source-fidelity.test.mjs",
+    "test:cq-marks": "node tests/cq-marks-integrity.test.mjs && node tests/source-fidelity.test.mjs",
     "test:keys": "node tests/key-ledger.test.js",
     "test:proxy": "node tests/proxy-worker.test.mjs",
-    "test:policy": "node tests/proxy-failure-policy.test.js && node tests/cq-marks-integrity.test.mjs",
-    "test": "node tests/run-regression.js && node tests/key-ledger.test.js && node tests/proxy-worker.test.mjs && node tests/proxy-failure-policy.test.js && node tests/cq-marks-integrity.test.mjs"
+    "test:policy": "node tests/proxy-failure-policy.test.js && node tests/cq-marks-integrity.test.mjs && node tests/source-fidelity.test.mjs",
+    "test": "node tests/run-regression.js && node tests/key-ledger.test.js && node tests/proxy-worker.test.mjs && node tests/proxy-failure-policy.test.js && node tests/cq-marks-integrity.test.mjs && node tests/source-fidelity.test.mjs"
   }
 }

@@ -249,6 +249,7 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 | `fayzar-ocr-proxy/README.md` | ডিপ্লয় ধাপ, এন্ডপয়েন্ট ও কুলডাউন নীতি |
 | `tests/key-ledger.test.js` | ৩৩টি অফলাইন ইউনিট টেস্ট (নকল ঘড়ি) — `npm run test:keys` |
 | `tests/cq-marks-integrity.test.mjs` | ১৪টি টেস্ট — CQ মার্ক দুইবার ছাপা বন্ধ + মার্ক আবিষ্কার নিষিদ্ধ (`npm run test:cq-marks`) |
+| `tests/source-fidelity.test.mjs` | ২৪টি টেস্ট — সোর্সের কোনো লাইন হারায় না, উদ্দীপক সঠিক প্রশ্নে, হেডার বডি গেলে না (`npm run test:fidelity`) |
 | `tests/proxy-worker.test.mjs` | ১৬টি Worker ইন্টিগ্রেশন টেস্ট (নকল KV + নকল Gemini) — `npm run test:proxy` |
 | index.html → সেটিংস → "কি মনিটর" | `/status` থেকে লাইভ টেবিল: অবস্থা, আজকের ব্যবহার, সফল/ব্যর্থ, কাউন্টডাউন, CSV এক্সপোর্ট |
 

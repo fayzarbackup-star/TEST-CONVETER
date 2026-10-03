@@ -107,6 +107,11 @@
             /^#{1,6}\s*(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
           break; // Questions have started, header is complete
         }
+        // সোর্স-ফিডেলিটি: `[উদ্দীপক ১]` ধরনের ব্লক মানেই বডি শুরু — এর পরের অনুচ্ছেদ
+        // হেডার-স্ক্যানে গেলে পুরো উদ্দীপক গিলে ফেলত (bodyStartIndex এগিয়ে যেত)।
+        if (/^\[\s*(?:উদ্দীপক|দৃশ্যকল্প|অনুচ্ছেদ|চিত্র|ছক|সারণি|তথ্য|নিচের)/.test(cleanLine)) {
+          break;
+        }
         if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine) || (isMcqParse && /\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2(?:\u09df|\u09af\u09bc)/i.test(cleanLine))) {
           result.header.institute = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -147,7 +152,12 @@
             result.header.examType = cleanLine.trim();
           }
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)/i.test(cleanLine) || /পূর্ণমান|মান/i.test(cleanLine)) && (!result.header.time || !result.header.marks)) {
+        // `মান` শব্দ-সীমা ছাড়া খুঁজলে "মানুষ"/"মানচিত্র"-ও ম্যাচ করত ⇒ বডির অনুচ্ছেদ
+        // হেডার ভেবে গিলে ফেলা হতো এবং header.marks-এ আবর্জনা ঢুকত। এখন লেবেলের পরে
+        // বিভাজক ও অঙ্ক — দুটোই বাধ্যতামূলক।
+        } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)\s*[\u0983:\-]/i.test(cleanLine) ||
+                    /(?:^|[\s|(\[])(?:পূর্ণ\s*মান|পূর্ণমান|মোট\s*মান|মান)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\d]/i.test(cleanLine)) &&
+                   (!result.header.time || !result.header.marks)) {
           let cLine = cleanLine;
           const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
           if (examSubMatch) {
@@ -161,7 +171,7 @@
           if (!tMatch && isMcqParse) {
             tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[:\u0983-]\s*([^;\n]+?)(?=\s*[:|\u0964]?\s*(?:\u09aa\u09c2\u09b0\u09cd\u09a3\u09ae\u09be\u09a8|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2|\u09ac\u09b9\u09c1\u09a8\u09bf\u09b0\u09cd\u09ac\u09be\u099a\u09a8|\u09ae\u09be\u09a8)|$)/i);
           }
-          const mMatch = cLine.match(/(?:পূর্ণমান|মান)[ঃ:\-]?\s*([^\n;]+)/i);
+          const mMatch = cLine.match(/(?:পূর্ণ\s*মান|পূর্ণমান|মোট\s*মান|(?:^|[\s|(\[])মান)\s*[ঃ:\-]?\s*([\u09E6-\u09EF\d][^\n;|]*)/i);
           if (tMatch && !result.header.time) result.header.time = tMatch[1].trim();
           if (mMatch && !result.header.marks) result.header.marks = mMatch[1].trim();
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -191,6 +201,18 @@
             result.sections.push(currentSection);
           }
           currentSection = { title: line, marks: '', questions: [] };
+          continue;
+        }
+
+        // সোর্স-ফিডেলিটি: `[উদ্দীপক ২]` / `[দৃশ্যকল্প]` / `[চিত্র]` ধরনের ব্লক শুরু হলে সেটি
+        // **পরের** প্রশ্নের উদ্দীপক — আগের প্রশ্নের শেষে জুড়ে দিলে ছাপা ভুল জায়গায় হতো।
+        // তাই চলমান প্রশ্ন বন্ধ করে লাইনটি pendingPreContext-এ জমা রাখা হয় (ক্রম অক্ষুণ্ন)।
+        if (/^\[\s*(?:উদ্দীপক|দৃশ্যকল্প|অনুচ্ছেদ|চিত্র|ছক|সারণি|তথ্য|নিচের)/.test(line.trim())) {
+          if (currentQuestion) {
+            currentSection.questions.push(currentQuestion);
+            currentQuestion = null;
+          }
+          pendingPreContext += (pendingPreContext ? '\n' : '') + line;
           continue;
         }
 
@@ -369,11 +391,24 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             // এখন প্রশ্নের টেক্সটে যোগ হয়, হারায় না।
             currentQuestion.text = (currentQuestion.text ? currentQuestion.text + ' ' : '') + cleanStim;
           }
+        } else {
+          // সোর্স-ফিডেলিটি গার্ড: প্রথম প্রশ্ন-নম্বরের আগে (বা দুই প্রশ্নের মাঝে) আসা যেকোনো
+          // লাইন আগে কোনো শাখাই ধরত না — নিঃশব্দে হারিয়ে যেত (যেমন প্রথম উদ্দীপকের অনুচ্ছেদ)।
+          // এখন তা পরের প্রশ্নের preContext-এ, সোর্সের হুবহু ক্রমে, সংরক্ষিত হয়।
+          pendingPreContext += (pendingPreContext ? '\n' : '') + line.replace(/^>\s?/, '');
         }
       }
 
       if (currentQuestion) {
         currentSection.questions.push(currentQuestion);
+      }
+      // ফাইলের শেষে কোনো প্রশ্নের সাথে যুক্ত না-হওয়া লেখা পড়ে থাকলে সেটিও হারাতে দেওয়া হয় না
+      if (!currentQuestion && pendingPreContext.trim()) {
+        currentSection.questions.push({
+          num: '', text: '', preContext: pendingPreContext,
+          stimulus: '', statements: [], subQuestions: [], options: []
+        });
+        pendingPreContext = '';
       }
       if (currentSection.questions.length > 0 || currentSection.title) {
         result.sections.push(currentSection);

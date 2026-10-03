@@ -13,7 +13,7 @@
     "exam": "",
     "examType": "",
     "institute": "",
-    "instructions": "[উদ্দীপক ১]",
+    "instructions": "",
     "location": "",
     "marks": "",
     "time": ""
@@ -25,7 +25,7 @@
         {
           "num": "১",
           "options": [],
-          "preContext": "",
+          "preContext": "[উদ্দীপক ১]\nএকটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
@@ -54,14 +54,14 @@
           "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "[উদ্দীপক ২]\nএকটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।",
+          "stimulus": "",
           "subQuestions": [],
           "text": "ঘ. গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো। ৪"
         },
         {
           "num": "২",
           "options": [],
-          "preContext": "",
+          "preContext": "[উদ্দীপক ২]\nএকটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
@@ -90,14 +90,14 @@
           "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "[উদ্দীপক ৩]\nএকটি তারের রোধ পরিমাপ করা হলো।",
+          "stimulus": "",
           "subQuestions": [],
           "text": "ঘ. ঘর্ষণ উপেক্ষা করা যৌক্তিক কি না মতামত দাও।"
         },
         {
           "num": "৩",
           "options": [],
-          "preContext": "",
+          "preContext": "[উদ্দীপক ৩]\nএকটি তারের রোধ পরিমাপ করা হলো।",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
@@ -193,7 +193,7 @@
       "textHead": "গ. ১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয়"
     },
     {
-      "hasStimulus": true,
+      "hasStimulus": false,
       "num": "১",
       "optionCount": 0,
       "section": 0,
@@ -225,7 +225,7 @@
       "textHead": "গ. প্রযুক্ত বলের মান নির্ণয় করো। (৩)"
     },
     {
-      "hasStimulus": true,
+      "hasStimulus": false,
       "num": "২",
       "optionCount": 0,
       "section": 0,
@@ -290,9 +290,9 @@
 <div style="text-align: right; flex: 1; white-space: nowrap;">
 </div>
 </div>
-<div class="qp-instructions italic" style="margin: 0; line-height: 1.35; font-size: 12pt; color: #1e293b;">[উদ্দীপক ১]</div>
 </div>
 <div class="qp-columns two-columns">
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ১]<br>একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
@@ -316,8 +316,8 @@
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
 <span class="cq-text text-justify flex-1">ঘ. গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো। ৪</span>
 </div>
-<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">[উদ্দীপক ২]<br>একটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।</div>
 </div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ২]<br>একটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
@@ -341,8 +341,8 @@
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
 <span class="cq-text text-justify flex-1">ঘ. ঘর্ষণ উপেক্ষা করা যৌক্তিক কি না মতামত দাও।</span>
 </div>
-<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">[উদ্দীপক ৩]<br>একটি তারের রোধ পরিমাপ করা হলো।</div>
 </div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">[উদ্দীপক ৩]<br>একটি তারের রোধ পরিমাপ করা হলো।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
@@ -379,25 +379,53 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
-<w:jc w:val="center"/>
+<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
-<w:i/>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">[উদ্দীপক ১]</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
-<w:pBdr>
-<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
-</w:pBdr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">/</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সেকেন্ড বেগ অর্জন করে।</w:t>
+</w:r>
 </w:p>
 <w:p>
 <w:pPr>
@@ -517,7 +545,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -530,7 +558,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -659,7 +687,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -672,7 +700,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 </w:pPr>
 <w:r>
 <w:rPr>
