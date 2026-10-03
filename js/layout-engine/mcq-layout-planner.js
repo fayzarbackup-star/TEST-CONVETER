@@ -413,6 +413,34 @@
     },
 
     /**
+     * Part-13.3 (রিপোর্ট-২.১ রুট-কজ): পৃষ্ঠা-১-এর কলাম-২-এ হেডার খায় না —
+     * কলাম-১ = cap1 (হেডার-করা), কলাম-২ = cap2 (পূর্ণ কলাম-উচ্চতা)। আগে
+     * দুটোতেই cap1 ধরা হতো ⇒ কলাম-২ অর্ধ-খালি রেখেই পরের পৃষ্ঠায় ঝাঁপ।
+     */
+    balancePageHeader(items, cap1, cap2, from) {
+      const start = from || 0;
+      const n = items.length - start;
+      if (n <= 0) return { count: 0, split: 0, h1: 0, h2: 0, empty: true };
+      const P = new Array(n + 1).fill(0);
+      for (let i = 0; i < n; i++) P[i + 1] = P[i] + items[start + i].height;
+      const best = { count: 0, split: 1, h1: 0, h2: 0 };
+      for (let K = n; K >= 1; K--) {
+        if (P[K] > cap1 + cap2) continue;
+        let found = null;
+        for (let k1 = 1; k1 <= K; k1++) {
+          const h1 = P[k1];
+          const h2 = P[K] - P[k1];
+          if (h1 <= cap1 && h2 <= cap2) {
+            const diff = Math.abs(h1 - h2);
+            if (!found || diff < found.diff) found = { k1, h1, h2, diff };
+          }
+        }
+        if (found) { best.count = K; best.split = found.k1; best.h1 = found.h1; best.h2 = found.h2; break; }
+      }
+      return best;
+    },
+
+    /**
      * মাস্টার এন্ট্রি — সম্পূর্ণ Geometry Plan।
      * options: { docType, margin, colSep, forceSz, layoutMode:'AUTO'|'A'|'B'|'C',
      *            lineFactor, baseSz, maxShrinkOverflow }
@@ -496,7 +524,7 @@
 
         if (pages.length && singlePage) {
           // এক পৃষ্ঠা: ব্যালান্স করি (ওয়ার্ডও তা-ই করে)
-          const b = this.balancePage(items, capPage1, 0);
+          const b = this.balancePageHeader(items, capPage1, capFull, 0);
           if (b.count > 0) {
             pages[0] = {
               page: 1,

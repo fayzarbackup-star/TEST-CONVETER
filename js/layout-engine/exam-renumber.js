@@ -76,11 +76,61 @@
     return parsedData;
   }
 
+  /**
+   * Part-13.3 (রিপোর্ট-১.১): গাইড-বইয়ের পেডাগজিক্যাল লেবেল বাদ — "(সহজমান)",
+   * "(মধ্যমান)", "(কঠিনমান)", "(সহজ মান)" … প্রশ্ন ও উপ-প্রশ্নের টেক্সট থেকে।
+   * সুরক্ষিত: "[অঙ্কনের চিহ্ন ও বিবরণ আবশ্যক]" — কখনো ছোঁয়া হয় না (এই বাক্যে 'মান' শব্দই নেই)।
+   */
+  function stripDifficultyTags(text) {
+    var s = String(text == null ? '' : text);
+    if (!s) return s;
+    // সঠিক বানান-সেট: "মধ্যমান" = মধ্যম+ান (ম শেয়ারড) — তাই পূর্ণ-শব্দ অল্টারনেশন
+    // বন্ধনীসহ: (সহজমান) (মধ্যমান) [কঠিনমান] (সহজ মান) — literal regex, string-escape নয়
+    var RE_BRACKETED = /[\(\[]\s*(?:সহজমান|মধ্যমান|কঠিনমান|সহজ\s+মান|মধ্যম\s+মান|কঠিন\s+মান)\s*[\)\]]/g;
+    // বন্ধনীহীন: "লেখো। সহজমান ২" — সীমা-চেকসহ
+    var RE_BARE = /(^|[\s।,;:])(?:সহজমান|মধ্যমান|কঠিনমান|সহজ\s+মান|মধ্যম\s+মান|কঠিন\s+মান)(?=$|[\s।,;:\)\]])/g;
+    s = s.replace(RE_BRACKETED, '');
+    s = s.replace(RE_BARE, '$1');
+    // পরিষ্কার: দ্বৈত শ্বাস ও বিরামচিহ্নের আগে ঝুলে-থাকা স্পেস
+    return s.replace(/[ \t]{2,}/g, ' ').replace(/\s+(?=[।,;:])/g, '').trim();
+  }
+
+  /** parsedData-র প্রশ্ন-টেক্সট-ক্ষেত্রগুলোতে লেবেল-স্ট্রিপ (in-place) */
+  function stripDifficultyTagsFromData(parsedData) {
+    if (!parsedData || !Array.isArray(parsedData.sections)) return parsedData;
+    var fix = stripDifficultyTags;
+    for (var si = 0; si < parsedData.sections.length; si++) {
+      var sec = parsedData.sections[si];
+      if (!sec) continue;
+      if (typeof sec.title === 'string') sec.title = fix(sec.title);
+      var qs = Array.isArray(sec.questions) ? sec.questions : [];
+      for (var qi = 0; qi < qs.length; qi++) {
+        var q = qs[qi];
+        if (!q) continue;
+        if (typeof q.text === 'string') q.text = fix(q.text);
+        if (typeof q.preContext === 'string') q.preContext = fix(q.preContext);
+        if (typeof q.stimulus === 'string') q.stimulus = fix(q.stimulus);
+        if (Array.isArray(q.statements)) q.statements = q.statements.map(fix);
+        var subs = Array.isArray(q.subQuestions) ? q.subQuestions : [];
+        for (var bi = 0; bi < subs.length; bi++) {
+          if (subs[bi] && typeof subs[bi].text === 'string') subs[bi].text = fix(subs[bi].text);
+        }
+        var opts = Array.isArray(q.options) ? q.options : [];
+        for (var oi = 0; oi < opts.length; oi++) {
+          if (opts[oi] && typeof opts[oi].text === 'string') opts[oi].text = fix(opts[oi].text);
+        }
+      }
+    }
+    return parsedData;
+  }
+
   const api = {
     isExamType: isExamType,
     toBengaliDigits: toBengaliDigits,
     detectBengaliStyle: detectBengaliStyle,
-    renumberExamSections: renumberExamSections
+    renumberExamSections: renumberExamSections,
+    stripDifficultyTags: stripDifficultyTags,
+    stripDifficultyTagsFromData: stripDifficultyTagsFromData
   };
 
   global.FayzarExamRenumber = api;

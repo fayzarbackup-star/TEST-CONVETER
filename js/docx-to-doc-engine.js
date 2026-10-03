@@ -589,6 +589,7 @@
       let marginRight = "0.6in";
       let cols = 1;
       let colSpace = "0.2in";
+      let colSep = false;   // Part-13.3: w:sep="1" থাকলে কলাম-বিভাজক রেখা
 
       if (opts.pageSize === 'legal') {
         width = "8.5in";
@@ -648,6 +649,9 @@
           if (spaceTwips) {
             colSpace = (spaceTwips / 1440).toFixed(2) + "in";
           }
+          // Part-13.3: DOCX-এর w:sep="1" = দৃশ্যমান কলাম-রেখা; না থাকলে রেখা নয়
+          const sepAttr = colsEl.getAttribute("w:sep") || colsEl.getAttribute("sep");
+          colSep = (sepAttr === "1" || sepAttr === "true");
         }
       }
 
@@ -659,7 +663,8 @@
         marginLeft,
         marginRight,
         cols,
-        colSpace
+        colSpace,
+        colSep
       };
     }
 
@@ -739,7 +744,13 @@
             }
           }
           if (tabStops.length > 0) {
-            pStyles.push(`mso-tab-stops:${tabStops.join(' ')}`);
+            // Part-13.3: Word-2003-মান্য CSS-প্রপার্টি `tab-stops:` (রুলারে স্টপ
+            // দেখায় ও ট্যাব সঠিক কলামে বসে — সময়/পূর্ণমান, MCQ অপশন-গ্রিড,
+            // CQ মার্ক)। আগে শুধু `mso-tab-stops:` ছিল — Word 2003 সেটি চিনত
+            // না ⇒ রুলারে কোনো স্টপ নেই, সব ট্যাব বামে আটকে যেত।
+            const stops = tabStops.join(' ');
+            pStyles.push(`tab-stops:${stops}`);
+            pStyles.push(`mso-tab-stops:${stops}`);
           }
         }
       }
@@ -1065,8 +1076,13 @@
           textContent += "\t";
           htmlContent += '___MSO_TAB_SEP___';
         } else if (tName === 'br') {
+          // Part-13.3: কলাম/পেজ-ব্রেক Word-HTML-এ মান্য সিনট্যাক্সে ম্যাপ — আগে
+          // সব br হারিয়ে যেত ⇒ বুকলেটে হেডিং পূর্ববর্তী প্রশ্নের নিচে গিয়ে পড়ত
+          const brType = t.getAttribute('w:type') || t.getAttribute('type') || '';
           textContent += "\n";
-          htmlContent += '<br/>\n';
+          if (brType === 'page') htmlContent += '___MSO_BRK_PAGE___';
+          else if (brType === 'column') htmlContent += '___MSO_BRK_COL___';
+          else htmlContent += '<br/>\n';
         }
       }
 
@@ -1135,15 +1151,15 @@
       const styleAttr = rStyles.length > 0 ? ` style="${rStyles.join(';')}"` : '';
       let html = imagesHtml;
 
-      if (htmlContent.includes('___MSO_TAB_SEP___')) {
-        const parts = htmlContent.split('___MSO_TAB_SEP___');
-        for (let pi = 0; pi < parts.length; pi++) {
-          if (pi > 0) {
-            html += '<span style="mso-tab-count:1">\t</span>';
-          }
-          if (parts[pi]) {
-            html += `<span${styleAttr}>${parts[pi]}</span>`;
-          }
+      const SPLIT_RE = /(___MSO_TAB_SEP___|___MSO_BRK_PAGE___|___MSO_BRK_COL___)/;
+      if (SPLIT_RE.test(htmlContent)) {
+        const parts = htmlContent.split(SPLIT_RE);
+        for (const part of parts) {
+          if (!part) continue;
+          if (part === '___MSO_TAB_SEP___') { html += '<span style="mso-tab-count:1">\t</span>'; continue; }
+          if (part === '___MSO_BRK_PAGE___') { html += `<br clear=all style='page-break-before:always'>\n`; continue; }
+          if (part === '___MSO_BRK_COL___') { html += `<br clear=all style='mso-column-break-before:always'>\n`; continue; }
+          html += `<span${styleAttr}>${part}</span>`;
         }
       } else {
         html += `<span${styleAttr}>${htmlContent}</span>`;
@@ -1290,8 +1306,10 @@
       sections.forEach((sec, idx) => {
         const secIndex = idx + 1;
         const page = sec.pageSettings;
+        // Part-13.3: কলাম-রেখা কেবল w:sep="1" থাকলে; CQ বুকলেটে (sep=0) রেখা থাকবে না
         const colsCss = page.cols >= 2
-          ? `\tmso-columns:${page.cols} even ${page.colSpace || '0.2in'};\n\tmso-column-separator:solid;\n`
+          ? (`\tmso-columns:${page.cols} even ${page.colSpace || '0.2in'};\n` +
+             (page.colSep ? '\tmso-column-separator:solid;\n' : ''))
           : '';
 
         pageStylesCss += ` @page Section${secIndex}

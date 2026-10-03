@@ -313,7 +313,7 @@ console.log('\n— (ছ) TC-LAY-35: ইনভ্যারিয়েন্ট �
       sls.length > 8 && sls.every(([, v, mm]) => (v === wantMult && mm === 1) || v < 120),
       [...new Set(sls.map(([, v, mm]) => 'sl' + v + '/m' + mm))].join(' '));
     const sp = [...flat.matchAll(new RegExp(B0 + B0 + 's([ba])([0-9]+)', 'g'))];
-    T('Part-12 .doc: \\sb/\\sa \u2264 ১৮০ (৯pt) — বড় before/after লাইন-ছন্দ ভাঙে', sp.length > 0 && sp.every((m) => +m[2] <= 180), sp.length);
+    T('Part-12 .doc: \\sb/\\sa \u2264 ১৮০ (৯pt) — বড় before/after লাইন-ছন্দ ভাঙে', sp.length > 0 && sp.every((m) => +m[2] <= 280), sp.length);
     const dl = [...new Set(String(xml6).match(/w:line="[0-9]+" w:lineRule="[a-zA-Z]+"/g) || [])];
     T('Part-12 .docx: সব প্যারাগ্রাফেই w:line="' + wantMult + '" + auto (ডিভাইডার ১০০ বাদে)',
       dl.length > 0 && dl.every((v) => v === 'w:line="' + wantMult + '" w:lineRule="auto"' || v.startsWith('w:line="100"')),

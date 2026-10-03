@@ -1510,7 +1510,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -1853,7 +1853,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -2170,7 +2170,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -2492,7 +2492,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -2814,7 +2814,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -3136,7 +3136,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -3466,7 +3466,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -3788,7 +3788,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -4110,7 +4110,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -4432,7 +4432,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>

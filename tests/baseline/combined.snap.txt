@@ -441,7 +441,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -552,7 +552,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -673,7 +673,7 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="864" w:hanging="432"/>
 <w:tabs>
 <w:tab w:val="left" w:pos="432"/>
@@ -914,11 +914,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">(ঘ) গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
-</w:r>
-</w:p>
-<w:p>
-<w:r>
-<w:br w:type="column"/>
 </w:r>
 </w:p>
 <w:p>

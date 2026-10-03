@@ -253,6 +253,8 @@
         let RN = (typeof FayzarExamRenumber !== 'undefined' && FayzarExamRenumber)
           || (typeof globalThis !== 'undefined' && globalThis.FayzarExamRenumber) || null;
         if (!RN && typeof require === 'function') { try { RN = require('./exam-renumber.js'); } catch (e) {} }
+        // Part-13.3: কাঠিন্য-লেবেল বাদ (প্রশ্ন/উপ-প্রশ্ন)
+        if (RN && RN.stripDifficultyTagsFromData && RN.isExamType(docType) && parsedData) RN.stripDifficultyTagsFromData(parsedData);
         if (RN && options.renumber !== false && RN.isExamType(docType) && parsedData) RN.renumberExamSections(parsedData);
       } catch (e) { console.warn('[FayzarPipeline] renumber skipped:', e); }
 

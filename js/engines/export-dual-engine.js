@@ -469,6 +469,8 @@
           || (typeof globalThis !== 'undefined' && globalThis.FayzarExamRenumber)
           || (typeof global !== 'undefined' && global.FayzarExamRenumber) || null;
         if (!RN && typeof require === 'function') { try { RN = require('../layout-engine/exam-renumber.js'); } catch (e) {} }
+        // Part-13.3 (রিপোর্ট-১.১): কাঠিন্য-লেবেল (সহজমান/মধ্যমান/কঠিনমান) বাদ
+        if (RN && RN.stripDifficultyTagsFromData && RN.isExamType(docType)) RN.stripDifficultyTagsFromData(parsed);
         if (RN && (!options || options.renumber !== false) && RN.isExamType(docType)) RN.renumberExamSections(parsed);
       } catch (e) { /* ফিডেলিটি প্রাধান্য — নম্বরায়ন ব্যর্থ হলেও কনটেন্ট অটুট */ }
       return parsed;
@@ -899,8 +901,8 @@
       s = s.replace(/\\fs(\d+)((?:\\f\d+)?)\\sl(\d+)\\slmult(\d)/g, (whole, sz, fslot, sl, mm) =>
         // ১২০-এর নিচে = হেয়ারলাইন/ডিভাইডার লাইন ⇒ সেগুলোর নিজস্ব সরু পিচই থাকে
         (+sl < 120 ? whole : '\\fs' + sz + fslot + '\\sl' + mult + '\\slmult1'));
-      // \sb/\sa স্ট্যান্ডার্ড সীমায় (৯pt = ১৮০ টুইপ) — বড় before/after লাইন-ছন্দ ভাঙে
-      s = s.replace(/\\s([ba])(\d{3,})/g, (whole, k, v) => '\\s' + k + Math.min(parseInt(v, 10), 180));
+      // Part-13.3: সীমা ≤ ২৮০ টুইপ (১৪pt) — CQ প্রশ্ন-বিরতি ২৪০ (১২pt) অনুমোদিত (রিপোর্ট-১.২: ১০–১৪pt)
+      s = s.replace(/\\s([ba])(\d{3,})/g, (whole, k, v) => '\\s' + k + Math.min(parseInt(v, 10), 280));
       return s;
     },
 
@@ -915,7 +917,7 @@
         (+v < 120 ? whole : 'w:line="' + line + '" w:lineRule="auto"'));
       s = s.replace(/w:lineRule="(auto|atLeast|exact)" w:line="([0-9]+)"/g, (whole, rule, v) =>
         (+v < 120 ? whole : 'w:lineRule="auto" w:line="' + line + '"'));
-      s = s.replace(/ w:(before|after)="(\d{3,})"/g, (whole, k, v) => ' w:' + k + '="' + Math.min(parseInt(v, 10), 180) + '"');
+      s = s.replace(/ w:(before|after)="(\d{3,})"/g, (whole, k, v) => ' w:' + k + '="' + Math.min(parseInt(v, 10), 280) + '"');
       // সমীকরণ-জোনের শেষে ঝুলে-থাকা স্পেস Word-এর ম্যাথ-অটো-স্পেসিং-এর ওপর চাপে
       // ⇒ \pi r^2 জাতীয় রাশিতে অস্বাভাবিক ফাঁকা (ট্রায়াজ ৫)
       s = s.replace(/(<m:t[^>]*>)([^<]*?)\s+(<\/m:t>)(?=<\/m:r><m:r>)/g, '$1$2$3');
@@ -1007,6 +1009,26 @@
         }
       }
       return { firstLineText, remaining };
+    },
+
+    /** Part-13.3: প্রশ্ন-ব্লকের শেষ spacing (১২pt বিরতি) — শেষ \\sa<N> বদলায় */
+    _bumpLastSpacingRtf(str, val) {
+      const s = String(str == null ? '' : str);
+      const idx = s.lastIndexOf('\\sa');
+      if (idx < 0) return s;
+      const m = /^\\sa(\d+)/.exec(s.slice(idx));
+      if (!m) return s;
+      return s.slice(0, idx) + '\\sa' + val + s.slice(idx + m[0].length);
+    },
+
+    /** Part-13.3: DOCX-এ শেষ `w:after="N"` বদলায় */
+    _bumpLastSpacingDocx(str, val) {
+      const s = String(str == null ? '' : str);
+      const idx = s.lastIndexOf('w:after="');
+      if (idx < 0) return s;
+      const m = /^w:after="(\d+)"/.exec(s.slice(idx));
+      if (!m) return s;
+      return s.slice(0, idx) + 'w:after="' + val + '"' + s.slice(idx + m[0].length);
     },
 
     /** RTF পেজ-সেটআপ্র (ল্যান্ডস্কেপ A4, ০.৫" মার্জিন, ২ কলাম, 0.7" গ্যাপ) — নম্বর সব প্ল্যানার থেকে */
@@ -1170,6 +1192,8 @@
             '\\li' + g.indent + '\\fi-' + g.indent + '\\tx' + g.indent + '\\tx' + half + ' ' + rowRtf + '\\par}\n';
         }
       }
+      // Part-13.3 (রিপোর্ট-১.২): শেষ অনুচ্ছেদে ১২pt (২৪০) after — প্রতিটি উদ্দীপক আলাদা ব্লক
+      rtf = this._bumpLastSpacingRtf(rtf, 240);
       return rtf;
     },
 
@@ -1343,6 +1367,8 @@
             '<w:tabs><w:tab w:val="left" w:pos="' + g.indent + '"/><w:tab w:val="left" w:pos="' + half + '"/></w:tabs></w:pPr>' + rowXml + '</w:p>';
         }
       }
+      // Part-13.3 (রিপোর্ট-১.২): প্রশ্ন-ব্লকের শেষ প্যারায় ২৪০ টুইপ (১২pt) after
+      xml = this._bumpLastSpacingDocx(xml, 240);
       return xml;
     },
 
@@ -1508,7 +1534,9 @@
       // পৃষ্ঠা ও কলাম বিন্যাস প্ল্যান থেকে (ঙ.২ — ২য় পৃষ্ঠায়ও ২-কলাম উচ্চতা-ব্যালান্স)
       for (let pi = 0; pi < plan.pages.length; pi++) {
         const pg = plan.pages[pi];
-        if (pi > 0) rtf += '\\page\n';
+        // Part-13.3 (রিপোর্ট-২.১): কৃত্রিম পেজ-ব্রেক বন্ধ — Word-এর স্বাভাবিক
+        // কলাম-প্রবাহই কলাম শেষ করে পরের কলাম/পৃষ্ঠায় যায়। আগে প্ল্যানারের
+        // উচ্চতা-অনুমান বড় হওয়ায় অর্ধ-খালি কলামে পেজ-ব্রেক ঝাঁপ দিত।
         const byIdx = (list) => list.map((i) => plan.items[i]).filter(Boolean);
         const col1 = byIdx(pg.col1);
         const col2 = byIdx(pg.col2);
@@ -1517,7 +1545,7 @@
         // শেষ পৃষ্ঠা Word/LibreOffice নিজেই উচ্চতা-ব্যালান্স করে (ঙ.২), আর প্রথম
         // পৃষ্ঠা কলাম ১ → কলাম ২ ক্রমে পূরণ হয়। জোরি ব্রেক কেবল options.forceColumnBreaks
         // দিলে (উচ্চতা মডেলের চেয়ে নিখুঁত ভাগ দরকার হলে) বসে।
-        if (pg.forceBreak && col2.length > 0) rtf += '\\column\n';
+        // Part-13.3: জোরি কলাম-ব্রেকও বন্ধ (প্রাকৃতিক প্রবাহ কলাম নিজেই ভরাট করে)
         for (const it of col2) rtf += renderRtfItem(it);
       }
 
@@ -1650,11 +1678,10 @@
       const byIdx = (list) => list.map((i) => plan.items[i]).filter(Boolean);
       for (let pi = 0; pi < plan.pages.length; pi++) {
         const pg = plan.pages[pi];
-        if (pi > 0) bodyXml += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+        // Part-13.3 (রিপোর্ট-২.১): কৃত্রিম পেজ-ব্রেক বন্ধ — প্রাকৃতিক প্রবাহ
         for (const it of byIdx(pg.col1)) bodyXml += renderDocxItem(it);
         const c2 = byIdx(pg.col2);
-        // Part-10: ডক্সেও ডিফল্ট কলাম-ব্রেক নেই (উপরের RTF নোট দেখুন)
-        if (pg.forceBreak && c2.length > 0) bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
+        // Part-10 + Part-13.3: ডক্সেও কোনো জোরি কলাম-ব্রেক নেই (প্রাকৃতিক প্রবাহ)
         for (const it of c2) bodyXml += renderDocxItem(it);
       }
 

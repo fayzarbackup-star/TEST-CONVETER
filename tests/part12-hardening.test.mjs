@@ -7,7 +7,7 @@
  *   (আ) উভয় প্ল্যানার: UI-নাম ('normal'/'narrow'/…), ইঞ্চি, raw-twips — মডিউল ও
  *       inline-fallback দুইভাবেই হুবহু একই জ্যামিতি (কোনো NaN জ্যামিতিতে ঢোকে না)
  *   (ই) এক্সপোর্ট: .doc (RTF) ও .docx — NaN-মুক্ত, লাইন-বক্স = \fs × lineFactor,
- *       \sb/\sa ≤ ১৮০, ম্যাথ-সীমান্তে ডাবল-স্পেস নেই
+ *       \sb/\sa ≤ ২৮০ (১৩.৩), ম্যাথ-সীমান্তে ডাবল-স্পেস নেই
  *   (ঈ) মার্ক: উৎসে না থাকলে কিছুই বানানো হয় না; থাকলে [৩]/(মান: ৩)/৩ নম্বর সব রূপ ধরা পড়ে
  *   (উ) গ্রুপিং: `১. নিচের উদ্দীপক…` ও `[উদ্দীপক N]` → সাব-প্রশ্নসহ সঠিক সংযুক্তি
  *   (ঊ) প্রিভিউ ⇄ ডাউনলোড: line-height প্ল্যান থেকে আসে
@@ -110,7 +110,7 @@ const rtf6 = EX.generateCqExamRtf(parsed6, {});
     [...new Set(pairs.map((m) => 'fs' + m[1] + ':sl' + m[2]))].join(' '));
   T('CQ .doc: NaN/undefined নেই', !/NaN|undefined/.test(rtf6), (rtf6.match(/NaN|undefined/g) || []).length);
   const sb = [...flat.matchAll(new RegExp(B + B + 's([ba])([0-9]+)', 'g'))];
-  T('CQ .doc: \sb/\sa ≤ ১৮০', sb.length > 0 && sb.every((m) => +m[2] <= 180), sb.length);
+  T('CQ .doc: \sb/\sa ≤ ২৮০ (১৩.৩)', sb.length > 0 && sb.every((m) => +m[2] <= 280), sb.length);
 }
 (async () => {
   for (const mi of ['normal', 'narrow', 'moderate', 'wide', 0.6, undefined]) {

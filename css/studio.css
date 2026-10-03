@@ -990,7 +990,9 @@ body.fullscreen-preview #preview-section {
    Creative Question (CQ) Layout (Pure CSS)
    =================================================== */
 .cq-q-item {
-  margin: 0 0 4px 0 !important;
+  /* Part-13.3 (রিপোর্ট-১.২): প্রতিটি সৃজনশীল প্রশ্নের পর ১২pt বিরতি — ডাউনলোডের
+     ২৪০ টুইপ (১২pt) paragraph-after-এর সঙ্গে হুবহু মিল (preview == download) */
+  margin: 0 0 12pt 0 !important;
   padding: 0 !important;
   line-height: 1.35 !important;
   break-inside: avoid;
