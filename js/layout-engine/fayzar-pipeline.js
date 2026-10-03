@@ -247,6 +247,15 @@
       // পার্স-উৎস চিহ্নিতকরণ — ভুল docType-এর parsedData কখনো ব্যবহার হবে না
       if (parsedData && !parsedData.__fzDocType) parsedData.__fzDocType = docType;
 
+      // Part-13.2: পরীক্ষার কাগজে অংশভিত্তিক ধারাবাহিক নম্বরায়ন (১।, ২।, ৩। …) —
+      // আউটপুট-লেয়ারে নীতি-স্টেপ; পার্সার/OCR ফিডেলিটি অটুট। options.renumber === false দিলে বন্ধ।
+      try {
+        let RN = (typeof FayzarExamRenumber !== 'undefined' && FayzarExamRenumber)
+          || (typeof globalThis !== 'undefined' && globalThis.FayzarExamRenumber) || null;
+        if (!RN && typeof require === 'function') { try { RN = require('./exam-renumber.js'); } catch (e) {} }
+        if (RN && options.renumber !== false && RN.isExamType(docType) && parsedData) RN.renumberExamSections(parsedData);
+      } catch (e) { console.warn('[FayzarPipeline] renumber skipped:', e); }
+
       // Step 3: Render (HTML Preview vs Word Document Export)
       let content = null;
       let renderError = null;

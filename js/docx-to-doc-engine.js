@@ -23,6 +23,19 @@
     'followedHyperlink': '800080'
   };
 
+  /**
+   * Part-13.2 (Word 2003 font-metric fix): Cambria Math প্রভৃতি OpenType-math ফন্টের
+   * লাইন-বক্স মেট্রিক্স SutonnyMJ-এর (ascent 1150 / descent 350) সঙ্গে মিশলে Word 2003-এর
+   * অটো-স্পেসিং ওই লাইনকে ৪০–৫০pt করে ফেলে ⇒ নির্দিষ্ট প্রশ্নে বিশাল ফাঁকা।
+   * .doc-HTML-এ সমীকরণ থাকে EQ-field-এ, তাই math-ফন্ট এখানে অপ্রয়োজনীয় —
+   * ANSI-নিরাপদ 'Times New Roman'-এ ম্যাপ করা হয়। (কোনো fixed line-height নয় —
+   * ভগ্নাংশ/সমীকরণের মাথা কাটার ঝুঁকি শূন্য।)
+   */
+  function sanitizeFontFamily(name) {
+    const s = String(name == null ? '' : name);
+    return /cambria\s*math|mathjax|stix\s*(?:two|general)?|latin\s*modern\s*math/i.test(s) ? 'Times New Roman' : s;
+  }
+
   class DocxToDocConverter {
     constructor() {
       this.domParser = typeof DOMParser !== 'undefined' ? new DOMParser() : null;
@@ -1062,6 +1075,10 @@
         fontFamily = opts.direction === 'all_unicode' ? 'Nikosh' : (opts.preserveSutonny ? 'SutonnyMJ' : 'Times New Roman');
       }
 
+      // Part-13.2: math-ফন্ট (Cambria Math ইত্যাদি) → ANSI-নিরাপদ ফন্ট —
+      // fixed line-height ছাড়াই Word 2003-এর ৪০–৫০pt লাইন-ফুলে-ওঠা বন্ধ হয়।
+      fontFamily = DocxToDocConverter.sanitizeFontFamily(fontFamily);   // static — টেস্টে monkeypatch-যোগ্য (নিয়ন্ত্রণ-রান)
+
       // Check if run is SutonnyMJ/Bijoy vs English/Math/Unicode
       const isEnglishFont = fontFamily && /times|calibri|arial|verdana|courier|georgia|cambria/i.test(fontFamily);
       const isSutonnyFont = fontFamily && (fontFamily.includes('Sutonny') || fontFamily.includes('Bijoy') || fontFamily.includes('Bangla'));
@@ -1435,6 +1452,8 @@ ${bodyDivsHtml}</body>
 
   const docxToDocEngine = new DocxToDocConverter();
   DocxToDocConverter.convertDocxToDoc = (docxInput, opts) => docxToDocEngine.convertDocxToDoc(docxInput, opts);
+
+  DocxToDocConverter.sanitizeFontFamily = sanitizeFontFamily;   // Part-13.2: টেস্টযোগ্য
 
   if (typeof window !== 'undefined') {
     window.DocxToDocConverter = DocxToDocConverter;

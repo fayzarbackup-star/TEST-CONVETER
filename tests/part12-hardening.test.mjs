@@ -202,7 +202,9 @@ const rtf6 = EX.generateCqExamRtf(parsed6, {});
   const ocr = fs.readFileSync(path.join(ROOT, 'js', 'ai-ocr-engine.js'), 'utf8');
   T('প্রম্পটে STRICT QUESTION-ONLY ব্লক (তৈরি + যাচাই দুটোতেই)', (ocr.match(/STRICT QUESTION-ONLY/g) || []).length === 2, (ocr.match(/STRICT QUESTION-ONLY/g) || []).length);
   T('কোভারেজ-ম্যান্ডেট থেকে answers/solutions বাদ', !/answers\/solutions/.test(ocr));
-  T('নম্বর-পুনঃসংখ্যায়নের নিয়মটি সীমাবদ্ধ (প্রশ্ন-নম্বর অক্ষুণ্ন থাকে)', /প্রশ্ন ১, ২, ৩|১ থেকে আবার শুরু/.test(ocr) && /QUESTION NUMBER PRESERVATION/.test(ocr));
+  // ১৩.২ নীতি: মডেল-প্রম্পটে নম্বর হুবহু সংরক্ষণ বাধ্যতামূলক; ধারাবাহিক ১।, ২।, ৩। …
+  // রেনাম্বারিং প্রম্পটে চাপানো হয় না — FayzarExamRenumber কোড-লেভেলে (ডাউনস্ট্রিমে) করে।
+  T('নম্বর-নিয়ম (১৩.২): প্রম্পটে preservation, রেনাম্বারিং ডাউনস্ট্রিমে — প্রম্পটে ম্যান্ডেট নেই', /QUESTION NUMBER PRESERVATION/.test(ocr) && !/MANDATORY SEQUENTIAL RENUMBERING/.test(ocr) && /ডাউনস্ট্রিমে/.test(ocr));
   T('প্রক্সি-টোকেন override-যোগ্য (localStorage → global → ফলব্যাক)', /globalThis\.FAYZAR_PROXY_TOKEN/.test(ocr));
 
   console.log('\nফল: ' + pass + ' পাস, ' + fail + ' ব্যর্থ');

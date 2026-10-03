@@ -106,7 +106,13 @@ const allQ = (p) => p.sections.flatMap((s) => s.questions);
   const zip = await global.JSZip.loadAsync(buf);
   const xml = await zip.file('word/document.xml').async('string');
   const txt = xml.replace(/<[^>]+>/g, '');
-  T('আর্টিফ্যাক্ট: docx-এ ৪টি প্রশ্ন-নম্বরই উপস্থিত', ['১২।', '০৭।', '৩।', '১৬।'].every((n) => txt.includes(n)), txt.slice(0, 120));
+  // ১৩.২: আর্টিফ্যাক্ট-লেভেলে (EDE _resolveParsed) নম্বর এখন সেকশনভিত্তিক ১..N —
+  // মূল গাইড-নম্বর ১২/০৭/১৬ ছাপা হয় না; parser-ফিডেলিটি (নিচে qs[]) অপরিবর্তিত থাকে।
+  // ফিক্সচারে ২টি সেকশন (মূল পরীক্ষা + 'সৃজনশীল প্রশ্ন ও সমাধান') ⇒ নীতিমতে প্রতিটি
+  // সেকশনই ১। থেকে শুরু করে (১।, ২।)×২; মূল গাইড-নম্বর ১২/০৭/১৬ আর ছাপা হয় না।
+  T('আর্টিফ্যাক্ট: প্রতি সেকশন ১।, ২। ছাপে; মূল গাইড-নম্বর থাকে না',
+    (txt.match(/১।/g) || []).length >= 2 && (txt.match(/২।/g) || []).length >= 2 &&
+    !txt.includes('১২।') && !txt.includes('০৭।') && !txt.includes('১৬।'), txt.slice(0, 120));
   T('আর্টিফ্যাক্ট: সাব-প্রশ্নের লেখা হারায়নি (সূত্র লেখো/সা. গু.)', txt.includes('সূত্র লেখো') && txt.includes('সা. গু.'));
   T('আর্টিফ্যাক্ট: মার্ক ২ ও ৮ টেক্সটে আছে', txt.includes('২') && txt.includes('৮'));
   T('আর্টিফ্যাক্ট: কাঁচা LaTeX (`\\frac`) নেই — OMML/সঠিক রেন্ডার', !/\\frac|\\sqrt/.test(txt));

@@ -454,8 +454,24 @@
      */
     _resolveParsed(rawText, docType, options, qEngine) {
       const pd = options && options.parsedData;
-      if (pd && pd.__fzDocType === docType) return pd;
-      return qEngine.parseQuestionPaper(rawText, { docType });
+      const parsed = (pd && pd.__fzDocType === docType) ? pd : qEngine.parseQuestionPaper(rawText, { docType });
+      return this._applyExamRenumber(parsed, docType, options);
+    },
+
+    /**
+     * Part-13.2: সেকশনভিত্তিক ধারাবাহিক নম্বরায়ন (আউটপুট-লেয়ার, নির্ধারক)।
+     * পার্সার হুবহু ট্রান্সক্রিপ্ট রাখে; চূড়ান্ত ১।, ২।, ৩। … এখানেই বসে —
+     * মডেল-প্রম্পটে নম্বর বদলানোর নির্দেশ না দিয়ে (প্লেসহোল্ডার-ঝুঁকি শূন্য)।
+     */
+    _applyExamRenumber(parsed, docType, options) {
+      try {
+        let RN = (typeof FayzarExamRenumber !== 'undefined' && FayzarExamRenumber)
+          || (typeof globalThis !== 'undefined' && globalThis.FayzarExamRenumber)
+          || (typeof global !== 'undefined' && global.FayzarExamRenumber) || null;
+        if (!RN && typeof require === 'function') { try { RN = require('../layout-engine/exam-renumber.js'); } catch (e) {} }
+        if (RN && (!options || options.renumber !== false) && RN.isExamType(docType)) RN.renumberExamSections(parsed);
+      } catch (e) { /* ফিডেলিটি প্রাধান্য — নম্বরায়ন ব্যর্থ হলেও কনটেন্ট অটুট */ }
+      return parsed;
     },
 
     generateLegacyDoc(rawText, docType = 'EXAM_CQ', options = {}) {
@@ -464,8 +480,8 @@
 
       if (qEngine && docType === 'EXAM_COMBINED') {
         const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
-        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' });
-        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' });
+        const parsedCq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' }), 'EXAM_CQ', options);
+        const parsedMcq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' }), 'EXAM_MCQ', options);
         const validator = this._getSchemaValidator();
         if (validator) { validator.validate(docType, parsedCq); validator.validate(docType, parsedMcq); }
         const rtf = this.generateCombinedExamRtf(parsedCq, parsedMcq, options);
@@ -646,8 +662,8 @@
 
       if (qEngine && docType === 'EXAM_COMBINED') {
         const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
-        const parsedCq = qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' });
-        const parsedMcq = qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' });
+        const parsedCq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' }), 'EXAM_CQ', options);
+        const parsedMcq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' }), 'EXAM_MCQ', options);
         const validator = this._getSchemaValidator();
         if (validator) { validator.validate(docType, parsedCq); validator.validate(docType, parsedMcq); }
         return await this.generateCombinedExamDocx(parsedCq, parsedMcq, options);

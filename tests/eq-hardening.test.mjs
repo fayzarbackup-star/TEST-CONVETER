@@ -230,7 +230,9 @@ const MCQ = [
   const html = String((await Pipeline.process('## ১২। `$x$` যাচাই।\n## উদাহরণ ২৯। `$y = x - 3$`\nক. দেখাও।', { docType: 'EXAM_CQ', outputFormat: 'html' })).content || '');
   const plain = html.replace(/<[^>]*>/g, '');
   T('## হেডিং-লিক নেই', !/#/.test(plain), plain.slice(0, 80));
-  T('প্রশ্ন-শিরোনাম অটুট (১২।)', plain.includes('১২।'));
+  // ১৩.২: প্রশ্ন-শিরোনামের নম্বর এখন সেকশনভিত্তিক (১২। → ১।); ## লিক-চেক ও নিচের
+  // `উদাহরণ ২৯` সংরক্ষণ-চেক অপরিবর্তিত — মডেল-প্রম্পটে নয়, কোড-লেভেলে রেনাম্বার।
+  T('প্রশ্ন-শিরোনাম অটুট (১৩.২: ১২। → ১।, ## লিক নেই)', plain.includes('১।') && !plain.includes('১২') && plain.includes('যাচাই।'));
   T('"উদাহরণ ২৯" লাইন থাকেছে (তথ্য হারায়নি)', plain.includes('উদাহরণ ২৯'));
 }
 
