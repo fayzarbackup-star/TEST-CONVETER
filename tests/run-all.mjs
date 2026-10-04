@@ -31,10 +31,12 @@ let totalPass = 0, totalFail = 0, skipped = 0;
 function tally(out) {
   const p1 = [...out.matchAll(/(\d+)\s*(?:পাস|passed)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
   const p2 = [...out.matchAll(/ℹ\s*pass\s*(\d+)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
-  const p = p1 + p2;
+  const p3 = [...out.matchAll(/(?:পাস|passed)[:\s]+(\d+)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
+  const p = p1 + p2 + (p1 === 0 && p2 === 0 ? p3 : 0);
   const f1 = [...out.matchAll(/(\d+)\s*(?:ব্যর্থ|failed)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
   const f2 = [...out.matchAll(/ℹ\s*fail\s*(\d+)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
-  const f = f1 + f2;
+  const f3 = [...out.matchAll(/(?:ব্যর্থ|failed)[:\s]+(\d+)/g)].map((m) => +m[1]).reduce((a, b) => a + b, 0);
+  const f = f1 + f2 + (f1 === 0 && f2 === 0 ? f3 : 0);
   const skip = /(?:SKIP|এড়ানো|স্কিপ)\b/i.test(out) || /ℹ\s*skipped\s*([1-9]\d*)/i.test(out);
   return { p, f, skip };
 }

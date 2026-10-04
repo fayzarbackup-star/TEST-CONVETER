@@ -982,13 +982,14 @@
 </div>
 <div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
 <div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠানের নাম</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণি ও বিষয়</div>
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
-<div style="text-align: left; flex: 1; white-space: nowrap;">
-</div>
-<div style="text-align: center; flex: 1;">
-</div>
-<div style="text-align: right; flex: 1; white-space: nowrap;">
-</div>
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ২ ঘণ্টা ৩০ মিনিট</div>
+<div style="text-align: center; flex: 1.5; text-decoration: underline; font-weight: bold; font-size: 13pt; letter-spacing: 0.5px;">সৃজনশীল অভীক্ষা</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমান: ৭০</div>
 </div>
 </div>
 <div class="qp-columns two-columns">
@@ -2559,6 +2560,100 @@
 <w:p>
 <w:r>
 <w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+<w:t xml:space="preserve">আপনার প্রতিষ্ঠানের নাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ঠিকানা লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+<w:t xml:space="preserve">পরীক্ষার নাম লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণি ও বিষয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="center" w:pos="3598"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ২ ঘণ্টা ৩০ মিনিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:u w:val="single"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সৃজনশীল অভীক্ষা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমান: ৭০</w:t>
 </w:r>
 </w:p>
 <w:p>

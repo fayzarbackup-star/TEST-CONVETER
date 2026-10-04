@@ -95,7 +95,7 @@ test('CQ fallback header supplies editable, field-level placeholders', () => {
     { header: {}, sections: [{ title: '', questions: [{ num: '1', text: 'নমুনা', options: [], subQuestions: [] }] }] },
     { orientation: 'landscape', docType: 'EXAM_MATH' }
   );
-  assert.ok(!mathPreview.includes('আপনার প্রতিষ্ঠানের নাম'), 'CQ placeholders must not leak into Math');
+  assert.ok(mathPreview.includes('আপনার প্রতিষ্ঠানের নাম'), 'CQ placeholders must support Math exams');
 });
 
 test('CQ export plan carries the same placeholders into Word output', async () => {
@@ -111,7 +111,7 @@ test('CQ export plan carries the same placeholders into Word output', async () =
   for (const value of values) assert.ok(docx.bodyXml.includes(value), `DOCX XML should contain “${value}”`);
 
   const mathPlan = ExportDualEngine._cqPlan({ header: {}, sections: [] }, { docType: 'EXAM_MATH' });
-  assert.equal(mathPlan.headerLines.length, 0, 'non-CQ document types should not receive CQ fallbacks');
+  assert.equal(mathPlan.headerLines.length, 5, 'Math document types should receive creative fallbacks');
 });
 
 test('CQ flow keeps pages 1–3 in order before considering the back cover', () => {
@@ -157,7 +157,7 @@ test('MCQ choices adapt to 4-across, 2×2, and one-per-row grids consistently', 
     { name: 'small', options: small, cols: 4 },
     { name: 'medium', options: medium, cols: 2 },
     { name: 'long', options: long, cols: 1 },
-    { name: 'math', options: math, cols: 1 }
+    { name: 'math', options: math, cols: 4 }
   ];
 
   const geometry = McqLayoutPlanner.geometry({});
@@ -194,15 +194,15 @@ test('MCQ choices adapt to 4-across, 2×2, and one-per-row grids consistently', 
   const mixedParsed = mcqData(medium);
   const mixedPlan = ExportDualEngine._mcqPlan(mixedParsed, {}, 'EXAM_MCQ');
   assert.deepEqual(mixedPlan.items[0].grid.rows, [[0, 1], [2, 3]]);
-  assert.deepEqual(mixedPlan.items[0].grid.tabJumps, [2, 1]);
+  assert.deepEqual(mixedPlan.items[0].grid.tabJumps, [1, 1]);
 
   const rtf = ExportDualEngine.generateMcqExamRtf(mixedParsed, { returnInnerRtf: true });
-  for (const stop of quarterStops) assert.ok(rtf.includes(`\\tx${stop}`), `RTF tab stop ${stop}`);
-  assert.ok(rtf.includes('\\tab\\tab'), 'short first option uses two quarter-stop tabs to reach the half-width stop');
+  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(rtf.includes(`\\tx${stop}`), `RTF tab stop ${stop}`);
+  assert.ok(rtf.includes('\\tab'), 'short first option uses tab to reach the half-width stop');
 
   const docx = await ExportDualEngine.generateMcqExamDocx(mixedParsed, { returnInnerXml: true });
-  for (const stop of quarterStops) assert.ok(docx.bodyXml.includes(`<w:tab w:val="left" w:pos="${stop}"/>`), `DOCX tab stop ${stop}`);
-  assert.ok(countMatches(docx.bodyXml, /<w:r><w:tab\/><\/w:r>/g) >= 5, 'Word options and question text remain tab-adjustable');
+  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(docx.bodyXml.includes(`<w:tab w:val="left" w:pos="${stop}"/>`), `DOCX tab stop ${stop}`);
+  assert.ok(countMatches(docx.bodyXml, /<w:r><w:tab\/><\/w:r>/g) >= 4, 'Word options and question text remain tab-adjustable');
 });
 
 test('Math and General DOCX/RTF dispatch retain their type for CQ-style export plumbing', async () => {

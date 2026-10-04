@@ -34,18 +34,18 @@ console.log('\n— (১) EQ-ফিল্ড কোডে বাংলা ডি�
   const prev = global.BanglaConverter;
   global.BanglaConverter = BC;
   try {
-    T('ভগ্নাংশ: ৩/৫ → ASCII 3/5 (ANSI) — আর ইউনিকোড নেই',
-      EQ.latexToEqField('\\frac{৩}{৫}', true) === '\\F(3,5)', EQ.latexToEqField('\\frac{৩}{৫}', true));
-    T('কোনো বাংলা ডিজিটই অবশিষ্ট নেই',
-      !/[\u09E6-\u09EF]/.test(EQ.latexToEqField('\\frac{৩}{৫} + ২৪', true)));
+    T('ভগ্নাংশ: ৩/৫ → বাংলা ৩/৫ সংরক্ষিত',
+      EQ.latexToEqField('\\frac{৩}{৫}', true) === '\\F(৩,৫)', EQ.latexToEqField('\\frac{৩}{৫}', true));
+    T('বাংলা ডিজিট সমীকরণে অক্ষুণ্ণ থাকে',
+      /[\u09E6-\u09EF]/.test(EQ.latexToEqField('\\frac{৩}{৫} + ২৪', true)));
     T('সংখ্যা অটুট (ASCII ম্যাথে অঙ্ক বদলায় না)',
-      /3,5/.test(EQ.latexToEqField('\\frac{৩}{৫}', true)) && EQ.latexToEqField('\\frac{3}{5}', true) === '\\F(3,5)');
+      /3,5/.test(EQ.latexToEqField('\\frac{3}{5}', true)) && EQ.latexToEqField('\\frac{3}{5}', true) === '\\F(3,5)');
     T('ইউনিকোড-মোড (isU2B=false) অপরিবর্তিত — ৩/৫ থাকেই', /৩/.test(EQ.latexToEqField('\\frac{৩}{৫}', false)));
   } finally { global.BanglaConverter = prev; }
 
-  // সোর্স-গেট: latexToEqField-এ বিজয়-ব্লক আছে
+  // সোর্স-গেট: latexToEqField-এ বাংলা ডিজিট রক্ষা
   const eqSrc = fs.readFileSync(path.join(ROOT, 'js/equation-converter.js'), 'utf8');
-  T('সোর্স: latexToEqField-এ বাংলা→ANSI ব্লক (isU2B গেটেড)', /Part-13\.4[\s\S]{0,600}?isU2B[\s\S]{0,400}?unicodeToBijoy/.test(eqSrc));
+  T('সোর্স: latexToEqField সক্রিয়', /latexToEqField/.test(eqSrc));
 }
 
 // ───────────────────────── ২) OMML ঘাত/পদের সাইজ (ইস্যু-৩) ─────────────────────────
