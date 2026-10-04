@@ -33,6 +33,54 @@
     return out;
   }
 
+  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL']);
+  const usesCreativeHeaderFallback = (docType) => CREATIVE_HEADER_DOC_TYPES.has(String(docType || '').toUpperCase());
+
+  function visualOptionTextForFallback(value) {
+    let s = String(value == null ? '' : value)
+      .replace(/\\\(|\\\)|\\\[|\\\]|\$\$?/g, '')
+      .replace(/\\(?:left|right|displaystyle|textstyle|scriptstyle|limits|nolimits)\b/g, '');
+    const glyphs = {
+      alpha:'α', beta:'β', gamma:'γ', delta:'δ', theta:'θ', lambda:'λ', pi:'π', sigma:'σ', phi:'φ', omega:'ω',
+      Gamma:'Γ', Delta:'Δ', Theta:'Θ', Lambda:'Λ', Pi:'Π', Sigma:'Σ', Phi:'Φ', Omega:'Ω',
+      times:'×', cdot:'·', div:'÷', pm:'±', mp:'∓', le:'≤', leq:'≤', ge:'≥', geq:'≥', ne:'≠', neq:'≠',
+      approx:'≈', infty:'∞', sum:'∑', int:'∫', rightarrow:'→', leftarrow:'←', to:'→', cdots:'⋯', ldots:'…'
+    };
+    for (let i = 0; i < 6; i++) {
+      const before = s;
+      s = s.replace(/\\(?:d?frac|tfrac|cfrac)\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '$1/$2')
+        .replace(/\\sqrt(?:\[[^\]]*\])?\s*\{([^{}]*)\}/g, '√$1')
+        .replace(/\\(?:text|textrm|textnormal|textbf|textit|mathrm|mathbf|mathit|operatorname|mbox)\s*\{([^{}]*)\}/g, '$1')
+        .replace(/\\(alpha|beta|gamma|delta|theta|lambda|pi|sigma|phi|omega|Gamma|Delta|Theta|Lambda|Pi|Sigma|Phi|Omega|times|cdot|div|pm|mp|leq|le|geq|ge|neq|ne|approx|infty|sum|int|rightarrow|leftarrow|to|cdots|ldots)\b/g, (_, cmd) => glyphs[cmd] || cmd)
+        .replace(/\\(?:sin|cos|tan|cot|sec|csc|ln|log|lim|max|min|det|exp)\b/g, (m) => m.slice(1))
+        .replace(/\\[A-Za-z]+/g, '')
+        .replace(/[{}^_]/g, '');
+      if (s === before) break;
+    }
+    return s.replace(/\s+/g, ' ').trim();
+  }
+
+  function fallbackOptionWidth(o, sizeHalf) {
+    const opt = o || {};
+    const label = opt.label ? '(' + opt.label + ')' : '';
+    const text = label + (label ? ' ' : '') + visualOptionTextForFallback(opt.text);
+    let em = 0;
+    for (const ch of text) {
+      const cp = ch.codePointAt(0);
+      if (ch === ' ' || ch === '\\t' || ch === '\\u00a0') em += 0.26;
+      else if (cp >= 0x09e6 && cp <= 0x09ef) em += 0.50;
+      else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
+      else if (/[a-z]/.test(ch)) em += 0.47;
+      else if (/[A-Z]/.test(ch)) em += 0.66;
+      else if (/[0-9]/.test(ch)) em += 0.50;
+      else if (".,:;'\\\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
+      else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
+      else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
+      else em += 0.60;
+    }
+    return Math.round(em * ((Number(sizeHalf) || 24) / 2) * 20 * 1.12);
+  }
+
   const ExportDualEngine = {
 
     /**
@@ -214,28 +262,13 @@
       const items = qs.map((q, i) => {
         const opts = q.options || [];
         const count = opts.length;
-        const widthOf = (o) => {
-          const label = o && o.label ? '(' + o.label + ')' : '';
-          const text = label + (label ? ' ' : '') + String((o && o.text) || '');
-          let em = 0;
-          for (const ch of text) {
-            const cp = ch.codePointAt(0);
-            if (ch === ' ' || ch === '\t' || ch === '\u00a0') em += 0.26;
-            else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
-            else if (/[a-z]/.test(ch)) em += 0.47;
-            else if (/[A-Z]/.test(ch)) em += 0.66;
-            else if (/[0-9০-৯]/.test(ch)) em += 0.50;
-            else if (".,:;'\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
-            else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
-            else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
-            else em += 0.60;
-          }
-          return Math.round(em * (G.baseSz / 2) * 20 * 1.12);
-        };
+        const mcqPlanner = this._getMcqPlanner();
+        const widthOf = (o) => (mcqPlanner && typeof mcqPlanner.optionWidth === 'function')
+          ? mcqPlanner.optionWidth(o, G.baseSz)
+          : fallbackOptionWidth(o, G.baseSz);
         const widths = opts.map(widthOf);
         const widest = widths.length ? Math.max(...widths) : 0;
-        const mathOptions = opts.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+|[=<>≤≥≠≈±×÷√∑∫^_]|(?:\b[A-Za-z0-9]\s*[+\-]\s*[A-Za-z0-9]))/.test(String((o && o.text) || '')));
-        const candidates = mathOptions ? [1] : (count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : (count ? [1] : []));
+        const candidates = count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : (count ? [1] : []);
         let cols = count ? 1 : 0;
         for (const c of candidates) {
           const slot = Math.floor(G.textW / c);
@@ -258,10 +291,7 @@
           for (let j = x; j < Math.min(x + Math.max(1, cols), count); j++) row.push(j);
           rows.push(row);
         }
-        const quarterW = Math.floor(G.textW / 4);
-        const tabJumps = rows.map((row) => cols === 2
-          ? (widths[row[0]] <= quarterW - 40 ? 2 : 1)
-          : (cols > 1 ? 1 : 0));
+        const tabJumps = rows.map(() => (cols > 1 ? 1 : 0));
         const stemLines = Math.max(1, Math.ceil(((String(q.num || '').length + 2 + String(q.text || '').length) * G.baseSz * 10) / (G.textW * 0.6)));
         const lines = Math.max(2, stemLines + rows.length);
         return { index: i, q, grid: { cols, rows, stops, tabStops4, tabJumps, slotW, widest }, stemLines, parts: {}, lines, height: lines * lineH + 20 };
@@ -1003,7 +1033,7 @@
 
       const h = (parsedData && parsedData.header) || {};
       const docType = options.docType || 'EXAM_CQ';
-      const useCqFallback = docType === 'EXAM_CQ';
+      const useCqFallback = usesCreativeHeaderFallback(docType) || options.cqHeaderFallback === true;
       const cqFb = { institute: 'আপনার প্রতিষ্ঠানের নাম', location: 'ঠিকানা লিখুন', exam: 'পরীক্ষার নাম লিখুন', classAndSubject: 'শ্রেণি ও বিষয়', time: '২ ঘণ্টা ৩০ মিনিট', examType: 'সৃজনশীল অভীক্ষা', marks: '৭০' };
       const field = (key) => {
         const v = h[key];
@@ -1566,15 +1596,11 @@
 
         if (q.options && q.options.length > 0 && it.grid && it.grid.cols > 0) {
           const grid = it.grid;
-          const quarterGrid = Number(grid.cols) === 2 && Array.isArray(grid.tabStops4) && grid.tabStops4.length === 4 && (options.returnInnerRtf || options.quarterGrid);
-          const activeStops = quarterGrid ? grid.tabStops4 : grid.stops;
+          const activeStops = Array.isArray(grid.stops) ? grid.stops : [];
           const stopsRtf = activeStops.map((p) => '\\tx' + p).join('');
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
-            const tabJumpCount = grid.cols === 2
-              ? (Array.isArray(grid.tabJumps) && grid.tabJumps[r] ? grid.tabJumps[r] : 2)
-              : 1;
-            const tabJumpRtf = '\\tab'.repeat(tabJumpCount) + ' ';
+            const tabJumpRtf = '\\tab ';
             const pieces = [];
             for (const oi of grid.rows[r]) {
               const o = q.options[oi];
@@ -1713,17 +1739,13 @@
         // ---- অপশন গ্রিড: সমান ট্যাব স্টপে ৪/২/১ কলাম (ঘ) ----
         if (q.options && q.options.length > 0 && it.grid && it.grid.cols > 0) {
           const grid = it.grid;
-          const quarterGrid = Number(grid.cols) === 2 && Array.isArray(grid.tabStops4) && grid.tabStops4.length === 4;
-          const activeStops = quarterGrid ? grid.tabStops4 : grid.stops;
+          const activeStops = Array.isArray(grid.stops) ? grid.stops : [];
           const tabsXml = activeStops.length
             ? `<w:tabs>${activeStops.map((p) => `<w:tab w:val="left" w:pos="${p}"/>`).join('')}</w:tabs>`
             : '';
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
-            const tabJumpCount = grid.cols === 2
-              ? (Array.isArray(grid.tabJumps) && grid.tabJumps[r] ? grid.tabJumps[r] : 2)
-              : 1;
-            const tabJumpXml = '<w:r><w:tab/></w:r>'.repeat(tabJumpCount);
+            const tabJumpXml = '<w:r><w:tab/></w:r>';
             let rowXml = '';
             grid.rows[r].forEach((oi, pos) => {
               const o = q.options[oi];

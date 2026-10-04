@@ -54,12 +54,12 @@
   function classOf(ch) {
     const c = ch.codePointAt(0);
     if (ch === ' ' || ch === '\t' || ch === '\u00A0') return 'space';
+    if (c >= 0x09E6 && c <= 0x09EF) return 'digit';      // বাংলা সংখ্যা
     if (c >= 0x0980 && c <= 0x09FF) {
       // মাত্রা/ই-কার/ি-কার জাতীয় বর্ণমালা-বহির্ভূত চিহ্ন সাড়ে-আড়াই
       if ((c >= 0x09BE && c <= 0x09CD) || (c >= 0x09E3 && c <= 0x09E4)) return 'banglaMark';
       return 'bangla';
     }
-    if (c >= 0x09E6 && c <= 0x09EF) return 'digit';      // বাংলা সংখ্যা
     if (c >= 0x30 && c <= 0x39) return 'digit';
     if (c >= 0x61 && c <= 0x7A) return 'latinLower';
     if (c >= 0x41 && c <= 0x5A) return 'latinUpper';
@@ -107,10 +107,100 @@
     return lines;
   }
 
-  /** অপশন লেবেল + টেক্সটের সম্পূর্ণ প্রস্থ */
+  /**
+   * TeX/LaTeX-কে প্রস্থ মাপার জন্য কাছাকাছি দৃশ্যমান গ্লিফে নামায়।
+   * গ্রিডের সিদ্ধান্তে `$`, `\frac`, `{}` বা `\pi`-র source-characters-কে
+   * আলাদা glyph ধরে গুনলে একই ছোট সমীকরণ অযথা ১-কলামে নেমে যায়।
+   */
+  function optionVisualText(value) {
+    let s = String(value == null ? '' : value);
+    const readGroup = (src, start, open, close) => {
+      if (src[start] !== open) return null;
+      let depth = 0;
+      for (let i = start; i < src.length; i++) {
+        if (src[i] === open) depth++;
+        else if (src[i] === close && --depth === 0) return { text: src.slice(start + 1, i), end: i + 1 };
+      }
+      return null;
+    };
+    const skipSpace = (src, at) => { while (at < src.length && /\s/.test(src[at])) at++; return at; };
+    const symbols = {
+      alpha: 'α', beta: 'β', gamma: 'γ', delta: 'δ', epsilon: 'ε', varepsilon: 'ϵ', zeta: 'ζ', eta: 'η',
+      theta: 'θ', vartheta: 'ϑ', iota: 'ι', kappa: 'κ', lambda: 'λ', mu: 'μ', nu: 'ν', xi: 'ξ', pi: 'π',
+      varpi: 'ϖ', rho: 'ρ', sigma: 'σ', tau: 'τ', upsilon: 'υ', phi: 'φ', varphi: 'ϕ', chi: 'χ', psi: 'ψ', omega: 'ω',
+      Gamma: 'Γ', Delta: 'Δ', Theta: 'Θ', Lambda: 'Λ', Xi: 'Ξ', Pi: 'Π', Sigma: 'Σ', Upsilon: 'Υ', Phi: 'Φ', Psi: 'Ψ', Omega: 'Ω',
+      times: '×', cdot: '·', div: '÷', pm: '±', mp: '∓', le: '≤', leq: '≤', ge: '≥', geq: '≥', neq: '≠', ne: '≠',
+      approx: '≈', equiv: '≡', propto: '∝', infty: '∞', sum: '∑', prod: '∏', int: '∫', partial: '∂', nabla: '∇',
+      forall: '∀', exists: '∃', in: '∈', notin: '∉', subset: '⊂', subseteq: '⊆', supset: '⊃', supseteq: '⊇',
+      cap: '∩', cup: '∪', rightarrow: '→', leftarrow: '←', to: '→', mapsto: '↦', longrightarrow: '⟶',
+      ldots: '…', cdots: '⋯', degree: '°', perp: '⊥', parallel: '∥'
+    };
+    const transparent = new Set([
+      'left', 'right', 'displaystyle', 'textstyle', 'scriptstyle', 'scriptscriptstyle', 'limits', 'nolimits',
+      'big', 'Big', 'bigg', 'Bigg', 'bigl', 'bigr', 'Bigl', 'Bigr', 'biggl', 'biggr', 'Biggl', 'Biggr'
+    ]);
+    const textCommands = new Set(['text', 'textrm', 'textnormal', 'textbf', 'textit', 'mathrm', 'mathbf', 'mathit', 'operatorname', 'mbox']);
+    const functionCommands = new Set(['sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'ln', 'log', 'lim', 'max', 'min', 'det', 'exp', 'sinh', 'cosh', 'tanh']);
+
+    function render(src, depth) {
+      if (depth > 8) return String(src).replace(/[{}$]/g, '').replace(/\\[A-Za-z]+/g, '');
+      let out = '';
+      for (let i = 0; i < src.length;) {
+        if (src[i] === '$' || src[i] === '`') { i++; continue; }
+        if (src.startsWith('\\(', i) || src.startsWith('\\)', i) || src.startsWith('\\[', i) || src.startsWith('\\]', i)) { i += 2; continue; }
+        if (src[i] === '\\') {
+          let j = i + 1;
+          if (j < src.length && /[A-Za-z]/.test(src[j])) {
+            while (j < src.length && /[A-Za-z]/.test(src[j])) j++;
+            const cmd = src.slice(i + 1, j);
+            let at = skipSpace(src, j);
+            if (/^(?:d?frac|tfrac|cfrac)$/.test(cmd)) {
+              const num = readGroup(src, at, '{', '}');
+              const denAt = num ? skipSpace(src, num.end) : at;
+              const den = num && readGroup(src, denAt, '{', '}');
+              if (num && den) { out += render(num.text, depth + 1) + '/' + render(den.text, depth + 1); i = den.end; continue; }
+            }
+            if (cmd === 'sqrt') {
+              let degree = '';
+              if (src[at] === '[') {
+                const d = readGroup(src, at, '[', ']');
+                if (d) { degree = render(d.text, depth + 1); at = skipSpace(src, d.end); }
+              }
+              const rad = readGroup(src, at, '{', '}');
+              if (rad) { out += (degree ? degree : '') + '√' + render(rad.text, depth + 1); i = rad.end; continue; }
+            }
+            if (textCommands.has(cmd)) {
+              const group = readGroup(src, at, '{', '}');
+              if (group) { out += render(group.text, depth + 1); i = group.end; continue; }
+            }
+            if (transparent.has(cmd)) { i = j; continue; }
+            if (/^(?:[,;:!])$/.test(cmd)) { out += ' '; i = j; continue; }
+            if (/^(?:quad|qquad|enspace|thinspace|medspace|thickspace)$/.test(cmd)) { out += ' '; i = j; continue; }
+            if (Object.prototype.hasOwnProperty.call(symbols, cmd)) { out += symbols[cmd]; i = j; continue; }
+            if (functionCommands.has(cmd)) { out += cmd; i = j; continue; }
+            // Unknown formatting/operator names are not printed as a backslash macro.
+            out += cmd;
+            i = j;
+            continue;
+          }
+          if (j < src.length) { out += src[j]; i = j + 1; }
+          else i++;
+          continue;
+        }
+        if (src[i] === '{' || src[i] === '}' || src[i] === '^' || src[i] === '_') { i++; continue; }
+        out += src[i++];
+      }
+      return out;
+    }
+    return render(s, 0).replace(/\s+/g, ' ').trim();
+  }
+
+  /** অপশন লেবেল + TeX syntax বাদ-দেওয়া দৃশ্যমান টেক্সটের সম্পূর্ণ প্রস্থ */
   function optionWidth(o, sz) {
-    const label = o.label ? '(' + o.label + ')' : '';
-    return measure(label === '()' ? '' : label, sz) + (label ? measure(' ', sz) : 0) + measure(o.text, sz);
+    const opt = o || {};
+    const label = opt.label ? '(' + opt.label + ')' : '';
+    const text = optionVisualText(opt.text);
+    return measure(label === '()' ? '' : label, sz) + (label ? measure(' ', sz) : 0) + measure(text, sz);
   }
 
   /**
@@ -245,9 +335,8 @@
       const widths = opts.map((o) => optionWidth(o, sz));
       const widest = Math.max.apply(null, widths);
 
-      // গণিত/ল্যাটেক্সযুক্ত অপশন আলাদা সারিতে থাকে; অন্যথায় প্রস্থ অনুযায়ী ৪/২/১।
-      const mathOptions = opts.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+)/.test(String((o && o.text) || '')));
-      const cand = mathOptions ? [1] : (count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : [1]);
+      // সমীকরণের source-notation নয়, optionWidth-এর visual estimate অনুযায়ী ৪/৩/২/১।
+      const cand = count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : [1];
       let cols = 1;
       for (const c of cand) {
         const slot = Math.floor(g.textW / c);
@@ -269,12 +358,8 @@
 
       const rows = [];
       for (let i = 0; i < count; i += cols) rows.push(opts.slice(i, i + cols).map((_, j) => i + j));
-      // ২-কলাম সারিতে প্রথম অপশন যদি ২৫% সীমার আগেই শেষ হয়, দুই Tab দরকার;
-      // নইলে একটি Tab সরাসরি ৫০% স্টপে যায়। এতে প্রতিটি সারি একই স্থানে শুরু হয়।
-      const quarterW = Math.floor(g.textW / 4);
-      const tabJumps = rows.map((row) => cols === 2
-        ? (optionWidth(opts[row[0]], sz) <= quarterW - g.minGap ? 2 : 1)
-        : (cols > 1 ? 1 : 0));
+      // stops[] প্রতিটি কলাম-সীমায় একটি বাম-ট্যাব দেয়; ২-কলামেও ৫০% স্টপে এক Tab যথেষ্ট।
+      const tabJumps = rows.map(() => (cols > 1 ? 1 : 0));
 
       return { cols, rows, stops, tabStops4: g.optionTabStops4.slice(), tabJumps, slotW, widest };
     },

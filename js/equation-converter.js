@@ -12,6 +12,18 @@
 (function (global) {
   'use strict';
 
+  /** Convert Bengali letters to Bijoy without changing any source-written digits. */
+  function unicodeToBijoyPreservingDigits(text, converter) {
+    const source = String(text == null ? '' : text);
+    const bc = converter || (typeof BanglaConverter !== 'undefined' ? BanglaConverter
+      : (typeof globalThis !== 'undefined' && globalThis.BanglaConverter) ? globalThis.BanglaConverter : null);
+    if (!bc || typeof bc.unicodeToBijoy !== 'function') return source;
+    return source.split(/([0-9\u09E6-\u09EF]+)/g).map((part) => {
+      if (/^[0-9\u09E6-\u09EF]+$/.test(part)) return part;
+      return bc.unicodeToBijoy(part, { convertNumbers: false });
+    }).join('');
+  }
+
   class EquationConverter {
 
     /**
@@ -60,7 +72,7 @@
         }
         let converted = trimmed;
         if (isU2B && typeof BanglaConverter !== 'undefined' && BanglaConverter.hasBengaliText(trimmed)) {
-          converted = BanglaConverter.unicodeToBijoy(trimmed, { convertNumbers: false });
+          converted = unicodeToBijoyPreservingDigits(trimmed, BanglaConverter);
           return ' ' + converted + ' ';
         }
         if (/[\u0980-\u09FF]/.test(converted)) {
@@ -86,14 +98,13 @@
       // 4. Clean up spaces
       s = s.replace(/\s+/g, ' ').trim();
 
-      // Part-13.4 (রিপোর্ট-২): বিজয় (.doc) টার্গেটে EQ কোডের ভেতরের বাংলা ডিজিট/টেক্সট
-      // SutonnyMJ (ANSI) কোডে রূপান্তর — নইলে ফিল্ডের ভেতরে ইউনিকোড গ্লিফ (৩/৫) থেকে যায়,
-      // যা SutonnyMJ লেখার সঙ্গে বেমানান।
+      // Part-14.2: Bijoy conversion-এ source-এর বাংলা/ASCII অঙ্ক স্পষ্টভাবে আলাদা রাখা হয়;
+      // convertNumbers:false একা যথেষ্ট নয়, কারণ Unicode→Bijoy forward-map বাংলা অঙ্ককে ASCII করে।
       if (isU2B) {
         var _BC = (typeof BanglaConverter !== 'undefined') ? BanglaConverter
           : (typeof globalThis !== 'undefined' && globalThis.BanglaConverter) ? globalThis.BanglaConverter : null;
         if (_BC && typeof _BC.unicodeToBijoy === 'function') {
-          try { s = s.replace(/[\u0980-\u09FF]+/g, function (m) { return _BC.unicodeToBijoy(m); }); } catch (e) {}
+          try { s = s.replace(/[\u0980-\u09FF]+/g, function (m) { return unicodeToBijoyPreservingDigits(m, _BC); }); } catch (e) {}
         }
       }
 
@@ -644,7 +655,8 @@
         } else if (m[2]) {
           out += `<span lang="EN-US" style="font-family:'Times New Roman',serif;">${m[2]}</span>`;
         } else if (m[3]) {
-          const targetBn = isBijoy && typeof BanglaConverter !== 'undefined' ? BanglaConverter.unicodeToBijoy(m[3]) : m[3];
+          const targetBn = isBijoy && typeof BanglaConverter !== 'undefined'
+            ? unicodeToBijoyPreservingDigits(m[3], BanglaConverter) : m[3];
           out += `<span style="font-family:'${bengaliFontName}',Arial,sans-serif;">${targetBn}</span>`;
         } else {
           const esc = (m[0] || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1053,7 +1065,7 @@
         let trimmed = inner.trim();
         let converted = trimmed;
         if (isU2B && typeof BanglaConverter !== 'undefined' && BanglaConverter.hasBengaliText(trimmed)) {
-          converted = BanglaConverter.unicodeToBijoy(trimmed, { convertNumbers: false });
+          converted = unicodeToBijoyPreservingDigits(trimmed, BanglaConverter);
         }
         return ' ' + converted + ' ';
       });

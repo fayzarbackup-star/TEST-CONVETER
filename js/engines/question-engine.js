@@ -11,6 +11,54 @@
 (function (global) {
   'use strict';
 
+  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL']);
+  const usesCreativeHeaderFallback = (docType) => CREATIVE_HEADER_DOC_TYPES.has(String(docType || '').toUpperCase());
+
+  function visualOptionTextForFallback(value) {
+    let s = String(value == null ? '' : value)
+      .replace(/\\\(|\\\)|\\\[|\\\]|\$\$?/g, '')
+      .replace(/\\(?:left|right|displaystyle|textstyle|scriptstyle|limits|nolimits)\b/g, '');
+    const glyphs = {
+      alpha:'α', beta:'β', gamma:'γ', delta:'δ', theta:'θ', lambda:'λ', pi:'π', sigma:'σ', phi:'φ', omega:'ω',
+      Gamma:'Γ', Delta:'Δ', Theta:'Θ', Lambda:'Λ', Pi:'Π', Sigma:'Σ', Phi:'Φ', Omega:'Ω',
+      times:'×', cdot:'·', div:'÷', pm:'±', mp:'∓', le:'≤', leq:'≤', ge:'≥', geq:'≥', ne:'≠', neq:'≠',
+      approx:'≈', infty:'∞', sum:'∑', int:'∫', rightarrow:'→', leftarrow:'←', to:'→', cdots:'⋯', ldots:'…'
+    };
+    for (let i = 0; i < 6; i++) {
+      const before = s;
+      s = s.replace(/\\(?:d?frac|tfrac|cfrac)\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, '$1/$2')
+        .replace(/\\sqrt(?:\[[^\]]*\])?\s*\{([^{}]*)\}/g, '√$1')
+        .replace(/\\(?:text|textrm|textnormal|textbf|textit|mathrm|mathbf|mathit|operatorname|mbox)\s*\{([^{}]*)\}/g, '$1')
+        .replace(/\\(alpha|beta|gamma|delta|theta|lambda|pi|sigma|phi|omega|Gamma|Delta|Theta|Lambda|Pi|Sigma|Phi|Omega|times|cdot|div|pm|mp|leq|le|geq|ge|neq|ne|approx|infty|sum|int|rightarrow|leftarrow|to|cdots|ldots)\b/g, (_, cmd) => glyphs[cmd] || cmd)
+        .replace(/\\(?:sin|cos|tan|cot|sec|csc|ln|log|lim|max|min|det|exp)\b/g, (m) => m.slice(1))
+        .replace(/\\[A-Za-z]+/g, '')
+        .replace(/[{}^_]/g, '');
+      if (s === before) break;
+    }
+    return s.replace(/\s+/g, ' ').trim();
+  }
+
+  function fallbackOptionWidth(o, sizeHalf) {
+    const opt = o || {};
+    const label = opt.label ? '(' + opt.label + ')' : '';
+    const text = label + (label ? ' ' : '') + visualOptionTextForFallback(opt.text);
+    let em = 0;
+    for (const ch of text) {
+      const cp = ch.codePointAt(0);
+      if (ch === ' ' || ch === '\\t' || ch === '\\u00a0') em += 0.26;
+      else if (cp >= 0x09e6 && cp <= 0x09ef) em += 0.50;
+      else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
+      else if (/[a-z]/.test(ch)) em += 0.47;
+      else if (/[A-Z]/.test(ch)) em += 0.66;
+      else if (/[0-9]/.test(ch)) em += 0.50;
+      else if (".,:;'\\\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
+      else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
+      else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
+      else em += 0.60;
+    }
+    return Math.round(em * ((Number(sizeHalf) || 24) / 2) * 20 * 1.12);
+  }
+
   const QuestionEngine = {
 
     /**
@@ -552,7 +600,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       marks: 'পূর্ণমানঃ ................'
     },
 
-    /** EXAM_CQ হেডার-ফলব্যাক — planner অনুপলব্ধ হলেও প্রিভিউতে একই ফিল্ড দেখায় */
+    /** CQ/Math/General creative-path হেডার-ফলব্যাক — planner অনুপলব্ধ হলেও প্রিভিউতে একই ফিল্ড দেখায় */
     CQ_HEADER_FALLBACK: {
       institute: 'আপনার প্রতিষ্ঠানের নাম',
       location: 'ঠিকানা লিখুন',
@@ -674,28 +722,9 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           const sz = Number(renderOpts.szHalf) || 24;
           gridCols = planner.decideOptionsGrid(options, sz, planner.geometry({})).cols;
         } else {
-          const hasMath = options.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+|[=<>≤≥≠≈±×÷√∑∫^_]|(?:\b[A-Za-z0-9]\s*[+\-]\s*[A-Za-z0-9]))/.test(String((o && o.text) || '')));
           const fallbackTextW = (renderOpts.geometry && Number(renderOpts.geometry.textW)) || 4657;
-          const optionWidth = (o) => {
-            const label = o && o.label ? '(' + o.label + ')' : '';
-            const text = label + (label ? ' ' : '') + String((o && o.text) || '');
-            let em = 0;
-            for (const ch of text) {
-              const cp = ch.codePointAt(0);
-              if (ch === ' ' || ch === '\t' || ch === '\u00a0') em += 0.26;
-              else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
-              else if (/[a-z]/.test(ch)) em += 0.47;
-              else if (/[A-Z]/.test(ch)) em += 0.66;
-              else if (/[0-9০-৯]/.test(ch)) em += 0.50;
-              else if (".,:;'\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
-              else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
-              else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
-              else em += 0.60;
-            }
-            return Math.round(em * ((Number(renderOpts.szHalf) || 24) / 2) * 20 * 1.12);
-          };
-          const widths = options.map(optionWidth);
-          const candidates = hasMath ? [1] : (options.length >= 4 ? [4, 2, 1] : options.length === 3 ? [3, 1] : [1]);
+          const widths = options.map((o) => fallbackOptionWidth(o, renderOpts.szHalf));
+          const candidates = options.length >= 4 ? [4, 2, 1] : options.length === 3 ? [3, 1] : [1];
           const gap = 40;
           gridCols = 1;
           for (const c of candidates) {
@@ -915,9 +944,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
      * Renders Header Block (School Name, Address, Exam, Subject, Time, Marks, Instructions).
      */
     renderHeaderBlock(header, renderOpts = {}) {
-      // Part-10 (খ.৩): MCQ প্রিভিউতে অটো-প্লেসহোল্ডার — হেডার কখনো ভাঙে না।
-      // (EXAM_CQ/অন্যান্য আর্কিটাইপের আচরণ অপরিবর্তিত — ফ্রোজেন চুক্তি।)
-      const useCqFb = !!(renderOpts && (renderOpts.cqFallback || renderOpts.docType === 'EXAM_CQ'));
+      // CQ, Math ও General creative-paper preview-তে একই edit-যোগ্য CQ header defaults.
+      const useCqFb = !!(renderOpts && (renderOpts.cqFallback || usesCreativeHeaderFallback(renderOpts.docType)));
       if (useCqFb) header = this.applyCqHeaderFallbacks(header);
       const useFb = !!(renderOpts && (renderOpts.fallback || renderOpts.docType === 'EXAM_MCQ'));
       if (useFb) header = this.applyMcqHeaderFallbacks(header);
@@ -1039,8 +1067,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const editableAttr = options.editable ? 'contenteditable="true" spellcheck="false"' : '';
       const styleAttr = `style="font-size: ${fontSize}; line-height: ${lineSpacing};"`;
       const renderDocType = options.docType || 'EXAM_CQ';
-      const headerRenderOpts = renderDocType === 'EXAM_CQ'
-        ? { docType: 'EXAM_CQ', cqFallback: true }
+      const headerRenderOpts = usesCreativeHeaderFallback(renderDocType)
+        ? { docType: renderDocType, cqFallback: true }
         : {};
 
       // Flatten all questions with their section titles
@@ -1091,7 +1119,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             if (col.headerFirst) html += this.renderHeaderBlock(headerModel, {
               cqGeom: cqPlan.geometry,
               docType: options.docType || 'EXAM_CQ',
-              cqFallback: (options.docType || 'EXAM_CQ') === 'EXAM_CQ'
+              cqFallback: usesCreativeHeaderFallback(options.docType || 'EXAM_CQ')
             });
             for (const it of (col.items || [])) html += renderBookletItem(it);
             html += `</div>`;

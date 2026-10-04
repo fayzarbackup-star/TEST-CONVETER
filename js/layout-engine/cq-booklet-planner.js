@@ -167,7 +167,7 @@
     /** হেডার লাইনের সাইজ — ৩ নম্বর ধারা (অর্ধ-পয়েন্ট) */
     HEADER_SIZES: { institute: 32, location: 24, exam: 26, classSubject: 24, metrics: 24 },
 
-    /** EXAM_CQ-তে অনুপস্থিত হেডার-ফিল্ডের দৃশ্যমান, ক্লিক-এডিটযোগ্য ফলব্যাক */
+    /** EXAM_CQ/EXAM_MATH/EXAM_GENERAL সৃজনশীল-পথে অনুপস্থিত হেডার-ফিল্ডের দৃশ্যমান, ক্লিক-এডিটযোগ্য ফলব্যাক */
     CQ_HEADER_FALLBACK: {
       institute: 'আপনার প্রতিষ্ঠানের নাম',
       location: 'ঠিকানা লিখুন',
@@ -382,7 +382,7 @@
       }
 
       const headerLines = this.buildHeader(parsedData && parsedData.header, {
-        fallback: docType === 'EXAM_CQ' || o.cqHeaderFallback === true
+        fallback: docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL' || o.cqHeaderFallback === true
       });
       const headH = this.headerHeight(headerLines, g);
       const empty = {
