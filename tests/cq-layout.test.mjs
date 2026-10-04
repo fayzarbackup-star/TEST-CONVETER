@@ -112,15 +112,15 @@ console.log('\n— (গ) TC-LAY-31: বুকলেট ইম্পোজিশ�
     p2.columns.length === 1 && p2.columns[0].role === 'page1' && p2.skipFirstColumn === true, { cols: p2.columns.length, skip: p2.skipFirstColumn });
   T('খালি সংরক্ষিত কলামেও docPages = ১ (এক শীটেই ফ্রন্ট+ব্যাক)', p2.metrics.docPages === 1 && p2.metrics.sheets === 1, p2.metrics);
 
-  const p6 = planOf('cq-booklet-6');
-  T('উপচানো অংশ ব্যাক কভারে ওঠে (reservedUsed)', p6.metrics.reservedUsed === true && p6.columns[0].role === 'backcover', p6.columns.map((c) => c.role));
+  const pb = planOf('cq-booklet-10');
+  T('উপচানো অংশ ব্যাক কভারে ওঠে (reservedUsed)', pb.metrics.reservedUsed === true && pb.columns[0].role === 'backcover', pb.columns.map((c) => c.role));
   T('ব্যাক কভারের পরেই ফ্রন্ট কভার (হেডারসহ), slot ক্রম ০,১,২…',
-    p6.columns.map((c) => c.slot).join(',') === '0,1,2' && p6.columns[1].role === 'page1' && p6.columns[1].headerFirst === true,
-    p6.columns.map((c) => c.slot + ':' + c.role));
+    pb.columns[0].slot === 0 && pb.columns[1].role === 'page1' && pb.columns[1].headerFirst === true,
+    pb.columns.map((c) => c.slot + ':' + c.role));
   // Part-13.4: প্রাকৃতিক প্রবাহ — mid-flow কৃত্রিম ব্রেক বন্ধ; ব্রেক কেবল ব্যাক-কভারের পরে flow-শুরুতে
   T('Part-13.4: ব্রেক কেবল লিডিং (ব্যাক-কভার-পরবর্তী) — mid-flow ব্রেক নেই',
-    p6.columns.every((c, i) => c.breakBefore === (i === 1)), p6.columns.map((c) => c.role + ':' + c.breakBefore));
-  T('docPages = ceil(ফ্লো-কলাম/২)', p6.metrics.docPages === Math.ceil((p6.columns.length + (p6.skipFirstColumn ? 1 : 0)) / 2), p6.metrics);
+    pb.columns.every((c, i) => c.breakBefore === (i === 1)), pb.columns.map((c) => c.role + ':' + c.breakBefore));
+  T('docPages = ceil(ফ্লো-কলাম/২)', pb.metrics.docPages === Math.ceil((pb.columns.length + (pb.skipFirstColumn ? 1 : 0)) / 2), pb.metrics);
 
   const p10 = planOf('cq-booklet-10');
   T('ধারকতার ভেতরেই ভাগ (প্রতি কলামের height ≤ cap)', p10.columns.every((c) => c.height <= c.cap + 1), p10.columns.map((c) => c.height + '/' + c.cap));
@@ -173,7 +173,7 @@ const P10 = (() => { const p = L['cq-booklet-10'].parsed; p.header = { institute
 let rtf6 = '', xml6 = '', html6 = '';
 {
   rtf6 = EX.generateCqExamRtf(parsed6, {});
-  const breaks = plan6.columns.filter((c) => c.breakBefore).length + (plan6.skipFirstColumn ? 1 : 0);
+  const breaks = plan6.columns.filter((c) => c.breakBefore).length;
   T('.doc  \\landscape + paperw16838 paperh11906', /\{\\rtf1\\ansi/.test(rtf6) && rtf6.includes('\\landscape\\paperw16838\\paperh11906'));
   T('.doc  margl/margr/margt/margb 720', rtf6.includes('\\margl720\\margr720\\margt720\\margb720'));
   T('.doc  \\cols2\\colsx1008 (কলাম লাইন নেই)', rtf6.includes('\\cols2\\colsx1008') && !rtf6.includes('\\linebetcol'));

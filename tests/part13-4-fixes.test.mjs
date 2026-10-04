@@ -119,7 +119,7 @@ console.log('\n— (৪) প্ল্যানার breakBefore —');
   T('mid-flow কলামগুলোতে কোনো ব্রেক নেই',
     skip.columns.slice(1).every((c) => c.breakBefore === false));
 
-  const back = PLAN.plan(mk(20), {});   // ডিফল্ট-রিজার্ভ: টেল-মুভ → ব্যাক-কভার কলাম গঠিত হয়
+  const back = PLAN.plan(mk(30), {});   // ডিফল্ট-রিজার্ভ: টেল-মুভ → ব্যাক-কভার কলাম গঠিত হয়
   const backRoles = back.columns.map((c) => c.role);
   T('ব্যাক-কভার কেস: ব্রেক কেবল ব্যাক-কভারের পরে (page1-এ)',
     backRoles[0] === 'backcover' && back.columns[1] && back.columns[1].breakBefore === true && back.columns.slice(2).every((c) => !c.breakBefore),

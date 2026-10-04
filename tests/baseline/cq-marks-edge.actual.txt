@@ -1,0 +1,861 @@
+# fixture: cq-marks-edge
+# docType: EXAM_CQ
+
+===== CLASSIFIER =====
+{
+  "type": "EXAM_CQ"
+}
+
+===== PARSED =====
+{
+  "header": {
+    "classAndSubject": "",
+    "exam": "",
+    "examType": "",
+    "institute": "",
+    "instructions": "",
+    "location": "",
+    "marks": "",
+    "time": ""
+  },
+  "sections": [
+    {
+      "marks": "",
+      "questions": [
+        {
+          "num": "১",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "উদ্দীপক ১\nএকটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "ত্বরণ কাকে বলে?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "গাড়িটির ত্বরণ ব্যাখ্যা করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "১০",
+              "text": "১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।"
+            }
+          ],
+          "text": ""
+        },
+        {
+          "num": "২",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "উদ্দীপক ২\nএকটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "বল কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "প্রযুক্ত বলের মান নির্ণয় করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "ঘর্ষণ উপেক্ষা করা যৌক্তিক কি না মতামত দাও।"
+            }
+          ],
+          "text": ""
+        },
+        {
+          "num": "৩",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "উদ্দীপক ৩\nএকটি তারের রোধ পরিমাপ করা হলো।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "রোধ কাকে বলে?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "ওহমের সূত্র ব্যাখ্যা করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "তারের রোধ নির্ণয় করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "তারটি পরিবাহী না অর্ধপরিবাহী? বিশ্লেষণ করো।"
+            }
+          ],
+          "text": ""
+        }
+      ],
+      "title": ""
+    }
+  ]
+}
+
+===== STRUCTURE =====
+{
+  "marks": [
+    "ক:১,খ:২,গ:১০,ঘ:৪",
+    "ক:১,খ:২,গ:৩,ঘ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅"
+  ],
+  "numbering": [
+    "১",
+    "২",
+    "৩"
+  ],
+  "questionCount": 3,
+  "questions": [
+    {
+      "hasStimulus": true,
+      "num": "১",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "গ:১০",
+        "ঘ:৪"
+      ],
+      "textHead": ""
+    },
+    {
+      "hasStimulus": true,
+      "num": "২",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "গ:৩",
+        "ঘ:∅"
+      ],
+      "textHead": ""
+    },
+    {
+      "hasStimulus": true,
+      "num": "৩",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": ""
+    }
+  ],
+  "sections": 1
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait margin-standard">
+<div class="word-crop-marks no-print">
+<div class="crop-tl">
+</div>
+<div class="crop-tr">
+</div>
+<div class="crop-bl">
+</div>
+<div class="crop-br">
+</div>
+</div>
+<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
+<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠানের নাম</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণি ও বিষয়</div>
+<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ২ ঘণ্টা ৩০ মিনিট</div>
+<div style="text-align: center; flex: 1.5; text-decoration: underline; font-weight: bold; font-size: 13pt; letter-spacing: 0.5px;">সৃজনশীল অভীক্ষা</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমান: ৭০</div>
+</div>
+</div>
+<div class="qp-columns two-columns">
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ১</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">ত্বরণ কাকে বলে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">গাড়িটির ত্বরণ ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১০</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ২</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">বল কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">প্রযুক্ত বলের মান নির্ণয় করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">ঘর্ষণ উপেক্ষা করা যৌক্তিক কি না মতামত দাও।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
+</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ৩</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি তারের রোধ পরিমাপ করা হলো।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">রোধ কাকে বলে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">ওহমের সূত্র ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">তারের রোধ নির্ণয় করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">তারটি পরিবাহী না অর্ধপরিবাহী? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+<w:p>
+<w:r>
+<w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+<w:t xml:space="preserve">আপনার প্রতিষ্ঠানের নাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ঠিকানা লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+<w:t xml:space="preserve">পরীক্ষার নাম লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণি ও বিষয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="center" w:pos="3598"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ২ ঘণ্টা ৩০ মিনিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:u w:val="single"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সৃজনশীল অভীক্ষা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমান: ৭০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">/</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সেকেন্ড বেগ অর্জন করে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. ত্বরণ কাকে বলে?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. গাড়িটির ত্বরণ ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. ১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উদ্দীপক ২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি বস্তুকে ৫ কেজি ভরের সাথে যুক্ত করে টানা হলো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. বল কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. প্রযুক্ত বলের মান নির্ণয় করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. ঘর্ষণ উপেক্ষা করা যৌক্তিক কি না মতামত দাও।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উদ্দীপক ৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি তারের রোধ পরিমাপ করা হলো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. রোধ কাকে বলে?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. ওহমের সূত্র ব্যাখ্যা করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. তারের রোধ নির্ণয় করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. তারটি পরিবাহী না অর্ধপরিবাহী? বিশ্লেষণ করো।</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
+<w:cols w:num="2" w:space="1008"/>
+</w:sectPr>
+
+===== RTF =====
+[object Blob]

@@ -1,0 +1,1257 @@
+# fixture: combined
+# docType: EXAM_COMBINED
+
+===== CLASSIFIER =====
+{
+  "type": "EXAM_COMBINED"
+}
+
+===== PARSED =====
+{
+  "header": {
+    "classAndSubject": "",
+    "exam": "",
+    "examType": "",
+    "institute": "",
+    "instructions": "",
+    "location": "",
+    "marks": "",
+    "time": ""
+  },
+  "sections": [
+    {
+      "marks": "",
+      "questions": [
+        {
+          "num": "১",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "উদ্দীপক ১\nএকটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "বেগ কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "সমত্বরণ বলতে কী বোঝায়?"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।"
+            }
+          ],
+          "text": ""
+        }
+      ],
+      "title": ""
+    },
+    {
+      "marks": "",
+      "questions": [
+        {
+          "num": "১",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "জুল"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "নিউটন"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "ওয়াট"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "প্যাসকেল"
+            }
+          ],
+          "text": "বলের একক কী?"
+        },
+        {
+          "num": "২",
+          "options": [],
+          "preContext": "",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "W = F / S"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "W = F * S"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "W = m * a"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "W = v / t"
+            }
+          ],
+          "text": "কাজের সমীকরণ কোনটি?"
+        }
+      ],
+      "title": "বহুনির্বাচনি প্রশ্ন:"
+    }
+  ]
+}
+
+===== STRUCTURE =====
+{
+  "marks": [
+    "ক:∅,খ:∅,গ:∅,ঘ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅"
+  ],
+  "numbering": [
+    "১",
+    "১",
+    "২"
+  ],
+  "questionCount": 3,
+  "questions": [
+    {
+      "hasStimulus": true,
+      "num": "১",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": ""
+    },
+    {
+      "hasStimulus": false,
+      "num": "১",
+      "optionCount": 0,
+      "section": 1,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": "বলের একক কী?"
+    },
+    {
+      "hasStimulus": false,
+      "num": "২",
+      "optionCount": 0,
+      "section": 1,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅"
+      ],
+      "textHead": "কাজের সমীকরণ কোনটি?"
+    }
+  ],
+  "sections": 2
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait margin-standard">
+<div class="word-crop-marks no-print">
+<div class="crop-tl">
+</div>
+<div class="crop-tr">
+</div>
+<div class="crop-bl">
+</div>
+<div class="crop-br">
+</div>
+</div>
+<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
+<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
+<div style="text-align: left; flex: 1; white-space: nowrap;">
+</div>
+<div style="text-align: center; flex: 1;">
+</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">
+</div>
+</div>
+</div>
+<div class="qp-columns two-columns">
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
+<span class="cq-text text-justify flex-1">উদ্দীপক ১</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">বেগ কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">সমত্বরণ বলতে কী বোঝায়?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
+</div>
+<div class="font-bold text-center bg-slate-100 py-0.5 my-1 border-y border-slate-300" style="font-size: 12pt; line-height: 1.35;">বহুনির্বাচনি প্রশ্ন:</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
+<span class="cq-text text-justify flex-1">বলের একক কী?</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">জুল</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">নিউটন</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">ওয়াট</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">প্যাসকেল</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
+</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
+<span class="cq-text text-justify flex-1">কাজের সমীকরণ কোনটি?</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">W = F / S</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">W = F * S</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">W = m * a</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">W = v / t</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+<!-- CQ PART -->
+<w:p>
+<w:r>
+<w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+<w:t xml:space="preserve">আপনার প্রতিষ্ঠানের নাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ঠিকানা লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+<w:t xml:space="preserve">পরীক্ষার নাম লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণি ও বিষয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="center" w:pos="3598"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ২ ঘণ্টা ৩০ মিনিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:u w:val="single"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সৃজনশীল অভীক্ষা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমান: ৭০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. বেগ কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. সমত্বরণ বলতে কী বোঝায়?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="60" w:after="60" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">বহুনির্বাচনি প্রশ্ন:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বলের একক কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. জুল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. নিউটন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. ওয়াট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. প্যাসকেল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কাজের সমীকরণ কোনটি?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">W = F / S</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">W = F * S</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">W = m * a</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">W = v / t</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
+<w:cols w:num="2" w:space="1008"/>
+</w:sectPr>
+<!-- MCQ PART -->
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আপনার প্রতিষ্ঠান এর নাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঠিকানা লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">পরীক্ষার নাম লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="right" w:pos="10366"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ................</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমানঃ ................</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="40" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:sectPr>
+<w:type w:val="continuous"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720"/>
+<w:cols w:num="1"/>
+</w:sectPr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উদ্দীপক ১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="0"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:i/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">একটি গাড়ির বেগ সময়ের সাথে পরিবর্তিত হচ্ছে। গাড়িটি প্রথম ৫ সেকেন্ডে সমত্বরণে চলে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) বেগ কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) সমত্বরণ বলতে কী বোঝায়?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) উদ্দীপকের আলোকে গাড়িটির ত্বরণ নির্ণয় করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) গাড়িটির মোট অতিক্রান্ত দূরত্ব গাণিতিকভাবে বিশ্লেষণ করো।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বলের একক কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ক) জুল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(খ) নিউটন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(গ) ওয়াট</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(ঘ) প্যাসকেল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">কাজের সমীকরণ কোনটি?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) W = F / S</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) W = F * S</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) W = m * a</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">) W = v / t</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:type w:val="continuous"/>
+<w:pgSz w:w="11906" w:h="16838"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="432" w:footer="432" w:gutter="0"/>
+<w:cols w:num="2" w:space="288" w:sep="1"/>
+</w:sectPr>
+
+===== RTF =====
+[object Blob]

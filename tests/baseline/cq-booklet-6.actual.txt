@@ -1,0 +1,2085 @@
+# fixture: cq-booklet-6
+# docType: EXAM_CQ
+
+===== CLASSIFIER =====
+{
+  "type": "EXAM_CQ"
+}
+
+===== PARSED =====
+{
+  "header": {
+    "classAndSubject": "",
+    "exam": "",
+    "examType": "",
+    "institute": "",
+    "instructions": "",
+    "location": "",
+    "marks": "",
+    "time": ""
+  },
+  "sections": [
+    {
+      "marks": "",
+      "questions": [
+        {
+          "num": "১",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "কোষ কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        },
+        {
+          "num": "২",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "মহাকর্ষ কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "অভিকর্ষজ ত্বরণ বলতে কী বোঝায়?"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "উদ্দীপকের বিজ্ঞানীর সূত্রটি ব্যাখ্যা করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        },
+        {
+          "num": "৩",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "গলনাঙ্ক কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "বরফ কেন পানিতে ভাসে?"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "উদ্দীপকের আলোকে পদার্থের অবস্থার পরিবর্তন ব্যাখ্যা করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        },
+        {
+          "num": "৪",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "গ্রামের বটগাছটিকে মানুষ কী মনে করত?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        },
+        {
+          "num": "৫",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "শফিকের বাবা পেশায় কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "তিনি চাষাবাদে কী ব্যবহার করেন?"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        },
+        {
+          "num": "৬",
+          "options": [],
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "statements": [],
+          "stimulus": "",
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "১",
+              "text": "কোষ কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।"
+            },
+            {
+              "isAlternative": true,
+              "label": "",
+              "mark": "",
+              "text": "--- অথবা ---"
+            },
+            {
+              "label": "খ",
+              "mark": "২",
+              "text": "জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।"
+            },
+            {
+              "label": "গ",
+              "mark": "৩",
+              "text": "উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "৪",
+              "text": "জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+        }
+      ],
+      "title": ""
+    }
+  ]
+}
+
+===== STRUCTURE =====
+{
+  "marks": [
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪",
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪",
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪",
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪",
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪",
+    "ক:১,খ:২,-:∅,খ:২,গ:৩,ঘ:৪"
+  ],
+  "numbering": [
+    "১",
+    "২",
+    "৩",
+    "৪",
+    "৫",
+    "৬"
+  ],
+  "questionCount": 6,
+  "questions": [
+    {
+      "hasStimulus": false,
+      "num": "১",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    },
+    {
+      "hasStimulus": false,
+      "num": "২",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৩",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৪",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৫",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৬",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:১",
+        "খ:২",
+        "-:∅",
+        "খ:২",
+        "গ:৩",
+        "ঘ:৪"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর দাও:"
+    }
+  ],
+  "sections": 1
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait margin-standard">
+<div class="word-crop-marks no-print">
+<div class="crop-tl">
+</div>
+<div class="crop-tr">
+</div>
+<div class="crop-bl">
+</div>
+<div class="crop-br">
+</div>
+</div>
+<div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
+<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠানের নাম</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণি ও বিষয়</div>
+<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ২ ঘণ্টা ৩০ মিনিট</div>
+<div style="text-align: center; flex: 1.5; text-decoration: underline; font-weight: bold; font-size: 13pt; letter-spacing: 0.5px;">সৃজনশীল অভীক্ষা</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমান: ৭০</div>
+</div>
+</div>
+<div class="qp-columns two-columns">
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">কোষ কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">মহাকর্ষ কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">অভিকর্ষজ ত্বরণ বলতে কী বোঝায়?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের বিজ্ঞানীর সূত্রটি ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">গলনাঙ্ক কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">বরফ কেন পানিতে ভাসে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের আলোকে পদার্থের অবস্থার পরিবর্তন ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৪।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">গ্রামের বটগাছটিকে মানুষ কী মনে করত?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৫।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">শফিকের বাবা পেশায় কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">তিনি চাষাবাদে কী ব্যবহার করেন?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
+<div class="cq-q-row" style="display: flex; align-items: flex-start;">
+<span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৬।</span>
+<span class="cq-text text-justify flex-1">নিচের প্রশ্নগুলোর উত্তর দাও:</span>
+</div>
+<div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ক.</span>
+<span class="cq-sub-text">কোষ কী?</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-or-divider text-center font-bold my-1" style="text-align: center; font-weight: bold; margin: 4px 0; color: #334155; font-size: 12pt;">--- অথবা ---</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
+<span class="cq-sub-text">জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
+<span class="cq-sub-text">উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
+</div>
+<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
+<div class="flex-1 text-justify">
+<span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
+<span class="cq-sub-text">জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</span>
+</div>
+<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+<w:p>
+<w:r>
+<w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+<w:t xml:space="preserve">আপনার প্রতিষ্ঠানের নাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ঠিকানা লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+<w:t xml:space="preserve">পরীক্ষার নাম লিখুন</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণি ও বিষয়</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="center" w:pos="3598"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ২ ঘণ্টা ৩০ মিনিট</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:u w:val="single"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সৃজনশীল অভীক্ষা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমান: ৭০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(এখানে একটি কোষের চিত্র দেওয়া আছে)</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. কোষ কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. মহাকর্ষ কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. অভিকর্ষজ ত্বরণ বলতে কী বোঝায়?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের বিজ্ঞানীর সূত্রটি ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. মহাবিশ্বের সবকিছুই কি এই সূত্র মেনে চলে? বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. গলনাঙ্ক কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. বরফ কেন পানিতে ভাসে?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের আলোকে পদার্থের অবস্থার পরিবর্তন ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. বাস্তব জীবনে এই অবস্থার পরিবর্তনের প্রভাব বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. গ্রামের বটগাছটিকে মানুষ কী মনে করত?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. গাছটির ডাল ভেঙে পড়লে মানুষের চিন্তার কারণ কী ছিল? ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের ঘটনাটি তোমার পঠিত গল্পের কোন দিকটিকে তুলে ধরে?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. উদ্দীপকটি কি গল্পের মূলভাবকে সম্পূর্ণরূপে ধারণ করে? তোমার মতামত দাও।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৫।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. শফিকের বাবা পেশায় কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. তিনি চাষাবাদে কী ব্যবহার করেন?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. শফিকের বাবার মতো কৃষকদের দেশের অর্থনীতিতে কী ভূমিকা আছে?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. আধুনিক চাষাবাদ কি সনাতন পদ্ধতির চেয়ে উন্নত? বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">(এখানে একটি কোষের চিত্র দেওয়া আছে)</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৬।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর দাও:</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. কোষ কী?</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. উদ্ভিদ কোষ ও প্রাণী কোষের মধ্যে পার্থক্য লেখো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:jc w:val="center"/>
+<w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">--- অথবা ---</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. উদ্দীপকের চিত্রটি কোন ধরনের কোষ? ব্যাখ্যা করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. জীবদেহে উক্ত কোষের ভূমিকা বিশ্লেষণ করো।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
+<w:cols w:num="2" w:space="1008"/>
+</w:sectPr>
+
+===== RTF =====
+[object Blob]
