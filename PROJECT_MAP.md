@@ -267,6 +267,14 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 
 ## ⚠️ Fix Log & Part Releases
 
+### Part-14.3 Release (২০২৬-১০-০৪)
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | জেমিনি ওসিআর-এ সংক্ষিপ্ত ও সৃজনশীল প্রশ্নের সুস্পষ্ট বিভাগ/ক্যাটাগরি (`##`) বিভাজন | js/ai-ocr-engine.js, js/layout-engine/gemini-prompt-factory.js | ✅ Fixed (প্রশ্নপত্রের ক্যাটাগরি অনুযায়ী আলাদা সেকশন) |
+| 2 | বুকলেট লেআউটে মূল প্রশ্ন পৃষ্ঠায় (কলাম ২) দৃশ্যমান সৃজনশীল হেডার প্লেসহোল্ডার ইনজেকশন | js/layout-engine/cq-booklet-planner.js, js/engines/export-dual-engine.js | ✅ Fixed (সংরক্ষিত কলামের পর পৃষ্ঠার শীর্ষে হেডার) |
+| 3 | মিশ্র সেকশন টাইটেল ও নম্বর সংরক্ষণ (`EXAM_COMBINED`, `EXAM_MATH`, `EXAM_CQ`) | js/engines/doc-classifier.js, js/engines/question-engine.js | ✅ Fixed (ক্যাটাগরি অনুযায়ী ১ থেকে ধারাবাহিক নম্বর) |
+| 4 | মাস্টার টেস্ট রানার ২৭টি টেস্ট স্যুইট ও ১,১২২টি গেট ১০০% অফলাইন ভেরিফিকেশন | tests/part-14.3-mixed-sections-and-header.test.js, tests/run-all.mjs | ✅ 1122/1122 PASS (0 FAIL) |
+
 ### Part-14.2 Release (২০২৬-১০-০৪)
 | # | সমস্যা / ফিচার | ফাইল | Status |
 | - | -------------- | ---- | ------ |
