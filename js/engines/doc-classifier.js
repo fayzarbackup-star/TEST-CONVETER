@@ -28,6 +28,17 @@
     classify(text) {
       if (!text || typeof text !== 'string') return { type: this.DOC_TYPES.GENERAL, confidence: 0 };
       const t = text.trim();
+      // Category headings are structure, not a single document-wide type. Preserve a
+      // short+creative paper as an exam even when OCR's frontmatter guessed GENERAL.
+      const categoryLines = t.split(/\r?\n/).map((line) => line.trim().replace(/^#{1,6}\s*/, '')).filter((line) =>
+        /^(?:(?:[কখগঘঙচছ])\s*[-–—]?\s*)?(?:বিভাগ|অংশ|সেকশন|section|part)(?=$|[\s:ঃ(])/i.test(line) ||
+        /^(?:সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|অতি\s*সংক্ষিপ্ত(?:\s*প্রশ্ন)?|বহুনির্বাচন[িী](?:\s*প্রশ্ন)?|নৈর্ব্যক্তিক(?:\s*প্রশ্ন)?|creative(?:\s+questions?)?|short[\s-]*(?:answer|questions?)|multiple[\s-]*choice|MCQ)(?=$|[\s:ঃ(])/i.test(line)
+      );
+      const hasShortSectionHeading = categoryLines.some((line) => /সংক্ষিপ্ত|অতি\s*সংক্ষিপ্ত|short/i.test(line));
+      const hasCreativeSectionHeading = categoryLines.some((line) => /সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|creative|\bCQ\b/i.test(line));
+      const hasCreativeExamMarkers = /সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|creative/i.test(t);
+      const hasMixedShortCreativeSections = hasShortSectionHeading && (hasCreativeSectionHeading || hasCreativeExamMarkers);
+      const hasExplicitSectionBreak = /---\s*SECTION_BREAK/i.test(t) || /\[LAYOUT:\s*COMBINED/i.test(t);
 
       // 0. EXPLICIT MASTER SECTOR ID (Highest Priority: Zero-hallucination Frontmatter / Tag)
       const frontmatterMatch = t.match(/^---\s*[\r\n]([\s\S]*?)[\r\n]---/);
@@ -51,8 +62,18 @@
       }
 
       if (detectedDocType) {
+        // An explicit combined separator wins over a mistaken single-sector frontmatter.
+        if (hasExplicitSectionBreak) {
+          return { type: this.DOC_TYPES.EXAM_COMBINED, confidence: 1.0, reason: 'Explicit combined section marker' };
+        }
+        if (hasMixedShortCreativeSections && ['EXAM_GENERAL', 'GENERAL_EXAM', 'QUESTION_2COL', 'PRIMARY_EXAM'].includes(detectedDocType)) {
+          return { type: this.DOC_TYPES.EXAM_CQ, confidence: 0.98, reason: 'Mixed short and creative sections; preserve section-wise exam layout' };
+        }
         if (detectedDocType === 'EXAM_GENERAL' || detectedDocType === 'GENERAL_EXAM' || detectedDocType === 'QUESTION_2COL' || detectedDocType === 'PRIMARY_EXAM') {
           return { type: this.DOC_TYPES.EXAM_GENERAL, confidence: 1.0, reason: 'Sector: EXAM_GENERAL' };
+        }
+        if (detectedDocType === 'EXAM_MATH' || detectedDocType === 'MATH_EXAM' || detectedDocType === 'MATHEMATICS_EXAM') {
+          return { type: this.DOC_TYPES.EXAM_MATH, confidence: 1.0, reason: 'Sector: EXAM_MATH' };
         }
         if (detectedDocType === 'EXAM_CQ' || detectedDocType === 'CREATIVE_EXAM' || detectedDocType === 'CQ_BOOKLET') {
           return { type: this.DOC_TYPES.EXAM_CQ, confidence: 1.0, reason: 'Sector: EXAM_CQ' };
@@ -120,10 +141,14 @@
       const isPureMcqPaper = (mcqBlockCount >= 10 && numberedBlockCount > 0 && mcqBlockCount >= numberedBlockCount * 0.85);
       const isStrictMcq = (mcqCount >= 18) || (totalQCount >= 3 && mcqCount >= totalQCount * 0.85) || isPureMcqPaper;
 
+      // A mixed short+creative exam must not fall through to the generic-question score.
+      if (hasMixedShortCreativeSections && !hasExplicitSectionBreak) {
+        return { type: this.DOC_TYPES.EXAM_CQ, confidence: 0.96, reason: 'Mixed short and creative sections; preserve section-wise exam layout' };
+      }
+
       // Combined CQ + MCQ Detection (Highest Priority for Exam Papers)
       const hasCqMarkers = /(?:সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|ক\-বিভাগ|খ\-বিভাগ)/i.test(t) ||
         (/(?:ক\.\s*[^\n]+\s*খ\.\s*[^\n]+\s*গ\.)/.test(t) && /\[[১-৪\d]\]/.test(t));
-      const hasExplicitSectionBreak = /---SECTION_BREAK/i.test(t) || /\[LAYOUT:\s*COMBINED/i.test(t);
 
       let combinedScore = 0;
       if (hasExplicitSectionBreak || (hasCqMarkers && isStrictMcq)) {

@@ -29,8 +29,15 @@
         case 'question-2col':
         case 'creative-cq':
           specificInstructions = `
+0. MIXED-CATEGORY QUESTION-PAPER STRUCTURE:
+   - Detect each clearly distinct category (short/সংক্ষিপ্ত, creative/সৃজনশীল, MCQ/বহুনির্বাচনি) and place it in its own section; do not flatten categories into one list.
+   - Use a separate Markdown level-2 heading immediately before each category. Examples: ## ক-বিভাগ (সংক্ষিপ্ত প্রশ্ন), ## সৃজনশীল প্রশ্ন, ## গ-বিভাগ (বহুনির্বাচনি প্রশ্ন). Preserve printed section labels; if no letter is printed, use only a neutral category heading and never invent ক/খ/গ.
+   - Reserve ## for category headings. Write each question as a plain serial line (১। ..., ২। ...), not as a heading. Keep its stimulus, sub-questions and options inside its category.
+   - A paper with both short and creative sections uses EXAM_CQ (or EXAM_MATH for a mathematics exam), not EXAM_GENERAL. For a CQ+MCQ combined paper, retain the exact ---SECTION_BREAK:MCQ--- separator before the MCQ section.
+   - Transcribe visible serials faithfully and do not carry one section's counter into another. The deterministic downstream renumberer restarts numbering independently within every parsed section.
+
 1. QUESTION NUMBERING & MARKS ALIGNMENT:
-   - Use Bengali sequential numbering with '।' (e.g. ১।, ২।, ৩।, ... ১০।).
+   - Preserve printed serials and digit script exactly. Keep numbering scopes separate under the category headings; the deterministic downstream renumberer restarts each parsed section at ১।.
    - For creative sub-questions, use '(ক)', '(খ)', '(গ)', '(ঘ)'.
    - Put the full marks in square brackets at the very right of the line (e.g. [১], [২], [৩], [৪] or [১০]).
    - For creative stimulus/passage, prefix with 'উদ্দীপক:' or format as a blockquote '> উদ্দীপক লেখা...'.
@@ -38,6 +45,7 @@
 2. FRONTMATTER HEADER SPECIFICATION:
    Extract or specify the header metadata at the very beginning between '---' delimiters:
    ---
+    doc_type: EXAM_GENERAL | EXAM_CQ | EXAM_MATH | EXAM_MCQ | EXAM_COMBINED
    institute: [প্রতিষ্ঠানের নাম]
    exam: [পরীক্ষার নাম]
    grade: [শ্রেণি]
@@ -194,7 +202,7 @@ ${specificInstructions}
 UNIVERSAL ACCURACY & FIDELITY MANDATES:
 ================================================================================
 1. STRICT SOURCE FIDELITY:
-   - Never invent, fabricate or guess missing questions, marks or headers that are not in the source.
+   - Never invent questions, answers, marks or institutional metadata. A clearly evidenced category boundary may receive a neutral Markdown ## label solely to preserve structure; retain printed headings and never invent section letters.
    - If handwritten or printed, transcribe stroke-by-stroke with surgical precision.
 
 2. LANGUAGE & SCRIPT INTEGRITY:

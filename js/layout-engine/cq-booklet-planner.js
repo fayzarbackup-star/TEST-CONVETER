@@ -167,7 +167,7 @@
     /** হেডার লাইনের সাইজ — ৩ নম্বর ধারা (অর্ধ-পয়েন্ট) */
     HEADER_SIZES: { institute: 32, location: 24, exam: 26, classSubject: 24, metrics: 24 },
 
-    /** EXAM_CQ/EXAM_MATH/EXAM_GENERAL সৃজনশীল-পথে অনুপস্থিত হেডার-ফিল্ডের দৃশ্যমান, ক্লিক-এডিটযোগ্য ফলব্যাক */
+    /** EXAM_CQ/EXAM_MATH/EXAM_GENERAL/EXAM_COMBINED-এর CQ পথে অনুপস্থিত হেডার-ফিল্ডের দৃশ্যমান, ক্লিক-এডিটযোগ্য ফলব্যাক */
     CQ_HEADER_FALLBACK: {
       institute: 'আপনার প্রতিষ্ঠানের নাম',
       location: 'ঠিকানা লিখুন',
@@ -382,7 +382,7 @@
       }
 
       const headerLines = this.buildHeader(parsedData && parsedData.header, {
-        fallback: docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL' || o.cqHeaderFallback === true
+        fallback: docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL' || docType === 'EXAM_COMBINED' || o.cqHeaderFallback === true
       });
       const headH = this.headerHeight(headerLines, g);
       const empty = {
@@ -426,6 +426,8 @@
         }
       }
 
+      const skipFirstColumn = reserve && !back.length;
+      // A reserved blank left cover is a real physical slot: page 1 then starts in column 2.
       const columns = [];
       if (back.length) {
         columns.push({
@@ -443,16 +445,15 @@
           role: i === 0 ? 'page1' : 'page',
           slot: i + 1,
           page: i + 1,                       // ছাপা পৃষ্ঠার ক্রম (১ = ফ্রন্ট কভার)
-          colInPage: (flowIdx % 2) + 1,
+          colInPage: ((flowIdx + (skipFirstColumn ? 1 : 0)) % 2) + 1,
           items: bins[i].items,
-          headerFirst: i === 0,
+          headerFirst: i === 0 && bins[i].items.length > 0,
           breakBefore: false,                // Part-13.4: নিচে ঠিক হবে (প্রাকৃতিক প্রবাহ)
           height: colCap - bins[i].left,
           cap: colCap
         });
       }
 
-      const skipFirstColumn = reserve && !back.length;
       // Part-13.4 (রিপোর্ট-১): MCQ-র মতো প্রাকৃতিক প্রবাহ — mid-flow কৃত্রিম কলাম-ব্রেক বন্ধ।
       // ব্রেক কেবল: (ক) ব্যাক-কভারের পরে flow শুরুর আগে, (খ) skipFirstColumn হলে লিডিং ব্রেক।
       for (const c of columns) c.breakBefore = false;

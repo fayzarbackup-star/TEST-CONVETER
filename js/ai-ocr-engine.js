@@ -122,13 +122,15 @@
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
      ---
-     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | OFFICIAL_NOTICE | STAMP_DEED>
+     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | OFFICIAL_NOTICE | STAMP_DEED>
      columns: <1 or 2>
      ---
    - SECTOR DETERMINATION RULES (DO NOT RELY ON COLUMNS IN HANDWRITTEN DRAFTS; CLASSIFY BY INTENDED PURPOSE):
      * Creative Questions (CQ 70 marks, Class 6-12 with stimulus & ক,খ,গ,ঘ): doc_type: EXAM_CQ, columns: 2
-     * Standard/Primary Exam (Class 1-5, short questions, fill-in-blanks, matching, grammar, general questions): doc_type: EXAM_GENERAL, columns: 2
-       -> CRITICAL: NEVER classify general or primary exam papers as EXAM_CQ! If there is no stimulus or no 4-tier CQ sub-questions, it is EXAM_GENERAL.
+     * A paper containing BOTH short/general questions and a clearly distinct creative/CQ section is still an exam: use doc_type: EXAM_CQ (or EXAM_MATH for a mathematics paper) and retain every category as a separate section; never flatten it into one generic flow.
+     * Mathematics exam with a creative/booklet section: doc_type: EXAM_MATH, columns: 2
+     * Standard/Primary Exam (Class 1-5, short questions, fill-in-blanks, matching, grammar, general questions) with no creative/CQ section: doc_type: EXAM_GENERAL, columns: 2
+       -> Do not force a general/primary paper into EXAM_CQ; a clearly distinct creative/CQ section is the exception and must use EXAM_CQ/EXAM_MATH.
      * Pure Multiple Choice Questions (20-30 MCQs, or source has only MCQs with at least 10-15 questions): doc_type: EXAM_MCQ, columns: 2
      * Combined Exam (both Creative Questions & 20-30 MCQs): doc_type: EXAM_COMBINED, columns: 2
      * Institutional Office Pad / Letterhead Memo: doc_type: OFFICE_PAD, columns: 1
@@ -141,18 +143,23 @@
      * If address is missing, write address in subtitle or next line: "ঠিকানা লিখুন"
      * If exam name is missing, write: exam: "পরীক্ষার নাম লিখুন"
      * Ensure grade (শ্রেণি), subject (বিষয়), time (সময়), fullMarks (পূর্ণমান) are included in frontmatter or top header.
+   - MULTI-CATEGORY SECTIONING MANDATE (FOR EVERY MIXED QUESTION PAPER):
+     * Whenever the source clearly switches category (short/সংক্ষিপ্ত, creative/সৃজনশীল, MCQ/বহুনির্বাচনি, etc.), emit a separate Markdown level-2 heading immediately before each category. Examples: ## ক-বিভাগ (সংক্ষিপ্ত প্রশ্ন), ## সৃজনশীল প্রশ্ন, ## গ-বিভাগ (বহুনির্বাচনি প্রশ্ন).
+     * Preserve any printed section letter/name and wording. If the category switch is clear but the source has no printed heading, add only a neutral category label (for example ## সংক্ষিপ্ত প্রশ্ন); never invent a ক/খ/গ label or question content.
+     * Keep each question and its stimulus/options under the correct heading. Reserve ## for category headings; write question serials as ordinary lines such as ১। ..., never as ## ১। ....
+     * Treat each category as an independent numbering scope. Transcribe visible serials faithfully; do not carry a previous category counter into a new section. The deterministic downstream renumberer resets each parsed section to ১, ২, ৩, ... .
    - SECTION BREAK MANDATE:
      * When transcribing a combined question paper (containing both Creative Questions and Multiple Choice Questions), when the Creative Question part ends and the Multiple Choice (MCQ) section begins (before its institutional header/title), YOU MUST INSERT THIS EXACT SEPARATOR ON ITS OWN LINE:
        ---SECTION_BREAK:MCQ---
 
 1. ZERO-HALLUCINATION & STRICT 100% SOURCE FIDELITY (NO EDITS, NO PARAPHRASING):
-   - Transcribe ONLY what is physically and visibly present in the source images. Never invent, extrapolate, or guess any question, sub-question, or header.
+   - Transcribe only source questions, sub-questions, numbers and institutional metadata that are physically visible. Do not invent content; use the explicitly mandated editable header placeholders when metadata is missing, and add a neutral category heading only for a clearly evidenced category transition as specified above.
    - DO NOT alter, rewrite, rephrase, summarize, or modify the original text, question contents, equations, or numbers on your own.
    - Transcribe stroke-by-stroke with 100% fidelity. Everything must match the source image word-for-word!
 
 2. MARKDOWN STRUCTURE:
    - Use # for main document/institution titles.
-   - Use ## for main serials and questions (e.g. ## ১। ..., ## ২। ...).
+   - Use ## exclusively for category/section headings (e.g. ## ক-বিভাগ (সংক্ষিপ্ত প্রশ্ন), ## সৃজনশীল প্রশ্ন). Write individual question serials as plain lines (e.g. ১। ..., ২। ...).
    - Use > for Creative Question paragraphs (উদ্দীপক).
    - Convert all tabular grids to standard Markdown tables |---|---| with proper column dividers.
 
@@ -237,7 +244,7 @@
       * এগুলোর ক্ষেত্রে শুধুমাত্র পেজ ডিজাইন ও ২-কলাম ফরম্যাট প্রযোজ্য হবে, ভেতরের প্রশ্নগুলোকে কৃত্রিম সৃজনশীলে বদলানো যাবে না।
 
 15. SHORT QUESTIONS (সংক্ষিপ্ত ও অতি সংক্ষিপ্ত প্রশ্নপত্র):
-    - সংক্ষিপ্ত প্রশ্ন, অতি সংক্ষিপ্ত প্রশ্ন বা এক কথায় উত্তরের ক্ষেত্রেও ক্রমিক নম্বর প্রতিটি সেকশনে স্বতন্ত্রভাবে ১।, ২।, ৩।, ৪। ... থেকে ক্রমানুসারে শুরু করতে হবে। বই বা গাইডের খণ্ডিত নম্বর বসানো সম্পূর্ণ নিষেধ।
+    - সংক্ষিপ্ত/অতি সংক্ষিপ্ত/এক কথার প্রতিটি বিভাগ স্বতন্ত্র নম্বরায়নের scope। OCR-এ দৃশ্যমান নম্বর হুবহু রাখুন; আগের বিভাগের নম্বর নতুন বিভাগে চালিয়ে যাবেন না। চূড়ান্ত আউটপুটে downstream renumberer প্রতিটি parsed section-কে আলাদাভাবে ১।, ২।, ৩। ... থেকে সাজায়—নিজে থেকে নম্বর বানাবেন বা বদলাবেন না।
 
 
 16. TABLES & GRIDS (টেবিল ও ছক):

@@ -33,7 +33,7 @@
     return out;
   }
 
-  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL']);
+  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL', 'EXAM_COMBINED']);
   const usesCreativeHeaderFallback = (docType) => CREATIVE_HEADER_DOC_TYPES.has(String(docType || '').toUpperCase());
 
   function visualOptionTextForFallback(value) {
@@ -924,6 +924,20 @@
      * Part-11: CQ বুকলেট প্ল্যান। margin / columnGap / columns / skipFirstColumn
      * UI-অপশন প্ল্যানারে পাস হয় — নতুন কোনো জ্যামিতি এ ফাইলে গণনা করা হয় না।
      */
+    _ensureCqHeaderPlacement(plan) {
+      if (!plan || !Array.isArray(plan.columns) || !plan.columns.length || !Array.isArray(plan.headerLines) || !plan.headerLines.length) return plan;
+      const columns = plan.columns;
+      // The planner may omit the reserved blank cover from columns[]. Always attach
+      // the editable header to the actual page-1 content column, not a blank/back-cover slot.
+      let firstPage = columns.findIndex((col) => col && col.role === 'page1');
+      if (firstPage < 0) firstPage = columns.findIndex((col) => col && col.page === 1 && col.role !== 'backcover');
+      if (firstPage < 0) firstPage = columns.findIndex((col) => col && col.role !== 'backcover' && Array.isArray(col.items) && col.items.length);
+      if (firstPage < 0) return plan;
+      for (const col of columns) col.headerFirst = false;
+      columns[firstPage].headerFirst = true;
+      return plan;
+    },
+
     _cqPlan(parsedData, options = {}) {
       const planner = this._getCqPlanner();
       if (planner && typeof planner.plan === 'function') {
@@ -934,14 +948,15 @@
             columnGap: options.columnGap || 0.7,
             cols: options.columns || 2,
             rightTab: options.rightTab,
-            skipFirstColumn: options.skipFirstColumn
+            skipFirstColumn: options.skipFirstColumn,
+            cqHeaderFallback: options.cqHeaderFallback === true
           });
-          if (p && p.geometry && Array.isArray(p.columns) && Array.isArray(p.items)) return p;
+          if (p && p.geometry && Array.isArray(p.columns) && Array.isArray(p.items)) return this._ensureCqHeaderPlacement(p);
         } catch (e) {
           /* ন্যূনতম ফলব্যাক প্ল্যান নিচে */
         }
       }
-      return this._cqPlanFallback(parsedData, options);
+      return this._ensureCqHeaderPlacement(this._cqPlanFallback(parsedData, options));
     },
 
     /**
@@ -1060,14 +1075,15 @@
         if (sec && sec.title) items.push({ kind: 'sectionTitle', text: sec.title, height: 0, lines: 1 });
         for (const q of ((sec && sec.questions) || [])) items.push({ kind: 'question', q, height: 0, lines: 0, parts: {} });
       }
+      const skipFirstColumn = options.skipFirstColumn !== false;
       const columns = [{
-        role: 'page1', slot: 1, page: 1, colInPage: 1, items,
-        headerFirst: true, breakBefore: false, height: 0, cap: g.capacity
+        role: 'page1', slot: 1, page: 1, colInPage: skipFirstColumn ? 2 : 1, items,
+        headerFirst: true, breakBefore: skipFirstColumn, height: 0, cap: g.capacity
       }];
       return {
         geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 },
-        headerLines, headerHeight: 0, skipFirstColumn: false, columns, items,
-        metrics: { count: items.length, capacity: g.capacity, columnsTotal: 1, printedPages: 1, docPages: 1, sheets: 1, reservedUsed: false, tailMoved: 0, headHeight: 0 }
+        headerLines, headerHeight: 0, skipFirstColumn, columns, items,
+        metrics: { count: items.length, capacity: g.capacity, columnsTotal: 1, printedPages: skipFirstColumn ? 2 : 1, docPages: 1, sheets: 1, reservedUsed: false, tailMoved: 0, headHeight: 0 }
       };
     },
 

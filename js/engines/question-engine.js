@@ -11,8 +11,17 @@
 (function (global) {
   'use strict';
 
-  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL']);
+  const CREATIVE_HEADER_DOC_TYPES = new Set(['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL', 'EXAM_COMBINED']);
   const usesCreativeHeaderFallback = (docType) => CREATIVE_HEADER_DOC_TYPES.has(String(docType || '').toUpperCase());
+  const cleanQuestionSectionTitle = (line) => String(line == null ? '' : line)
+    .trim().replace(/^#{1,6}\s*/, '').replace(/\s+#{1,6}\s*$/, '').trim();
+  const isQuestionSectionHeading = (line) => {
+    const raw = String(line == null ? '' : line).trim();
+    const title = cleanQuestionSectionTitle(raw);
+    if (!title || title.length > 100) return false;
+    return /^(?:(?:[কখগঘঙচছ])\s*[-–—]?\s*)?(?:বিভাগ|অংশ|সেকশন|section|part)(?=$|[\s:ঃ(])/i.test(title) ||
+      /^(?:সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|অতি\s*সংক্ষিপ্ত(?:\s*প্রশ্ন)?|বহুনির্বাচন[িী](?:\s*প্রশ্ন)?|নৈর্ব্যক্তিক(?:\s*প্রশ্ন)?|creative(?:\s+questions?)?|short[\s-]*(?:answer|questions?)|multiple[\s-]*choice|MCQ)(?=$|[\s:ঃ(])/i.test(title);
+  };
 
   function visualOptionTextForFallback(value) {
     let s = String(value == null ? '' : value)
@@ -256,7 +265,7 @@
             // Part-12: সেকশন-বিভাজক/বিভাগ-শিরোনাম উদ্দীপকে জমা হয় না (combined পেপারে
             // `---SECTION_BREAK:MCQ---` প্রথম উদ্দীপকের সঙ্গে মিশে গিয়েছিল)
             const isBoundary = isNextQ || /SECTION[\s_\-]*BREAK/i.test(t) || /^[\-–—=*#\s]+$/.test(t) ||
-              /^#{0,6}\s*(?:বিভাগ|অংশ|সেকশন|Section)\b/.test(t) || /(?:বিভাগ|অংশ)[\u0983:\-]/.test(t);
+              isQuestionSectionHeading(t) || /^#{0,6}\s*(?:বিভাগ|অংশ|সেকশন|Section)\b/.test(t) || /(?:বিভাগ|অংশ)[\u0983:\-]/.test(t);
             if (!t) { stimulusOpen = false; continue; }        // ফাঁকা লাইন ব্লক শেষ করে
             if (!isBoundary) {
               pendingStimulus += (pendingStimulus ? '\n' : '') + t;
@@ -266,8 +275,18 @@
           }
         }
 
-        // Section Title Detection
-        if (/(?:বিভাগ|অংশ)[ঃ:\-]|সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|বহুনির্বাচনি|নৈর্ব্যক্তিক/i.test(line) && line.length < 75) {
+        // Section Title Detection: category headings (including `## ক-বিভাগ ...`)
+        // are structural boundaries, not question text or part of an open stimulus.
+        const sectionTitleText = cleanQuestionSectionTitle(line);
+        const isQuestionNumberLine = /^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-–—:ঃ.]*)?[\u09E6-\u09EF\d]+[\u0964.)]/.test(sectionTitleText);
+        const isLegacySectionTitle = /(?:বিভাগ|অংশ)[ঃ:\-]|সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|বহুনির্বাচন[িী]|নৈর্ব্যক্তিক/i.test(sectionTitleText);
+        if (!isQuestionNumberLine && (isQuestionSectionHeading(line) || isLegacySectionTitle) && sectionTitleText.length < 100) {
+          // A stimulus immediately before a category heading belongs to the upcoming
+          // section/question, not the final question of the previous category.
+          if (currentQuestion && pendingStimulus) {
+            const firstStimulusLine = String(pendingStimulus).split('\n')[0];
+            if (currentQuestion.stimulus === firstStimulusLine) currentQuestion.stimulus = '';
+          }
           if (currentQuestion) {
             currentSection.questions.push(currentQuestion);
             currentQuestion = null;
@@ -277,9 +296,9 @@
           }
           // Part-12 (অডিট ১-এর সহ-তথ্য): `বিভাগ: গণিত মান: ২০` — শিরোনামের সঙ্গে
           // লেগে-থাকা পূর্ণমান এখন আলাদা ফিল্ডে (আগে পুরো লাইনটি শিরোনাম হতো)।
-          const secTail = line.match(/(?:মান|মার্ক)[\u0983:\u09df]\s*([\u09E6-\u09EF\d]+)\s*$/);
+          const secTail = sectionTitleText.match(/(?:মান|মার্ক)[\u0983:\u09df]\s*([\u09E6-\u09EF\d]+)\s*$/);
           currentSection = {
-            title: secTail ? line.slice(0, secTail.index).replace(/[\s,;:\u0964\-–]+$/, '') : line,
+            title: secTail ? sectionTitleText.slice(0, secTail.index).replace(/[\s,;:\u0964\-–]+$/, '') : sectionTitleText,
             marks: secTail ? secTail[1] : '',
             questions: []
           };
@@ -701,7 +720,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           columnGap: options.columnGapInches || options.columnGap || 0.7,
           cols: options.columns || 2,
           rightTab: options.rightTab,
-          skipFirstColumn: options.skipFirstColumn
+          skipFirstColumn: options.skipFirstColumn,
+          cqHeaderFallback: options.cqHeaderFallback === true
         });
         return (p && p.geometry && Array.isArray(p.columns)) ? p : null;
       } catch (e) {
