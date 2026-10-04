@@ -552,6 +552,34 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       marks: 'পূর্ণমানঃ ................'
     },
 
+    /** EXAM_CQ হেডার-ফলব্যাক — planner অনুপলব্ধ হলেও প্রিভিউতে একই ফিল্ড দেখায় */
+    CQ_HEADER_FALLBACK: {
+      institute: 'আপনার প্রতিষ্ঠানের নাম',
+      location: 'ঠিকানা লিখুন',
+      exam: 'পরীক্ষার নাম লিখুন',
+      classSubject: 'শ্রেণি ও বিষয়',
+      time: '২ ঘণ্টা ৩০ মিনিট',
+      examType: 'সৃজনশীল অভীক্ষা',
+      marks: '৭০'
+    },
+
+    applyCqHeaderFallbacks(header) {
+      const planner = this._getCqPlanner();
+      const FB = (planner && planner.CQ_HEADER_FALLBACK) || this.CQ_HEADER_FALLBACK;
+      const h = header || {};
+      const nonEmpty = (v) => v !== null && v !== undefined && String(v).trim() !== '';
+      return {
+        institute: nonEmpty(h.institute) ? h.institute : FB.institute,
+        location: nonEmpty(h.location) ? h.location : FB.location,
+        exam: nonEmpty(h.exam) ? h.exam : FB.exam,
+        classAndSubject: nonEmpty(h.classAndSubject) ? h.classAndSubject : FB.classAndSubject,
+        time: nonEmpty(h.time) ? h.time : FB.time,
+        examType: nonEmpty(h.examType) ? h.examType : FB.examType,
+        marks: nonEmpty(h.marks) ? h.marks : FB.marks,
+        instructions: h.instructions || ''
+      };
+    },
+
     /** প্রিভিউ/এক্সপোর্ট দুই পথেই একই ফলব্যাক টেক্সট বসে */
     applyMcqHeaderFallbacks(header) {
       const FB = this.MCQ_HEADER_FALLBACK;
@@ -620,7 +648,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       if (!planner || typeof planner.plan !== 'function') return null;
       try {
         const p = planner.plan(parsedData, {
-          docType: 'EXAM_CQ',
+          docType: options.docType || 'EXAM_CQ',
           margin: options.marginInches || options.margin || 0.5,
           columnGap: options.columnGapInches || options.columnGap || 0.7,
           cols: options.columns || 2,
@@ -637,20 +665,57 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     renderMcqOptions(options, renderOpts = {}) {
       if (!options || options.length === 0) return '';
 
-      const maxLen = Math.max(...options.map(o => o.text.length));
-      const totalLen = options.reduce((sum, o) => sum + o.text.length, 0);
-      const isRoman = options.every(o => /(?:^|[\s,(])(?:i{1,3}|iv|র{1,3})(?:[\s,.)]|$)/i.test(o.text));
-
-      let gridClass = 'mcq-grid-4';
-      if (renderOpts.forceTwoColumns || (!isRoman && (maxLen > 14 || totalLen > 48))) {
-        gridClass = maxLen > 25 ? 'mcq-grid-1' : 'mcq-grid-2';
+      // Planner-এ প্রশ্ন না-গেলেও একই measured-width grid বেছে নিই; legacy
+      // forceTwoColumns আর ছোট বিকল্পকে অযথা ২-কলামে নামিয়ে দেয় না।
+      let gridCols = Number(renderOpts.gridCols || (renderOpts.planItem && renderOpts.planItem.grid && renderOpts.planItem.grid.cols) || 0);
+      if (!(gridCols >= 1 && gridCols <= 4)) {
+        const planner = this._getMcqPlanner();
+        if (planner && typeof planner.decideOptionsGrid === 'function' && typeof planner.geometry === 'function') {
+          const sz = Number(renderOpts.szHalf) || 24;
+          gridCols = planner.decideOptionsGrid(options, sz, planner.geometry({})).cols;
+        } else {
+          const hasMath = options.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+|[=<>≤≥≠≈±×÷√∑∫^_]|(?:\b[A-Za-z0-9]\s*[+\-]\s*[A-Za-z0-9]))/.test(String((o && o.text) || '')));
+          const fallbackTextW = (renderOpts.geometry && Number(renderOpts.geometry.textW)) || 4657;
+          const optionWidth = (o) => {
+            const label = o && o.label ? '(' + o.label + ')' : '';
+            const text = label + (label ? ' ' : '') + String((o && o.text) || '');
+            let em = 0;
+            for (const ch of text) {
+              const cp = ch.codePointAt(0);
+              if (ch === ' ' || ch === '\t' || ch === '\u00a0') em += 0.26;
+              else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
+              else if (/[a-z]/.test(ch)) em += 0.47;
+              else if (/[A-Z]/.test(ch)) em += 0.66;
+              else if (/[0-9০-৯]/.test(ch)) em += 0.50;
+              else if (".,:;'\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
+              else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
+              else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
+              else em += 0.60;
+            }
+            return Math.round(em * ((Number(renderOpts.szHalf) || 24) / 2) * 20 * 1.12);
+          };
+          const widths = options.map(optionWidth);
+          const candidates = hasMath ? [1] : (options.length >= 4 ? [4, 2, 1] : options.length === 3 ? [3, 1] : [1]);
+          const gap = 40;
+          gridCols = 1;
+          for (const c of candidates) {
+            const slot = Math.floor(fallbackTextW / c);
+            const fits = widths.every((w, oi) => {
+              if (c === 1) return true;
+              const row = Math.floor(oi / c);
+              let rowMax = 0;
+              for (let k = row * c; k < Math.min(row * c + c, options.length); k++) rowMax = Math.max(rowMax, widths[k]);
+              return rowMax <= slot - gap;
+            });
+            if (fits) { gridCols = c; break; }
+          }
+        }
       }
-      // Part-10 (ঘ.১–ঘ.২): প্ল্যানার পরিমাপ করে যে গ্রিড ঠিক করেছে, প্রিভিউ সেটিই মানে —
-      // ৪টি ছোট বিকল্প সমান দূরত্বে এক লাইনে, বড় হলে ২, আরও বড় হলে ১।
-      const planCols = renderOpts.gridCols || (renderOpts.planItem && renderOpts.planItem.grid ? renderOpts.planItem.grid.cols : 0);
-      if (planCols >= 1 && planCols <= 4) gridClass = 'mcq-grid-' + planCols;
+      if (!(gridCols >= 1 && gridCols <= 4)) gridCols = 1;
+      const gridClass = 'mcq-grid-' + gridCols;
+      const threeColStyle = gridCols === 3 ? ' style="grid-template-columns: repeat(3, minmax(0, 1fr));"' : '';
 
-      let html = `<div class="mcq-grid ${gridClass}">`;
+      let html = `<div class="mcq-grid ${gridClass}"${threeColStyle}>`;
       for (const opt of options) {
         html += `<div class="mcq-opt">`;
         html += `<span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(${this.escape(opt.label)})</span> `;
@@ -852,8 +917,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     renderHeaderBlock(header, renderOpts = {}) {
       // Part-10 (খ.৩): MCQ প্রিভিউতে অটো-প্লেসহোল্ডার — হেডার কখনো ভাঙে না।
       // (EXAM_CQ/অন্যান্য আর্কিটাইপের আচরণ অপরিবর্তিত — ফ্রোজেন চুক্তি।)
+      const useCqFb = !!(renderOpts && (renderOpts.cqFallback || renderOpts.docType === 'EXAM_CQ'));
+      if (useCqFb) header = this.applyCqHeaderFallbacks(header);
       const useFb = !!(renderOpts && (renderOpts.fallback || renderOpts.docType === 'EXAM_MCQ'));
-      if (useFb && header) header = this.applyMcqHeaderFallbacks(header);
+      if (useFb) header = this.applyMcqHeaderFallbacks(header);
       const pmLabel = useFb ? 'পূর্ণমানঃ ' : 'পূর্ণমান: ';
       // Part-12: বুকেলেট প্রিভিউতে হেডারের লাইন-বক্সও প্ল্যান-রেশিওতে (RTF s32+\sl480)
       const hlh = (renderOpts && renderOpts.cqGeom && Number.isFinite(+renderOpts.cqGeom.lineRenderCssRatio)) ? String(+renderOpts.cqGeom.lineRenderCssRatio) : '1.2';
@@ -971,6 +1038,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const lineSpacing = options.lineSpacing || '1.35';
       const editableAttr = options.editable ? 'contenteditable="true" spellcheck="false"' : '';
       const styleAttr = `style="font-size: ${fontSize}; line-height: ${lineSpacing};"`;
+      const renderDocType = options.docType || 'EXAM_CQ';
+      const headerRenderOpts = renderDocType === 'EXAM_CQ'
+        ? { docType: 'EXAM_CQ', cqFallback: true }
+        : {};
 
       // Flatten all questions with their section titles
       const allItems = [];
@@ -1017,7 +1088,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
               continue;
             }
             html += `<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="${col.page}" data-col="${col.colInPage}">`;
-            if (col.headerFirst) html += this.renderHeaderBlock(headerModel, { cqGeom: cqPlan.geometry });
+            if (col.headerFirst) html += this.renderHeaderBlock(headerModel, {
+              cqGeom: cqPlan.geometry,
+              docType: options.docType || 'EXAM_CQ',
+              cqFallback: (options.docType || 'EXAM_CQ') === 'EXAM_CQ'
+            });
             for (const it of (col.items || [])) html += renderBookletItem(it);
             html += `</div>`;
           }
@@ -1171,7 +1246,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ১ (১ম অংশ — সম্পূর্ণ পেজ ভরাট, ২-কলাম অপশন)</div>`;
           html += `<div class="paper-sheet size-a4-portrait ${marginClass} mb-4 page-break-indicator">${this.renderCropMarks()}`;
           html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait" ${editableAttr} ${styleAttr}>`;
-          html += this.renderHeaderBlock(parsedData.header);
+          html += this.renderHeaderBlock(parsedData.header, headerRenderOpts);
           html += `<div class="qp-columns qp-columns-flex" style="display: flex; column-gap: 0.2in;">`;
 
           // Page 1 Column 1
@@ -1241,7 +1316,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         const lineStyle = layoutMode === 'B' ? 'line-height: 1.45;' : `line-height: ${lineSpacing};`;
         let html = `<div class="paper-sheet size-a4-portrait ${marginClass}">${this.renderCropMarks()}`;
         html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait" ${editableAttr} style="${lineStyle} font-size: ${fontSize};">`;
-        html += this.renderHeaderBlock(parsedData.header);
+        html += this.renderHeaderBlock(parsedData.header, headerRenderOpts);
         html += `<div class="qp-columns two-columns">`;
         for (const item of allItems) {
           if (item.type === 'SECTION_TITLE') {
@@ -1258,7 +1333,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const paperSizeClass = isLandscape ? 'size-a4-landscape' : 'size-a4-portrait';
       let html = `<div class="paper-sheet ${paperSizeClass} ${marginClass}">${this.renderCropMarks()}`;
       html += `<div class="question-paper ${fontClass} dense-zero-gap ${isLandscape ? 'orientation-landscape' : 'orientation-portrait'}" ${editableAttr} ${styleAttr}>`;
-      html += this.renderHeaderBlock(parsedData.header);
+      html += this.renderHeaderBlock(parsedData.header, headerRenderOpts);
       html += `<div class="qp-columns ${options.singleColumn ? '' : 'two-columns'}">`;
       for (const item of allItems) {
         if (item.type === 'SECTION_TITLE') {

@@ -222,6 +222,9 @@
       g.stops4 = [g.indent, g.indent + g.slot4, g.indent + g.slot4 * 2, g.indent + g.slot4 * 3];
       g.stops2 = [g.indent, g.indent + g.slot2];
       g.stops3 = [g.indent, g.indent + Math.floor(g.textW / 3), g.indent + Math.floor(g.textW / 3) * 2];
+      // চারটি সমান ২৫% কলাম: শেষ stop-টি ডান প্রান্তে, যাতে Word-এ Tab দিয়েও
+      // grid-টি একই জ্যামিতিতে পুনর্বিন্যাস করা যায়।
+      g.optionTabStops4 = [1, 2, 3, 4].map((i) => g.indent + (i === 4 ? g.textW : Math.floor(g.textW * i / 4)));
       // শেষ ডিফেন্স: NaN/Infinity জ্যামিতি থেকে বের হতে পারবে না (OpenXML ক্র্যাশ রোধ)
       ['margin', 'colGap', 'indent', 'colW', 'textW', 'usableW', 'usableH', 'pageW', 'pageH', 'baseSz', 'slot4', 'slot2']
         .forEach((k) => { const n = Number(g[k]); if (!Number.isFinite(n) || n <= 0) g[k] = Math.round(Number.isFinite(this.GEOMETRY[k]) ? this.GEOMETRY[k] : 720); });
@@ -237,13 +240,14 @@
     decideOptionsGrid(options, sz, g) {
       const opts = Array.isArray(options) ? options : [];
       const count = opts.length;
-      if (count === 0) return { cols: 0, rows: [], stops: [], slotW: 0, widest: 0 };
+      if (count === 0) return { cols: 0, rows: [], stops: [], tabStops4: [], slotW: 0, widest: 0 };
 
       const widths = opts.map((o) => optionWidth(o, sz));
       const widest = Math.max.apply(null, widths);
 
-      // কত কলামে বসবে: ৪ (কমপক্ষে ৪টি অপশন হলে), না হয় ৩/২, না হয় ১
-      const cand = count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : [1];
+      // গণিত/ল্যাটেক্সযুক্ত অপশন আলাদা সারিতে থাকে; অন্যথায় প্রস্থ অনুযায়ী ৪/২/১।
+      const mathOptions = opts.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+)/.test(String((o && o.text) || '')));
+      const cand = mathOptions ? [1] : (count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : [1]);
       let cols = 1;
       for (const c of cand) {
         const slot = Math.floor(g.textW / c);
@@ -265,8 +269,14 @@
 
       const rows = [];
       for (let i = 0; i < count; i += cols) rows.push(opts.slice(i, i + cols).map((_, j) => i + j));
+      // ২-কলাম সারিতে প্রথম অপশন যদি ২৫% সীমার আগেই শেষ হয়, দুই Tab দরকার;
+      // নইলে একটি Tab সরাসরি ৫০% স্টপে যায়। এতে প্রতিটি সারি একই স্থানে শুরু হয়।
+      const quarterW = Math.floor(g.textW / 4);
+      const tabJumps = rows.map((row) => cols === 2
+        ? (optionWidth(opts[row[0]], sz) <= quarterW - g.minGap ? 2 : 1)
+        : (cols > 1 ? 1 : 0));
 
-      return { cols, rows, stops, slotW, widest };
+      return { cols, rows, stops, tabStops4: g.optionTabStops4.slice(), tabJumps, slotW, widest };
     },
 
     /** হেডার ব্লক (খ.২–৪): ৫টি লাইন সর্বদাই থাকবে — অটো-প্লেসহোল্ডার সহ */
@@ -352,7 +362,7 @@
         }
       }
 
-      let grid = { cols: 0, rows: [], stops: [], slotW: 0, widest: 0 };
+      let grid = { cols: 0, rows: [], stops: [], tabStops4: [], slotW: 0, widest: 0 };
       if (q.options && q.options.length > 0) {
         grid = this.decideOptionsGrid(q.options, sz, g);
         parts.optionRows = grid.rows.length;

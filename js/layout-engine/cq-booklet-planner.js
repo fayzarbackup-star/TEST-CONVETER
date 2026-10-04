@@ -83,11 +83,18 @@
     const s = String(str == null ? '' : str).replace(/\s+/g, ' ').trim();
     if (!s) return 1;
     const maxW = Math.max(600, availW);
+    const words = s.split(' ');
+    const spaceW = measure(' ', sz);
     let lines = 1;
     let cur = 0;
-    for (const word of s.split(' ')) {
-      const w = measure(word + ' ', sz);
-      if (cur + w > maxW && cur > 0) { lines++; cur = w; } else { cur += w; }
+    for (const word of words) {
+      const w = measure(word, sz);
+      const next = cur === 0 ? w : cur + spaceW + w;
+      if (cur > 0 && next > maxW) { lines++; cur = w; }
+      else { cur = next; }
+      // অত্যন্ত লম্বা একক টোকেন (URL/সূত্র) — শুধু বাস্তব অতিরিক্ত লাইন গুনি;
+      // শব্দের শেষে কল্পিত space যোগ করে wrap/overflow বাড়ানো হয় না।
+      while (cur > maxW && w > maxW) { lines++; cur -= maxW; }
     }
     return lines;
   }
@@ -160,6 +167,17 @@
     /** হেডার লাইনের সাইজ — ৩ নম্বর ধারা (অর্ধ-পয়েন্ট) */
     HEADER_SIZES: { institute: 32, location: 24, exam: 26, classSubject: 24, metrics: 24 },
 
+    /** EXAM_CQ-তে অনুপস্থিত হেডার-ফিল্ডের দৃশ্যমান, ক্লিক-এডিটযোগ্য ফলব্যাক */
+    CQ_HEADER_FALLBACK: {
+      institute: 'আপনার প্রতিষ্ঠানের নাম',
+      location: 'ঠিকানা লিখুন',
+      exam: 'পরীক্ষার নাম লিখুন',
+      classAndSubject: 'শ্রেণি ও বিষয়',
+      time: '২ ঘণ্টা ৩০ মিনিট',
+      examType: 'সৃজনশীল অভীক্ষা',
+      marks: '৭০'
+    },
+
     // ------------------------------------------------------------- প্রকাশ্য মাপক
     measure(str, sz) { return measure(str, sz); },
     lineCount(str, sz, availW) { return lineCount(str, sz, availW); },
@@ -209,29 +227,51 @@
      * CQ হেডার-ব্লক — যে তথ্য আছে শুধু সেটিই ছাপা হয়। (MCQ-র স্মার্ট প্লেসহোল্ডার
      * নীতি এখানে প্রযোজ্য নয়: Part-11 §৩ সেটি চায়নি, ফলে বিদ্যমান CQ আচরণ অটুট থাকে।)
      */
-    buildHeader(header) {
+    buildHeader(header, options) {
       const h = header || {};
+      const useFallback = !!(options && options.fallback);
+      const FB = this.CQ_HEADER_FALLBACK;
       const S = this.HEADER_SIZES;
       const lines = [];
-      const add = (kind, text, extra) => {
-        if (!String(text || '').trim()) return;
-        lines.push(Object.assign({ kind, text: String(text).trim(), fallbackUsed: false, align: 'center' }, extra || {}));
+      const value = (key, fallbackKey) => {
+        const raw = h[key];
+        if (raw !== null && raw !== undefined && String(raw).trim()) {
+          return { text: String(raw).trim(), fallbackUsed: false };
+        }
+        return { text: useFallback ? FB[fallbackKey || key] : '', fallbackUsed: useFallback };
       };
-      add('institute', h.institute, { bold: true, sz: S.institute });
-      add('location', h.location, { bold: false, sz: S.location });
-      add('exam', h.exam, { bold: true, sz: S.exam });
-      add('classSubject', h.classAndSubject, { bold: false, sz: S.classSubject });
-      if (h.time || h.marks || h.examType || h.institute || h.exam) {
-        // মাঝের লেবেল: ব্যবহারকারী দিলে সেটি, না দিলে নথি-ধরনের শিরোনাম (৩ নম্বর ধারা)
+      const add = (kind, field, extra) => {
+        if (!field.text) return;
+        lines.push(Object.assign({ kind, text: field.text, fallbackUsed: field.fallbackUsed, align: 'center' }, extra || {}));
+      };
+      const institute = value('institute');
+      const location = value('location');
+      const exam = value('exam');
+      const classSubject = value('classAndSubject');
+      const time = value('time');
+      const examType = value('examType');
+      const marks = value('marks');
+      add('institute', institute, { bold: true, sz: S.institute });
+      add('location', location, { bold: false, sz: S.location });
+      add('exam', exam, { bold: true, sz: S.exam });
+      add('classSubject', classSubject, { bold: false, sz: S.classSubject });
+      if (useFallback || h.time || h.marks || h.examType || h.institute || h.exam || h.location || h.classAndSubject) {
+        // বাস্তব মান থাকলে পুরনো লেবেল/আচরণ অটুট; fallback-এ নির্দিষ্ট CQ লেবেলসহ পূর্ণ লাইন।
+        const timeLabel = time.fallbackUsed ? 'সময়: ' : 'সময়: ';
         lines.push({
           kind: 'metrics',
-          text: h.time ? 'সময়: ' + h.time : '',
-          center: h.examType || 'সৃজনশীল অভীক্ষা',
-          right: h.marks ? 'পূর্ণমান: ' + h.marks : '',
-          fallbackUsed: false, align: 'left', bold: true, sz: S.metrics
+          text: time.text ? timeLabel + time.text : '',
+          center: examType.text || (!useFallback ? 'সৃজনশীল অভীক্ষা' : ''),
+          right: marks.text ? 'পূর্ণমান: ' + marks.text : '',
+          fallbackUsed: time.fallbackUsed || examType.fallbackUsed || marks.fallbackUsed,
+          fallbackFields: { time: time.fallbackUsed, examType: examType.fallbackUsed, marks: marks.fallbackUsed },
+          align: 'left', bold: true, sz: S.metrics
         });
       }
-      if (h.instructions) add('instructions', h.instructions, { italic: true, sz: S.location });
+      if (h.instructions) {
+        const instructions = { text: String(h.instructions).trim(), fallbackUsed: false };
+        add('instructions', instructions, { italic: true, sz: S.location });
+      }
       return lines;
     },
 
@@ -249,7 +289,7 @@
         else if (l.kind === 'instructions') m.instructions = l.text || '';
         else if (l.kind === 'metrics') {
           m.examType = l.center || '';
-          m.time = String(l.text || '').replace(/^সময়:\s*/, '');
+          m.time = String(l.text || '').replace(/^(?:সময়|সময়):\s*/, '');
           m.marks = String(l.right || '').replace(/^পূর্ণমান:\s*/, '');
         }
       }
@@ -270,7 +310,10 @@
 
     // ------------------------------------------------------ প্রশ্নের উচ্চতা (৪–৬)
     measureQuestion(q, sz, g) {
-      const lineH = this.lineH(sz, g);
+      // প্রশ্নের উচ্চতা রেন্ডারের CSS ratio (১.৩৪) দিয়ে মাপি; lineFactor=১.৫০
+      // ছিল অপ্রয়োজনীয় safety inflation, যার ফলে page 2/3-এ আগেভাগে overflow হতো।
+      const renderRatio = Number.isFinite(+g.lineRenderCssRatio) ? +g.lineRenderCssRatio : g.lineFactor;
+      const lineH = Math.round((sz / 2) * TWP_PER_PT * renderRatio);
       const p = { pre: 0, stem: 0, stimulus: 0, table: 0, subCount: 0, subLines: 0, options: 0, orDivider: 0, total: 0 };
 
       for (const ln of toLines(q.preContext)) p.pre += lineCount(ln, sz, g.colW);
@@ -319,6 +362,7 @@
      */
     plan(parsedData, options) {
       const o = options || {};
+      const docType = o.docType || 'EXAM_CQ';
       const g = this.geometry(o);
       const lineH = this.lineH(g.baseSz, g);
       // বুকলেট সংযোজন (২): শীট-১-এর ১ম কলাম ব্যাক কভার হিসেবে সংরক্ষিত।
@@ -337,7 +381,9 @@
         }
       }
 
-      const headerLines = this.buildHeader(parsedData && parsedData.header);
+      const headerLines = this.buildHeader(parsedData && parsedData.header, {
+        fallback: docType === 'EXAM_CQ' || o.cqHeaderFallback === true
+      });
       const headH = this.headerHeight(headerLines, g);
       const empty = {
         geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 }, headerLines, headerHeight: headH,
@@ -365,7 +411,8 @@
       // (খ) উপচে যাওয়া অংশ ব্যাক-কভারে (শীট-১ কলাম-১) টেনে আনা — যাতে অতিরিক্ত শীট না লাগে
       const back = [];
       let tailMoved = 0;
-      if (backFill && used >= 3) {
+      // ব্যাক-কভার কেবল চতুর্থ flow-bin (পৃষ্ঠা ৪+) থেকে ভরে; পৃষ্ঠা ১–৩ কখনো সরানো হয় না।
+      if (backFill && used >= 4) {
         const last = bins[used - 1];
         let h = 0;
         const movable = [];

@@ -212,22 +212,60 @@
       }
       const lineH = Math.round((G.baseSz / 2) * 20 * G.lineFactor);
       const items = qs.map((q, i) => {
-        const count = (q.options || []).length;
-        const cols = count >= 4 ? 2 : (count > 0 ? count : 0);
+        const opts = q.options || [];
+        const count = opts.length;
+        const widthOf = (o) => {
+          const label = o && o.label ? '(' + o.label + ')' : '';
+          const text = label + (label ? ' ' : '') + String((o && o.text) || '');
+          let em = 0;
+          for (const ch of text) {
+            const cp = ch.codePointAt(0);
+            if (ch === ' ' || ch === '\t' || ch === '\u00a0') em += 0.26;
+            else if (cp >= 0x0980 && cp <= 0x09ff) em += (cp >= 0x09be && cp <= 0x09cd) ? 0.30 : 0.52;
+            else if (/[a-z]/.test(ch)) em += 0.47;
+            else if (/[A-Z]/.test(ch)) em += 0.66;
+            else if (/[0-9০-৯]/.test(ch)) em += 0.50;
+            else if (".,:;'\"()[]{}/|!?".indexOf(ch) !== -1) em += 0.28;
+            else if ('-–—_'.indexOf(ch) !== -1) em += 0.36;
+            else if ('+=×÷√%<>≤≥≠≈'.indexOf(ch) !== -1) em += 0.55;
+            else em += 0.60;
+          }
+          return Math.round(em * (G.baseSz / 2) * 20 * 1.12);
+        };
+        const widths = opts.map(widthOf);
+        const widest = widths.length ? Math.max(...widths) : 0;
+        const mathOptions = opts.some((o) => /(?:\$[^$]+\$|\\\(|\\\[|\\[A-Za-z]+|[=<>≤≥≠≈±×÷√∑∫^_]|(?:\b[A-Za-z0-9]\s*[+\-]\s*[A-Za-z0-9]))/.test(String((o && o.text) || '')));
+        const candidates = mathOptions ? [1] : (count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : (count ? [1] : []));
+        let cols = count ? 1 : 0;
+        for (const c of candidates) {
+          const slot = Math.floor(G.textW / c);
+          const fits = widths.every((w, oi) => {
+            if (c === 1) return true;
+            const row = Math.floor(oi / c);
+            let rowMax = 0;
+            for (let k = row * c; k < Math.min(row * c + c, count); k++) rowMax = Math.max(rowMax, widths[k]);
+            return rowMax <= slot - 40;
+          });
+          if (fits) { cols = c; break; }
+        }
         const slotW = cols ? Math.floor(G.textW / cols) : 0;
         const stops = [];
         for (let k = 1; k < cols; k++) stops.push(G.indent + slotW * k);
+        const tabStops4 = [1, 2, 3, 4].map((k) => G.indent + (k === 4 ? G.textW : Math.floor(G.textW * k / 4)));
         const rows = [];
         for (let x = 0; x < count; x += Math.max(1, cols)) {
           const row = [];
           for (let j = x; j < Math.min(x + Math.max(1, cols), count); j++) row.push(j);
           rows.push(row);
         }
+        const quarterW = Math.floor(G.textW / 4);
+        const tabJumps = rows.map((row) => cols === 2
+          ? (widths[row[0]] <= quarterW - 40 ? 2 : 1)
+          : (cols > 1 ? 1 : 0));
         const stemLines = Math.max(1, Math.ceil(((String(q.num || '').length + 2 + String(q.text || '').length) * G.baseSz * 10) / (G.textW * 0.6)));
         const lines = Math.max(2, stemLines + rows.length);
-        return { index: i, q, grid: { cols, rows, stops, slotW, widest: 0 }, stemLines, parts: {}, lines, height: lines * lineH + 20 };
+        return { index: i, q, grid: { cols, rows, stops, tabStops4, tabJumps, slotW, widest }, stemLines, parts: {}, lines, height: lines * lineH + 20 };
       });
-
       const headH = headerLines.length * lineH + 60;
       const half = Math.ceil(items.length / 2);
       return {
@@ -495,7 +533,7 @@
         const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
-        const rtf = this.generateCqExamRtf(parsed, options);
+        const rtf = this.generateCqExamRtf(parsed, { ...options, docType });
         return new Blob([rtf], { type: 'application/msword' });
       }
 
@@ -676,7 +714,7 @@
         const parsed = this._resolveParsed(rawText, docType, options, qEngine);
         const validator = this._getSchemaValidator();
         if (validator) validator.validate(docType, parsed);
-        return await this.generateCqExamDocx(parsed, options);
+        return await this.generateCqExamDocx(parsed, { ...options, docType });
       }
 
       if (qEngine && docType === 'EXAM_MCQ') {
@@ -861,7 +899,7 @@
       if (planner && typeof planner.plan === 'function') {
         try {
           const p = planner.plan(parsedData, {
-            docType: 'EXAM_CQ',
+            docType: options.docType || 'EXAM_CQ',
             margin: options.margin || 0.5,
             columnGap: options.columnGap || 0.7,
             cols: options.columns || 2,
@@ -964,20 +1002,29 @@
       g.capacity = Math.round(g.usableH * 0.98);
 
       const h = (parsedData && parsedData.header) || {};
-      const headerLines = [];
-      const push = (kind, text, extra) => {
-        if (!String(text || '').trim()) return;
-        headerLines.push(Object.assign({ kind, text: String(text).trim(), align: 'center', fallbackUsed: false }, extra || {}));
+      const docType = options.docType || 'EXAM_CQ';
+      const useCqFallback = docType === 'EXAM_CQ';
+      const cqFb = { institute: 'আপনার প্রতিষ্ঠানের নাম', location: 'ঠিকানা লিখুন', exam: 'পরীক্ষার নাম লিখুন', classAndSubject: 'শ্রেণি ও বিষয়', time: '২ ঘণ্টা ৩০ মিনিট', examType: 'সৃজনশীল অভীক্ষা', marks: '৭০' };
+      const field = (key) => {
+        const v = h[key];
+        return v !== null && v !== undefined && String(v).trim()
+          ? { text: String(v).trim(), fallbackUsed: false }
+          : { text: useCqFallback ? cqFb[key] : '', fallbackUsed: useCqFallback };
       };
-      push('institute', h.institute, { bold: true, sz: 32 });
-      push('location', h.location, { sz: 24 });
-      push('exam', h.exam, { bold: true, sz: 26 });
-      push('classSubject', h.classAndSubject, { sz: 24 });
-      if (h.time || h.marks || h.examType) {
-        headerLines.push({ kind: 'metrics', text: h.time ? 'সময়: ' + h.time : '', center: h.examType || '', right: h.marks ? 'পূর্ণমান: ' + h.marks : '', align: 'left', bold: true, sz: 24, fallbackUsed: false });
+      const headerLines = [];
+      const push = (kind, fieldValue, extra) => {
+        if (!String(fieldValue.text || '').trim()) return;
+        headerLines.push(Object.assign({ kind, text: String(fieldValue.text).trim(), align: 'center', fallbackUsed: fieldValue.fallbackUsed }, extra || {}));
+      };
+      push('institute', field('institute'), { bold: true, sz: 32 });
+      push('location', field('location'), { sz: 24 });
+      push('exam', field('exam'), { bold: true, sz: 26 });
+      push('classSubject', field('classAndSubject'), { sz: 24 });
+      const time = field('time'), examType = field('examType'), marks = field('marks');
+      if (useCqFallback || h.time || h.marks || h.examType) {
+        headerLines.push({ kind: 'metrics', text: time.text ? (time.fallbackUsed ? 'সময়: ' : 'সময়: ') + time.text : '', center: examType.text, right: marks.text ? 'পূর্ণমান: ' + marks.text : '', align: 'left', bold: true, sz: 24, fallbackUsed: time.fallbackUsed || examType.fallbackUsed || marks.fallbackUsed });
       }
-      push('instructions', h.instructions, { italic: true, sz: 24 });
-
+      push('instructions', { text: h.instructions || '', fallbackUsed: false }, { italic: true, sz: 24 });
       const items = [];
       for (const sec of ((parsedData && parsedData.sections) || [])) {
         if (sec && sec.title) items.push({ kind: 'sectionTitle', text: sec.title, height: 0, lines: 1 });
@@ -1517,19 +1564,24 @@
           }
         }
 
-        // ---- অপশন গ্রিড: সমান দূরত্বের ৪/২/১ কলাম (ঘ.১–ঘ.২) ----
         if (q.options && q.options.length > 0 && it.grid && it.grid.cols > 0) {
           const grid = it.grid;
-          const stopsRtf = grid.stops.map((p) => '\\tx' + p).join('');
+          const quarterGrid = Number(grid.cols) === 2 && Array.isArray(grid.tabStops4) && grid.tabStops4.length === 4 && (options.returnInnerRtf || options.quarterGrid);
+          const activeStops = quarterGrid ? grid.tabStops4 : grid.stops;
+          const stopsRtf = activeStops.map((p) => '\\tx' + p).join('');
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
+            const tabJumpCount = grid.cols === 2
+              ? (Array.isArray(grid.tabJumps) && grid.tabJumps[r] ? grid.tabJumps[r] : 2)
+              : 1;
+            const tabJumpRtf = '\\tab'.repeat(tabJumpCount) + ' ';
             const pieces = [];
             for (const oi of grid.rows[r]) {
               const o = q.options[oi];
               pieces.push('({\\f0 ' + this.formatRtfText(o.label, options) + '}) ' + this.renderMcqTextRtf(o.text, options));
             }
             block += `{\\ql\\fs${sz}${lineRtf}\\sb0\\sa${isLastRow ? '20' : '0'}\\li${indent}${stopsRtf} `
-              + pieces.join('\\tab ') + '\\par}\n';
+              + pieces.join(tabJumpRtf) + '\\par}\n';
           }
         } else if ((!q.options || q.options.length === 0) && q.subQuestions && q.subQuestions.length > 0) {
           // Part-9b: অপশন না থাকলে subQuestions-এর লাইনগুলোও ছাপা হবে (তথ্য হারাবে না)
@@ -1661,15 +1713,21 @@
         // ---- অপশন গ্রিড: সমান ট্যাব স্টপে ৪/২/১ কলাম (ঘ) ----
         if (q.options && q.options.length > 0 && it.grid && it.grid.cols > 0) {
           const grid = it.grid;
-          const tabsXml = grid.stops.length
-            ? `<w:tabs>${grid.stops.map((p) => `<w:tab w:val="left" w:pos="${p}"/>`).join('')}</w:tabs>`
+          const quarterGrid = Number(grid.cols) === 2 && Array.isArray(grid.tabStops4) && grid.tabStops4.length === 4;
+          const activeStops = quarterGrid ? grid.tabStops4 : grid.stops;
+          const tabsXml = activeStops.length
+            ? `<w:tabs>${activeStops.map((p) => `<w:tab w:val="left" w:pos="${p}"/>`).join('')}</w:tabs>`
             : '';
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
+            const tabJumpCount = grid.cols === 2
+              ? (Array.isArray(grid.tabJumps) && grid.tabJumps[r] ? grid.tabJumps[r] : 2)
+              : 1;
+            const tabJumpXml = '<w:r><w:tab/></w:r>'.repeat(tabJumpCount);
             let rowXml = '';
             grid.rows[r].forEach((oi, pos) => {
               const o = q.options[oi];
-              if (pos > 0) rowXml += '<w:r><w:tab/></w:r>';
+              if (pos > 0) rowXml += tabJumpXml;
               rowXml += this.renderDocxRuns('(' + (o.label || '') + ') ' + (o.text || ''), options, { sz });
             });
             qXml += `<w:p><w:pPr><w:spacing w:before="0" w:after="${isLastRow ? '20' : '0'}" w:line="240" w:lineRule="auto"/><w:ind w:left="${indent}"/>${tabsXml}</w:pPr>${rowXml}</w:p>`;
