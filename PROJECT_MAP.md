@@ -267,6 +267,14 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 
 ## ⚠️ Fix Log & Part Releases
 
+### Part-14.2 Release (২০২৬-১০-০৪)
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | সৃজনশীল ও গণিত পরীক্ষায় হেডার ফলব্যাক (`EXAM_MATH`, `EXAM_GENERAL`, `EXAM_CQ`) | js/layout-engine/cq-booklet-planner.js, js/engines/export-dual-engine.js, js/engines/question-engine.js | ✅ Fixed (সকল সৃজনশীল ও গণিত পরীক্ষায় দৃশ্যমান ও এডিটেবল হেডার) |
+| 2 | সমীকরণে বাংলা সংখ্যা অক্ষুণ্ণ রাখা ($৩/৫ \to ৩/৫$) ও সোর্স ফিডেলিটি | js/equation-converter.js | ✅ Fixed (সোর্স অনুযায়ী বাংলা অঙ্ক অপরিবর্তিত) |
+| 3 | বহুনির্বাচনি (MCQ) অপশনে ভিজ্যুয়াল মাপক ও ৪/২ কলাম L-ট্যাব গ্রিড (ডানপাশের খালি জায়গা দূর) | js/layout-engine/mcq-layout-planner.js, js/engines/export-dual-engine.js | ✅ Fixed (ছোট ম্যাথ অপশন ৪-কলাম ও ২×২ গ্রিডে বিন্যস্ত) |
+| 4 | মাস্টার টেস্ট রানার ২৬টি টেস্ট স্যুইট ও ১১২২টি গেট ১০০% অফলাইন ভেরিফিকেশন | tests/part-14.2-regression.test.js, tests/run-all.mjs | ✅ 1122/1122 PASS (0 FAIL) |
+
 ### Part-14.0 Release (২০২৬-১০-০৩)
 | # | সমস্যা / ফিচার | ফাইল | Status |
 | - | -------------- | ---- | ------ |
