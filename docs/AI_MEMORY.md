@@ -1,0 +1,78 @@
+# AI Session Memory & Context
+> **CRITICAL RULE FOR ALL FUTURE AI AGENTS:** You MUST read this file AND `PROJECT_MASTER_GUIDE.md` at the start of any new session or when responding to a prompt to understand the project's current state, recent changes, architecture, git repo access, and strict frozen engine rules. Do not ask the user for information already documented here.
+
+## 1. Credentials & Environment
+- **Master Guide & Rules**: Detailed in [`PROJECT_MASTER_GUIDE.md`](PROJECT_MASTER_GUIDE.md).
+- **GitHub Token**: Saved in `.env` as `GITHUB_TOKEN`.
+- **Cloudflare KV**: `FAYZAR_OCR_KEYS` (ID: `2de59ce830064432b4e8938373ebc2bf`) - rate limit 20/min.
+
+## 2. Directory Structure & Workflow
+- **Main Development**: `c:\Users\Admin\.gemini\antigravity-ide\scratch\fayzar-bangla-converter\`
+- **Testing/Review Branch Clone**: `temp-test-converter\TEST-CONVETER-arena-01a0f18b-test-conveter\`
+  - *Note*: If making final deliverables or testing via the reviewer's branch, always ensure changes are synced here and pushed to GitHub.
+- **GitHub Repo**: `https://github.com/fayzarbackup-star/TEST-CONVETER/tree/arena/01a0f18b-test-conveter`
+
+## 3. Recently Implemented Features (DO NOT OVERWRITE)
+1. **Cloudflare Proxy Failover**: `fayzar-ocr-proxy/index.js` manages key rotation, masking, rate-limiting, and error handling for Gemini API.
+2. **Two-Phase Self-Recheck**: Implemented in `js/ai-ocr-engine.js` prompt. The AI evaluates text internally before finalizing output.
+3. **Key Ledger UI**: Built into `index.html` to monitor API keys. Logic resides in `fayzar-ocr-proxy/ledger.js`.
+4. **CORS Fix**: `fayzar-ocr-proxy/index.js` now correctly supports `http://localhost:3008` and `https://fayzarcomputer.com.bd` dynamically.
+5. **No Chunking**: The artificial 5-second chunking logic was completely removed.
+
+- **Part-14.3 Deployed (Oct 04, 2026)**: OCR Section Categorization & Booklet Column 2 Header Injection.
+  - **Gemini OCR Section Categorization (`js/ai-ocr-engine.js`, `js/layout-engine/gemini-prompt-factory.js`)**: Directs Gemini prompts to explicitly separate distinct exam question sections (e.g. `## ক-বিভাগ (সংক্ষিপ্ত প্রশ্ন)`, `## খ-বিভাগ (সৃজনশীল প্রশ্ন)`) using Markdown section headings (`##`), keeping questions categorized and allowing per-section sequential numbering.
+  - **Booklet Column 2 Header Injection (`js/layout-engine/cq-booklet-planner.js`, `js/engines/export-dual-engine.js`)**: In 2-sheet / landscape booklet mode where the left column (Column 1) is reserved for the back cover, the planner assigns Page 1 to physical Column 2 and places the fallback header before the first question in that actual starting column, eliminating the missing header bug.
+  - **Master Test Runner**: 27 suites / 1122 gates all passing (100% PASS, 0 failures). Added `tests/part-14.3-mixed-sections-and-header.test.js`.
+
+- **Part-14.2 Deployed (Oct 04, 2026)**: Layout & Equation Fix Pack (Creative/Math Header Fallback, Bengali Equation Digits, MCQ Visual Option Grid & True Stops).
+  - **Creative/Math Exam Header Fallback (`js/layout-engine/cq-booklet-planner.js`, `js/engines/export-dual-engine.js`, `js/engines/question-engine.js`)**: Extended fallback header generation (`আপনার প্রতিষ্ঠানের নাম`, `ঠিকানা লিখুন`, `পরীক্ষার নাম লিখুন`, `শ্রেণি ও বিষয়`, `সময়`, `পূর্ণমান`) across all creative exam archetypes (`EXAM_MATH`, `EXAM_GENERAL`, and `EXAM_CQ`). Prevents creative math exams from dropping headers.
+  - **Bengali Digits in Equations (`js/equation-converter.js`)**: Preserved Bengali digits ($৩/৫ \to \F(৩,৫)$) across Word 2003 RTF EQ-fields, OMML XML, and readable HTML. ASCII authored digits remain ASCII without cross-language corruption.
+  - **MCQ Math Option Visual Grid & Dynamic L-Tabs (`js/layout-engine/mcq-layout-planner.js`, `js/engines/export-dual-engine.js`)**: Replaced crude regex-based math collapse with visual symbol width measurement. Compact math choices ($2\pi r, \sqrt{7}$, fractions) dynamically format into 4-across or 2x2 grids, eliminating large empty blank right margins. Emitted RTF `\tx` and DOCX `<w:tab/>` tab stops align directly with the active grid columns.
+  - **Master Test Runner**: 26 suites / 1122 gates all passing (100% PASS, 0 failures). Added `tests/part-14.2-regression.test.js` (161/161 PASS offline).
+
+- **Part-14.1 Deployed (Oct 04, 2026)**: Layout Engine Fix Pack (CQ Fallback Header, CQ Booklet 4-Page Back-Fill Delay, MCQ 4-Tab Alignment & Page-Fit).
+  - **CQ Fallback Header (`js/engines/question-engine.js`, `js/layout-engine/cq-booklet-planner.js`)**: Missing CQ headers now generate editable, field-level fallback placeholders (`আপনার প্রতিষ্ঠানের নাম`, `ঠিকানা লিখুন`, `পরীক্ষার নাম লিখুন`, `সময়: ... | পূর্ণমান: ...`) matching Word and preview output.
+  - **CQ Booklet Back-Fill Delay (`js/layout-engine/cq-booklet-planner.js`)**: Back-fill delayed until flow reaches Page 4 (`used >= 4`), keeping Pages 1–3 in natural consecutive order and preventing premature dump to back cover for 2-sheet booklets.
+  - **MCQ 4-Tab Interval Grid & Spacing (`js/layout-engine/mcq-layout-planner.js`, `js/engines/export-dual-engine.js`)**: Refined option grid evaluation so math options don't falsely force 1-column explosion on simple operators, and quarter-grid tabs are properly scoped so Word options align uniformly with true 25% tab intervals.
+  - **Master Test Runner**: 25 suites / 961 gates all passing (100% PASS, 0 failures). Added `tests/part14-1-fixes.test.mjs` (7/7 PASS offline).
+- **Part-14.0 Deployed (Oct 03, 2026)**: Studio Fix Pack (Figure Export Pipeline, Single-Run Marker Token, Caret Guard, Modal UX).
+  - **Figure Export Pipeline (`js/engines/studio-figure-pipeline.js`)**: Converts studio figures (`QZFIGnQZ` markers) into native document images across both Word formats:
+    - Word 2003 `.doc` (RTF): Injects `{\pict\pngblip\picw...\pich... <hex>}` with tolerant fallbacks and brace balance.
+    - Modern Word `.docx`: Generates `word/media/figureN.png`, registers `[Content_Types].xml`, `document.xml.rels`, and inserts `<w:drawing>` paragraphs respecting alignment.
+  - **Edit Bridge Marker/Label Leak Prevention (`js/engines/studio-edit-bridge.js`)**: Purges `.studio-figure-wrapper` from text extraction clones, strips marker tokens during dirty checks (`stripFigMarkers`), and preserves tokens during field assignment (`preserveFigMarkers`). Upgraded marker format to single ASCII run token (`QZFIGnQZ`).
+  - **Studio Controller Caret Guard & Focus Defense (`js/studio-controller.js`)**: Valid target caret resolver (`resolveValidTarget()`), removed stale `lastSavedRange` and textbox fallbacks, `mousedown.preventDefault` on ribbons/modals to protect selection, persistent `parsedData.__figures` across AutoSave and History undo/redo.
+  - **UI Integration (`studio.html`)**: Added `#btn-quick-insert-math` & `#btn-quick-insert-diagram` IDs and loaded `studio-figure-pipeline.js`.
+  - **Master Test Runner**: 24 suites / 954 gates all passing (100% PASS, 0 failures). Added `tests/part14-0-studio-figure.test.mjs` (63/63 PASS offline).
+- **Part-13.4 Deployed (Oct 03, 2026)**: 3-Issue Layout & Math Fixes (CQ Booklet Column Breaks, Bijoy $৩/৫$ ANSI Mapping, Exponent $x^2, x^4$ 8pt Size Reduction).
+  - **CQ Booklet Premature Break Elimination**: In `js/layout-engine/cq-booklet-planner.js`, multi-column flow only emits 1 leading break for first flow-column (after back-cover), eliminating mid-flow breaks that previously caused 40-50% blank gaps.
+  - **Bijoy .doc EQ-Field Bangla Digits ($৩/৫ \to 3/5$)**: In `js/equation-converter.js` (`latexToEqField`) and `js/docx-to-doc-engine.js` (`_toTargetScript`), Bangla Unicode digits (U+09E6..U+09EF) inside EQ-field codes mapped to SutonnyMJ ANSI (`3/5`), eliminating Unicode box/mismatch in Word 2003 while preserving Unicode mode untouched.
+  - **Exponent / Superscript / Subscript Font Sizing (~67% = 8pt)**:
+    - DOCX (OMML): `EquationConverter._applyOmmlScriptSizes()` injects `<w:sz w:val="16"/><w:szCs w:val="16"/>` into `m:sup`/`m:sub` runs.
+    - DOC (EQ-Field): `_wrapEqScriptSizes()` wraps `\S\up4(...)` / `\S\do8(...)` arguments in `<span style='font-size:8.0pt'>...</span>`.
+    - RTF: In `js/engines/export-dual-engine.js` and `js/ai-ocr-engine.js`, `{\super\fs16 ...}` and `{\sub\fs16 ...}` emit clean 8pt font sizing.
+  - **Master Test Runner**: 23 suites / 891 gates all passing (100% PASS, 0 failures). Added `tests/part13-4-fixes.test.mjs` (36/36 PASS).
+- **Studio v4.0 Deployed (Oct 03, 2026)**: Direct Always-On WYSIWYG Editing + Math/Science Symbol Palette + Geometric Figures & Diagrams System.
+  - **Seamless Click-to-Edit**: Document sheets activate typing immediately upon click without requiring a separate "এডিট করুন" button click.
+  - **Math Symbol Palette Modal**: 4 categories (মৌলিক, বীজগণিত, জ্যামিতি, সেট) with 1-click insertion into caret position in markdown or live preview.
+  - **Geometry Figures & Diagrams Modal**: Local image upload (auto DataURL embedding) + 8 preset vector geometry diagrams (সমকোণী ত্রিভুজ, সাধারণ ত্রিভুজ, বৃত্ত ও ব্যাসার্ধ, বৃত্তের জ্যা, সামান্তরিক, রম্বস, সংখ্যারেখা, স্থানাঙ্ক অক্ষ) with interactive figure toolbar (ছোট, মাঝারি, বড়, বামে, মাঝে, ডানে, মুছুন; print-hidden).
+  - **Master Test Runner**: 22 suites / 855 gates all passing (100% PASS, 0 failures).
+- **Part-13.3 Deployed (Oct 03, 2026)**: Comprehensive 8-Issue Layout & Spacing Hardening Release (Word 2003 .doc + Modern Word .docx).
+  - **Difficulty Tag Strip**: `FayzarExamRenumber.stripDifficultyLabels()` automatically purges `(সহজমান)`, `(মধ্যমান)`, `(কঠিনমান)` across all question fields while preserving geometry clauses like `[অঙ্কনের চিহ্ন ও বিবরণ আবশ্যক]`.
+  - **CQ Question Gap (12pt / 240 dxa)**: Word 2003 RTF (`\sa240`) and DOCX (`w:after="240"`) inject clean 12pt visual enter gap between consecutive creative questions without exceeding 14pt (280 dxa) line rhythm.
+  - **Header Left/Right Alignment**: Word-standard `tab-stops:` emitted (`tab-stops:right 518.3pt`), placing `সময়:` on the left margin and `পূর্ণমান:` on the right margin.
+  - **MCQ 2x2 L-Tab Grid**: Word 2003 `.doc` options emitted with valid Word-standard `tab-stops:` (`21.6pt 79.8pt 138.0pt 196.2pt`) preventing option stacking on the left.
+  - **Premature Break Fix (.docx)**: Removed artificial `\page` and `\column` breaks in MCQ path, enabling natural Word balance. In `mcq-layout-planner.js`, added `balancePageHeader(items, cap1, cap2, from)` to allocate full height to column 2 of page 1.
+  - **CQ Column Separator Removed**: In `docx-to-doc-engine.js`, `w:sep` parsed conditionally; CQ booklet sets `colSep: false`, eliminating the vertical line between columns.
+  - **Booklet Column-Break Mapping**: In `docx-to-doc-engine.js`, `w:type="column"` maps cleanly to `<br clear=all style='mso-column-break-before:always'>` ensuring the header stays at the top of the column.
+  - **Master Test Runner**: 22 suites / 855 gates all passing (0 failures). Added `tests/part13-3-layout-fixes.test.mjs` (41/41 PASS).
+- **Part-13.2 Deployed (Oct 03, 2026)**: Word 2003 `.doc` Math-Font Sanitization + Code-Level Per-Section Exam Renumbering.
+  - **Word 2003 `.doc` Spacing Fix**: Resolved via math-font sanitization (`sanitizeFontFamily()`) at font-resolution level in `js/docx-to-doc-engine.js` (Cambria Math/STIX/MathJax mapped to ANSI/Times New Roman). Fixed line-height completely prohibited, eliminating clipping risk (0 fraction tops cut).
+  - **Sequential Renumbering (১।, ২।, ৩। ...)**: Per-section sequential renumbering implemented at code-level via `js/layout-engine/exam-renumber.js` (`FayzarExamRenumber`) hooked into `fayzar-pipeline.js` and `export-dual-engine.js`. Gemini prompt strictly enforces verbatim preservation; downstream code handles renumbering without placeholder hallucination. Parser fidelity (questions 12/07) intact.
+  - **Master Test Runner (`npm test` / `node tests/run-all.mjs`)**: 21 suites / 814 gates all passing (0 failures). Added `tests/exam-renumber.test.mjs` (34/34 PASS) and `tests/word2003-font-metric.test.mjs` (23/23 PASS).
+- **Part-13.1 Deployed**: Studio Edit Bridge (`js/engines/studio-edit-bridge.js`) & Parity Hardening.
+- **Part-12.1 Deployed**: Word-2003 Artifact-Test Fixture Hardening.
+- **Part-12 Deployed**: Full hardening & stability release for Word 2003 (.doc RTF) and Modern Word (.docx).
+- **Part-11 Deployed**: Master CQ Booklet Layout Planner (`js/layout-engine/cq-booklet-planner.js`).
+- **Part-10 Deployed**: Master MCQ Layout Planner (`js/layout-engine/mcq-layout-planner.js`).
+
+
