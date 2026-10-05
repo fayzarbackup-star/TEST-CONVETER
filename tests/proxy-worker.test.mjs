@@ -37,8 +37,21 @@ let calls = [];
 globalThis.fetch = async (url, opts) => {
   const key = new URL(url).searchParams.get('key');
   const model = url.match(/models\/([^:]+):/)[1];
-  calls.push({ key: key.slice(-4), model });
+  calls.push({ key: key.slice(-4), model, body: opts && opts.body });
   const r = script.shift() || { ok: true };
+  if (r.sse) {                            // Part-17.0: টুকরো-টুকরো SSE (চিন্তা/লেখা/ত্রুটি), ঐচ্ছিক বিরতিসহ
+    const enc = new TextEncoder();
+    const chunks = r.sse.slice();
+    const body = new ReadableStream({
+      async pull(c) {
+        // সংখ্যা = বিরতি; বিরতির পর পরের টুকরো পাঠাতেই হবে (কিছু না পাঠিয়ে ফিরলে স্ট্রিম আর pull করে না)
+        while (chunks.length && typeof chunks[0] === 'number') await new Promise(res => setTimeout(res, chunks.shift()));
+        if (!chunks.length) { c.close(); return; }
+        c.enqueue(enc.encode(chunks.shift()));
+      }
+    });
+    return new Response(body, { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
+  }
   if (r.throw) throw new Error('network down');
   if (r.delay) await new Promise(res => setTimeout(res, r.delay));
   if (r.stall) {                          // ঝুলে-থাকা অনুরোধ — শুধু abort এ কাটে
@@ -408,6 +421,63 @@ T('part-7: মডেল-ক্রম কঠোর — ৩-flash → ৩.৮ → 
   && (!m2.length || (m1.length && Math.max(...m1) < Math.min(...m2)))
   && (!m3.length || !m2.length || Math.max(...m2) < Math.min(...m3)),
   calls.map(c => c.model));
+
+// (সময়-নির্ভর পুরনো টেস্টগুলোর পরে রাখা — এর বিরতি আগের কুলডাউন-গণনা বদলে দিত)
+// ── ২চ. Part-17.0: চিন্তা-গেট (includeThoughts) — ৫২৪-রোধ + চিন্তার মাঝে ব্যর্থতায় ফেইলওভার
+{
+  const TH = (t) => 'data: ' + JSON.stringify({ candidates: [{ content: { parts: [{ text: t, thought: true }] } }] }) + '\r\n\r\n';
+  const TX = (t, fin) => 'data: ' + JSON.stringify({ candidates: [{ content: { parts: [{ text: t }] }, ...(fin ? { finishReason: fin } : {}) }] }) + '\r\n\r\n';
+  const ERR = '{\n  "error": {\n    "code": 503,\n    "message": "This model is currently experiencing high demand.",\n    "status": "UNAVAILABLE"\n  }\n}\n';
+  const mk = () => { const st = new Map([['API_KEYS', JSON.stringify(KEYS)]]); return { st, env: { PROXY_TOKEN: TOKEN, SERVER_RETRY_MS: '1', WAIT_TICK_MS: '5', FAYZAR_OCR_KEYS: { get: async k => st.get(k) ?? null, put: async (k, v) => { st.set(k, v); } } } }; };
+  const go = (envX, models = ['gemini-3-flash-preview']) => worker.fetch(new Request('https://w.dev/', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+    body: JSON.stringify({ payload: { contents: [], generationConfig: { temperature: 0.2 } }, models })
+  }), envX, ctx);
+
+  let m = mk(); script = [{ sse: [TH('ভাবছি ১'), 10, TH('ভাবছি ২'), 10, TX('উত্তর '), TX('শেষ', 'STOP')] }]; calls = [];
+  let e = await sse(await go(m.env));
+  T('17.0: চিন্তার পর আসল লেখা → সফল, ক্লায়েন্ট শুধু লেখা পায় (চিন্তা নয়)', e.texts === 'উত্তর শেষ' && !/ভাবছি/.test(JSON.stringify(e.events)), { texts: e.texts });
+  T('17.0: Gemini-কে includeThoughts পাঠানো হয় (অন্য generationConfig অটুট)', /"includeThoughts":true/.test(calls[0].body) && /"temperature":0.2/.test(calls[0].body), calls[0].body);
+  T('17.1: ডিফল্ট চিন্তার মাত্রা low বসে', /"thinkingLevel":"low"/.test(calls[0].body), calls[0].body);
+  {
+    const m2 = mk(); script = [{ sse: [TX('ঠিক', 'STOP')] }]; calls = [];
+    await sse(await worker.fetch(new Request('https://w.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+      body: JSON.stringify({ payload: { contents: [], generationConfig: { thinkingConfig: { thinkingLevel: 'high' } } }, models: ['gemini-3-flash-preview'] }) }), m2.env, ctx));
+    T('17.1: ক্লায়েন্টের নিজের মাত্রা (high) অটুট থাকে', /"thinkingLevel":"high"/.test(calls[0].body) && !/"low"/.test(calls[0].body), calls[0].body);
+    script = [{ sse: [TX('ঠিক', 'STOP')] }]; calls = [];
+    await sse(await worker.fetch(new Request('https://w.dev/', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN },
+      body: JSON.stringify({ payload: { contents: [], generationConfig: { thinkingConfig: { thinkingBudget: 1024 } } }, models: ['gemini-3-flash-preview'] }) }), m2.env, ctx));
+    T('17.1: thinkingBudget থাকলে thinkingLevel বসে না (সংঘাত নয়)', !/thinkingLevel/.test(calls[0].body) && /"thinkingBudget":1024/.test(calls[0].body), calls[0].body);
+  }
+  T('17.0: চিন্তার সময় "thinking" হার্টবিট আসে', e.names.includes('thinking'), e.names);
+  const log1 = JSON.parse(m.st.get('OCR_LOG'))[0];
+  T('17.0: লগে চিন্তা-টুকরো গোনা হয়', log1.thoughtChunks === 2 && log1.outcome === 'success', log1);
+
+  m = mk(); script = [{ sse: [TH('ভাবছি'), 5, ERR] }, { sse: [TH('আবার ভাবছি'), TX('দ্বিতীয় কি-তে উত্তর', 'STOP')] }]; calls = [];
+  e = await sse(await go(m.env));
+  T('17.0: চিন্তার মাঝে ৫০৩ → অন্য কি-তে নতুন চেষ্টা, সফল', calls.length === 2 && calls[0].key !== calls[1].key && e.texts === 'দ্বিতীয় কি-তে উত্তর', { calls: calls.map(c => c.key), texts: e.texts, names: e.names });
+  T('17.0: ব্যর্থ চেষ্টার কোনো অংশ ক্লায়েন্টে যায়নি', !/ভাবছি|high demand/.test(e.texts));
+  const log2 = JSON.parse(m.st.get('OCR_LOG'))[0];
+  T('17.0: লগে মাঝপথের ৫০৩ SERVER হিসেবে', log2.attempts[0].class === 'SERVER' && /mid-stream/.test(log2.attempts[0].detail), log2.attempts);
+
+  m = mk(); script = [{ sse: [TH('ভাবছি')] }, { sse: [TX('ঠিক', 'STOP')] }]; calls = [];
+  e = await sse(await go(m.env));
+  T('17.0: লেখা ছাড়া প্রবাহ শেষ → ফেইলওভার', calls.length === 2 && e.texts === 'ঠিক', { calls: calls.length, texts: e.texts });
+
+  m = mk(); script = [{ sse: [TH('ভাবছি'), 'data: ' + JSON.stringify({ candidates: [{ content: { parts: [] }, finishReason: 'MAX_TOKENS' }] }) + '\r\n\r\n'] }, { sse: [TX('ঠিক', 'STOP')] }]; calls = [];
+  e = await sse(await go(m.env));
+  T('17.0: লেখা ছাড়াই finishReason (চিন্তায় সীমা শেষ) → ফেইলওভার', calls.length === 2 && e.texts === 'ঠিক', { calls: calls.length });
+
+  m = mk(); m.env.ATTEMPT_TIMEOUT_MS = '60';
+  script = [{ sse: [TH('১'), 400, TH('২'), 400, TH('৩'), 400, TH('৪'), 400, TX('দেরিতে')] }, { sse: [TX('দ্রুত', 'STOP')] }]; calls = [];  // সীমা সর্বনিম্ন ১০০০ms (Worker)
+  e = await sse(await go(m.env));
+  const log5 = JSON.parse(m.st.get('OCR_LOG'))[0];
+  T('17.0: চিন্তা সময়সীমা পেরোলে TIMEOUT → পরের কি, কি-কে শাস্তি নেই', calls.length === 2 && e.texts === 'দ্রুত' && log5.attempts[0].class === 'TIMEOUT', log5.attempts);
+
+  m = mk(); m.env.INCLUDE_THOUGHTS = 'false'; script = [{ ok: true }]; calls = [];
+  await sse(await go(m.env));
+  T('17.0: INCLUDE_THOUGHTS=false দিলে আগের আচরণ (includeThoughts যায় না)', !/includeThoughts/.test(calls[0].body), calls[0].body);
+}
 
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);

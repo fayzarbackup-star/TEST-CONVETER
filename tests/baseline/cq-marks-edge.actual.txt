@@ -27,7 +27,7 @@
           "options": [],
           "preContext": "",
           "statements": [],
-          "stimulus": "উদ্দীপক ১\nএকটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।",
+          "stimulus": "উদ্দীপক ১\nএকটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।",
           "subQuestions": [
             {
               "label": "ক",
@@ -37,17 +37,17 @@
             {
               "label": "খ",
               "mark": "২",
-              "text": "গাড়িটির ত্বরণ ব্যাখ্যা করো।"
+              "text": "গাড়িটির ত্বরণ ব্যাখ্যা করো।"
             },
             {
               "label": "গ",
               "mark": "১০",
-              "text": "১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।"
+              "text": "১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।"
             },
             {
               "label": "ঘ",
               "mark": "৪",
-              "text": "গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।"
+              "text": "গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।"
             }
           ],
           "text": ""
@@ -67,12 +67,12 @@
             {
               "label": "খ",
               "mark": "২",
-              "text": "নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।"
+              "text": "নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।"
             },
             {
               "label": "গ",
               "mark": "৩",
-              "text": "প্রযুক্ত বলের মান নির্ণয় করো।"
+              "text": "প্রযুক্ত বলের মান নির্ণয় করো।"
             },
             {
               "label": "ঘ",
@@ -102,7 +102,7 @@
             {
               "label": "গ",
               "mark": "",
-              "text": "তারের রোধ নির্ণয় করো।"
+              "text": "তারের রোধ নির্ণয় করো।"
             },
             {
               "label": "ঘ",
@@ -205,7 +205,7 @@
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
 <span class="cq-text text-justify flex-1">উদ্দীপক ১</span>
 </div>
-<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।</div>
+<div class="cq-stimulus text-justify" style="padding-left: 32px !important; margin: 2px 0 !important; font-size: 12pt; line-height: 1.35;">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার/সেকেন্ড বেগ অর্জন করে।</div>
 <div class="cq-subs" style="padding-left: 32px !important; margin: 3px 0 0 0 !important;">
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
@@ -217,21 +217,21 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-text">গাড়িটির ত্বরণ ব্যাখ্যা করো।</span>
+<span class="cq-sub-text">গাড়িটির ত্বরণ ব্যাখ্যা করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-text">১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</span>
+<span class="cq-sub-text">১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">১০</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">ঘ.</span>
-<span class="cq-sub-text">গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</span>
+<span class="cq-sub-text">গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৪</div>
 </div>
@@ -254,14 +254,14 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">খ.</span>
-<span class="cq-sub-text">নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</span>
+<span class="cq-sub-text">নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">২</div>
 </div>
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-text">প্রযুক্ত বলের মান নির্ণয় করো।</span>
+<span class="cq-sub-text">প্রযুক্ত বলের মান নির্ণয় করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">৩</div>
 </div>
@@ -301,7 +301,7 @@
 <div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">
 <div class="flex-1 text-justify">
 <span class="cq-sub-lbl font-bold" style="margin-right: 6px;">গ.</span>
-<span class="cq-sub-text">তারের রোধ নির্ণয় করো।</span>
+<span class="cq-sub-text">তারের রোধ নির্ণয় করো।</span>
 </div>
 <div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">
 </div>
@@ -431,9 +431,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -467,7 +467,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার</w:t>
+<w:t xml:space="preserve">একটি গাড়ি স্থির অবস্থা থেকে যাত্রা শুরু করে ১০ সেকেন্ডে ২০ মিটার</w:t>
 </w:r>
 <w:r>
 <w:rPr>
@@ -489,9 +489,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -517,9 +517,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -529,7 +529,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">খ. গাড়িটির ত্বরণ ব্যাখ্যা করো।</w:t>
+<w:t xml:space="preserve">খ. গাড়িটির ত্বরণ ব্যাখ্যা করো।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -545,9 +545,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -557,7 +557,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">গ. ১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</w:t>
+<w:t xml:space="preserve">গ. ১০ সেকেন্ডে অতিক্রান্ত দূরত্ব নির্ণয় করো।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -573,9 +573,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -585,7 +585,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">ঘ. গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</w:t>
+<w:t xml:space="preserve">ঘ. গাড়িটির গতি সমত্বরণ ছিল কি? বিশ্লেষণ করো।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -601,9 +601,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -643,9 +643,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -671,9 +671,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -683,7 +683,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">খ. নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</w:t>
+<w:t xml:space="preserve">খ. নিউটনের দ্বিতীয় সূত্র ব্যাখ্যা করো।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -699,9 +699,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -711,7 +711,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">গ. প্রযুক্ত বলের মান নির্ণয় করো।</w:t>
+<w:t xml:space="preserve">গ. প্রযুক্ত বলের মান নির্ণয় করো।</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -727,9 +727,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -744,9 +744,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -786,9 +786,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -803,9 +803,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -820,9 +820,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -831,15 +831,15 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">গ. তারের রোধ নির্ণয় করো।</w:t>
+<w:t xml:space="preserve">গ. তারের রোধ নির্ণয় করো।</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -858,4 +858,36 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\column}
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2451? \u2476?\u2495?\u2487?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqc\tx3598\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2536? \u2456?\u2467?\u2509?\u2463?\u2494? \u2537?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\b\ul {\f0 \u2488?\u2499?\u2460?\u2472?\u2486?\u2496?\u2482? \u2437?\u2477?\u2496?\u2453?\u2509?\u2487?\u2494?}}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2541?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa20 {\f0 \u2447?\u2453?\u2463?\u2495? \u2455?\u2494?\u2524?\u2495? \u2488?\u2509?\u2469?\u2495?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494? \u2469?\u2503?\u2453?\u2503? \u2479?\u2494?\u2468?\u2509?\u2480?\u2494? \u2486?\u2497?\u2480?\u2497? \u2453?\u2480?\u2503? \u2535?\u2534? \u2488?\u2503?\u2453?\u2503?\u2472?\u2509?\u2465?\u2503? \u2536?\u2534? \u2478?\u2495?\u2463?\u2494?\u2480?}{\f1 /}{\f0 \u2488?\u2503?\u2453?\u2503?\u2472?\u2509?\u2465? \u2476?\u2503?\u2455? \u2437?\u2480?\u2509?\u2460?\u2472? \u2453?\u2480?\u2503?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2468?\u2509?\u2476?\u2480?\u2467? \u2453?\u2494?\u2453?\u2503? \u2476?\u2482?\u2503??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2455?\u2494?\u2524?\u2495?\u2463?\u2495?\u2480? \u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2535?\u2534? \u2488?\u2503?\u2453?\u2503?\u2472?\u2509?\u2465?\u2503? \u2437?\u2468?\u2495?\u2453?\u2509?\u2480?\u2494?\u2472?\u2509?\u2468? \u2470?\u2498?\u2480?\u2468?\u2509?\u2476? \u2472?\u2495?\u2480?\u2509?\u2467?\u2527? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2455?\u2494?\u2524?\u2495?\u2463?\u2495?\u2480? \u2455?\u2468?\u2495? \u2488?\u2478?\u2468?\u2509?\u2476?\u2480?\u2467? \u2459?\u2495?\u2482? \u2453?\u2495?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2536?\u2404?}\tab {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa20 {\f0 \u2447?\u2453?\u2463?\u2495? \u2476?\u2488?\u2509?\u2468?\u2497?\u2453?\u2503? \u2539? \u2453?\u2503?\u2460?\u2495? \u2477?\u2480?\u2503?\u2480? \u2488?\u2494?\u2469?\u2503? \u2479?\u2497?\u2453?\u2509?\u2468? \u2453?\u2480?\u2503? \u2463?\u2494?\u2472?\u2494? \u2489?\u2482?\u2507?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2476?\u2482? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2472?\u2495?\u2441?\u2463?\u2472?\u2503?\u2480? \u2470?\u2509?\u2476?\u2495?\u2468?\u2496?\u2527? \u2488?\u2498?\u2468?\u2509?\u2480? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2474?\u2509?\u2480?\u2479?\u2497?\u2453?\u2509?\u2468? \u2476?\u2482?\u2503?\u2480? \u2478?\u2494?\u2472? \u2472?\u2495?\u2480?\u2509?\u2467?\u2527? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2456?. \u2456?\u2480?\u2509?\u2487?\u2467? \u2441?\u2474?\u2503?\u2453?\u2509?\u2487?\u2494? \u2453?\u2480?\u2494? \u2479?\u2508?\u2453?\u2509?\u2468?\u2495?\u2453? \u2453?\u2495? \u2472?\u2494? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2537?\u2404?}\tab {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa20 {\f0 \u2447?\u2453?\u2463?\u2495? \u2468?\u2494?\u2480?\u2503?\u2480? \u2480?\u2507?\u2471? \u2474?\u2480?\u2495?\u2478?\u2494?\u2474? \u2453?\u2480?\u2494? \u2489?\u2482?\u2507?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2453?. \u2480?\u2507?\u2471? \u2453?\u2494?\u2453?\u2503? \u2476?\u2482?\u2503??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2454?. \u2451?\u2489?\u2478?\u2503?\u2480? \u2488?\u2498?\u2468?\u2509?\u2480? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2455?. \u2468?\u2494?\u2480?\u2503?\u2480? \u2480?\u2507?\u2471? \u2472?\u2495?\u2480?\u2509?\u2467?\u2527? \u2453?\u2480?\u2507?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2456?. \u2468?\u2494?\u2480?\u2463?\u2495? \u2474?\u2480?\u2495?\u2476?\u2494?\u2489?\u2496? \u2472?\u2494? \u2437?\u2480?\u2509?\u2471?\u2474?\u2480?\u2495?\u2476?\u2494?\u2489?\u2496?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\par}
+}

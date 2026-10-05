@@ -1,9 +1,9 @@
 /**
  * Fayzar — চিত্র-হস্তান্তর স্টোর (FayzarFigureTransfer)
  * ======================================================
- * OCR পাতা → স্টুডিও (আলাদা ট্যাব) চিত্র পাঠানো। localStorage-এর ~৫MB সীমায় ছবি ধরে না,
- * তাই IndexedDB (একই origin: localhost:3008)। পেলোডে শুধু চাবি যায়; স্টুডিও take() করে
- * নেয় এবং রেকর্ড মুছে যায় (এককালীন হস্তান্তর)। ৪৮ ঘণ্টার পুরনো রেকর্ড put()-এর সময় ছাঁটা হয়।
+ * OCR পাতা → স্টুডিও (আলাদা ট্যাব) চিত্র পাঠানো। localStorage-এর ~৫MB সীমায় ছবি ধরে না,
+ * তাই IndexedDB (একই origin: localhost:3008)। পেলোডে শুধু চাবি যায়; স্টুডিও take() করে
+ * নেয় এবং রেকর্ড মুছে যায় (এককালীন হস্তান্তর)। ৪৮ ঘণ্টার পুরনো রেকর্ড put()-এর সময় ছাঁটা হয়।
  */
 (function (global) {
   'use strict';
@@ -18,7 +18,7 @@
       const req = indexedDB.open(DB_NAME, 1);
       req.onupgradeneeded = () => { req.result.createObjectStore(STORE); };
       req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error || new Error('IndexedDB খোলা যায়নি'));
+      req.onerror = () => reject(req.error || new Error('IndexedDB খোলা যায়নি'));
     });
   }
 
@@ -56,7 +56,7 @@
     return key;
   }
 
-  /** চাবির চিত্রগুলো ফেরত দেয় এবং রেকর্ড মুছে দেয়; না থাকলে null */
+  /** চাবির চিত্রগুলো ফেরত দেয় এবং রেকর্ড মুছে দেয়; না থাকলে null */
   async function take(key) {
     if (!key) return null;
     const db = await openDb();

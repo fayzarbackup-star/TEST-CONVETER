@@ -12,17 +12,17 @@
  * সমাধান — "মার্কার + ফিগার-স্টোর" মডেল:
  *   ১) সোর্স-টেক্সটে একটি ASCII মার্কার বসে:  QZFIG12QZ
  *      (টোকেনের সব অক্ষর english-শ্রেণির — রান-ভাগকারী টোকেনাইজার এটি
- *       এক টুকরোতেই রাখে; আগের `@@FIG12@@`-এ `@` নিউট্রাল হওয়ায় মার্কার RTF-এ
- *       `@@}{\f1 FIG12@@}` হয়ে ভাগ হয়ে যেত ⇒ এক্সপোর্টে চিত্র বসত না। ফিক্স-২।)
+ *       এক টুকরোতেই রাখে; আগের `@@FIG12@@`-এ `@` নিউট্রাল হওয়ায় মার্কার RTF-এ
+ *       `@@}{\f1 FIG12@@}` হয়ে ভাগ হয়ে যেত ⇒ এক্সপোর্টে চিত্র বসত না। ফিক্স-২।)
  *      (সোর্সটাই সত্য ⇒ typing/re-render নির্বিশেষে চিত্র টেকে)।
  *   ২) চিত্রের বাইনারি থাকে ফিগার-স্টোরে (id → { dataUrl, pxW, pxH, cssW, align }).
- *   ৩) প্রিভিউ-রেন্ডারের পরে মার্কারটি UI-র্যাপারে বদলানো হয় (applyFigures)।
+ *   ৩) প্রিভিউ-রেন্ডারের পরে মার্কারটি UI-র্যাপারে বদলানো হয় (applyFigures)।
  *   ৪) এক্সপোর্টে মার্কার → আসল চিত্র:
  *        .docx : word/media/figureN.png + [Content_Types] png + rels + <w:drawing>
  *        .doc  : RTF  {\pict\pngblip\picw…\pich…\picwgoal…\pichgoal… <HEX>}
- *   ৫) সব সময় রাস্টারাইজ (SVG→PNG/JPEG) — Word 2003 SVG আঁকতে পারে না।
+ *   ৫) সব সময় রাস্টারাইজ (SVG→PNG/JPEG) — Word 2003 SVG আঁকতে পারে না।
  *
- * নোড ও ব্রাউজার দুই পরিবেশেই লোড হয় (ইউনিট-টেস্টে require করা যায়)।
+ * নোড ও ব্রাউজার দুই পরিবেশেই লোড হয় (ইউনিট-টেস্টে require করা যায়)।
  * ═══════════════════════════════════════════════════════════════════════════
  */
 (function (global) {
@@ -30,7 +30,7 @@
 
   const MARKER_SRC = 'QZFIG\\d+QZ';
   const FIG_MAX_PX = 1400;            // দীর্ঘতম বাহু (রাস্টারাইজ-সীমা)
-  const FIG_PNG_BUDGET = 900 * 1024;  // এর বেশি হলে JPEG q0.85 (কেবল ছবি; SVG→সবসময় PNG)
+  const FIG_PNG_BUDGET = 900 * 1024;  // এর বেশি হলে JPEG q0.85 (কেবল ছবি; SVG→সবসময় PNG)
   const EMU_PER_PX = 9525;            // CSS px (96dpi) → EMU
   const TWIPS_PER_PX = 15;            // CSS px → twips
 
@@ -41,7 +41,7 @@
 
   function escapeRegex(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-  /** বাংলা-অঙ্ক (০-৯) থাকলে ASCII-তে নামায় — ম্যাচ থেকে id বের করার আগে */
+  /** বাংলা-অঙ্ক (০-৯) থাকলে ASCII-তে নামায় — ম্যাচ থেকে id বের করার আগে */
   function normDigits(s) {
     return String(s == null ? '' : s).replace(/[\u09E6-\u09EF]/g, function (ch) {
       return String(ch.charCodeAt(0) - 0x09E6);
@@ -50,8 +50,8 @@
 
   /**
    * সহনশীল ম্যাচার (নিরাপত্তা-জাল): মার্কারের অক্ষরগুলোর মাঝে RTF/XML কন্ট্রোল-জাঙ্ক
-   * ঢুকে পড়লেও (যেমন `QZ}{\f1 FIG1QZ`) মার্কার ধরা পড়ে। কেবল তখনই ব্যবহৃত হয় যখন
-   * হুবহু ম্যাচ ব্যর্থ হয় — ফলে সাধারণ পথে কোনো ঝুঁকি নেই।
+   * ঢুকে পড়লেও (যেমন `QZ}{\f1 FIG1QZ`) মার্কার ধরা পড়ে। কেবল তখনই ব্যবহৃত হয় যখন
+   * হুবহু ম্যাচ ব্যর্থ হয় — ফলে সাধারণ পথে কোনো ঝুঁকি নেই।
    * @param {number|null} id  null ⇒ যেকোনো id
    */
   function tolerantMarkerRegex(id, opts) {
@@ -63,8 +63,8 @@
   }
 
   /**
-   * RTF-এ সহনশীলভাবে সরানোর সময় দাঁড়-ব্যালান্স ঠিক রাখে (নইলে Word ভাঙে)।
-   * ম্যাচের ভিতরে যত বেশি `{` খুলেছে তার সমান `}` জুড়ে দেয় (উল্টোটাও)।
+   * RTF-এ সহনশীলভাবে সরানোর সময় দাঁড়-ব্যালান্স ঠিক রাখে (নইলে Word ভাঙে)।
+   * ম্যাচের ভিতরে যত বেশি `{` খুলেছে তার সমান `}` জুড়ে দেয় (উল্টোটাও)।
    */
   function balanceBraces(matched) {
     const s = String(matched || '');
@@ -80,7 +80,7 @@
     return '';
   }
 
-  /** আউটপুটে কোনো (জীবিত বা মৃত) মার্কার-অবশেষ থাকলে সরায় — কখনো ফাঁস হবে না */
+  /** আউটপুটে কোনো (জীবিত বা মৃত) মার্কার-অবশেষ থাকলে সরায় — কখনো ফাঁস হবে না */
   function stripAllMarkers(text, isRtf) {
     const s = String(text == null ? '' : text);
     return s.replace(tolerantMarkerRegex(null), function (m) {
@@ -90,7 +90,7 @@
     });
   }
 
-  /** টেক্সটে যত মার্কার আছে (হুবহু + সহনশীল মিলিয়ে) */
+  /** টেক্সটে যত মার্কার আছে (হুবহু + সহনশীল মিলিয়ে) */
   function countMarkers(text) {
     const s = String(text == null ? '' : text);
     const exact = (s.match(markerRegex()) || []).length;
@@ -109,7 +109,7 @@
     return out;
   }
 
-  /** মার্কার বাদ দিয়ে পরিষ্কার টেক্সট (তুলনা/সার্চের জন্য) */
+  /** মার্কার বাদ দিয়ে পরিষ্কার টেক্সট (তুলনা/সার্চের জন্য) */
   function stripMarkers(text) {
     return String(text == null ? '' : text)
       .replace(/[ \t]*QZFIG\d+QZ[ \t]*/g, ' ')
@@ -121,7 +121,7 @@
 
   /**
    * এডিটের পরে মূল মানে থাকা মার্কার অটুট রাখে (নইলে টেক্সট-এডিটে চিত্র হারাত)।
-   * যেগুলো নতুন মানে নেই, সেগুলো মানের শেষে যোগ হয়।
+   * যেগুলো নতুন মানে নেই, সেগুলো মানের শেষে যোগ হয়।
    */
   function preserveMarkers(value, original) {
     const orig = String(original == null ? '' : original).match(markerRegex()) || [];
@@ -132,7 +132,7 @@
     return String(value == null ? '' : value).replace(/\s+$/, '') + ' ' + missing.join(' ');
   }
 
-  /** পুরনো সোর্স-টেক্সট থেকে আর ব্যবহার না হওয়া মার্কার সরায় */
+  /** পুরনো সোর্স-টেক্সট থেকে আর ব্যবহার না হওয়া মার্কার সরায় */
   function pruneMarkers(text, liveIds) {
     const live = new Set((liveIds || []).map((i) => markerFor(i)));
     return String(text == null ? '' : text).replace(/[ \t]*QZFIG\d+QZ[ \t]*/g, (m) => (live.has(m.trim()) ? m : ' '));
@@ -206,11 +206,11 @@
 
   /**
    * SVG/IMG এলিমেন্ট → { dataUrl, pxW, pxH, cssW, cssH, mime }
-   * দীর্ঘতম বাহু ≤ maxPx; SVG সবসময় PNG (স্বচ্ছতা অটুট), ছবি বড় হলে JPEG।
+   * দীর্ঘতম বাহু ≤ maxPx; SVG সবসময় PNG (স্বচ্ছতা অটুট), ছবি বড় হলে JPEG।
    */
   async function rasterizeElement(el, opts) {
     opts = opts || {};
-    if (!el || typeof document === 'undefined') throw new Error('rasterizeElement: DOM প্রয়োজন');
+    if (!el || typeof document === 'undefined') throw new Error('rasterizeElement: DOM প্রয়োজন');
     const tag = (el.tagName || '').toLowerCase();
     const isSvg = tag === 'svg';
     let src, natW = 100, natH = 80;
@@ -238,7 +238,7 @@
     ctx.drawImage(img, 0, 0, pxW, pxH);
     let mime = 'image/png';
     let dataUrl = canvas.toDataURL('image/png');
-    if (!isSvg && dataUrl.length > FIG_PNG_BUDGET) {           // অপাক্ত ছবি — JPEG সাশ্রয়ী
+    if (!isSvg && dataUrl.length > FIG_PNG_BUDGET) {           // অপাক্ত ছবি — JPEG সাশ্রয়ী
       dataUrl = canvas.toDataURL('image/jpeg', 0.85);
       mime = 'image/jpeg';
     }
@@ -285,7 +285,7 @@
         const re = new RegExp(escapeRegex(marker), 'g');
         text = text.replace(re, () => { n++; return ' ' + pict + ' '; });
       } else {
-        // সহনশীল পথ: মার্কারের অক্ষরগুলো রান-সীমানায় ভাগ হয়ে গেছে
+        // সহনশীল পথ: মার্কারের অক্ষরগুলো রান-সীমানায় ভাগ হয়ে গেছে
         const reT = tolerantMarkerRegex(parseInt(id, 10));
         text = text.replace(reT, (m) => {
           n++; tolerantHits++;
@@ -362,15 +362,15 @@
   }
 
   /**
-   * .docx (Blob|Buffer|Uint8Array) → নতুন প্যাকেজ (মার্কারগুলো আসল ছবি হয়ে)।
+   * .docx (Blob|Buffer|Uint8Array) → নতুন প্যাকেজ (মার্কারগুলো আসল ছবি হয়ে)।
    * media + rels + [Content_Types] + drawing — সবই এখানে।
    */
   async function injectIntoDocx(input, figures, opts) {
     const JSZip = _getJSZip();
-    if (!JSZip) throw new Error('JSZip পাওয়া যায়নি');
+    if (!JSZip) throw new Error('JSZip পাওয়া যায়নি');
     const zip = await JSZip.loadAsync(input);
     const docFile = zip.file('word/document.xml');
-    if (!docFile) throw new Error('word/document.xml নেই — ডকুমেন্ট-প্যাকেজ নয়');
+    if (!docFile) throw new Error('word/document.xml নেই — ডকুমেন্ট-প্যাকেজ নয়');
     let doc = await docFile.async('string');
     const relsFile = zip.file('word/_rels/document.xml.rels');
     let rels = relsFile ? await relsFile.async('string') : '';
@@ -386,7 +386,7 @@
       const marker = markerFor(id);
       if (!fig || !fig.dataUrl) continue;
       if (doc.indexOf(marker) === -1) {
-        // সহনশীল পথ: মার্কার হুবহু নেই (রান-সীমানায় ভাগ হয়েছে) ⇒ এনটিটি/স্পেস-জাঙ্ক সহ মিলাই
+        // সহনশীল পথ: মার্কার হুবহু নেই (রান-সীমানায় ভাগ হয়েছে) ⇒ এনটিটি/স্পেস-জাঙ্ক সহ মিলাই
         const mT = tolerantMarkerRegex(parseInt(id, 10), { noTags: true }).exec(doc);
         if (!mT) continue;
         doc = doc.slice(0, mT.index) + marker + doc.slice(mT.index + mT[0].length);
@@ -424,7 +424,7 @@
     if (rels) zip.file('word/_rels/document.xml.rels', rels);
     if (types) zip.file('[Content_Types].xml', types);
 
-    // আউটপুট-টাইপ ইনপুটের সঙ্গে মিলিয়ে (Browser: Blob → Blob; Node: Buffer → nodebuffer)
+    // আউটপুট-টাইপ ইনপুটের সঙ্গে মিলিয়ে (Browser: Blob → Blob; Node: Buffer → nodebuffer)
     const inputIsBlob = (typeof Blob !== 'undefined') && (input instanceof Blob);
     const wantBlob = inputIsBlob || (opts && opts.type === 'blob');
     if (wantBlob) {
@@ -441,7 +441,7 @@
   }
 
   // ───────────────────────────── স্টোর-হেল্পার ─────────────────────────────
-  /** parsedData.__figures না স্টোর — যেটা আছে সেটাই; __figures অগ্রাধিকার পায় */
+  /** parsedData.__figures না স্টোর — যেটা আছে সেটাই; __figures অগ্রাধিকার পায় */
   function collectStore(parsedData, fallbackStore) {
     const pinned = parsedData && parsedData.__figures;
     if (pinned && typeof pinned === 'object' && Object.keys(pinned).length) return pinned;

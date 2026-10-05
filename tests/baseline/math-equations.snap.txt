@@ -3,7 +3,7 @@
 
 ===== CLASSIFIER =====
 {
-  "type": "EXAM_GENERAL"
+  "type": "EXAM_MATH"
 }
 
 ===== PARSED =====

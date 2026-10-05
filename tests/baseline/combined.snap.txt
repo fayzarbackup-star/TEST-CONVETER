@@ -852,7 +852,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
+<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -869,7 +869,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">সময়: ................</w:t>
+<w:t xml:space="preserve">সময়: ................</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1280,8 +1280,8 @@
 {\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472? \u2447?\u2480? \u2472?\u2494?\u2478?}\par}
 {\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
 {\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
-{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2479?\u2492?\u2435? ................}\par}
-{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2479?\u2492?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2527?\u2435? ................}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2527?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
 {\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
 \sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
 {\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2476?\u2482?\u2503?\u2480? \u2447?\u2453?\u2453? \u2453?\u2496??}\par}

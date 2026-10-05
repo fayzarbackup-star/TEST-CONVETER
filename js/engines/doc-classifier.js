@@ -26,9 +26,9 @@
     },
 
     /**
-     * Part-15.9: OCR-এর `doc_type` (বা ক্লাসিফায়ার) EXAM_CQ/MATH/GENERAL বললেও লেখায় প্রশ্নের পরে
+     * Part-15.9: OCR-এর `doc_type` (বা ক্লাসিফায়ার) EXAM_CQ/MATH/GENERAL বললেও লেখায় প্রশ্নের পরে
      * আলাদা বহুনির্বাচনি অংশ (শিরোনাম + নিচে ≥৮টি ক/খ/গ/ঘ বিকল্প-লাইন) থাকলে → EXAM_COMBINED,
-     * যাতে MCQ অংশ নিজের পোর্ট্রেট ২-কলাম গ্রিডে যায় (Gemini সবসময় `---SECTION_BREAK:MCQ---` দেয় না)।
+     * যাতে MCQ অংশ নিজের পোর্ট্রেট ২-কলাম গ্রিডে যায় (Gemini সবসময় `---SECTION_BREAK:MCQ---` দেয় না)।
      */
     promoteCombined(type, text) {
       const t = String(type || '').toUpperCase();
@@ -49,7 +49,8 @@
 
     classify(text) {
       if (!text || typeof text !== 'string') return { type: this.DOC_TYPES.GENERAL, confidence: 0 };
-      const t = text.trim();
+      // Part-18.0: য়/ড়/ঢ় দুই-অংশ রূপ ⇒ একক অক্ষর (নিয়মগুলো এই রূপে লেখা; নইলে "প্রত্যয়ন", "পরীক্ষা"… মিলত না)
+      const t = text.trim().replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD');
       // Category headings are structure, not a single document-wide type. Preserve a
       // short+creative paper as an exam even when OCR's frontmatter guessed GENERAL.
       const categoryLines = t.split(/\r?\n/).map((line) => line.trim().replace(/^#{1,6}\s*/, '')).filter((line) =>
@@ -131,10 +132,10 @@
 
       // Part-10 (ক.১–ক.২): ব্লক-ভিত্তিক বিশুদ্ধ MCQ শনাক্তকরণ।
       // আগের গণনা শুধু *একই লাইনে* অপশন থাকা ক্লাস্টার ধরত (`ক. x খ. y`);
-      // OCR/মার্কডাউনের সবচেয়ে সাধারণ ফর্ম — প্রতি লাইনে একটি করে অপশন —
-      // গণনার বাইরে থাকায় ২৫–৩০ প্রশ্নের বিশুদ্ধ MCQ প্রশ্নপত্রও EXAM_GENERAL
-      // -এ যেত। এখন প্রশ্ন-ব্লক ধরে ধরে গনা হয় (১০+ বিশুদ্ধ MCQ ব্লক → পূর্ণ
-      // MCQ ফরম্যাট; ২৫–৩০টি হলেও স্বয়ংক্রিয়ভাবে একই পাথ)।
+      // OCR/মার্কডাউনের সবচেয়ে সাধারণ ফর্ম — প্রতি লাইনে একটি করে অপশন —
+      // গণনার বাইরে থাকায় ২৫–৩০ প্রশ্নের বিশুদ্ধ MCQ প্রশ্নপত্রও EXAM_GENERAL
+      // -এ যেত। এখন প্রশ্ন-ব্লক ধরে ধরে গনা হয় (১০+ বিশুদ্ধ MCQ ব্লক → পূর্ণ
+      // MCQ ফরম্যাট; ২৫–৩০টি হলেও স্বয়ংক্রিয়ভাবে একই পাথ)।
       let mcqBlockCount = 0;
       let numberedBlockCount = 0;
       {
@@ -151,16 +152,22 @@
             const txt = m[2].trim();
             if (!txt) continue;
             optLines++;
-            // CQ সাব-প্রশ্নের স্বাক্ষর — মার্ক-ব্র্যাকেট, অতীতকালী ক্রিয়া-শেষ, অথবা
+            // CQ সাব-প্রশ্নের স্বাক্ষর — মার্ক-ব্র্যাকেট, অতীতকালী ক্রিয়া-শেষ, অথবা
             // দীর্ঘ নির্দেশনামূলক বাক্য। MCQ বিকল্প সাধারণত সংক্ষিপ্ত নাম/বাঁধা উত্তর।
             if (/\[[^\]]*\]/.test(ln) ||
-                /(?:করো|কর|দাও|দিাও|লিখ|নির্ণয়|ব্যাখ্যা|বর্ণনা|প্রমাণ|হিসাব|উত্তর দিন)\s*[।.]?\s*$/.test(txt) ||
-                /উদ্দীপক|সূত্র|মান নির্ণয়|তালিকা|চিত্র|সংক্ষেপে/i.test(txt)) cqish++;
+                /(?:করো|কর|দাও|দিাও|লিখ|নির্ণয়|ব্যাখ্যা|বর্ণনা|প্রমাণ|হিসাব|উত্তর দিন)\s*[।.]?\s*$/.test(txt) ||
+                /উদ্দীপক|সূত্র|মান নির্ণয়|তালিকা|চিত্র|সংক্ষেপে/i.test(txt)) cqish++;
           }
           if (optLines >= 2 && cqish === 0) mcqBlockCount++;
         }
       }
       const isPureMcqPaper = (mcqBlockCount >= 10 && numberedBlockCount > 0 && mcqBlockCount >= numberedBlockCount * 0.85);
+      // Part-18.0: গণিত — সংখ্যাযুক্ত প্রশ্নের অর্ধেকের বেশিতে সূত্র ($…$ / LaTeX) ⇒ EXAM_MATH (আগে শুধু ফ্রন্টম্যাটার দিয়ে)
+      let mathQCount = 0;
+      t.split(/(?=^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\]])/m).forEach((bp) => {
+        if (/^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\]]/.test(bp) && /\$[^$\n]+\$|\\(?:frac|sqrt|int|sum|theta|pi|begin)\b/.test(bp)) mathQCount++;
+      });
+      const isMathPaper = numberedBlockCount >= 3 && mathQCount >= numberedBlockCount * 0.5;
       const isStrictMcq = (mcqCount >= 18) || (totalQCount >= 3 && mcqCount >= totalQCount * 0.85) || isPureMcqPaper;
 
       // A mixed short+creative exam must not fall through to the generic-question score.
@@ -218,12 +225,12 @@
       // Admit card patterns
       if (/প্রবেশপত্র|ADMIT\s*CARD/i.test(t)) admitScore += 8;
       if (/পূর্ণমান.*পাসমান/i.test(t)) admitScore += 5;
-      if (/পরীক্ষার্থীর\s*নাম.*রোল|রোল.*সময়/i.test(t)) admitScore += 4;
+      if (/পরীক্ষার্থীর\s*নাম.*রোল|রোল.*সময়/i.test(t)) admitScore += 4;
 
       // Salary slip patterns
       if (/বেতন\s*স্লিপ|PAY\s*SLIP/i.test(t)) salaryScore += 8;
-      if (/মূল\s*বেতন|বাড়ি\s*ভাড়া\s*ভাতা|নিট\s*বেতন/i.test(t)) salaryScore += 6;
-      if (/ভবিষ্যৎ\s*তহবিল|আয়কর/i.test(t) && /বেতন|মাস/i.test(t)) salaryScore += 4;
+      if (/মূল\s*বেতন|বাড়ি\s*ভাড়া\s*ভাতা|নিট\s*বেতন/i.test(t)) salaryScore += 6;
+      if (/ভবিষ্যৎ\s*তহবিল|আয়কর/i.test(t) && /বেতন|মাস/i.test(t)) salaryScore += 4;
 
       // Notice patterns
       if (/বিজ্ঞপ্তি|নোটিশ|অফিস\s*আদেশ|জরুরি\s*বিজ্ঞপ্তি/i.test(t)) noticeScore += 6;
@@ -231,8 +238,8 @@
 
       // CV/Resume patterns (deduplicated)
       if (/জীবনবৃত্তান্ত|বায়োডাটা|কারিকুলাম\s*ভিটা|CURRICULUM\s*VITAE|RESUME|পিতার\s*নাম.*মাতার\s*নাম|শিক্ষাগত\s*যোগ্যতা/i.test(t)) cvScore += 8;
-      if (/ব্যক্তিগত\s*তথ্য|পেশাগত\s*অভিজ্ঞতা|কর্মঅভিজ্ঞতা|দক্ষতা\s*সমূহ|জাতীয়তা|জাতীয়তা|স্থায়ী\s*ঠিকানা|স্থায়ী\s*ঠিকানা|বর্তমান\s*ঠিকানা|REFERENCE/i.test(t)) cvScore += 5;
-      if (/পরীক্ষার\s*নাম.*পাশের\s*সন|বোর্ড\/বিশ্ববিদ্যালয়|বোর্ড\/বিশ্ববিদ্যালয়/i.test(t)) cvScore += 4;
+      if (/ব্যক্তিগত\s*তথ্য|পেশাগত\s*অভিজ্ঞতা|কর্মঅভিজ্ঞতা|দক্ষতা\s*সমূহ|জাতীয়তা|জাতীয়তা|স্থায়ী\s*ঠিকানা|স্থায়ী\s*ঠিকানা|বর্তমান\s*ঠিকানা|REFERENCE/i.test(t)) cvScore += 5;
+      if (/পরীক্ষার\s*নাম.*পাশের\s*সন|বোর্ড\/বিশ্ববিদ্যালয়|বোর্ড\/বিশ্ববিদ্যালয়/i.test(t)) cvScore += 4;
 
       // Specialized document gate: only high-fidelity non-exam document types bypass the exam gate
       const maxSpecialScore = Math.max(
@@ -272,7 +279,14 @@
         }
       }
 
+      // Part-18.0: দলিল — হলফনামা/অঙ্গীকারনামা (আগে "জাতীয়তা" দেখে সিভি হয়ে যেত)
+      if (/হলফ\s*নামা|হলফপূর্বক|এফিডেভিট|অঙ্গীকার\s*নামা/.test(t)) stampScore += 14;
+      // Part-18.0: রুটিন — "রুটিন" শব্দ + বার/তারিখের টেবিল (আগে শুধু "ক্লাস রুটিন/পিরিয়ড")
+      if (/রুটিন/.test(t) && /^\s*\|.*(?:বার|তারিখ|সময়|সময়)/m.test(t)) routineScore += 30;
+      const mathScore = isMathPaper ? 30 : 0;
+
       const scores = [
+        { type: this.DOC_TYPES.EXAM_MATH, score: mathScore },
         { type: this.DOC_TYPES.EXAM_COMBINED, score: combinedScore },
         { type: this.DOC_TYPES.EXAM_CQ, score: cqScore },
         { type: this.DOC_TYPES.EXAM_MCQ, score: mcqScore },

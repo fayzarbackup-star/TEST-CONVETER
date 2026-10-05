@@ -800,7 +800,7 @@
 <div class="font-kalpurush dense-zero-gap">
 <div class="sheet-label">
 <i class="fas fa-file-word text-blue-600">
-</i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি (ফন্ট 11pt-এ সংকুচিত করে ১ পৃষ্ঠায় ফিট করা হয়েছে)</div>
+</i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি (ফন্ট 11pt-এ সংকুচিত করে ১ পৃষ্ঠায় ফিট করা হয়েছে)</div>
 <div class="paper-sheet size-a4-portrait margin-standard">
 <div class="word-crop-marks no-print">
 <div class="crop-tl">
@@ -1474,7 +1474,7 @@
 <w:szCs w:val="22"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">সময়: ২৫ মিনিট</w:t>
+<w:t xml:space="preserve">সময়: ২৫ মিনিট</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -3804,7 +3804,7 @@
 {\qc\fs22\f0\sl240\slmult1\sb0\sa0 {\f0 \u2453?\u2507?\u2468?\u2507?\u2479?\u2492?\u2494?\u2482?\u2496?, \u2480?\u2434?\u2474?\u2497?\u2480?}\par}
 {\qc\b\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2437?\u2480?\u2509?\u2471?}{\f1 -}{\f0 \u2476?\u2494?\u2480?\u2509?\u2487?\u2495?\u2453? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?}\par}
 {\qc\fs22\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? \u2487?\u2487?\u2509?\u2464?  |  \u2476?\u2495?\u2487?\u2479?\u2492?\u2435? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?}\par}
-{\ql\b\fs22\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2479?\u2492?: \u2536?\u2539? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? \u2536?\u2539?}\par}
+{\ql\b\fs22\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2527?: \u2536?\u2539? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? \u2536?\u2539?}\par}
 {\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
 \sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
 {\ql\b\fs22\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480?\u2503?\u2480? \u2478?\u2488?\u2509?\u2468?\u2495?\u2487?\u2509?\u2453? \u2476?\u2482?\u2494? \u2489?\u2479?\u2492? \u2453?\u2507?\u2472?\u2463?\u2495?\u2453?\u2503??}\par}

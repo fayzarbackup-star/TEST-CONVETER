@@ -9,21 +9,21 @@
  *   পার্স করে ফাইল বানাত ⇒ প্রিভিউতে করা **সব এডিট লোপ পেত**। (প্রমাণ: RTF-এ
  *   পুরোনো টেক্সটই থাকত।)
  *
- * সমাধান (রূপান্তর নয়, DP-সিঙ্ক):
+ * সমাধান (রূপান্তর নয়, DP-সিঙ্ক):
  *   `parsedData`-ই এক্সপোর্ট-এঞ্জিনের সত্য — প্রিভিউও তার থেকেই আঁকা। তাই
- *   প্রিভিউ-DOM-কে `parsedData`-এর সঙ্গে মিলিয়ে শুধু **যেগুলো বদলেছে সেগুলো**
- *   (path → মান) সংগ্রহ করা হয়, তারপর parsedData-এর কপিতে বসানো হয়।
+ *   প্রিভিউ-DOM-কে `parsedData`-এর সঙ্গে মিলিয়ে শুধু **যেগুলো বদলেছে সেগুলো**
+ *   (path → মান) সংগ্রহ করা হয়, তারপর parsedData-এর কপিতে বসানো হয়।
  *   এর ফলে:
- *     • প্রশ্নের গঠন/গণিত-সমীকরণ/EQ-ফিল্ড অটুট থাকে (পুনঃপার্স হয় না),
- *     • প্রিভিউ ১০০% যা দেখায়, এক্সপোর্ট ঠিক তা-ই ছাপে (WYSIWYG সমতা),
+ *     • প্রশ্নের গঠন/গণিত-সমীকরণ/EQ-ফিল্ড অটুট থাকে (পুনঃপার্স হয় না),
+ *     • প্রিভিউ ১০০% যা দেখায়, এক্সপোর্ট ঠিক তা-ই ছাপে (WYSIWYG সমতা),
  *     • কেউ টাচ না করলে শূন্য এডিট ⇒ ব্যাবধান শূন্য সাইড-ইফেক্ট।
  *
  * পার্স-ডেটার গঠন (question-engine):
  *   CQ : {num, text, preContext, stimulus, subQuestions:[{label,text,mark}], …}
  *   MCQ: {num, text, options:[{label,text}], subQuestions:[…], statements:[…]}
  *
- * নির্ভরযোগ্যতা: প্রতিটি ক্ষেত্রের তুলনা হয় টেক্সট-নরমালাইজ করে — তাই যেখানে
- * ব্যবহারকারী সত্যিই কিছু বদলেছেন শুধু সেখানেই এডিট রেকর্ড হয় (বাকি সব
+ * নির্ভরযোগ্যতা: প্রতিটি ক্ষেত্রের তুলনা হয় টেক্সট-নরমালাইজ করে — তাই যেখানে
+ * ব্যবহারকারী সত্যিই কিছু বদলেছেন শুধু সেখানেই এডিট রেকর্ড হয় (বাকি সব
  * অটুট — বিশেষত .eq-rendered গণিত-নোড)।
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -93,7 +93,7 @@
   }
 
   /**
-   * এডিট-তালিকা parsedData-এর কপিতে বসায় (মূল অবজেক্ট অটুট — immutable)
+   * এডিট-তালিকা parsedData-এর কপিতে বসায় (মূল অবজেক্ট অটুট — immutable)
    * @param {object} parsedData
    * @param {Array<{path:string, value:*}>} edits
    */
@@ -108,7 +108,7 @@
     return out;
   }
 
-  /** সব সেকশনের প্রশ্ন এক তালিকায়: [{q, si, qi, path}] */
+  /** সব সেকশনের প্রশ্ন এক তালিকায়: [{q, si, qi, path}] */
   function allQuestions(parsedData) {
     const list = [];
     if (!parsedData || !Array.isArray(parsedData.sections)) return list;
@@ -124,9 +124,9 @@
   function isEl(n) { return !!(n && n.nodeType === 1); }
 
   /**
-   * Part-14.0 (P0-2): চিত্র-র্যাপার/টুলবার বাদ দিয়ে ফিল্ডের টেক্সট।
+   * Part-14.0 (P0-2): চিত্র-র্যাপার/টুলবার বাদ দিয়ে ফিল্ডের টেক্সট।
    * আগে DOM-এ বসানো SVG-র শীর্ষবিন্দু-লেবেল (A/B/C) innerText-এ ঢুকে
-   * "প্রশ্ন এডিট হয়েছে" ভেবে parsedData-তে ছাপা হত (নীরব দূষণ)।
+   * "প্রশ্ন এডিট হয়েছে" ভেবে parsedData-তে ছাপা হত (নীরব দূষণ)।
    */
   function textWithoutFigures(el) {
     if (!isEl(el)) return '';
@@ -142,12 +142,12 @@
     }
   }
 
-  /** @@FIGn@@ মার্কার ছাড়া টেক্সট (তুলনার জন্য) */
+  /** @@FIGn@@ মার্কার ছাড়া টেক্সট (তুলনার জন্য) */
   function stripFigMarkers(s) {
     return String(s == null ? '' : s).replace(/QZFIG\d+QZ/g, ' ').replace(/\s+/g, ' ').trim();
   }
 
-  /** মূল মানে থাকা মার্কার অটুট — নইলে প্রিভিউ-টেক্সটএডিটে চিত্র হারায় (P0-3) */
+  /** মূল মানে থাকা মার্কার অটুট — নইলে প্রিভিউ-টেক্সটএডিটে চিত্র হারায় (P0-3) */
   function preserveFigMarkers(value, original) {
     const orig = String(original == null ? '' : original).match(/QZFIG\d+QZ/g) || [];
     if (!orig.length) return value;
@@ -189,7 +189,7 @@
     const items = root.querySelectorAll('.cq-q-item, .mcq-q-item');
 
     items.forEach((item) => {
-      // ── প্রশ্ন শনাক্তকরণ: আগে নম্বর দিয়ে, না পেলে ক্রম দিয়ে
+      // ── প্রশ্ন শনাক্তকরণ: আগে নম্বর দিয়ে, না পেলে ক্রম দিয়ে
       const numEl = item.querySelector('.cq-num, .mcq-num');
       const key = numEl ? normNum(numEl.textContent) : '';
       let entry = key ? byNum.get(key) : null;
@@ -202,7 +202,7 @@
 
       const P = entry.path;
       const q = entry.q || {};
-      const local = {};   // path → মান (একই path-এ একাধিক এডিট জোড়া লাগাতে)
+      const local = {};   // path → মান (একই path-এ একাধিক এডিট জোড়া লাগাতে)
 
       // ── ১) স্টেম (প্রশ্নের মূল লাইন / উদ্দীপকের প্রথম লাইন)
       const stemEl = item.querySelector('.cq-text, .mcq-text');
@@ -224,7 +224,7 @@
         }
       }
 
-      // ── ২) উদ্দীপকের বাকি লাইন (.cq-stimulus) — স্টেম-এডিটের সঙ্গে মিলিয়ে
+      // ── ২) উদ্দীপকের বাকি লাইন (.cq-stimulus) — স্টেম-এডিটের সঙ্গে মিলিয়ে
       const stimEl = item.querySelector('.cq-stimulus');
       if (stimEl && q.stimulus != null) {
         const stimLines = String(q.stimulus).split('\n');
@@ -288,7 +288,7 @@
         });
       }
 
-      // ── ৫) MCQ fallback: অপশন না থাকলে subQuestions সারি হিসেবে ছাপা হয়
+      // ── ৫) MCQ fallback: অপশন না থাকলে subQuestions সারি হিসেবে ছাপা হয়
       if (!optEls.length && q.subQuestions && q.subQuestions.length) {
         const rowDivs = item.querySelectorAll('.mcq-options-row > div');
         rowDivs.forEach((d, k) => {

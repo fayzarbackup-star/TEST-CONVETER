@@ -12,6 +12,7 @@
      * Parses raw text into structured routine data.
      */
     parseRoutine(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       if (!rawText) return null;
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
 
@@ -47,11 +48,15 @@
           continue;
         }
 
-        // Header detection (e.g. বার | ১ম | ২য় ...)
-        if (/বার|দিন|তারিখ/i.test(line) && (line.includes('|') || line.includes('\t'))) {
+        // Part-18.0: মার্কডাউন-টেবিলের বিভাজক-সারি (|---|---|) বাদ
+        if (/^\|?\s*:?-{2,}/.test(line) && /^[\s|:\-]+$/.test(line)) continue;
+
+        // Header detection (e.g. বার | ১ম | ২য় ...) — শুধু প্রথম টেবিল-সারি (আগে "রবিবার"-এর "বার" দেখে প্রতিটি সারিই শিরোনাম হয়ে যেত)
+        if (!routine._headerSet && !routine.rows.length && /বার|দিন|তারিখ|সময়|ঘণ্টা/i.test(line) && (line.includes('|') || line.includes('\t'))) {
           const cells = line.split(/[|\t]+/).map(c => c.trim()).filter(Boolean);
           if (cells.length >= 2) {
             routine.headers = cells;
+            routine._headerSet = true;
             continue;
           }
         }

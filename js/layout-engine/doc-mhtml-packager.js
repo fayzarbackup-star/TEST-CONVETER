@@ -5,12 +5,12 @@
  * হিসেবে বসে — Word 2003 `data:` URI দেখাতে পারে না (ছবি ফাঁকা/লাল-ক্রস)।
  *
  * সঠিক পদ্ধতি = MHTML (multipart/related, RFC 2557) — Word নিজে "Single File Web Page"-এ যেভাবে
- * সেভ করে: একটি HTML অংশ + প্রতিটি ছবি আলাদা base64 অংশ, `Content-Location` দিয়ে যুক্ত।
+ * সেভ করে: একটি HTML অংশ + প্রতিটি ছবি আলাদা base64 অংশ, `Content-Location` দিয়ে যুক্ত।
  * Word 2003 ও নতুন Word দুটোই .doc নামের MHTML ফাইল সরাসরি খোলে
- * (এই প্রজেক্টের doc-binary-engine.js একই ফরম্যাট পড়েও)।
+ * (এই প্রজেক্টের doc-binary-engine.js একই ফরম্যাট পড়েও)।
  *
  * এই মডিউল রূপান্তরকারীর পরে চলে — DocxToDocConverter নিজে অপরিবর্তিত।
- * ছবি না থাকলে HTML হুবহু ফেরত দেয় (আগের আচরণ, কোনো ঝুঁকি নেই)।
+ * ছবি না থাকলে HTML হুবহু ফেরত দেয় (আগের আচরণ, কোনো ঝুঁকি নেই)।
  */
 (function (global) {
   'use strict';
@@ -71,7 +71,7 @@
   /**
    * Part-16.4: Word (HTML-.doc) <img>-এর CSS `width/height` উপেক্ষা করে ছবির নিজস্ব পিক্সেল (৯৬ DPI) ধরে —
    * Word COM-এ মাপা: ২৮৯px চিত্র ⇒ ৩.০১" (docx-এ একই চিত্র ০.৯৬")। তাই style-এর pt মাপ থেকে
-   * HTML `width`/`height` অ্যাট্রিবিউট (px = pt × ৯৬/৭২) বসানো হয় এবং মাপ-ভাঙা `height:auto`/`max-width` সরানো হয়।
+   * HTML `width`/`height` অ্যাট্রিবিউট (px = pt × ৯৬/৭২) বসানো হয় এবং মাপ-ভাঙা `height:auto`/`max-width` সরানো হয়।
    */
   function sizeImgTags(html) {
     return String(html).replace(/<img\b[^>]*>/gi, (tag) => {
@@ -100,7 +100,7 @@
     },
 
     /**
-     * Word-HTML → MHTML স্ট্রিং। একই ছবি (একই base64) একবারই অংশ হয়।
+     * Word-HTML → MHTML স্ট্রিং। একই ছবি (একই base64) একবারই অংশ হয়।
      * @returns {{ mhtml: string, images: Array<{name, mime, location}> }} — ছবি না থাকলে mhtml = মূল HTML
      */
     pack(html) {

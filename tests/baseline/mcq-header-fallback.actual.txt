@@ -46,7 +46,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?"
+          "text": "কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?"
         },
         {
           "num": "২",
@@ -124,7 +124,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "কিবোর্ডে কয়টি ফাংশন কি থাকে?"
+          "text": "কিবোর্ডে কয়টি ফাংশন কি থাকে?"
         },
         {
           "num": "৫",
@@ -161,7 +161,7 @@
             },
             {
               "label": "খ",
-              "text": "ফায়ারফক্স"
+              "text": "ফায়ারফক্স"
             },
             {
               "label": "গ",
@@ -280,7 +280,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "মনিটরকে কী বলা হয়?"
+          "text": "মনিটরকে কী বলা হয়?"
         },
         {
           "num": "১১",
@@ -299,14 +299,14 @@
             },
             {
               "label": "ঘ",
-              "text": "উপরোপরী কিছুই নয়"
+              "text": "উপরোপরী কিছুই নয়"
             }
           ],
           "preContext": "",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?"
+          "text": "হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?"
         },
         {
           "num": "১২",
@@ -384,7 +384,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?"
+          "text": "একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?"
         }
       ],
       "title": ""
@@ -434,7 +434,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?"
+      "textHead": "কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?"
     },
     {
       "hasStimulus": false,
@@ -458,7 +458,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "কিবোর্ডে কয়টি ফাংশন কি থাকে?"
+      "textHead": "কিবোর্ডে কয়টি ফাংশন কি থাকে?"
     },
     {
       "hasStimulus": false,
@@ -506,7 +506,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "মনিটরকে কী বলা হয়?"
+      "textHead": "মনিটরকে কী বলা হয়?"
     },
     {
       "hasStimulus": false,
@@ -514,7 +514,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?"
+      "textHead": "হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?"
     },
     {
       "hasStimulus": false,
@@ -538,7 +538,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থ"
+      "textHead": "একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থা"
     }
   ],
   "sections": 1
@@ -565,7 +565,7 @@
 <h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠান এর নাম</h1>
 <div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
 <div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
-<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ ................  |  বিষয়ঃ ................</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ ................  |  বিষয়ঃ ................</div>
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
 <div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ................</div>
 <div style="text-align: center; flex: 1;">
@@ -578,7 +578,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১.</span>
-<span class="mcq-text">কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?</span>
+<span class="mcq-text">কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-2">
@@ -656,7 +656,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">৪.</span>
-<span class="mcq-text">কিবোর্ডে কয়টি ফাংশন কি থাকে?</span>
+<span class="mcq-text">কিবোর্ডে কয়টি ফাংশন কি থাকে?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-4">
@@ -718,7 +718,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">ফায়ারফক্স</span>
+<span class="mcq-opt-text">ফায়ারফক্স</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
@@ -816,7 +816,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১০.</span>
-<span class="mcq-text">মনিটরকে কী বলা হয়?</span>
+<span class="mcq-text">মনিটরকে কী বলা হয়?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-2">
@@ -842,10 +842,10 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১১.</span>
-<span class="mcq-text">হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?</span>
+<span class="mcq-text">হ্যাঁ/না—মাউস একটি পয়েন্টিং ডিভাইস?</span>
 </div>
 <div class="mcq-options-row">
-<div class="mcq-grid mcq-grid-1">
+<div class="mcq-grid mcq-grid-2">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
 <span class="mcq-opt-text">হ্যাঁ</span>
@@ -860,7 +860,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">উপরোপরী কিছুই নয়</span>
+<span class="mcq-opt-text">উপরোপরী কিছুই নয়</span>
 </div>
 </div>
 </div>
@@ -920,7 +920,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১৪.</span>
-<span class="mcq-text">একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?</span>
+<span class="mcq-text">একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-4">
@@ -1005,7 +1005,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
+<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1022,7 +1022,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">সময়: ................</w:t>
+<w:t xml:space="preserve">সময়: ................</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1082,7 +1082,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?</w:t>
+<w:t xml:space="preserve">কম্পিউটারের মস্তিষ্ক বলা হয় কোনটিকে?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1090,10 +1090,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1121,10 +1118,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1182,10 +1176,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1195,9 +1186,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">(ক) মাউস</w:t>
-</w:r>
-<w:r>
-<w:tab/>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1216,10 +1204,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1229,9 +1214,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">(গ) মনিটর</w:t>
-</w:r>
-<w:r>
-<w:tab/>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1372,7 +1354,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কিবোর্ডে কয়টি ফাংশন কি থাকে?</w:t>
+<w:t xml:space="preserve">কিবোর্ডে কয়টি ফাংশন কি থাকে?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1621,10 +1603,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1644,7 +1623,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) ফায়ারফক্স</w:t>
+<w:t xml:space="preserve">(খ) ফায়ারফক্স</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1652,10 +1631,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1665,9 +1641,6 @@
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
 <w:t xml:space="preserve">(গ) ক্রোম</w:t>
-</w:r>
-<w:r>
-<w:tab/>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1716,10 +1689,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1779,10 +1749,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2085,7 +2052,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">মনিটরকে কী বলা হয়?</w:t>
+<w:t xml:space="preserve">মনিটরকে কী বলা হয়?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2093,10 +2060,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2124,10 +2088,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2213,13 +2174,16 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">মাউস একটি পয়েন্টিং ডিভাইস?</w:t>
+<w:t xml:space="preserve">মাউস একটি পয়েন্টিং ডিভাইস?</w:t>
 </w:r>
 </w:p>
 <w:p>
 <w:pPr>
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -2229,12 +2193,9 @@
 </w:rPr>
 <w:t xml:space="preserve">(ক) হ্যাঁ</w:t>
 </w:r>
-</w:p>
-<w:p>
-<w:pPr>
-<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432"/>
-</w:pPr>
+<w:r>
+<w:tab/>
+</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
@@ -2246,8 +2207,11 @@
 </w:p>
 <w:p>
 <w:pPr>
-<w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
+<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="2760"/>
+</w:tabs>
 </w:pPr>
 <w:r>
 <w:rPr>
@@ -2257,19 +2221,16 @@
 </w:rPr>
 <w:t xml:space="preserve">(গ) সম্ভবত</w:t>
 </w:r>
-</w:p>
-<w:p>
-<w:pPr>
-<w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432"/>
-</w:pPr>
+<w:r>
+<w:tab/>
+</w:r>
 <w:r>
 <w:rPr>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) উপরোপরী কিছুই নয়</w:t>
+<w:t xml:space="preserve">(ঘ) উপরোপরী কিছুই নয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2475,10 +2436,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2506,10 +2464,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2559,7 +2514,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?</w:t>
+<w:t xml:space="preserve">একটি সাধারণ কিবোর্ডে কয়টি অক্ষর বোতাম থাকে?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2622,4 +2577,59 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols1
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472? \u2447?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2527?\u2435? ................}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2527?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
+\sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480?\u2503?\u2480? \u2478?\u2488?\u2509?\u2468?\u2495?\u2487?\u2509?\u2453? \u2476?\u2482?\u2494? \u2489?\u2527? \u2453?\u2507?\u2472?\u2463?\u2495?\u2453?\u2503??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2489?\u2494?\u2480?\u2509?\u2465?\u2465?\u2495?\u2488?\u2509?\u2453?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2480?\u2509?\u2479?\u2494?\u2478?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2478?\u2494?\u2439?\u2453?\u2509?\u2480?\u2507?\u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2480?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2478?\u2494?\u2470?\u2494?\u2480?\u2476?\u2507?\u2480?\u2509?\u2465?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2453?\u2507?\u2472?\u2463?\u2495? \u2439?\u2472?\u2474?\u2497?\u2463? \u2465?\u2495?\u2477?\u2494?\u2439?\u2488??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2478?\u2494?\u2441?\u2488?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2474?\u2509?\u2480?\u2495?\u2472?\u2509?\u2463?\u2494?\u2480?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2478?\u2472?\u2495?\u2463?\u2480?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2488?\u2509?\u2474?\u2495?\u2453?\u2494?\u2480?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2537?\u2404?}\tab {\f0 \u2535? \u2476?\u2494?\u2439?\u2463? }{\f1 = }{\f0 \u2453?\u2468? \u2476?\u2495?\u2463??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx1596\tx2760\tx3924 ({\f0 {\f0 \u2453?}}) {\f0 \u2538?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2542?}\tab ({\f0 {\f0 \u2455?}}) {\f0 \u2535?\u2540?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2537?\u2536?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2538?\u2404?}\tab {\f0 \u2453?\u2495?\u2476?\u2507?\u2480?\u2509?\u2465?\u2503? \u2453?\u2527?\u2463?\u2495? \u2475?\u2494?\u2434?\u2486?\u2472? \u2453?\u2495? \u2469?\u2494?\u2453?\u2503??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx1596\tx2760\tx3924 ({\f0 {\f0 \u2453?}}) {\f0 \u2542?\u2463?\u2495?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2535?\u2534?\u2463?\u2495?}\tab ({\f0 {\f0 \u2455?}}) {\f0 \u2535?\u2536?\u2463?\u2495?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2535?\u2538?\u2463?\u2495?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2539?\u2404?}\tab {\f1 ROM-}{\f0 \u2447?\u2480? \u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474? \u2453?\u2496??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f1 Read Only Memory}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f1 Random Only Memory}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f1 Read Outer Memory}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f1 Random Output Memory}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2540?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2453?\u2507?\u2472?\u2463?\u2495? \u2437?\u2474?\u2494?\u2480?\u2503?\u2463?\u2495?\u2434? \u2488?\u2495?\u2488?\u2509?\u2463?\u2503?\u2478??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2482?\u2495?\u2472?\u2494?\u2453?\u2509?\u2488?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2475?\u2494?\u2527?\u2494?\u2480?\u2475?\u2453?\u2509?\u2488?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2453?\u2509?\u2480?\u2507?\u2478?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2437?\u2474?\u2503?\u2480?\u2494?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2541?\u2404?}\tab {\f0 \u2472?\u2468?\u2497?\u2472? \u2475?\u2494?\u2439?\u2482? \u2454?\u2507?\u2482?\u2494?\u2480? \u2486?\u2480?\u2509?\u2463?\u2453?\u2494?\u2463? \u2453?\u2496??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f1 Ctrl+N}\tab ({\f0 {\f0 \u2454?}}) {\f1 Ctrl+O}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f1 Ctrl+S}\tab ({\f0 {\f0 \u2456?}}) {\f1 Ctrl+P}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2542?\u2404?}\tab {\f0 \u2455?\u2494?\u2467?\u2495?\u2468?\u2495?\u2453? \u2488?\u2434?\u2453?\u2503?\u2468?\u2503? \u2479?\u2507?\u2455? \u2458?\u2495?\u2489?\u2509?\u2472? \u2453?\u2507?\u2472?\u2463?\u2495??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx1596\tx2760\tx3924 ({\f0 {\f0 \u2453?}}) {\f1 +}\tab ({\f0 {\f0 \u2454?}}) {\f1 -}\tab ({\f0 {\f0 \u2455?}}) {\f1 *}\tab ({\f0 {\f0 \u2456?}}) {\f1 \u247?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2543?\u2404?}\tab {\f0 \u2535? \u2453?\u2495?\u2482?\u2507?\u2476?\u2494?\u2439?\u2463? \u2488?\u2478?\u2494?\u2472? \u2453?\u2468? \u2476?\u2494?\u2439?\u2463??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx1596\tx2760\tx3924 ({\f0 {\f0 \u2453?}}) {\f0 \u2535?\u2534?\u2534?\u2534?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2535?\u2534?\u2536?\u2538?}\tab ({\f0 {\f0 \u2455?}}) {\f0 \u2535?\u2534?\u2536?\u2542?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2536?\u2534?\u2538?\u2542?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2534?\u2404?}\tab {\f0 \u2478?\u2472?\u2495?\u2463?\u2480?\u2453?\u2503? \u2453?\u2496? \u2476?\u2482?\u2494? \u2489?\u2527??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2438?\u2441?\u2463?\u2474?\u2497?\u2463? \u2465?\u2495?\u2477?\u2494?\u2439?\u2488?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2439?\u2472?\u2474?\u2497?\u2463? \u2465?\u2495?\u2477?\u2494?\u2439?\u2488?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2488?\u2509?\u2463?\u2507?\u2480?\u2503?\u2460?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2480?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2535?\u2404?}\tab {\f0 \u2489?\u2509?\u2479?\u2494?\u2433?}{\f1 /}{\f0 \u2472?\u2494?}{\f1 \u8212?}{\f0 \u2478?\u2494?\u2441?\u2488? \u2447?\u2453?\u2463?\u2495? \u2474?\u2527?\u2503?\u2472?\u2509?\u2463?\u2495?\u2434? \u2465?\u2495?\u2477?\u2494?\u2439?\u2488??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2489?\u2509?\u2479?\u2494?\u2433?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2472?\u2494?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2488?\u2478?\u2509?\u2477?\u2476?\u2468?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2441?\u2474?\u2480?\u2507?\u2474?\u2480?\u2496? \u2453?\u2495?\u2459?\u2497?\u2439? \u2472?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2536?\u2404?}\tab {\f0 \u2488?\u2495?\u2474?\u2495?\u2439?\u2441?}{\f1 -}{\f0 \u2447?\u2480? \u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474? \u2453?\u2496??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f1 Central Process Unit}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f1 Control Processing Unit}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f1 Central Processing Unit}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f1 Computer Personal Unit}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2537?\u2404?}\tab {\f0 \u2453?\u2507?\u2472?\u2463?\u2495? \u2488?\u2509?\u2463?\u2507?\u2480?\u2503?\u2460? \u2465?\u2495?\u2477?\u2494?\u2439?\u2488??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2474?\u2503?\u2472?\u2465?\u2509?\u2480?\u2494?\u2439?\u2477?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2488?\u2509?\u2453?\u2509?\u2479?\u2494?\u2472?\u2494?\u2480?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2488?\u2494?\u2441?\u2472?\u2509?\u2465? \u2476?\u2453?\u2509?\u2488?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2474?\u2509?\u2480?\u2460?\u2503?\u2453?\u2509?\u2463?\u2480?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2538?\u2404?}\tab {\f0 \u2447?\u2453?\u2463?\u2495? \u2488?\u2494?\u2471?\u2494?\u2480?\u2467? \u2453?\u2495?\u2476?\u2507?\u2480?\u2509?\u2465?\u2503? \u2453?\u2527?\u2463?\u2495? \u2437?\u2453?\u2509?\u2487?\u2480? \u2476?\u2507?\u2468?\u2494?\u2478? \u2469?\u2494?\u2453?\u2503??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx1596\tx2760\tx3924 ({\f0 {\f0 \u2453?}}) {\f0 \u2536?\u2538?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2536?\u2540?}\tab ({\f0 {\f0 \u2455?}}) {\f0 \u2536?\u2542?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2537?\u2534?}\par}
+}

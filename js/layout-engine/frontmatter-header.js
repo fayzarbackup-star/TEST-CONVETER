@@ -2,16 +2,16 @@
  * Fayzar — ফ্রন্টম্যাটার → প্রশ্নপত্র-হেডার (FayzarFrontmatter)
  * ============================================================
  * Gemini OCR প্রম্পট (gemini-prompt-factory.js) ফাইলের শুরুতে `---` ব্লকে institute / exam /
- * grade / subject / time / fullMarks দেয়। আগে এই ব্লক শুধু মুছে ফেলা হতো ⇒ সঠিক তথ্য থাকা
- * সত্ত্বেও হেডারে ফলব্যাক প্লেসহোল্ডার বসত। এখানে ব্লকটি পড়ে হেডারের **ফাঁকা** ঘর পূরণ হয়;
- * মূল লেখা থেকে পার্স করা মান সবসময় অগ্রাধিকার পায় (ফ্রন্টম্যাটার কেবল ঘাটতি মেটায়)।
+ * grade / subject / time / fullMarks দেয়। আগে এই ব্লক শুধু মুছে ফেলা হতো ⇒ সঠিক তথ্য থাকা
+ * সত্ত্বেও হেডারে ফলব্যাক প্লেসহোল্ডার বসত। এখানে ব্লকটি পড়ে হেডারের **ফাঁকা** ঘর পূরণ হয়;
+ * মূল লেখা থেকে পার্স করা মান সবসময় অগ্রাধিকার পায় (ফ্রন্টম্যাটার কেবল ঘাটতি মেটায়)।
  */
 (function (global) {
   'use strict';
 
   const FM_RE = /^﻿?\s*---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 
-  // `[প্রতিষ্ঠানের নাম]`-জাতীয় টেমপ্লেট-প্লেসহোল্ডার, ফাঁকা বা N/A মান বাদ
+  // `[প্রতিষ্ঠানের নাম]`-জাতীয় টেমপ্লেট-প্লেসহোল্ডার, ফাঁকা বা N/A মান বাদ
   function clean(v) {
     const s = String(v == null ? '' : v).trim().replace(/^["']|["']$/g, '').trim();
     if (!s || /^\[.*\]$/.test(s) || /^(?:n\/?a|null|none|-+|…+|\.{3,})$/i.test(s)) return '';
@@ -39,8 +39,8 @@
       const subject = f.subject || '';
       const isEn = /^[\x00-\x7F]*$/.test(grade + subject) && /[A-Za-z]/.test(grade + subject);
       const cls = grade && subject
-        ? (isEn ? 'Class: ' + grade + '  |  Subject: ' + subject : 'শ্রেণি: ' + grade + '  |  বিষয়: ' + subject)
-        : (grade ? (isEn ? 'Class: ' : 'শ্রেণি: ') + grade : (subject ? (isEn ? 'Subject: ' : 'বিষয়: ') + subject : ''));
+        ? (isEn ? 'Class: ' + grade + '  |  Subject: ' + subject : 'শ্রেণি: ' + grade + '  |  বিষয়: ' + subject)
+        : (grade ? (isEn ? 'Class: ' : 'শ্রেণি: ') + grade : (subject ? (isEn ? 'Subject: ' : 'বিষয়: ') + subject : ''));
       return {
         institute: f.institute || f.institution || f.school || '',
         location: f.address || f.location || '',
@@ -51,7 +51,7 @@
       };
     },
 
-    /** শুধু ফাঁকা হেডার-ঘর পূরণ (উৎস-লেখার মান অক্ষত) — header অবজেক্টটিই বদলায় ও ফেরত দেয় */
+    /** শুধু ফাঁকা হেডার-ঘর পূরণ (উৎস-লেখার মান অক্ষত) — header অবজেক্টটিই বদলায় ও ফেরত দেয় */
     applyToHeader(header, fields) {
       const h = header || {};
       if (!fields) return h;

@@ -1,13 +1,13 @@
 /**
  * Fayzar Bangla Converter — MCQ Master Layout Planner (Part-10)
  * =============================================================
- * খালি চোখে ধরা পড়ে না এমন জ্যামিতি এখানেই ঠিক হয় — এটি একটি **নির্ভুল,
+ * খালি চোখে ধরা পড়ে না এমন জ্যামিতি এখানেই ঠিক হয় — এটি একটি **নির্ভুল,
  * পার্শ্ব-প্রভাবহীন (pure) জ্যামিতি মডেল**: কোনো DOCX/RTF/HTML লেখে না, কোনো
  * ইঞ্জিন ডিপেন্ডেন্সি নেই, শুধুই ইনপুট (parse করা প্রশ্নপত্র + পেজ জ্যামিতি)
  * থেকে আউটপুট (Geometry Plan) গণনা করে।
  *
  * তিন রেন্ডারারই (Word 2003 RTF, Modern DOCX, HTML Preview) একই প্ল্যান
- * কনজিউম করে — ফলে "preview == download" অনড় থাকে।
+ * কনজিউম করে — ফলে "preview == download" অনড় থাকে।
  *
  * Part-10 চুক্তি (বহুনির্বাচনী মাস্টার লেআউট):
  *  (ক) স্কপ   : বিশুদ্ধ MCQ প্রশ্নপত্র (১০–৩০+ প্রশ্ন) → এই ফুল ফরম্যাট
@@ -15,10 +15,10 @@
  *              নিচে সিঙ্গেল বর্ডার ডিভাইডার; মিসিং তথ্যে অটো-প্লেসহোল্ডার
  *  (গ) কলাম   : হেডারের পর থেকে সমান ২ কলাম, মাঝে দৃশ্যমান কলাম লাইন,
  *              কলামের মাঝে 0.2" গ্যাপ, হ্যাঙ্গিং ইনডেন্ট (নম্বরের পর ট্যাব,
- *              নম্বরের নিচে কোনো লেখা র‍্যাপ হবে না, অপশনও একই উল্লম্ব রেখায়)
- *  (ঘ) অপশন  : সমান দূরত্বের ৪-কলাম গ্রিড; বড় হলে অটো ২, আরও বড় হলে ১
- *  (ঙ) ফিট    : ১–৪টি প্রশ্ন উপচে ২য় পৃষ্ঠায় গেলে ফন্ট ১১.৫/১১pt করে
- *              ১ পৃষ্ঠায় ফিট; না পারলে ২য় পৃষ্ঠায়ও ২-কলাম উচ্চতা-ব্যালান্স
+ *              নম্বরের নিচে কোনো লেখা র‍্যাপ হবে না, অপশনও একই উল্লম্ব রেখায়)
+ *  (ঘ) অপশন  : সমান দূরত্বের ৪-কলাম গ্রিড; বড় হলে অটো ২, আরও বড় হলে ১
+ *  (ঙ) ফিট    : ১–৪টি প্রশ্ন উপচে ২য় পৃষ্ঠায় গেলে ফন্ট ১১.৫/১১pt করে
+ *              ১ পৃষ্ঠায় ফিট; না পারলে ২য় পৃষ্ঠায়ও ২-কলাম উচ্চতা-ব্যালান্স
  *
  * মাপের একক: সবকিছু **twips** (1pt = 20 twips, 1" = 1440 twips)।
  */
@@ -29,18 +29,18 @@
   const TWP_PER_PT = 20;
 
   /**
-   * Part-10 ক্যালিব্রেশন (রেন্ডার-বিবৃত্তি দিয়ে মাপা — proof/render/):
+   * Part-10 ক্যালিব্রেশন (রেন্ডার-বিবৃত্তি দিয়ে মাপা — proof/render/):
    *  - প্রকৃত শব্দ-প্রস্থ / মডেল-প্রস্থ ≈ ১.১০ → মডেল হালকা আন্ডার-এস্টিমেট করত,
    *    ফলে র‍্যাপ কম গণনা হতো ও এক কলামে অতিরিক্ত প্রশ্ন ঢুকত।
    *  - লাইন-পিচ: ১২pt-এ রেন্ডারে ১৬.৫pt (≈ ১.৩৭৫×) — নিচের lineFactor-এ সেট করা।
-   * মডেল ইচ্ছাকৃতভাবে রক্ষণশীল: একটু ফাঁকা কলাম, অবাঞ্ছিত ২য় পৃষ্ঠার চেয়ে শ্রেয়।
+   * মডেল ইচ্ছাকৃতভাবে রক্ষণশীল: একটু ফাঁকা কলাম, অবাঞ্ছিত ২য় পৃষ্ঠার চেয়ে শ্রেয়।
    */
   const WIDTH_SCALE = 1.12;
 
-  /** প্রতি ক্যারেক্টার-ক্লাসের প্রস্থ (em এককে) — অর্ধ-পয়েন্ট সাইজে রূপান্তরযোগ্য */
+  /** প্রতি ক্যারেক্টার-ক্লাসের প্রস্থ (em এককে) — অর্ধ-পয়েন্ট সাইজে রূপান্তরযোগ্য */
   const EM = {
-    bangla: 0.52,      // \u0980–\u09FF (স্বরবর্ণ/ব্যঞ্জনবর্ণ/যুক্তাক্ষর — গড়)
-    banglaMark: 0.30,  // মাত্রা/ি-কার জাতীয় combining-ish
+    bangla: 0.52,      // \u0980–\u09FF (স্বরবর্ণ/ব্যঞ্জনবর্ণ/যুক্তাক্ষর — গড়)
+    banglaMark: 0.30,  // মাত্রা/ি-কার জাতীয় combining-ish
     latinLower: 0.47,
     latinUpper: 0.66,
     digit: 0.50,
@@ -56,7 +56,7 @@
     if (ch === ' ' || ch === '\t' || ch === '\u00A0') return 'space';
     if (c >= 0x09E6 && c <= 0x09EF) return 'digit';      // বাংলা সংখ্যা
     if (c >= 0x0980 && c <= 0x09FF) {
-      // মাত্রা/ই-কার/ি-কার জাতীয় বর্ণমালা-বহির্ভূত চিহ্ন সাড়ে-আড়াই
+      // মাত্রা/ই-কার/ি-কার জাতীয় বর্ণমালা-বহির্ভূত চিহ্ন সাড়ে-আড়াই
       if ((c >= 0x09BE && c <= 0x09CD) || (c >= 0x09E3 && c <= 0x09E4)) return 'banglaMark';
       return 'bangla';
     }
@@ -69,7 +69,7 @@
     return 'wide';
   }
 
-  /** টেক্সটের প্রস্থ (twips) — sz হলো অর্ধ-পয়েন্ট (24 = 12pt) */
+  /** টেক্সটের প্রস্থ (twips) — sz হলো অর্ধ-পয়েন্ট (24 = 12pt) */
   function measure(str, sz) {
     const s = String(str == null ? '' : str);
     if (!s) return 0;
@@ -79,7 +79,7 @@
     return Math.round(em * emTwips * WIDTH_SCALE);
   }
 
-  /** কতগুলো ভিজ্যুয়াল লাইন নেবে (ওয়ার্ড-রিদ্র্যাপ মডেল) */
+  /** কতগুলো ভিজ্যুয়াল লাইন নেবে (ওয়ার্ড-রিদ্র্যাপ মডেল) */
   function lineCount(str, sz, availW) {
     const s = String(str == null ? '' : str).replace(/\s+/g, ' ').trim();
     if (!s) return 1;
@@ -108,9 +108,9 @@
   }
 
   /**
-   * TeX/LaTeX-কে প্রস্থ মাপার জন্য কাছাকাছি দৃশ্যমান গ্লিফে নামায়।
+   * TeX/LaTeX-কে প্রস্থ মাপার জন্য কাছাকাছি দৃশ্যমান গ্লিফে নামায়।
    * গ্রিডের সিদ্ধান্তে `$`, `\frac`, `{}` বা `\pi`-র source-characters-কে
-   * আলাদা glyph ধরে গুনলে একই ছোট সমীকরণ অযথা ১-কলামে নেমে যায়।
+   * আলাদা glyph ধরে গুনলে একই ছোট সমীকরণ অযথা ১-কলামে নেমে যায়।
    */
   function optionVisualText(value) {
     let s = String(value == null ? '' : value);
@@ -195,7 +195,7 @@
     return render(s, 0).replace(/\s+/g, ' ').trim();
   }
 
-  /** অপশন লেবেল + TeX syntax বাদ-দেওয়া দৃশ্যমান টেক্সটের সম্পূর্ণ প্রস্থ */
+  /** অপশন লেবেল + TeX syntax বাদ-দেওয়া দৃশ্যমান টেক্সটের সম্পূর্ণ প্রস্থ */
   function optionWidth(o, sz) {
     const opt = o || {};
     const label = opt.label ? '(' + opt.label + ')' : '';
@@ -205,7 +205,7 @@
 
   /**
    * Part-12: দৈর্ঘ্য-ইউনিট রিজলভার — js/layout-engine/layout-units.js লোড থাকলে
-   * সেই একমাত্র অ্যালগরিদম, না থাকলে এখানেই সমতুল্য সংস্করণ (গেটে মিল যাচাই করা হয়)।
+   * সেই একমাত্র অ্যালগরিদম, না থাকলে এখানেই সমতুল্য সংস্করণ (গেটে মিল যাচাই করা হয়)।
    * উদ্দেশ্য একটাই: জ্যামিতিতে কখনোই NaN/Infinity ঢুকবে না — কারণ UI থেকে আসা
    * 'normal'/'narrow'/'moderate'/'wide' স্ট্রিং parseFloat-এ NaN ⇒ OpenXML-এ
    * <w:pgMar w:top=\"NaN\"/> ⇒ Word ফাইল করাপ্ট বলে প্রত্যাখ্যান করে।
@@ -218,7 +218,7 @@
     const bnDigits = (v) => (typeof v !== 'string' ? v : v.replace(/[\u09e6-\u09ef]/g, (c) => String('\u09e6\u09e7\u09e8\u09e9\u09ea\u09eb\u09ec\u09ed\u09ee\u09ef'.indexOf(c))));
     const cl = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
     const tw = (v, fb, map, hi) => {
-      hi = hi || 22000;   // raw-twips ইনপুট (যেমন rightTab ৭০৫০) যেন কেটে না যায়
+      hi = hi || 22000;   // raw-twips ইনপুট (যেমন rightTab ৭০৫০) যেন কেটে না যায়
       const f = cl(Math.round(fin(fb, 720)), 0, hi);
       if (v === null || v === undefined || v === false || v === '') return f;
       if (typeof v === 'number') return Number.isFinite(v) ? cl(Math.round(Math.abs(v) > 6 ? v : v * 1440), 0, hi) : f;
@@ -243,7 +243,7 @@
   const McqLayoutPlanner = {
     version: '10.0.0',
 
-    /** Part-10 ভিত্তি জ্যামিতি (টুইপসে) — সব কনস্ট্যান্ট এক জায়গায়, টেস্ট এখান থেকেই পড়ে */
+    /** Part-10 ভিত্তি জ্যামিতি (টুইপসে) — সব কনস্ট্যান্ট এক জায়গায়, টেস্ট এখান থেকেই পড়ে */
     GEOMETRY: {
       pageW: 11906,          // A4 পোর্ট্রেট প্রস্থ (8.27")
       pageH: 16838,          // A4 পোর্ট্রেট উচ্চতা (11.69")
@@ -253,7 +253,7 @@
       colSep: true,          // দৃশ্যমান কলাম লাইন (গ.২)
       indent: 432,           // হ্যাঙ্গিং ইনডেন্ট ০.৩" (মাস্টার চুক্তি §১)
       lineFactor: 1.50,
-      // Part-12 (ট্রায়াজ ১): রেন্ডার-রেশিও — RTF/DOCX সব প্যারাগ্রাফে 'single'-এর গুণক
+      // Part-12 (ট্রায়াজ ১): রেন্ডার-রেশিও — RTF/DOCX সব প্যারাগ্রাফে 'single'-এর গুণক
       // (1 = নিজ ফন্টের প্রাকৃতিক লাইন); ১.৫ শুধু ক্যাপাসিটি মডেলের নিরাপত্তা-ধারনা,
       // প্রিভিউর CSS line-height কিন্তু রেন্ডারের সঙ্গে মিলে (1.34 ≈ বাংলা ফন্ট single)।
       lineRenderFactor: 1,
@@ -263,7 +263,7 @@
       headerLineFactor: 1.28,
       baseSz: 24,            // ১২pt
       shrinkLadder: [24, 23, 22],  // ১২ → ১১.৫ → ১১ (ঙ.১)
-      maxShrinkOverflow: 4,  // ১–৪টি প্রশ্ন উপচে ২য় পেজে গেলে শ্রিংক প্রয়োগ
+      maxShrinkOverflow: 4,  // ১–৪টি প্রশ্ন উপচে ২য় পেজে গেলে শ্রিংক প্রয়োগ
       minGap: 40             // দুই অপশন স্লটের মাঝে ন্যূনতম শ্বাস (টুইপস = ২pt)
     },
 
@@ -272,20 +272,20 @@
       institute: 'আপনার প্রতিষ্ঠান এর নাম',
       location: 'ঠিকানা লিখুন',
       exam: 'পরীক্ষার নাম লিখুন',
-      classSubject: 'শ্রেণিঃ ................  |  বিষয়ঃ ................',
-      time: 'সময়: ................',
+      classSubject: 'শ্রেণিঃ ................  |  বিষয়ঃ ................',
+      time: 'সময়: ................',
       marks: 'পূর্ণমানঃ ................'
     },
 
     // ---------------------------------------------------------------------
-    // মাপ জাদুকর (প্রকাশ্য — টেস্ট থেকে সরাসরি যাচাই করা যায়)
+    // মাপ জাদুকর (প্রকাশ্য — টেস্ট থেকে সরাসরি যাচাই করা যায়)
     // ---------------------------------------------------------------------
     measure(str, sz) { return measure(str, sz); },
     lineCount(str, sz, availW) { return lineCount(str, sz, availW); },
     optionWidth(o, sz) { return optionWidth(o, sz); },
 
     /**
-     * জ্যামিতি নির্ণয়: পেজ + মার্জিন + কলাম + ইনডেন্ট + ট্যাব স্টপ।
+     * জ্যামিতি নির্ণয়: পেজ + মার্জিন + কলাম + ইনডেন্ট + ট্যাব স্টপ।
      * sz দিলে সেই ফন্ট সাইজের জন্য লাইন-উচ্চতাও সহ।
      */
     geometry(options = {}) {
@@ -312,8 +312,8 @@
       g.stops4 = [g.indent, g.indent + g.slot4, g.indent + g.slot4 * 2, g.indent + g.slot4 * 3];
       g.stops2 = [g.indent, g.indent + g.slot2];
       g.stops3 = [g.indent, g.indent + Math.floor(g.textW / 3), g.indent + Math.floor(g.textW / 3) * 2];
-      // চারটি সমান ২৫% কলাম: শেষ stop-টি ডান প্রান্তে, যাতে Word-এ Tab দিয়েও
-      // grid-টি একই জ্যামিতিতে পুনর্বিন্যাস করা যায়।
+      // চারটি সমান ২৫% কলাম: শেষ stop-টি ডান প্রান্তে, যাতে Word-এ Tab দিয়েও
+      // grid-টি একই জ্যামিতিতে পুনর্বিন্যাস করা যায়।
       g.optionTabStops4 = [1, 2, 3, 4].map((i) => g.indent + (i === 4 ? g.textW : Math.floor(g.textW * i / 4)));
       // শেষ ডিফেন্স: NaN/Infinity জ্যামিতি থেকে বের হতে পারবে না (OpenXML ক্র্যাশ রোধ)
       ['margin', 'colGap', 'indent', 'colW', 'textW', 'usableW', 'usableH', 'pageW', 'pageH', 'baseSz', 'slot4', 'slot2']
@@ -326,7 +326,7 @@
       return Math.round((sz / 2) * TWP_PER_PT * (g ? g.lineFactor : this.GEOMETRY.lineFactor));
     },
 
-    /** ৪/৩/২/১ কলাম গ্রিড সিদ্ধান্ত — পরিমাপভিত্তিক, দৈর্ঘ্য-হিউরিস্টিক নয় (ঘ.১–২) */
+    /** ৪/৩/২/১ কলাম গ্রিড সিদ্ধান্ত — পরিমাপভিত্তিক, দৈর্ঘ্য-হিউরিস্টিক নয় (ঘ.১–২) */
     decideOptionsGrid(options, sz, g) {
       const opts = Array.isArray(options) ? options : [];
       const count = opts.length;
@@ -335,7 +335,7 @@
       const widths = opts.map((o) => optionWidth(o, sz));
       const widest = Math.max.apply(null, widths);
 
-      // সমীকরণের source-notation নয়, optionWidth-এর visual estimate অনুযায়ী ৪/৩/২/১।
+      // সমীকরণের source-notation নয়, optionWidth-এর visual estimate অনুযায়ী ৪/৩/২/১।
       const cand = count >= 4 ? [4, 2, 1] : count === 3 ? [3, 1] : [1];
       let cols = 1;
       for (const c of cand) {
@@ -343,7 +343,7 @@
         const fitsAll = widths.every((w, i) => {
           // একই লাইনে পাশাপাশি বসার জন্য: slot-এর ভেতর থাকতে হবে (শ্বাস বাদে)
           if (c === 1) return true;
-          // যে সারিতে ওই অপশনটি বসবে সেই সারির সর্বোচ্চ প্রস্থ দেখা হয়
+          // যে সারিতে ওই অপশনটি বসবে সেই সারির সর্বোচ্চ প্রস্থ দেখা হয়
           const rowIdx = Math.floor(i / c);
           let rowMax = 0;
           for (let k = rowIdx * c; k < Math.min(rowIdx * c + c, count); k++) rowMax = Math.max(rowMax, widths[k]);
@@ -358,7 +358,7 @@
 
       const rows = [];
       for (let i = 0; i < count; i += cols) rows.push(opts.slice(i, i + cols).map((_, j) => i + j));
-      // stops[] প্রতিটি কলাম-সীমায় একটি বাম-ট্যাব দেয়; ২-কলামেও ৫০% স্টপে এক Tab যথেষ্ট।
+      // stops[] প্রতিটি কলাম-সীমায় একটি বাম-ট্যাব দেয়; ২-কলামেও ৫০% স্টপে এক Tab যথেষ্ট।
       const tabJumps = rows.map(() => (cols > 1 ? 1 : 0));
 
       return { cols, rows, stops, tabStops4: g.optionTabStops4.slice(), tabJumps, slotW, widest };
@@ -395,7 +395,7 @@
         align: 'center', bold: false, sizeDelta: 0
       });
 
-      const timeTxt = h.time ? 'সময়: ' + h.time : (docType === 'EXAM_MCQ' ? fb.time : '');
+      const timeTxt = h.time ? 'সময়: ' + h.time : (docType === 'EXAM_MCQ' ? fb.time : '');
       const marksTxt = h.marks ? 'পূর্ণমানঃ ' + h.marks : (docType === 'EXAM_MCQ' ? fb.marks : '');
       lines.push({
         kind: 'metrics',
@@ -410,7 +410,7 @@
       return lines.filter((l) => l.text || l.right || l.center);
     },
 
-    /** হেডার উচ্চতা (টুইপসে) — পৃষ্ঠা ১-এর কলাম ক্যাপাসিটি থেকে বিয়োগ হয় */
+    /** হেডার উচ্চতা (টুইপসে) — পৃষ্ঠা ১-এর কলাম ক্যাপাসিটি থেকে বিয়োগ হয় */
     headerHeight(headerLines, sz, g) {
       let h = 0;
       for (const l of headerLines) {
@@ -470,7 +470,7 @@
     /**
      * উচ্চতা-ভিত্তিক কলাম ব্যালান্স (ঙ.২) — দুই কলামের উচ্চতার পার্থক্য ন্যূনতম,
      * কোনো কলামই ক্যাপাসিটি অতিক্রম করবে না।
-     * রিটার্ন: { count, split, h1, h2 } — count = যে-সংখ্যক আইটেম এই পৃষ্ঠায় ধরে
+     * রিটার্ন: { count, split, h1, h2 } — count = যে-সংখ্যক আইটেম এই পৃষ্ঠায় ধরে
      */
     balancePage(items, capH, from) {
       const start = from || 0;
@@ -508,9 +508,9 @@
     },
 
     /**
-     * Part-13.3 (রিপোর্ট-২.১ রুট-কজ): পৃষ্ঠা-১-এর কলাম-২-এ হেডার খায় না —
+     * Part-13.3 (রিপোর্ট-২.১ রুট-কজ): পৃষ্ঠা-১-এর কলাম-২-এ হেডার খায় না —
      * কলাম-১ = cap1 (হেডার-করা), কলাম-২ = cap2 (পূর্ণ কলাম-উচ্চতা)। আগে
-     * দুটোতেই cap1 ধরা হতো ⇒ কলাম-২ অর্ধ-খালি রেখেই পরের পৃষ্ঠায় ঝাঁপ।
+     * দুটোতেই cap1 ধরা হতো ⇒ কলাম-২ অর্ধ-খালি রেখেই পরের পৃষ্ঠায় ঝাঁপ।
      */
     balancePageHeader(items, cap1, cap2, from) {
       const start = from || 0;
@@ -543,7 +543,7 @@
     plan(parsedData, options = {}) {
       const docType = options.docType || 'EXAM_MCQ';
       // Part-10 (খ.১): MCQ আর্কিটাইপে মার্জিন সর্বদা 0.5" — UI থেকে অন্য মান এলেও
-      // এই চুক্তি প্রযোজ্য (অ-MCQ আর্কিটাইপ স্পর্শ করা হয় না)।
+      // এই চুক্তি প্রযোজ্য (অ-MCQ আর্কিটাইপ স্পর্শ করা হয় না)।
       const o2 = (docType === 'EXAM_MCQ' && !options.forceMargin)
         ? Object.assign({}, options, { margin: 0.5, columnGap: 0.2 })
         : options;
@@ -565,19 +565,19 @@
       let chosen = null;
       let baseCand = null;
       // Part-10 পৃষ্ঠা-বিন্যাস মডেল (ঙ.১–ঙ.২):
-      //  - পৃষ্ঠা ১ "পূর্ণ" হয়: কলাম ১ পূরণ → কলাম ২ পূরণ (fill)
-      //  - শেষ পৃষ্ঠা উচ্চতা-ব্যালান্সড (balance) — ওয়ার্ড/লিব্রঅফিস ক্রমাগত
-      //    বহু-কলাম সেকশনের শেষ পৃষ্ঠা স্বয়ংক্রিয়ভাবে ব্যালান্স করে, তাই এখানে
-      //    জোরি কলাম-ব্রেক দেওয়া হয় না (দিলে কলাম ১ ঠিকমতো না ধরলে পরের কলাম
-      //    ফাঁকা থেকে যায় — রেন্ডারে ধরা পড়েছে)।
+      //  - পৃষ্ঠা ১ "পূর্ণ" হয়: কলাম ১ পূরণ → কলাম ২ পূরণ (fill)
+      //  - শেষ পৃষ্ঠা উচ্চতা-ব্যালান্সড (balance) — ওয়ার্ড/লিব্রঅফিস ক্রমাগত
+      //    বহু-কলাম সেকশনের শেষ পৃষ্ঠা স্বয়ংক্রিয়ভাবে ব্যালান্স করে, তাই এখানে
+      //    জোরি কলাম-ব্রেক দেওয়া হয় না (দিলে কলাম ১ ঠিকমতো না ধরলে পরের কলাম
+      //    ফাঁকা থেকে যায় — রেন্ডারে ধরা পড়েছে)।
       for (let ai = 0; ai < attempts.length; ai++) {
         const sz = attempts[ai];
         const lineH = this.lineH(sz, g);
-        // হেডার ব্লক সংকুচিত হয় না — পরিচয়মূলক লেখা ভিত্তি সাইজেই থাকে
+        // হেডার ব্লক সংকুচিত হয় না — পরিচয়মূলক লেখা ভিত্তি সাইজেই থাকে
         const headH = this.headerHeight(headerLines, g.baseSz, g);
         // ১ লাইন রিজার্ভ: DOCX-এ হেডার→বডি সেকশন-ব্রেকের প্যারাগ্রাফটিও এক লাইন
-        // জায়গা নেয় (রেন্ডারে মাপা: DOCX বডি ৬pt নিচ থেকে শুরু হয়)। রিজার্ভ না
-        // রাখলে .doc ঠিক ১ পৃষ্ঠায় বসে কিন্তু .docx ২য় পৃষ্ঠায় উঠে যায়।
+        // জায়গা নেয় (রেন্ডারে মাপা: DOCX বডি ৬pt নিচ থেকে শুরু হয়)। রিজার্ভ না
+        // রাখলে .doc ঠিক ১ পৃষ্ঠায় বসে কিন্তু .docx ২য় পৃষ্ঠায় উঠে যায়।
         const capPage1 = Math.max(lineH * 4, g.usableH - headH - lineH);
         const capFull = Math.max(lineH * 4, g.usableH);
 
@@ -597,7 +597,7 @@
           let c1 = [];
           let h1 = 0;
           while (i < items.length && h1 + items[i].height <= cap) { h1 += items[i].height; c1.push(items[i].index); i++; }
-          if (c1.length === 0 && i < items.length) { c1.push(items[i].index); h1 += items[i].height; i++; } // এড়িয়ে চলি: শূন্য পৃষ্ঠা
+          if (c1.length === 0 && i < items.length) { c1.push(items[i].index); h1 += items[i].height; i++; } // এড়িয়ে চলি: শূন্য পৃষ্ঠা
           let c2 = [];
           let h2 = 0;
           while (i < items.length && h2 + items[i].height <= cap) { h2 += items[i].height; c2.push(items[i].index); i++; }
@@ -612,13 +612,13 @@
           // জোরি কলাম-ব্রেক তখনি নিরাপদ যখন পরিকল্পিত কলাম ১-এর উচ্চতার সঙ্গে
           // পৃষ্ঠার প্রকৃত ধারণক্ষমতার ফাঁকা থাকে (≈১০%)। ফাঁকা না থাকলে
           // কলাম ২ পুরো ফাঁকা থেকে যেতে পারে (রেন্ডারে দেখা) — তখন প্রবাহেই
-          // রাখি, Word/LO শেষ পৃষ্ঠা নিজেই ভাগ করে নেয়।
+          // রাখি, Word/LO শেষ পৃষ্ঠা নিজেই ভাগ করে নেয়।
           pg.forceBreak = pg.mode === 'balance' && Math.max(pg.h1, pg.h2) <= cap * 0.9;
           return pg;
         };
 
         if (pages.length && singlePage) {
-          // এক পৃষ্ঠা: ব্যালান্স করি (ওয়ার্ডও তা-ই করে)
+          // এক পৃষ্ঠা: ব্যালান্স করি (ওয়ার্ডও তা-ই করে)
           const b = this.balancePageHeader(items, capPage1, capFull, 0);
           if (b.count > 0) {
             pages[0] = {
@@ -656,13 +656,13 @@
         };
         if (ai === 0) baseCand = cand;
         // Part-10 (ঙ.১) — সংকোচন শুধু তখনই গ্রহণযোগ্য যখন তা সত্যিই
-        // **এক পৃষ্ঠা** সাধন করে। নাহলে বড় ফন্টই (১২pt) রাখা হয়, যাতে
-        // ২য় পৃষ্ঠায় ১–২টি প্রশ্নের মতো কঙ্কাল-পৃষ্ঠা না বনে।
+        // **এক পৃষ্ঠা** সাধন করে। নাহলে বড় ফন্টই (১২pt) রাখা হয়, যাতে
+        // ২য় পৃষ্ঠায় ১–২টি প্রশ্নের মতো কঙ্কাল-পৃষ্ঠা না বনে।
         if (singlePage) { chosen = cand; break; }
         const mayShrink = overflow > 0 && overflow <= (options.maxShrinkOverflow || g.maxShrinkOverflow) && ai < attempts.length - 1;
         if (!mayShrink) {
-          // ল্যাডার শেষ কিন্তু ১ পৃষ্ঠা হয়নি → ভিত্তি সাইজেই ফিরে যাই: বড়
-          // ফন্ট + পূর্ণ ২য় পৃষ্ঠা, কঙ্কাল-পৃষ্ঠার (১টি প্রশ্ন) চেয়ে শ্রেয়।
+          // ল্যাডার শেষ কিন্তু ১ পৃষ্ঠা হয়নি → ভিত্তি সাইজেই ফিরে যাই: বড়
+          // ফন্ট + পূর্ণ ২য় পৃষ্ঠা, কঙ্কাল-পৃষ্ঠার (১টি প্রশ্ন) চেয়ে শ্রেয়।
           chosen = (ai > 0 && baseCand && !baseCand.singlePage) ? baseCand : cand;
           break;
         }
@@ -703,8 +703,8 @@
         },
         items: chosen.items,
         pages,
-        // Part-10: কলাম-ব্রেক প্রতি-পৃষ্ঠায় স্বেচ্ছাধীন (pg.forceBreak) —
-        // 'balance' পেজে ফাঁকা থাকলেই বসে, ঠাসি থাকলে প্রবাহেই রাখা হয়।
+        // Part-10: কলাম-ব্রেক প্রতি-পৃষ্ঠায় স্বেচ্ছাধীন (pg.forceBreak) —
+        // 'balance' পেজে ফাঁকা থাকলেই বসে, ঠাসি থাকলে প্রবাহেই রাখা হয়।
         forceColumnBreaks: false,
         forceOneLineOptions: !!chosen.forceOneLineOptions,
         forceTwoLineOptions: !!chosen.forceTwoLineOptions

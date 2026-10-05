@@ -3,7 +3,7 @@
 
 ===== CLASSIFIER =====
 {
-  "type": "EXAM_GENERAL"
+  "type": "EXAM_MATH"
 }
 
 ===== PARSED =====
@@ -149,13 +149,14 @@
 </div>
 <div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="font-size: 12pt; line-height: 1.35;">
 <div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠানের নাম</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণি ও বিষয়</div>
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
-<div style="text-align: left; flex: 1; white-space: nowrap;">
-</div>
-<div style="text-align: center; flex: 1;">
-</div>
-<div style="text-align: right; flex: 1; white-space: nowrap;">
-</div>
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ২ ঘণ্টা ৩০ মিনিট</div>
+<div style="text-align: center; flex: 1.5; text-decoration: underline; font-weight: bold; font-size: 13pt; letter-spacing: 0.5px;">সৃজনশীল অভীক্ষা</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমান: ৭০</div>
 </div>
 </div>
 <div class="qp-columns two-columns">
@@ -314,9 +315,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -367,9 +368,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -439,9 +440,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -523,9 +524,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -576,9 +577,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -648,4 +649,23 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\column}
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2451? \u2476?\u2495?\u2487?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqc\tx3598\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2536? \u2456?\u2467?\u2509?\u2463?\u2494? \u2537?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\b\ul {\f0 \u2488?\u2499?\u2460?\u2472?\u2486?\u2496?\u2482? \u2437?\u2477?\u2496?\u2453?\u2509?\u2487?\u2494?}}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2541?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa240\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2488?\u2478?\u2494?\u2471?\u2494?\u2472? \u2453?\u2480?\u2507?: }{\field{\*\fldinst EQ {\f1 {\i ax}\\S\\up4(}{\f1\fs16 2}{\f1 ) + {\i bx} + {\i c} = 0}}{\fldrslt }}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa240\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2536?\u2404?}\tab {\f0 \u2474?\u2509?\u2480?\u2478?\u2494?\u2467? \u2453?\u2480?\u2507? \u2479?\u2503?, }{\field{\*\fldinst EQ {\f1 sin\\S\\up4(}{\f1\fs16 2}{\f1 ) \u952? + cos\\S\\up4(}{\f1\fs16 2}{\f1 ) \u952? = 1}}{\fldrslt }}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa240\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2537?\u2404?}\tab {\f0 \u2470?\u2503?\u2454?\u2494?\u2451? \u2479?\u2503?, }{\field{\*\fldinst EQ {\f1 \\F({\i d},{\i dx}) ({\i e}\\S\\up4(}{\f1\fs16 {\i x}}{\f1 )) = {\i e}\\S\\up4(}{\f1\fs16 {\i x}}{\f1 )}}{\fldrslt }}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa240\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2538?\u2404?}\tab {\f0 \u2439?\u2472?\u2509?\u2463?\u2495?\u2455?\u2509?\u2480?\u2503?\u2486?\u2472? \u2453?\u2480?\u2507?: }{\field{\*\fldinst EQ {\f1 \u8747? {\i x}\\S\\up4(}{\f1\fs16 2}{\f1 ) {\i dx}}}{\fldrslt }}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa240\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2539?\u2404?}\tab {\f0 \u2478?\u2509?\u2479?\u2494?\u2463?\u2509?\u2480?\u2495?\u2453?\u2509?\u2488? }{\f1 {\i A} = ( 1 2 ; 3 4 )}{\f0  \u2489?\u2482?\u2503? }{\field{\*\fldinst EQ {\f1 {\i A}\\S\\up4(}{\f1\fs16 -1}{\f1 )}}{\fldrslt }}{\f0  \u2472?\u2495?\u2480?\u2509?\u2467?\u2527? \u2453?\u2480?\u2507?\u2404?}\par}
+}

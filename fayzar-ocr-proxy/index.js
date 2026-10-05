@@ -273,7 +273,23 @@ export default {
       const ledger = migrateLedger(await loadJson(env, 'KEY_LEDGER', { keys: {} }));
       const now = Date.now();
       // Part-16.5: ৮MB পেলোড প্রতিটি চেষ্টায় আবার JSON বানানো হতো (Worker-CPU অপচয়) — একবারই
-      const bodyStr = JSON.stringify(payload);
+      // Part-17.0: Cloudflare ~১২৫s-এর মধ্যে প্রথম বাইট না পেলে সাব-রিকোয়েস্ট কাটে (HTTP 524) — নিয়ম ১৮-এর দীর্ঘ
+      // চিন্তায় ভারী পাতা কখনো সফল হতো না। Gemini-কে চিন্তার সারাংশ চলমান পাঠাতে বলা হয় (includeThoughts) ⇒
+      // কয়েক সেকেন্ডেই বাইট আসে; চিন্তার অংশ Worker নিজের কাছে রাখে (ক্লায়েন্টে যায় না), নিয়ম ১৮ অক্ষত।
+      const thoughtsOn = String(env.INCLUDE_THOUGHTS || 'true').toLowerCase() !== 'false';
+      const withThoughts = (pl) => {
+        if (!thoughtsOn || !pl || typeof pl !== 'object') return pl;
+        const gc = Object.assign({}, pl.generationConfig || {});
+        const tc = Object.assign({}, gc.thinkingConfig || {});
+        // Part-17.1: ডিফল্ট চিন্তার মাত্রা "low" (মাপা: একই নির্ভুলতায় ২–২০ গুণ দ্রুত; স্বয়ংক্রিয় মাত্রায় কখনো ৬০k+ টোকেন
+        // চিন্তা ⇒ ৩ মিনিট+ ও ৫২৪-ঝুঁকি)। ক্লায়েন্ট নিজে মাত্রা/বাজেট দিলে সেটাই থাকে। env DEFAULT_THINKING_LEVEL=off ⇒ বন্ধ।
+        const defLevel = String(env.DEFAULT_THINKING_LEVEL || 'low').toLowerCase();
+        if (defLevel !== 'off' && tc.thinkingLevel == null && tc.thinkingBudget == null) tc.thinkingLevel = defLevel;
+        tc.includeThoughts = true;
+        gc.thinkingConfig = tc;
+        return Object.assign({}, pl, { generationConfig: gc });
+      };
+      const bodyStr = JSON.stringify(withThoughts(payload));
       // Part-16.5: এই অনুরোধের লগ-রেকর্ড (কি মাস্কড)
       // colo/country: Cloudflare-এর কোন ডেটা-সেন্টারে Worker চলল — Google-এর "অঞ্চল-সীমা" নির্ণয়ের জন্য
       const cf = request.cf || {};
@@ -414,32 +430,127 @@ export default {
                 continue;
               }
 
-              // ---------- সফল ----------
-              recordSuccess(ledger, key, model, Date.now() - started, Date.now());
-              logRec.ttfbSec = Math.round((Date.now() - started) / 1000);
-              logRec.ttfbMs = Date.now() - started;   // Part-16.6: অঞ্চল-তুলনার জন্য মিলিসেকেন্ডে
-              logRec.attempts.push({ key: maskKey(key), model, class: 'OK', status: res.status, sec: logRec.ttfbSec });
-              ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
-              ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() })));
-              note({ event: 'streaming', attempt: i + 1, key: maskKey(key), model, elapsedSec: elapsed() });
-
+              // ---------- Part-17.0: চিন্তা-গেট ----------
+              // প্রথম "আসল লেখা" না আসা পর্যন্ত Gemini-র প্রবাহ Worker-এর কাছে থাকে (চিন্তার অংশ বাদ, ক্লায়েন্টকে
+              // শুধু 'thinking' হার্টবিট)। এর মধ্যে ৫০৩/ত্রুটি, খালি সমাপ্তি বা সময়সীমা ⇒ এই চেষ্টা ব্যর্থ ধরে পরের কি/মডেল
+              // (ক্লায়েন্ট তখনো কিছু পায়নি, তাই ফেইলওভার নিরাপদ)। আসল লেখা এলেই commit — তারপর হুবহু রিলে।
               const reader = res.body.getReader();
               const dec = new TextDecoder();
-              let tail = '';
+              let committed = false, pending = '', midErr = null, thoughtN = 0, lastNote = Date.now(), tail = '';
+              const gateDeadline = started + attemptTimeoutMs;
+              const commitWith = (j, real) => {
+                committed = true;
+                recordSuccess(ledger, key, model, Date.now() - started, Date.now());
+                logRec.ttfbSec = Math.round((Date.now() - started) / 1000);
+                logRec.ttfbMs = Date.now() - started;
+                logRec.thoughtChunks = thoughtN;
+                logRec.attempts.push({ key: maskKey(key), model, class: 'OK', status: res.status, sec: logRec.ttfbSec });
+                ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
+                ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() })));
+                note({ event: 'streaming', attempt: i + 1, key: maskKey(key), model, elapsedSec: elapsed() });
+                if (j.candidates && j.candidates[0] && j.candidates[0].content) j.candidates[0].content.parts = real;
+                const first = 'data: ' + JSON.stringify(j) + '\r\n\r\n';
+                tail = first.slice(-3000);
+                controller.enqueue(encoder.encode(first));
+              };
+              const parseErrorBlob = (txt) => {
+                const k = txt.indexOf('{');
+                if (k < 0 || !/"error"/.test(txt)) return null;
+                try { const o = JSON.parse(txt.slice(k)); return o && o.error ? o.error : null; } catch (e) { return { code: 0, message: txt.slice(0, 200) }; }
+              };
               try {
                 while (true) {
-                  const { done, value } = await reader.read();
+                  let rr;
+                  if (committed) rr = await reader.read();
+                  else {
+                    const left = gateDeadline - Date.now();
+                    if (left <= 0) { midErr = { code: 0, message: 'attempt timeout (' + Math.round(attemptTimeoutMs / 1000) + 's, thinking)', timeout: true }; break; }
+                    let tId;
+                    rr = await Promise.race([reader.read(), new Promise((r) => { tId = setTimeout(() => r({ __timeout: true }), left); })]);
+                    clearTimeout(tId);
+                    if (rr.__timeout) { midErr = { code: 0, message: 'attempt timeout (' + Math.round(attemptTimeoutMs / 1000) + 's, thinking)', timeout: true }; break; }
+                  }
+                  const { done, value } = rr;
                   if (done) break;
                   logRec.streamedBytes += value.byteLength;
-                  tail = (tail + dec.decode(value, { stream: true })).slice(-3000);
-                  controller.enqueue(value);
+                  if (committed) {
+                    tail = (tail + dec.decode(value, { stream: true })).slice(-3000);
+                    controller.enqueue(value);
+                    continue;
+                  }
+                  pending += dec.decode(value, { stream: true });
+                  let m;
+                  while (!committed && !midErr && (m = /\r?\n\r?\n/.exec(pending))) {
+                    const evt = pending.slice(0, m.index);
+                    pending = pending.slice(m.index + m[0].length);
+                    const data = evt.split(/\r?\n/).filter((l) => l.startsWith('data:')).map((l) => l.slice(5).trim()).join('');
+                    let j = null;
+                    if (data) { try { j = JSON.parse(data); } catch (e) { j = null; } }
+                    if (!j) { const er = parseErrorBlob(evt); if (er) midErr = er; continue; }
+                    if (j.error) { midErr = j.error; break; }
+                    const cand = j.candidates && j.candidates[0];
+                    const parts = (cand && cand.content && cand.content.parts) || [];
+                    const real = parts.filter((p) => !p.thought);
+                    thoughtN += parts.length - real.length;
+                    // Part-17.1: প্রথম চিন্তা-সংকেত কখন এল (৫২৪-ঝুঁকি মাপার জন্য — ১২৫s-এর আগে আসছে কি না)
+                    if (parts.length > real.length && logRec.firstThoughtMs == null) logRec.firstThoughtMs = Date.now() - started;
+                    if (real.some((p) => (p.text && p.text.length) || p.inlineData || p.functionCall)) { commitWith(j, real); break; }
+                    if (cand && cand.finishReason) { midErr = { code: 0, message: 'finished without text (' + cand.finishReason + ')', empty: true }; break; }
+                    if (Date.now() - lastNote >= waitTickMs) {
+                      lastNote = Date.now();
+                      note({ event: 'thinking', attempt: i + 1, total: plan.length, key: maskKey(key), model, elapsedSec: elapsed(), waitingSec: Math.round((Date.now() - started) / 1000), thoughts: thoughtN });
+                    }
+                  }
+                  if (committed && pending) { controller.enqueue(encoder.encode(pending)); tail = (tail + pending).slice(-3000); pending = ''; }
+                  if (midErr) break;
                 }
+                if (!committed && !midErr) {
+                  const er = parseErrorBlob(pending);
+                  midErr = er || { code: 0, message: 'stream ended before any text', empty: true };
+                }
+              } catch (streamErr) {
+                if (!committed) midErr = { code: 0, message: String(streamErr && streamErr.message || streamErr).slice(0, 200) };
+                else { logRec.outcome = 'stream_error'; logRec.finish = String(streamErr && streamErr.message || streamErr).slice(0, 200); }
+              }
+
+              if (!committed) {
+                try { await reader.cancel(); } catch (e) {}
+                const entry = ensureEntry(ledger, key, Date.now());
+                const st = Number(midErr.code) || 0;
+                verdict = classifyGeminiError(st >= 400 ? st : 0, { error: { message: String(midErr.message || ''), status: midErr.status } }, {
+                  now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails, timeout: !!midErr.timeout
+                });
+                lastError = { status: st, detail: verdict.detail };
+                recordFailure(ledger, key, model, verdict, Date.now());
+                attempts.push({ key: maskKey(key), model, class: verdict.class, reopenInSec: Math.ceil((verdict.reopenAfterMs || 0) / 1000) });
+                logRec.attempts.push({ key: maskKey(key), model, class: verdict.class, status: st, detail: ('mid-stream: ' + String(verdict.detail || '')).slice(0, 200), sec: Math.round((Date.now() - started) / 1000), thoughts: thoughtN });
+                if (verdict.class === 'FATAL_INPUT') { note({ event: 'fatal', class: verdict.class, detail: verdict.detail }); break; }
+                if (verdict.class === 'LOCATION') {
+                  if (++locationFails >= LOCATION_MAX) break;
+                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'LOCATION', waitSec: 1, elapsedSec: elapsed() });
+                  await new Promise(r => setTimeout(r, Math.min(1500, retryMs || 1500)));
+                  continue;
+                }
+                if (verdict.class === 'SERVER') {
+                  const set = (serverFailKeys[model] = serverFailKeys[model] || new Set());
+                  set.add(key);
+                  if (set.size >= SERVER_KEYS_BEFORE_SWITCH) {
+                    note({ event: 'switch_model', from: model, reason: 'server', elapsedSec: elapsed() });
+                    i = skipRestOfModel(plan, i, model);
+                    continue;
+                  }
+                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'server', waitSec: Math.round(retryMs / 1000), elapsedSec: elapsed() });
+                  if (retryMs) await new Promise(r => setTimeout(r, retryMs));
+                  continue;
+                }
+                note({ event: 'switch_key', key: maskKey(key), model, reason: verdict.class, elapsedSec: elapsed() });
+                continue;
+              }
+
+              if (!logRec.outcome) {
                 const fm = tail.match(/"finishReason"\s*:\s*"([A-Z_]+)"/g);
                 logRec.finish = fm ? fm[fm.length - 1].replace(/.*"([A-Z_]+)"$/, '$1') : 'NONE';
                 logRec.outcome = 'success';
-              } catch (streamErr) {
-                logRec.outcome = 'stream_error';
-                logRec.finish = String(streamErr && streamErr.message || streamErr).slice(0, 200);
               }
               logRec.totalSec = elapsed();
               await saveLog();

@@ -12,21 +12,22 @@
     /**
      * Parses raw text into structured salary data.
      * Expected format (flexible):
-     *   প্রতিষ্ঠান: বিজ্ঞান রেসিডেন্সিয়াল মডেল স্কুল
+     *   প্রতিষ্ঠান: বিজ্ঞান রেসিডেন্সিয়াল মডেল স্কুল
      *   মাস: সেপ্টেম্বর ২০২৫
      *   নাম: মোঃ আবদুল করিম
      *   পদ: সহকারী শিক্ষক
      *   বিভাগ: বিজ্ঞান বিভাগ
      *   মূল বেতন: ১৬,০০০
-     *   বাড়ি ভাড়া ভাতা: ৪,০০০
+     *   বাড়ি ভাড়া ভাতা: ৪,০০০
      *   চিকিৎসা ভাতা: ১,৫০০
-     *   যাতায়াত ভাতা: ৮০০
+     *   যাতায়াত ভাতা: ৮০০
      *   --- কর্তন ---
      *   ভবিষ্যৎ তহবিল: ১,৬০০
-     *   আয়কর: ০
+     *   আয়কর: ০
      *   বিবিধ কর্তন: ০
      */
     parseSalaryData(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       if (!rawText) return null;
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
 
@@ -51,18 +52,20 @@
       };
 
       for (const line of lines) {
-        // Section divider
-        if (/^---\s*কর্তন|^কর্তন সমূহ|^বিয়োগ/i.test(line)) { mode = 'deductions'; continue; }
-        if (/^---\s*আয়|^আয় সমূহ|^মোট আয়/i.test(line)) { mode = 'earnings'; continue; }
+        // Part-18.0: মোট/নিট লাইন আবার যোগ নয় (আগে মোট আয়-কর্তনও আইটেম হয়ে হিসাব দ্বিগুণ হতো)
+        if (/^(?:মোট|সর্বমোট|নিট|নীট)\s*(?:আয়|কর্তন|প্রদেয়|বেতন|পাওনা)?/i.test(line) && /[\d০-৯]/.test(line)) continue;
+        // Section divider (Part-18.0: "আয়:" / "কর্তন:" শিরোনামও)
+        if (/^---\s*কর্তন|^কর্তন\s*সমূহ|^কর্তনসমূহ|^বিয়োগ|^কর্তন\s*[ঃ:]?\s*$/i.test(line)) { mode = 'deductions'; continue; }
+        if (/^---\s*আয়|^আয়\s*সমূহ|^আয়\s*[ঃ:]?\s*$/i.test(line)) { mode = 'earnings'; continue; }
 
         // Named fields
         const instMatch = line.match(/^প্রতিষ্ঠান[ঃ:]?\s*(.+)/i);
         if (instMatch) { data.institute = instMatch[1].trim(); continue; }
 
-        const monthMatch = line.match(/^(?:মাস|সময়কাল)[ঃ:]?\s*(.+)/i);
+        const monthMatch = line.match(/^(?:মাস|সময়কাল)[ঃ:]?\s*(.+)/i);
         if (monthMatch) { data.month = monthMatch[1].trim(); continue; }
 
-        const nameMatch = line.match(/^(?:নাম|কর্মীর নাম)[ঃ:]?\s*(.+)/i);
+        const nameMatch = line.match(/^(?:নাম|কর্মীর নাম|কর্মচারীর নাম)[ঃ:]?\s*(.+)/i);
         if (nameMatch) { data.name = nameMatch[1].trim(); continue; }
 
         const desigMatch = line.match(/^(?:পদ|পদবি|পদবী)[ঃ:]?\s*(.+)/i);
@@ -71,7 +74,7 @@
         const deptMatch = line.match(/^(?:বিভাগ|শাখা|সেকশন)[ঃ:]?\s*(.+)/i);
         if (deptMatch) { data.department = deptMatch[1].trim(); continue; }
 
-        const empIdMatch = line.match(/^(?:কর্মী নং|আইডি|ID)[ঃ:]?\s*(.+)/i);
+        const empIdMatch = line.match(/^(?:কর্মী নং|কর্মচারী আইডি|কর্মী আইডি|আইডি|ID)[ঃ:]?\s*(.+)/i);
         if (empIdMatch) { data.employeeId = empIdMatch[1].trim(); continue; }
 
         const joinMatch = line.match(/^(?:যোগদান|যোগদানের তারিখ)[ঃ:]?\s*(.+)/i);
@@ -99,14 +102,14 @@
       if (data.earnings.length === 0) {
         data.earnings = [
           { label: 'মূল বেতন', amount: '0' },
-          { label: 'বাড়ি ভাড়া ভাতা', amount: '0' },
+          { label: 'বাড়ি ভাড়া ভাতা', amount: '0' },
           { label: 'চিকিৎসা ভাতা', amount: '0' },
         ];
       }
       if (data.deductions.length === 0) {
         data.deductions = [
           { label: 'ভবিষ্যৎ তহবিল', amount: '0' },
-          { label: 'আয়কর', amount: '0' },
+          { label: 'আয়কর', amount: '0' },
         ];
       }
 
@@ -130,7 +133,7 @@
      * Renders salary slip HTML.
      */
     renderToHtml(data, options = {}) {
-      if (!data) return '<div class="text-center py-10 text-red-500">বেতন স্লিপের তথ্য পাওয়া যায়নি।</div>';
+      if (!data) return '<div class="text-center py-10 text-red-500">বেতন স্লিপের তথ্য পাওয়া যায়নি।</div>';
 
       const fontClass = options.font === 'bijoy' ? 'font-sutonny' : 'font-kalpurush';
       const fs = options.fontSize || '11pt';
@@ -179,7 +182,7 @@
         <table style="width: 100%; border-collapse: collapse; font-size: 10pt; margin-bottom: 12px;">
           <thead>
             <tr style="background: #1a1a2e; color: #fff;">
-              <th style="padding: 6px 8px; text-align: left; border: 1px solid #1a1a2e;" colspan="2">আয় (Earnings)</th>
+              <th style="padding: 6px 8px; text-align: left; border: 1px solid #1a1a2e;" colspan="2">আয় (Earnings)</th>
               <th style="padding: 6px 8px; text-align: left; border: 1px solid #1a1a2e;" colspan="2">কর্তন (Deductions)</th>
             </tr>
             <tr style="background: #e8eaf6; font-weight: bold; font-size: 9pt;">
@@ -194,7 +197,7 @@
           </tbody>
           <tfoot>
             <tr style="background: #f1f5f9; font-weight: 900;">
-              <td style="padding: 5px 6px; border: 1px solid #c0c0c0;">মোট আয়</td>
+              <td style="padding: 5px 6px; border: 1px solid #c0c0c0;">মোট আয়</td>
               <td style="padding: 5px 6px; border: 1px solid #c0c0c0; text-align: right; color: #166534;">${this.formatMoney(data.totalEarnings)}</td>
               <td style="padding: 5px 6px; border: 1px solid #c0c0c0;">মোট কর্তন</td>
               <td style="padding: 5px 6px; border: 1px solid #c0c0c0; text-align: right; color: #b91c1c;">${this.formatMoney(data.totalDeductions)}</td>
@@ -229,7 +232,7 @@
 
         <!-- Footer Note -->
         <div style="margin-top: 20px; text-align: center; font-size: 8.5pt; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 8px;">
-          এটি কম্পিউটার মুদ্রিত — কোনো স্বাক্ষরের প্রয়োজন নেই | ফয়জার কম্পিউটার, ফুলবাড়ী, দিনাজপুর
+          এটি কম্পিউটার মুদ্রিত — কোনো স্বাক্ষরের প্রয়োজন নেই | ফয়জার কম্পিউটার, ফুলবাড়ী, দিনাজপুর
         </div>
       </div>`;
     },

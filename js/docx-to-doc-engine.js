@@ -252,6 +252,11 @@
 
       const docXml = this.domParser.parseFromString(docXmlStr, "application/xml");
       const parsedBody = this._parseDocumentBody(docXml, styleResolver, mediaMap, opts);
+      // Part-17.3: হেডার/ফুটার (আগে .doc-এ পুরো হারাত)
+      try {
+        const hf = await this._parseHeaderFooter(zip, relsMap, docXml, styleResolver, mediaMap, opts);
+        parsedBody.headerHtml = hf.header; parsedBody.footerHtml = hf.footer;
+      } catch (e) { /* হেডার না পেলে আগের আচরণ */ }
 
       opts.onProgress(85, "অফিস ২০০৩ কমপ্লায়েন্ট (.doc) আর্কিটেকচার তৈরি হচ্ছে...");
       const docHtml = this._buildWord2003Document(parsedBody, opts);
@@ -387,9 +392,20 @@
       const elements = [node, ...(node.getElementsByTagName ? Array.from(node.getElementsByTagName('*')) : [])];
       let currentWidth = null;
       let currentHeight = null;
+      let anchor = null;   // Part-17.3: ভাসমান ছবির অবস্থান (wp:anchor) — আগে সাধারণ ছবি হয়ে যেত
 
       for (let el of elements) {
         const elName = (el.localName || el.nodeName || '').split(':').pop();
+        if (elName === 'anchor') {
+          const posOf = (axis) => {
+            const p = Array.from(el.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'position' + axis);
+            if (!p) return null;
+            const off = Array.from(p.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'posOffset');
+            return { rel: p.getAttribute('relativeFrom') || 'column', pt: off ? parseInt(off.textContent || '0', 10) / 12700 : 0 };
+          };
+          const behind = el.getAttribute('behindDoc') === '1';
+          anchor = { h: posOf('H'), v: posOf('V'), behind };
+        }
         if (elName === 'extent') {
           const cx = parseInt(el.getAttribute("cx") || "0", 10);
           const cy = parseInt(el.getAttribute("cy") || "0", 10);
@@ -437,6 +453,14 @@
         seen.add(img.id);
         const wAttr = img.w ? `width:${img.w};` : '';
         const hAttr = img.h ? `height:${img.h};` : '';
+        if (anchor && anchor.h && anchor.v && img.w && img.h) {
+          const relMap = { page: 'page', margin: 'margin', column: 'text', paragraph: 'text', character: 'char', line: 'line' };
+          const rh = relMap[anchor.h.rel] || 'text', rv = relMap[anchor.v.rel] || 'text';
+          const sid = '_x0000_s' + (1025 + (this._anchorSeq = (this._anchorSeq || 0) + 1));
+          const pos = `position:absolute;margin-left:${anchor.h.pt.toFixed(1)}pt;margin-top:${anchor.v.pt.toFixed(1)}pt;width:${img.w};height:${img.h};z-index:${anchor.behind ? -1 : 1};mso-position-horizontal-relative:${rh};mso-position-vertical-relative:${rv}`;
+          html += `<!--[if gte vml 1]><v:shape id="${sid}" type="#_x0000_t75" style='${pos}'><v:imagedata src="${mediaMap[img.id]}" o:title=""/><w:wrap type="square"/></v:shape><![endif]--><![if !vml]><span style='mso-ignore:vglayout;position:absolute;z-index:1;left:${anchor.h.pt.toFixed(1)}pt;top:${anchor.v.pt.toFixed(1)}pt;width:${img.w};height:${img.h}'><img src="${mediaMap[img.id]}" style="${wAttr}${hAttr}" alt="Image" v:shapes="${sid}" /></span><![endif]>`;
+          continue;
+        }
         html += `<img src="${mediaMap[img.id]}" style="${wAttr}${hAttr}max-width:100%;height:auto;display:inline-block;margin:3pt 0;vertical-align:middle;" alt="Image" />`;
       }
       return html;
@@ -640,6 +664,40 @@
       };
     }
 
+    /** Part-17.3: শেষ সেকশনের ডিফল্ট হেডার/ফুটার → HTML (Word-HTML mso-element) */
+    async _parseHeaderFooter(zip, relsMap, docXml, styleResolver, mediaMap, opts) {
+      const out = { header: '', footer: '' };
+      const body = docXml ? (docXml.querySelector('body') || docXml.documentElement) : null;
+      if (!body) return out;
+      let sectPr = null;
+      for (let i = body.childNodes.length - 1; i >= 0; i--) {
+        const c = body.childNodes[i];
+        if (c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'sectPr') { sectPr = c; break; }
+      }
+      if (!sectPr) return out;
+      for (const [kind, refName] of [['header', 'headerReference'], ['footer', 'footerReference']]) {
+        const refs = Array.from(sectPr.childNodes).filter((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === refName);
+        const ref = refs.find((r) => (r.getAttribute('w:type') || r.getAttribute('type') || 'default') === 'default') || refs[0];
+        if (!ref) continue;
+        const rid = ref.getAttribute('r:id') || ref.getAttribute('id');
+        const rel = rid && relsMap[rid];
+        if (!rel || !rel.target) continue;
+        const xmlStr = await this._getZipFileContent(zip, 'word/' + rel.target.replace(/^\/?(word\/)?/, ''));
+        if (!xmlStr) continue;
+        const hx = this.domParser.parseFromString(xmlStr, 'application/xml');
+        const root = hx.documentElement;
+        const parts = [];
+        for (const ch of Array.from(root.childNodes || [])) {
+          if (ch.nodeType !== 1) continue;
+          const nm = (ch.localName || ch.nodeName).split(':').pop();
+          if (nm === 'p') parts.push(this._parseParagraph(ch, styleResolver, mediaMap, opts).html);
+          else if (nm === 'tbl') parts.push(this._parseTable(ch, styleResolver, mediaMap, opts).html);
+        }
+        out[kind] = parts.join('\n');
+      }
+      return out;
+    }
+
     _parseSectionProperties(sectPr, opts) {
       let width = "8.27in";  // A4 default
       let height = "11.69in";
@@ -715,7 +773,57 @@
         }
       }
 
+      // Part-17.5: সেকশন শুরুর ধরন — শুধু স্পষ্ট "nextPage" হলে .doc-এ পাতা ভাঙে (হুবহু-মোড: মূলের প্রতি পাতা = নতুন পাতা);
+      // অনুপস্থিত হলে আগের আচরণ (একটানা) — চালু প্রশ্নপত্রের .doc অপরিবর্তিত
+      let breakType = null;
+      if (sectPr) {
+        const typeEl = Array.from(sectPr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'type');
+        if (typeEl) breakType = typeEl.getAttribute('w:val') || typeEl.getAttribute('val');
+      }
+
+      // Part-17.7: পাতার বর্ডার (w:pgBorders) ⇒ Word-HTML @page border/padding। না থাকলে কিছুই যোগ হয় না (চালু আউটপুট অপরিবর্তিত)
+      let pageBorderCss = '';
+      let pageFrame = null;
+      if (sectPr) {
+        const pb = Array.from(sectPr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'pgBorders');
+        if (pb) {
+          const STYLE = { single: 'solid', double: 'double', dotted: 'dotted', dashed: 'dashed', thick: 'solid' };
+          const parts = [], pads = {};
+          ['top', 'right', 'bottom', 'left'].forEach((side) => {
+            const el = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === side);
+            const val = el && (el.getAttribute('w:val') || el.getAttribute('val'));
+            if (!el || !val || val === 'nil' || val === 'none') { pads[side] = 0; return; }
+            const sz = parseInt(el.getAttribute('w:sz') || el.getAttribute('sz') || '4', 10);
+            const css = STYLE[val] || 'solid';
+            const wPt = Math.max(0.5, (css === 'double' ? sz / 8 * 3 : sz / 8));
+            parts.push(`border-${side}:${css} windowtext ${wPt.toFixed(1)}pt`);
+            pads[side] = parseInt(el.getAttribute('w:space') || el.getAttribute('space') || '0', 10);
+          });
+          // Part-17.9: Word-HTML আমদানি সবসময় "পাতার কিনারা থেকে" মাপে (সর্বোচ্চ ৩১pt) — "লেখা থেকে" (w:offsetFrom="text")
+          // বর্ডার .doc-এ সেভাবে আসে না ⇒ পাতা-স্থির আয়তক্ষেত্র-আকৃতি (VML) হিসেবে ঠিক জায়গায় আঁকা
+          const offsetFrom = pb.getAttribute('w:offsetFrom') || pb.getAttribute('offsetFrom');
+          const allSame = ['top', 'right', 'bottom', 'left'].every((s) => pads[s] !== undefined);
+          if (parts.length && offsetFrom === 'text' && allSame) {
+            const inPt = (v) => parseFloat(v) * 72;
+            const firstEl = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1);
+            const v0 = firstEl ? (firstEl.getAttribute('w:val') || firstEl.getAttribute('val')) : 'single';
+            const sz0 = firstEl ? parseInt(firstEl.getAttribute('w:sz') || firstEl.getAttribute('sz') || '4', 10) : 4;
+            const x = inPt(marginLeft) - pads.left, y = inPt(marginTop) - pads.top;
+            pageFrame = {
+              x, y, w: inPt(width) - inPt(marginLeft) - inPt(marginRight) + pads.left + pads.right,
+              h: inPt(height) - inPt(marginTop) - inPt(marginBottom) + pads.top + pads.bottom,
+              double: v0 === 'double', weightPt: Math.max(0.75, v0 === 'double' ? sz0 / 8 * 3 : sz0 / 8)
+            };
+          } else if (parts.length) {
+            pageBorderCss = '\t' + parts.join(';\n\t') + `;\n\tpadding:${pads.top}.0pt ${pads.right}.0pt ${pads.bottom}.0pt ${pads.left}.0pt;\n` +
+              '\tmso-page-border-surround-header:no;\n\tmso-page-border-surround-footer:no;\n';
+          }
+        }
+      }
+
       return {
+        pageBorderCss,
+        pageFrame,
         width,
         height,
         marginTop,
@@ -724,7 +832,8 @@
         marginRight,
         cols,
         colSpace,
-        colSep
+        colSep,
+        breakType
       };
     }
 
@@ -766,7 +875,13 @@
 
           if (before) pStyles.push(`margin-top:${(parseInt(before, 10)/20).toFixed(1)}pt`);
           if (after) pStyles.push(`margin-bottom:${(parseInt(after, 10)/20).toFixed(1)}pt`);
-          if (line) pStyles.push(`line-height:${(parseInt(line, 10)/240).toFixed(2)}`);
+          // Part-17.5: lineRule মানা — exact/atLeast-এ w:line টুইপ (pt×২০), গুণিতক নয়। আগে সবসময় ÷২৪০ গুণিতক ধরা হতো
+          // ⇒ "ঠিক ২৯pt" লাইন হয়ে যেত "২৯ গুণ" (হুবহু-মোডের .doc-এ ৪ পাতা ⇒ ২৯ পাতা)। auto হলে আগের মতো।
+          const lineRule = spacing.getAttribute("w:lineRule") || spacing.getAttribute("lineRule") || 'auto';
+          if (line && (lineRule === 'exact' || lineRule === 'atLeast')) {
+            pStyles.push(`line-height:${(parseInt(line, 10)/20).toFixed(1)}pt`);
+            pStyles.push(`mso-line-height-rule:${lineRule === 'exact' ? 'exactly' : 'at-least'}`);
+          } else if (line) pStyles.push(`line-height:${(parseInt(line, 10)/240).toFixed(2)}`);
         }
 
         const ind = pPr.querySelector("ind");
@@ -788,18 +903,42 @@
 
         // Parse tab stops (w:tabs > w:tab)
         const tabsEl = pPr.querySelector("tabs") || pPr.querySelector("*|tabs");
+        // Part-17.3: অনুচ্ছেদের রেখা (pBdr — শিরোনামের নিচের দাগ ইত্যাদি) — আগে হারাত
+        const pBdr = Array.from(pPr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'pBdr');
+        if (pBdr) {
+          const sides = [];
+          for (const sd of ['top', 'bottom', 'left', 'right']) {
+            const el = Array.from(pBdr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === sd);
+            const v = el && (el.getAttribute('w:val') || el.getAttribute('val'));
+            if (!v || v === 'none' || v === 'nil') continue;
+            const sz = parseInt(el.getAttribute('w:sz') || el.getAttribute('sz') || '4', 10);
+            const col = el.getAttribute('w:color') || el.getAttribute('color');
+            const sp = (v === 'double' ? 'double' : 'solid') + ' ' + (col && col !== 'auto' ? '#' + col : 'windowtext') + ' ' + Math.max(0.5, sz / 8).toFixed(1) + 'pt';
+            sides.push(sd, sp);
+          }
+          if (sides.length) {
+            pStyles.push('border:none');
+            for (let k = 0; k < sides.length; k += 2) {
+              pStyles.push(`border-${sides[k]}:${sides[k + 1]}`, `mso-border-${sides[k]}-alt:${sides[k + 1]}`, `padding-${sides[k]}:1.0pt`);
+            }
+          }
+        }
+
         if (tabsEl) {
           const tabNodes = tabsEl.querySelectorAll("tab, *|tab");
           const tabStops = [];
           for (let tn of tabNodes) {
             const pos = tn.getAttribute("w:pos") || tn.getAttribute("pos");
             const val = tn.getAttribute("w:val") || tn.getAttribute("val") || "left";
-            if (pos) {
+            // Part-17.3: ট্যাব-লিডার (……. / ---- / ____) — আগে হারাত
+            const leaderRaw = tn.getAttribute("w:leader") || tn.getAttribute("leader") || "";
+            const leader = { dot: 'dotted', middleDot: 'dotted', hyphen: 'dashed', underscore: 'lined', heavy: 'lined' }[leaderRaw] || '';
+            if (pos && val !== 'clear') {
               const ptVal = (parseInt(pos, 10)/20).toFixed(1) + "pt";
-              if (val === 'left' || val === 'clear') {
-                tabStops.push(ptVal);
+              if (val === 'left' || val === 'start') {
+                tabStops.push(leader ? `${leader} ${ptVal}` : ptVal);
               } else {
-                tabStops.push(`${val} ${ptVal}`);
+                tabStops.push(`${val === 'end' ? 'right' : val}${leader ? ' ' + leader : ''} ${ptVal}`);
               }
             }
           }
@@ -1231,127 +1370,154 @@
       };
     }
 
+    // Part-17.3 (হুবহু-লেআউট ধাপ ২): টেবিল পুনর্লিখন — ধাপ ০-এ Word দিয়ে মাপা ফাঁক পূরণ:
+    //  • শুধু নিজের সরাসরি সারি/ঘর (আগে `tr`-সিলেক্টর ভেতরের টেবিলের সারিও টেনে আনত ⇒ নেস্টেড টেবিল মিশে যেত)
+    //  • ঘরের ভেতরে নেস্টেড টেবিল পুনরাবৃত্ত রূপান্তর
+    //  • লম্বালম্বি জোড়া ঘর (vMerge ⇒ rowspan), আড়াআড়ি (gridSpan ⇒ colspan)
+    //  • প্রতি পাশের বর্ডার: ঘরের tcBorders, না থাকলে টেবিলের tblBorders (বাইরের/ভেতরের), Grid-স্টাইলে সব
+    //  • টেবিলের চওড়া tblW (dxa/pct) ও অবস্থান (jc); tblW না থাকলে আগের মতো ১০০%
     _parseTable(tblNode, styleResolver, mediaMap, opts) {
-      const tblPr = tblNode.querySelector("tblPr");
-      let hasBorders = false;
-      if (tblPr) {
-        const tblBorders = tblPr.querySelector("tblBorders");
-        if (tblBorders) {
-          const borders = tblBorders.querySelectorAll("top, left, bottom, right, insideH, insideV");
-          for (let b of Array.from(borders)) {
-            const val = b.getAttribute("w:val") || b.getAttribute("val");
-            if (val && val !== 'none' && val !== 'nil') {
-              hasBorders = true;
-              break;
-            }
-          }
-        }
-        const tblStyle = tblPr.querySelector("tblStyle");
-        if (tblStyle) {
-          const styleVal = (tblStyle.getAttribute("w:val") || tblStyle.getAttribute("val") || '').toLowerCase();
-          if (styleVal.includes('grid') || styleVal.includes('tablegrid') || styleVal.includes('border')) {
-            hasBorders = true;
-          }
-        }
-      }
-
-      let tblStyles = [
-        'border-collapse:collapse',
-        'mso-table-layout-alt:fixed',
-        hasBorders ? 'border:solid windowtext 1.0pt' : 'border:none',
-        hasBorders ? 'mso-border-alt:solid windowtext .5pt' : 'mso-border-alt:none',
-        'mso-padding-alt:0in 5.4pt 0in 5.4pt',
-        'width:100%'
-      ];
-
-      let stats = { paragraphs: 0, runs: 0 };
-      let rowsHtml = [];
-
-      const rows = tblNode.querySelectorAll(":scope > tr, :scope > tblRow, tr");
-      for (let r = 0; r < rows.length; r++) {
-        const trNode = rows[r];
-        let cellsHtml = [];
-
-        const cells = trNode.querySelectorAll(":scope > tc, :scope > tblCell, tc");
-        for (let c = 0; c < cells.length; c++) {
-          const tcNode = cells[c];
-          let tcStyles = [
-            'padding:3.5pt 5.5pt',
-            hasBorders ? 'border:solid windowtext 1.0pt' : 'border:none',
-            hasBorders ? 'mso-border-alt:solid windowtext .5pt' : 'mso-border-alt:none',
-            'vertical-align:top'
-          ];
-          let colSpanAttr = '';
-          let rowSpanAttr = '';
-
-          // Parse cell properties
-          const tcPr = tcNode.querySelector("tcPr");
-          if (tcPr) {
-            const shd = tcPr.querySelector("shd");
-            if (shd) {
-              const fill = shd.getAttribute("w:fill") || shd.getAttribute("fill");
-              if (fill && fill !== 'auto' && fill !== 'none') {
-                tcStyles.push(`background-color:#${fill}`);
-                tcStyles.push(`mso-shading:#${fill}`);
-              }
-            }
-
-            const tcW = tcPr.querySelector("tcW");
-            if (tcW) {
-              const w = tcW.getAttribute("w:w") || tcW.getAttribute("w");
-              if (w && parseInt(w, 10) > 0) {
-                tcStyles.push(`width:${(parseInt(w, 10)/20).toFixed(1)}pt`);
-              }
-            }
-
-            const vAlign = tcPr.querySelector("vAlign");
-            if (vAlign) {
-              const va = vAlign.getAttribute("w:val") || vAlign.getAttribute("val");
-              if (va === 'center') tcStyles.push('vertical-align:middle');
-              else if (va === 'bottom') tcStyles.push('vertical-align:bottom');
-            }
-
-            const gridSpan = tcPr.querySelector("gridSpan");
-            if (gridSpan) {
-              const spanVal = gridSpan.getAttribute("w:val") || gridSpan.getAttribute("val");
-              if (spanVal && parseInt(spanVal, 10) > 1) {
-                colSpanAttr = ` colspan="${spanVal}"`;
-              }
-            }
-          }
-
-          // Parse cell paragraphs
-          let pList = tcNode.querySelectorAll("p");
-          let cellInnerHtml = [];
-
-          for (let p of pList) {
-            const pData = this._parseParagraph(p, styleResolver, mediaMap, opts);
-            cellInnerHtml.push(pData.html);
-            stats.paragraphs++;
-            stats.runs += pData.runCount;
-          }
-
-          if (cellInnerHtml.length === 0) {
-            const cellImgs = this._extractImagesFromNode(tcNode, mediaMap);
-            if (cellImgs) {
-              cellInnerHtml.push(`<p class="MsoNormal">${cellImgs}</p>`);
-            } else {
-              cellInnerHtml.push('<p class="MsoNormal">&nbsp;</p>');
-            }
-          }
-
-          cellsHtml.push(`<td${colSpanAttr}${rowSpanAttr} style="${tcStyles.join(';')}">${cellInnerHtml.join('')}</td>`);
-        }
-
-        rowsHtml.push(`<tr>${cellsHtml.join('')}</tr>`);
-      }
-
-      const html = `<table class="MsoNormalTable" style="${tblStyles.join(';')}">${rowsHtml.join('\n')}</table>`;
-
-      return {
-        html: html,
-        stats: stats
+      const ln = (n) => (n.localName || n.nodeName || '').split(':').pop();
+      const kids = (n, name) => Array.from((n && n.childNodes) || []).filter((c) => c.nodeType === 1 && ln(c) === name);
+      const kid = (n, name) => kids(n, name)[0] || null;
+      const attr = (n, a) => (n ? (n.getAttribute('w:' + a) || n.getAttribute(a)) : null);
+      const on = (el) => { if (!el) return null; const v = attr(el, 'val'); return v && v !== 'none' && v !== 'nil' ? true : false; };
+      const spec = (el) => {
+        if (!on(el)) return null;
+        const sz = parseInt(attr(el, 'sz') || '4', 10);
+        const col = attr(el, 'color');
+        const v = attr(el, 'val');
+        const kind = v === 'double' ? 'double' : (v === 'dotted' ? 'dotted' : (v === 'dashed' ? 'dashed' : 'solid'));
+        return kind + ' ' + (col && col !== 'auto' ? '#' + col : 'windowtext') + ' ' + Math.max(0.5, sz / 8).toFixed(1) + 'pt';
       };
+
+      const tblPr = kid(tblNode, 'tblPr');
+      const tb = tblPr ? kid(tblPr, 'tblBorders') : null;
+      const T = {
+        top: tb ? spec(kid(tb, 'top')) : null, bottom: tb ? spec(kid(tb, 'bottom')) : null,
+        left: tb ? spec(kid(tb, 'left') || kid(tb, 'start')) : null, right: tb ? spec(kid(tb, 'right') || kid(tb, 'end')) : null,
+        insideH: tb ? spec(kid(tb, 'insideH')) : null, insideV: tb ? spec(kid(tb, 'insideV')) : null
+      };
+      const tsEl = tblPr ? kid(tblPr, 'tblStyle') : null;
+      if (tsEl && !tb && /grid|border/i.test(attr(tsEl, 'val') || '')) {
+        const d = 'solid windowtext 1.0pt';
+        Object.assign(T, { top: d, bottom: d, left: d, right: d, insideH: d, insideV: d });
+      }
+
+      let widthCss = 'width:100%';
+      const twEl = tblPr ? kid(tblPr, 'tblW') : null;
+      if (twEl) {
+        const t = attr(twEl, 'type'); const w = parseInt(attr(twEl, 'w') || '0', 10);
+        if (t === 'dxa' && w > 0) widthCss = 'width:' + (w / 20).toFixed(1) + 'pt';
+        else if (t === 'pct' && w > 0) widthCss = 'width:' + (w > 100 ? (w / 50) : w).toFixed(1) + '%';
+      }
+      const tjEl = tblPr ? kid(tblPr, 'jc') : null;
+      const tj = attr(tjEl, 'val');
+      const alignAttr = tj === 'center' ? ' align="center"' : (tj === 'right' || tj === 'end' ? ' align="right"' : '');
+
+      // Part-17.7: opts.honorCellMargins (শুধু হুবহু-মোড) — টেবিলের নিজের tblCellMar-ই ঘরের প্যাডিং (Word-এর হুবহু);
+      // অন্যথায় আগের 3.5pt 5.5pt (চালু প্রশ্নপত্রের .doc অপরিবর্তিত)
+      let cellPad = 'padding:3.5pt 5.5pt';
+      const cmEl = tblPr && opts && opts.honorCellMargins ? kid(tblPr, 'tblCellMar') : null;
+      if (cmEl) {
+        const mv = (names, d) => { for (const n of names) { const e = kid(cmEl, n); if (e) return (parseInt(attr(e, 'w') || '0', 10) / 20); } return d; };
+        cellPad = `padding:${mv(['top'], 0).toFixed(1)}pt ${mv(['right', 'end'], 5.4).toFixed(1)}pt ${mv(['bottom'], 0).toFixed(1)}pt ${mv(['left', 'start'], 5.4).toFixed(1)}pt`;
+      }
+
+      const tblStyles = [
+        'border-collapse:collapse', 'mso-table-layout-alt:fixed', 'border:none', 'mso-border-alt:none',
+        'mso-padding-alt:0in 5.4pt 0in 5.4pt', widthCss
+      ];
+      if (tj === 'center') tblStyles.push('margin-left:auto', 'margin-right:auto');
+
+      // গ্রিড-মডেল: প্রতি ঘরের শুরু-কলাম, colspan, vMerge
+      const rows = kids(tblNode, 'tr');
+      const model = rows.map((tr) => kids(tr, 'tc').map((tc) => {
+        const pr = kid(tc, 'tcPr');
+        const gs = parseInt(attr(pr ? kid(pr, 'gridSpan') : null, 'val') || '1', 10) || 1;
+        const vmEl = pr ? kid(pr, 'vMerge') : null;
+        const vm = vmEl ? ((attr(vmEl, 'val') || 'continue') === 'restart' ? 'restart' : 'continue') : null;
+        return { tc, pr, gs, vm, col: 0, rowspan: 1 };
+      }));
+      let totalCols = 0;
+      model.forEach((cells) => { let col = 0; cells.forEach((c) => { c.col = col; col += c.gs; }); totalCols = Math.max(totalCols, col); });
+      model.forEach((cells, r) => cells.forEach((c) => {
+        if (c.vm !== 'restart') return;
+        for (let k = r + 1; k < model.length; k++) {
+          const nx = model[k].find((x) => x.col === c.col);
+          if (nx && nx.vm === 'continue') c.rowspan++; else break;
+        }
+      }));
+
+      const stats = { paragraphs: 0, runs: 0 };
+      const rowsHtml = [];
+      model.forEach((cells, r) => {
+        const cellsHtml = [];
+        cells.forEach((c) => {
+          if (c.vm === 'continue') return;                    // জোড়া ঘরের অংশ — উপরের ঘর rowspan দিয়ে ঢাকে
+          const pr = c.pr;
+          const cb = pr ? kid(pr, 'tcBorders') : null;
+          const side = (names, fallback) => {
+            if (cb) { for (const n of names) { const el = kid(cb, n); if (el) return spec(el); } }
+            return fallback;
+          };
+          const lastRow = r + c.rowspan - 1 >= model.length - 1;
+          const bTop = side(['top'], r === 0 ? T.top : T.insideH);
+          const bBottom = side(['bottom'], lastRow ? T.bottom : T.insideH);
+          const bLeft = side(['left', 'start'], c.col === 0 ? T.left : T.insideV);
+          const bRight = side(['right', 'end'], c.col + c.gs >= totalCols ? T.right : T.insideV);
+          // Part-17.8: হুবহু-মোডে ঘরের নিজের vAlign (মাঝে/নিচে); অন্যথায় আগের মতো ওপরে
+          const vaEl = opts && opts.honorCellMargins && pr ? kid(pr, 'vAlign') : null;
+          const va = vaEl ? attr(vaEl, 'val') : null;
+          const tcStyles = [cellPad, 'vertical-align:' + (va === 'center' ? 'middle' : (va === 'bottom' ? 'bottom' : 'top'))];
+          for (const [nm, v] of [['top', bTop], ['bottom', bBottom], ['left', bLeft], ['right', bRight]]) {
+            tcStyles.push('border-' + nm + ':' + (v || 'none'));
+            tcStyles.push('mso-border-' + nm + '-alt:' + (v || 'none'));
+          }
+          if (pr) {
+            const shd = kid(pr, 'shd');
+            const fill = attr(shd, 'fill');
+            if (fill && fill !== 'auto' && fill !== 'none') { tcStyles.push('background-color:#' + fill); tcStyles.push('mso-shading:#' + fill); }
+            const tcW = kid(pr, 'tcW');
+            const w = parseInt(attr(tcW, 'w') || '0', 10);
+            if (w > 0 && (attr(tcW, 'type') || 'dxa') === 'dxa') tcStyles.push('width:' + (w / 20).toFixed(1) + 'pt');
+            const va = attr(kid(pr, 'vAlign'), 'val');
+            if (va === 'center') tcStyles.push('vertical-align:middle');
+            else if (va === 'bottom') tcStyles.push('vertical-align:bottom');
+          }
+          // ঘরের সরাসরি সন্তান: অনুচ্ছেদ ও নেস্টেড টেবিল (ক্রম অক্ষত)
+          const inner = [];
+          for (const ch of Array.from(c.tc.childNodes || [])) {
+            if (ch.nodeType !== 1) continue;
+            const nm = ln(ch);
+            if (nm === 'p') {
+              const pData = this._parseParagraph(ch, styleResolver, mediaMap, opts);
+              inner.push(pData.html); stats.paragraphs++; stats.runs += pData.runCount;
+            } else if (nm === 'tbl') {
+              const t = this._parseTable(ch, styleResolver, mediaMap, opts);
+              inner.push(t.html); stats.paragraphs += t.stats.paragraphs; stats.runs += t.stats.runs;
+            }
+          }
+          if (!inner.length) {
+            const cellImgs = this._extractImagesFromNode(c.tc, mediaMap);
+            inner.push(cellImgs ? '<p class="MsoNormal">' + cellImgs + '</p>' : '<p class="MsoNormal">&nbsp;</p>');
+          }
+          const span = (c.gs > 1 ? ' colspan="' + c.gs + '"' : '') + (c.rowspan > 1 ? ' rowspan="' + c.rowspan + '"' : '');
+          cellsHtml.push('<td' + span + ' style="' + tcStyles.join(';') + '">' + inner.join('') + '</td>');
+        });
+        // Part-17.9: হুবহু-মোডে সারির উচ্চতা (w:trHeight) ⇒ Word-HTML height + mso-height-rule (Word নিজে এভাবেই লেখে)
+        let trStyle = '';
+        if (opts && opts.honorCellMargins) {
+          const trPr = kid(rows[r], 'trPr');
+          const th = trPr ? kid(trPr, 'trHeight') : null;
+          const hv = th ? parseInt(attr(th, 'val') || '0', 10) : 0;
+          if (hv > 0) trStyle = ` style="height:${(hv / 20).toFixed(1)}pt;mso-height-rule:${attr(th, 'hRule') === 'exact' ? 'exactly' : 'at-least'}"`;
+        }
+        rowsHtml.push('<tr' + trStyle + '>' + cellsHtml.join('') + '</tr>');
+      });
+
+      const html = '<table class="MsoNormalTable"' + alignAttr + ' border=0 cellspacing=0 cellpadding=0 style="' + tblStyles.join(';') + '">' + rowsHtml.join('\n') + '</table>';
+      return { html, stats };
     }
 
     _buildWord2003Document(parsedBody, opts) {
@@ -1377,16 +1543,39 @@
 \tmargin:${page.marginTop} ${page.marginRight} ${page.marginBottom} ${page.marginLeft};
 \tmso-header-margin:.5in;
 \tmso-footer-margin:.5in;
-${colsCss}\tmso-paper-source:0;}
+${page.pageBorderCss || ''}${colsCss}${parsedBody.headerHtml ? '\tmso-header:h1;\n' : ''}${parsedBody.footerHtml ? '\tmso-footer:f1;\n' : ''}\tmso-paper-source:0;}
  div.Section${secIndex}
 \t{page:Section${secIndex};}\n`;
 
+        // Part-17.5: DOCX-নিয়ম — সেকশনের নিজের sectPr-এর type=nextPage ⇒ এই সেকশন নতুন পাতায় শুরু (Word-এর আচরণের হুবহু)
         const sectionBreak = (idx === 0)
           ? ''
-          : `<br clear=all style='page-break-before:auto;mso-break-type:section-break'>\n`;
+          : ((page.breakType === 'nextPage')
+            ? `<br clear=all style='page-break-before:always;mso-break-type:section-break'>\n`
+            : `<br clear=all style='page-break-before:auto;mso-break-type:section-break'>\n`);
 
-        bodyDivsHtml += `${sectionBreak}<div class="Section${secIndex}">\n${sec.html}\n</div>\n`;
+        // Part-17.9: "লেখা থেকে" মাপা পাতার ফ্রেম ⇒ পাতা-স্থির VML আয়তক্ষেত্র (লেখার পেছনে), সেকশনের প্রথম অনুচ্ছেদে নোঙর
+        let secHtml = sec.html;
+        if (page.pageFrame) {
+          const f = page.pageFrame;
+          const sid = '_x0000_s' + (1025 + (this._anchorSeq = (this._anchorSeq || 0) + 1));
+          const shape = `<!--[if gte vml 1]><v:rect id="${sid}" style='position:absolute;margin-left:${f.x.toFixed(1)}pt;margin-top:${f.y.toFixed(1)}pt;width:${f.w.toFixed(1)}pt;height:${f.h.toFixed(1)}pt;z-index:-251658240;mso-position-horizontal-relative:page;mso-position-vertical-relative:page' filled="f" strokeweight="${f.weightPt.toFixed(2)}pt"><v:stroke linestyle="${f.double ? 'thinThin' : 'single'}"/><w:wrap anchorx="page" anchory="page"/></v:rect><![endif]-->`;
+          const firstP = secHtml.search(/<p[\s>]/i);
+          const firstTbl = secHtml.search(/<table[\s>]/i);
+          if (firstP >= 0 && (firstTbl < 0 || firstP < firstTbl)) {
+            const end = secHtml.indexOf('>', firstP) + 1;
+            secHtml = secHtml.slice(0, end) + shape + secHtml.slice(end);
+          } else {
+            secHtml = `<p class=MsoNormal style='margin:0;line-height:1.0pt;font-size:1.0pt'>${shape}</p>\n` + secHtml;
+          }
+        }
+        bodyDivsHtml += `${sectionBreak}<div class="Section${secIndex}">\n${secHtml}\n</div>\n`;
       });
+      // Part-17.3: হেডার/ফুটার উপাদান (Word-HTML: @page-এ mso-header:h1 / mso-footer:f1 এদের নির্দেশ করে)
+      if (parsedBody.headerHtml || parsedBody.footerHtml) {
+        bodyDivsHtml += "<div style='mso-element:header' id=h1>\n" + (parsedBody.headerHtml || '') + "\n</div>\n" +
+          "<div style='mso-element:footer' id=f1>\n" + (parsedBody.footerHtml || '') + "\n</div>\n";
+      }
 
       return `<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml"

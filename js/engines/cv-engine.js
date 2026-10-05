@@ -12,6 +12,7 @@
      * Parses raw text into structured CV data.
      */
     parseCV(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       if (!rawText) return null;
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
 
@@ -35,51 +36,47 @@
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        if (!cv.name && /^(?:নাম|নামঃ|নাম:)\s*(.+)/i.test(line)) {
-          cv.name = line.replace(/^(?:নাম|নামঃ|নাম:)\s*/i, '').trim();
-          continue;
-        }
+        // Part-18.0: "নাম: …" — আগে "নাম" মিলে ":" সহ নাম হতো
+        const nm = line.match(/^নাম\s*[ঃ:]\s*(.+)/i);
+        if (!cv.name && nm) { cv.name = nm[1].trim(); continue; }
 
-        if (/জীবনবৃত্তান্ত|বায়োডাটা|বায়োডাটা|CURRICULUM\s*VITAE|RESUME/i.test(line) && line.length < 50) {
+        if (/জীবনবৃত্তান্ত|বায়োডাটা|বায়োডাটা|CURRICULUM\s*VITAE|RESUME/i.test(line) && line.length < 50) {
           cv.title = line;
           continue;
         }
 
-        // Section switches
-        if (/শিক্ষাগত\s*যোগ্যতা|Education/i.test(line)) {
-          section = 'education';
-          continue;
-        }
-        if (/অভিজ্ঞতা|কর্ম\s*অভিজ্ঞতা|Experience/i.test(line)) {
-          section = 'experience';
-          continue;
-        }
-        if (/দক্ষতা|কম্পিউটার\s*দক্ষতা|ভাষাগত\s*দক্ষতা|Skills/i.test(line)) {
-          section = 'skills';
-          continue;
-        }
+        // Part-18.0: টেবিলের বিভাজক-সারি বাদ
+        if (/^[\s|:\-]+$/.test(line) && /-{2,}/.test(line)) continue;
+
+        // Section switches (শুধু ছোট শিরোনাম-লাইন; লম্বা বাক্য নয়)
+        const isHead = line.length < 45;
+        if (isHead && /শিক্ষাগত\s*যোগ্যতা|Education/i.test(line)) { section = 'education'; continue; }
+        if (isHead && /অভিজ্ঞতা|কর্ম\s*অভিজ্ঞতা|Experience/i.test(line)) { section = 'experience'; continue; }
+        if (isHead && /দক্ষতা|কম্পিউটার\s*দক্ষতা|ভাষাগত\s*দক্ষতা|Skills/i.test(line)) { section = 'skills'; continue; }
+        if (isHead && /ব্যক্তিগত\s*তথ্য|Personal/i.test(line)) { section = 'personal'; continue; }
+        if (isHead && /উদ্দেশ্য|Objective/i.test(line) && /[ঃ:]\s*$/.test(line)) { section = 'objective'; continue; }
+        // অঙ্গীকার/ঘোষণা: ছোট শিরোনাম হলে পরের লাইন; বাক্য হলে সেটিই ঘোষণা
         if (/অঙ্গীকার|ঘোষণা|Declaration/i.test(line)) {
-          section = 'declaration';
+          if (isHead && /[ঃ:]?\s*$/.test(line) && line.split(/\s+/).length <= 3) section = 'declaration';
+          else { cv.declaration = line; section = 'end'; }
           continue;
         }
 
         // Contact detection
         const phoneMatch = line.match(/(?:মোবাইল|ফোন|Phone|Cell)[ঃ:\s]*([\d\+০-৯\s\-]+)/i);
-        if (phoneMatch) cv.contact.phone = phoneMatch[1].trim();
-
+        if (phoneMatch) { cv.contact.phone = phoneMatch[1].trim(); continue; }
         const emailMatch = line.match(/(?:ইমেইল|ই-মেইল|Email)[ঃ:\s]*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
-        if (emailMatch) cv.contact.email = emailMatch[1].trim();
+        if (emailMatch) { cv.contact.email = emailMatch[1].trim(); continue; }
+        const addrMatch = line.match(/^(?:ঠিকানা|বর্তমান\s*ঠিকানা|Address)[ঃ:]\s*(.+)/i);
+        if (addrMatch && !cv.contact.address) { cv.contact.address = addrMatch[1].trim(); continue; }
 
         if (section === 'education') {
           if (line.includes('|') || line.includes('\t') || /এস\.?এস\.?সি|এইচ\.?এস\.?সি|স্নাতক|মাস্টার্স|দাখিল|আলিম/i.test(line)) {
             const parts = line.split(/[|\t]+/).map(p => p.trim()).filter(Boolean);
+            // টেবিলের শিরোনাম-সারি (পরীক্ষা | প্রতিষ্ঠান | সাল | ফলাফল) ডেটা নয়
+            if (parts.length >= 3 && /পরীক্ষা|ডিগ্রি|Exam|Degree/i.test(parts[0]) && /সাল|বছর|Year/i.test(parts.join(' '))) continue;
             if (parts.length >= 3) {
-              cv.education.push({
-                exam: parts[0] || '',
-                board: parts[1] || '',
-                year: parts[2] || '',
-                gpa: parts[3] || ''
-              });
+              cv.education.push({ exam: parts[0] || '', board: parts[1] || '', year: parts[2] || '', gpa: parts[3] || '' });
             } else {
               cv.education.push({ exam: line, board: '', year: '', gpa: '' });
             }
@@ -88,8 +85,14 @@
           cv.experience.push(line);
         } else if (section === 'skills') {
           cv.skills.push(line);
+        } else if (section === 'objective') {
+          cv.personalInfo.push({ label: 'ক্যারিয়ারের উদ্দেশ্য', value: line });
+          section = 'personal';
         } else if (section === 'declaration') {
           cv.declaration = line;
+          section = 'end';
+        } else if (section === 'end') {
+          // স্বাক্ষর/নাম — ঘোষণার পরের লাইন রাখার দরকার নেই (জেনারেটর নিজে স্বাক্ষর-ঘর দেয়)
         } else {
           // Personal info key-value
           const kvMatch = line.match(/^(.+?)[ঃ:]\s*(.+)/);

@@ -4,16 +4,16 @@
  * পথ-১ (ব্যবহারকারীর সিদ্ধান্ত ২০২৬-১০-০৫): ছবি/PDF-এর যেখানে চিত্র আছে, সেটি মূল পাতা থেকে কেটে
  * পরিষ্কার করে প্রকৃত মাপে এডিটযোগ্য ফাইলে বসানো।
  *
- *  ১) Gemini OCR লেখায় চিত্রের জায়গায় ট্যাগ দেয়:  [[FIG:p=<পাতা>;box=<ymin>,<xmin>,<ymax>,<xmax>]]  (০–১০০০)
- *  ২) মূল পাতা আবার উচ্চ রেজোলিউশনে (≈৩০০ DPI) আঁকা — Gemini-তে পাঠানো সংকুচিত ছবি থেকে নয়
- *  ৩) বক্স নিখুঁত করা (আমাদের ইঞ্জিন): বক্সের ভেতরের কালির সীমা + গায়ে-লাগা লেবেল (A, B, O, ৫ সে.মি.)
- *     যতক্ষণ সংলগ্ন কালি আছে ততক্ষণ প্রান্ত বাড়ানো; ফাঁকা সাদা ফালিতে থামে (পাশের প্রশ্ন-লেখা ঢোকে না)
- *  ৪) পরিষ্কার: স্ক্যানের ধূসর/হলদে পটভূমি সাদা, বিচ্ছিন্ন দাগ মোছা, চারপাশের বাড়তি সাদা ছাঁটা
- *  ৫) মাপ: মূল পাতায় চিত্রের প্রকৃত প্রস্থ (ইঞ্চি); কলামের লেখার প্রস্থের বেশি হলে কলাম-প্রস্থ
- *  ৬) লেখায় ট্যাগের জায়গায় চিত্র-মার্কার QZFIGnQZ — চিত্র-স্টোর StudioFigurePipeline-এর একই কাঠামো
+ *  ১) Gemini OCR লেখায় চিত্রের জায়গায় ট্যাগ দেয়:  [[FIG:p=<পাতা>;box=<ymin>,<xmin>,<ymax>,<xmax>]]  (০–১০০০)
+ *  ২) মূল পাতা আবার উচ্চ রেজোলিউশনে (≈৩০০ DPI) আঁকা — Gemini-তে পাঠানো সংকুচিত ছবি থেকে নয়
+ *  ৩) বক্স নিখুঁত করা (আমাদের ইঞ্জিন): বক্সের ভেতরের কালির সীমা + গায়ে-লাগা লেবেল (A, B, O, ৫ সে.মি.)
+ *     যতক্ষণ সংলগ্ন কালি আছে ততক্ষণ প্রান্ত বাড়ানো; ফাঁকা সাদা ফালিতে থামে (পাশের প্রশ্ন-লেখা ঢোকে না)
+ *  ৪) পরিষ্কার: স্ক্যানের ধূসর/হলদে পটভূমি সাদা, বিচ্ছিন্ন দাগ মোছা, চারপাশের বাড়তি সাদা ছাঁটা
+ *  ৫) মাপ: মূল পাতায় চিত্রের প্রকৃত প্রস্থ (ইঞ্চি); কলামের লেখার প্রস্থের বেশি হলে কলাম-প্রস্থ
+ *  ৬) লেখায় ট্যাগের জায়গায় চিত্র-মার্কার QZFIGnQZ — চিত্র-স্টোর StudioFigurePipeline-এর একই কাঠামো
  *
  * বিশুদ্ধ হিসাব (ট্যাগ, বক্স, পরিষ্কার, মাপ) RGBA বাফারে — Node-এ টেস্টযোগ্য।
- * ব্রাউজার-অংশ (pdf.js দিয়ে পাতা আঁকা, ক্যানভাসে কাটা) আলাদা ফাংশনে।
+ * ব্রাউজার-অংশ (pdf.js দিয়ে পাতা আঁকা, ক্যানভাসে কাটা) আলাদা ফাংশনে।
  */
 (function (global) {
   'use strict';
@@ -21,7 +21,7 @@
   const DPI = 300;
   const MAX_RENDER_PX = 5200;          // ব্রাউজার-ক্যানভাস সীমার নিচে নিরাপদ
   const A4_WIDTH_IN = 8.27;
-  const DESKEW_MIN_DEG = 0.15;          // এর কম কাত চোখে পড়ে না — ঘোরালে বরং সামান্য ঝাপসা হয়
+  const DESKEW_MIN_DEG = 0.15;          // এর কম কাত চোখে পড়ে না — ঘোরালে বরং সামান্য ঝাপসা হয়
   const CSS_PX_PER_IN = 96;            // StudioFigurePipeline-এর cssW (EMU_PER_PX = 9525) ৯৬ DPI ধরে
 
   const bnToAscii = (s) => String(s == null ? '' : s).replace(/[০-৯]/g, (d) => String(d.charCodeAt(0) - 0x09E6));
@@ -29,8 +29,8 @@
   const lum = (d, i) => (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
 
   // ───────────────────────────── ১) ট্যাগ ─────────────────────────────
-  // Part-16.3: Gemini ট্যাগের গঠন প্রতিবার হুবহু এক থাকে না (box=[..], "page=", পৃষ্ঠা=, বাড়তি ক্ষেত্র,
-  // \[\[ এস্কেপ) — তাই যেকোনো [[FIG ...]] ধরা হয়, ভেতর থেকে পাতা ও ৪টি সংখ্যা সহনশীলভাবে পড়া হয়।
+  // Part-16.3: Gemini ট্যাগের গঠন প্রতিবার হুবহু এক থাকে না (box=[..], "page=", পৃষ্ঠা=, বাড়তি ক্ষেত্র,
+  // \[\[ এস্কেপ) — তাই যেকোনো [[FIG ...]] ধরা হয়, ভেতর থেকে পাতা ও ৪টি সংখ্যা সহনশীলভাবে পড়া হয়।
   const ANY_TAG_SRC = '\\\\?\\[\\\\?\\[\\s*FIG\\b([^\\n]*?)\\\\?\\]\\\\?\\](?!\\])';
   const anyTagRe = (lead) => new RegExp((lead ? '[ \\t]*' : '') + ANY_TAG_SRC, 'gi');
 
@@ -68,7 +68,7 @@
     return out;
   }
 
-  /** ট্যাগ → চিত্র-মার্কার (ক্রমিক id ১ থেকে, বা firstId থেকে); বাদ পড়া (অবৈধ) ট্যাগ লেখা থেকে মুছে যায় */
+  /** ট্যাগ → চিত্র-মার্কার (ক্রমিক id ১ থেকে, বা firstId থেকে); বাদ পড়া (অবৈধ) ট্যাগ লেখা থেকে মুছে যায় */
   function replaceTagsWithMarkers(text, firstId) {
     let id = Number.isFinite(firstId) ? firstId : 1;
     const ids = [];
@@ -90,8 +90,8 @@
 
   /**
    * Part-16.3: ট্যাগের অবস্থান ঠিক করা — Gemini কখনো "১৭। [[FIG]]\nপ্রশ্নের লেখা" বা "১৭।\n[[FIG]]\nলেখা"
-   * লেখে; ট্যাগ সরালে নম্বর একা লাইনে পড়ে প্রশ্ন ভেঙে যেত (নম্বর আলাদা অনুচ্ছেদ, ক্রম নতুন করে শুরু)।
-   * নিয়ম: নম্বর + (শুধু ট্যাগ) + পরের লেখা ⇒ "১৭। লেখা [[FIG]]" (চিত্র প্রশ্নের লেখার ঠিক পরে বসে)।
+   * লেখে; ট্যাগ সরালে নম্বর একা লাইনে পড়ে প্রশ্ন ভেঙে যেত (নম্বর আলাদা অনুচ্ছেদ, ক্রম নতুন করে শুরু)।
+   * নিয়ম: নম্বর + (শুধু ট্যাগ) + পরের লেখা ⇒ "১৭। লেখা [[FIG]]" (চিত্র প্রশ্নের লেখার ঠিক পরে বসে)।
    * অন্য সব লাইন অপরিবর্তিত।
    */
   const NUM_PREFIX_RE = /^(\s*(?:\*\*)?[0-9০-৯]{1,3}\s*[।.)](?:\*\*)?)\s*$/;
@@ -110,7 +110,7 @@
       const bare = withoutTags(line);
       const np = NUM_PREFIX_RE.exec(bare);
       if (np) {
-        // নম্বর-একা (ট্যাগসহ বা ছাড়া) → পরের ট্যাগ-লাইন জমিয়ে প্রথম লেখার লাইনের সাথে জোড়া
+        // নম্বর-একা (ট্যাগসহ বা ছাড়া) → পরের ট্যাগ-লাইন জমিয়ে প্রথম লেখার লাইনের সাথে জোড়া
         let tags = tagsOf(line);
         let j = i + 1;
         while (j < lines.length && (isBlank(lines[j]) || isTagOnly(lines[j]))) { if (isTagOnly(lines[j])) tags += (tags ? ' ' : '') + tagsOf(lines[j]); j++; }
@@ -125,7 +125,7 @@
     return out.join('\n');
   }
 
-  /** ০–১০০০ বক্স → পিক্সেল আয়তক্ষেত্র {x,y,w,h} (pad = পাতার ভগ্নাংশ) */
+  /** ০–১০০০ বক্স → পিক্সেল আয়তক্ষেত্র {x,y,w,h} (pad = পাতার ভগ্নাংশ) */
   function boxToRect(box, W, H, pad) {
     const p = Number.isFinite(pad) ? pad : 0;
     const [ymin, xmin, ymax, xmax] = box;
@@ -136,7 +136,7 @@
     return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
 
-  /** পিক্সেল আয়তক্ষেত্র → ০–১০০০ বক্স (রিভিউ স্ক্রিনে সংরক্ষণের জন্য) */
+  /** পিক্সেল আয়তক্ষেত্র → ০–১০০০ বক্স (রিভিউ স্ক্রিনে সংরক্ষণের জন্য) */
   function rectToBox(r, W, H) {
     return [Math.round(r.y / H * 1000), Math.round(r.x / W * 1000), Math.round((r.y + r.h) / H * 1000), Math.round((r.x + r.w) / W * 1000)];
   }
@@ -154,13 +154,13 @@
 
   /**
    * Gemini-বক্স → চিত্রের ঠিক চারপাশে (Part-16.3, আসল PDF-এ যাচাইকৃত)।
-   * আসল স্ক্যানে Gemini-র বক্স প্রায় নিখুঁত; ঝুঁকি হলো বাড়তি কাটা (পাশের প্রশ্ন/অপশন/সমাধান)।
+   * আসল স্ক্যানে Gemini-র বক্স প্রায় নিখুঁত; ঝুঁকি হলো বাড়তি কাটা (পাশের প্রশ্ন/অপশন/সমাধান)।
    * পদ্ধতি — সংযুক্ত কালি-খণ্ড (8-connected):
    *  • যে খণ্ড বক্সের ভেতরে অন্তত একটি পিক্সেল রাখে, তা বিবেচ্য
    *  • খণ্ডটি পুরোটা বক্স+maxGrow (পাতার ছোট দিকের ২.৫%) সীমার ভেতরে ⇒ পুরো খণ্ড (আধা-কাটা লেবেল A, B, M উদ্ধার)
-   *  • খণ্ডের অর্ধেকের কম পিক্সেল বক্সের ভেতরে (প্রান্ত-ছোঁয়া পাশের লেখা/অপশন) ⇒ পুরো বাদ
-   *  • সীমা ছাড়িয়ে গেলে (ছোট বক্সে কাটা বড় বৃত্ত/রেখা) ⇒ সীমা পর্যন্ত
-   *  • বক্সের বাইরে থাকা খণ্ড (পাশের লেখা, বিন্দু-রেখা) কখনো নয়; অতি-ছোট দাগ (< minPix) উপেক্ষা
+   *  • খণ্ডের অর্ধেকের কম পিক্সেল বক্সের ভেতরে (প্রান্ত-ছোঁয়া পাশের লেখা/অপশন) ⇒ পুরো বাদ
+   *  • সীমা ছাড়িয়ে গেলে (ছোট বক্সে কাটা বড় বৃত্ত/রেখা) ⇒ সীমা পর্যন্ত
+   *  • বক্সের বাইরে থাকা খণ্ড (পাশের লেখা, বিন্দু-রেখা) কখনো নয়; অতি-ছোট দাগ (< minPix) উপেক্ষা
    *  তারপর চারপাশে margin।
    */
   function refineRect(img, rect, opts) {
@@ -173,7 +173,7 @@
     const minPix = o.minPix != null ? o.minPix : Math.max(4, unit * unit);
     const bx0 = clamp(Math.round(rect.x), 0, W - 1), by0 = clamp(Math.round(rect.y), 0, H - 1);
     const bx1 = clamp(Math.round(rect.x + rect.w), bx0 + 1, W), by1 = clamp(Math.round(rect.y + rect.h), by0 + 1, H);
-    // অনুসন্ধান-এলাকা = বক্স + maxGrow (+১, সীমা ছোঁয়া খণ্ড চেনার জন্য)
+    // অনুসন্ধান-এলাকা = বক্স + maxGrow (+১, সীমা ছোঁয়া খণ্ড চেনার জন্য)
     const gx0 = Math.max(0, bx0 - maxGrow - 1), gy0 = Math.max(0, by0 - maxGrow - 1);
     const gx1 = Math.min(W, bx1 + maxGrow + 1), gy1 = Math.min(H, by1 + maxGrow + 1);
     const lx0 = bx0 - maxGrow, ly0 = by0 - maxGrow, lx1 = bx1 + maxGrow, ly1 = by1 + maxGrow;
@@ -209,7 +209,7 @@
         }
       }
       if (n < minPix) continue;
-      // বক্সের প্রান্ত সামান্য ছোঁয়া পাশের লেখা (খণ্ডের অর্ধেকের কম ভেতরে) ⇒ পুরো বাদ
+      // বক্সের প্রান্ত সামান্য ছোঁয়া পাশের লেখা (খণ্ডের অর্ধেকের কম ভেতরে) ⇒ পুরো বাদ
       if (nIn * 2 < n) continue;
       const within = cx0 > lx0 && cy0 > ly0 && cx1 < lx1 - 1 && cy1 < ly1 - 1;
       const [a0, b0, a1, b1] = within ? [cx0, cy0, cx1, cy1]
@@ -225,7 +225,7 @@
   /**
    * Part-16.4: পাতার কাত (ডিগ্রি) — লেখার লাইনের অনুভূমিক প্রক্ষেপণ (projection profile)।
    * প্রতিটি কোণে কালি-বিন্দুগুলো y' = y·cosθ − x·sinθ সারিতে জমা; সারিগুলোর বর্গ-যোগফল সর্বোচ্চ
-   * যে কোণে (লাইনগুলো সবচেয়ে "ধারালো") সেটাই কাত। ধনাত্মক = লাইন ডানে নামছে (ঘড়ির কাঁটার দিকে কাত)।
+   * যে কোণে (লাইনগুলো সবচেয়ে "ধারালো") সেটাই কাত। ধনাত্মক = লাইন ডানে নামছে (ঘড়ির কাঁটার দিকে কাত)।
    * দ্রুততার জন্য ~১০০০px প্রস্থে নমুনা; ±maxDeg-এ ০.১° ধাপ, তারপর ০.০২° সূক্ষ্ম ধাপ।
    */
   function estimateSkew(img, opts) {
@@ -256,8 +256,8 @@
   }
 
   /**
-   * Part-16.3: কাটা ছবির কিনারা ছোঁয়া কালি-খণ্ড = পাশের লেখার টুকরো (চিত্র মার্জিনের কারণে কিনারা ছোঁয় না) ⇒ সাদা।
-   * নিরাপত্তা: মোট কালির ২৫%-এর বড় খণ্ড (ছোট বক্সে কাটা চিত্র নিজেই) কখনো মোছা হয় না। img in-place।
+   * Part-16.3: কাটা ছবির কিনারা ছোঁয়া কালি-খণ্ড = পাশের লেখার টুকরো (চিত্র মার্জিনের কারণে কিনারা ছোঁয় না) ⇒ সাদা।
+   * নিরাপত্তা: মোট কালির ২৫%-এর বড় খণ্ড (ছোট বক্সে কাটা চিত্র নিজেই) কখনো মোছা হয় না। img in-place।
    */
   function clearBorderFragments(img, thr) {
     const W = img.width, H = img.height, d = img.data, T = thr || 170;
@@ -293,7 +293,7 @@
   // ───────────────────────────── ৪) পরিষ্কার ─────────────────────────────
   /**
    * পটভূমি সাদা (রঙ অক্ষত): উজ্জ্বলতম ~২০% পিক্সেল = পটভূমি ⇒ প্রতিটি চ্যানেল সেই অনুপাতে টেনে ২৫৫;
-   * প্রায়-সাদা ⇒ খাঁটি সাদা; বিচ্ছিন্ন একক কালো দাগ (৮-প্রতিবেশীর ≤১টি কালো) ⇒ সাদা। img in-place।
+   * প্রায়-সাদা ⇒ খাঁটি সাদা; বিচ্ছিন্ন একক কালো দাগ (৮-প্রতিবেশীর ≤১টি কালো) ⇒ সাদা। img in-place।
    */
   function cleanImage(img) {
     const W = img.width, H = img.height, d = img.data;
@@ -330,7 +330,7 @@
     return img;
   }
 
-  /** চারপাশের সাদা ছাঁটার আয়তক্ষেত্র (কালি না থাকলে পুরোটা) */
+  /** চারপাশের সাদা ছাঁটার আয়তক্ষেত্র (কালি না থাকলে পুরোটা) */
   function trimRect(img, margin) {
     const W = img.width, H = img.height, d = img.data;
     let minX = W, minY = H, maxX = -1, maxY = -1;
@@ -386,7 +386,7 @@
   function pdfLib() { return (typeof window !== 'undefined') && (window['pdfjs-dist/build/pdf'] || window.pdfjsLib); }
 
   /**
-   * filesQueue (ai-ocr-engine) → পাতার উৎস তালিকা, Gemini-কে যে ক্রমে পাঠানো হয়েছে সেই ক্রমে।
+   * filesQueue (ai-ocr-engine) → পাতার উৎস তালিকা, Gemini-কে যে ক্রমে পাঠানো হয়েছে সেই ক্রমে।
    * আইটেম: PDF-পাতা {file, pdfPage, pageWidthPt} | ছবি {file|base64} | কাঁচা PDF {file, isPdf} (সব পাতা বিস্তার)
    */
   async function buildPageSources(queue) {
@@ -405,7 +405,7 @@
     const key = file.name + ':' + file.size + ':' + file.lastModified;
     if (!pdfCache.has(key)) {
       const lib = pdfLib();
-      if (!lib) throw new Error('pdf.js লোড হয়নি');
+      if (!lib) throw new Error('pdf.js লোড হয়নি');
       if (lib.GlobalWorkerOptions && !lib.GlobalWorkerOptions.workerSrc) lib.GlobalWorkerOptions.workerSrc = 'js/vendor/pdf.worker.min.js';
       pdfCache.set(key, lib.getDocument({ data: await file.arrayBuffer() }).promise);
     }
@@ -413,7 +413,7 @@
   }
 
   function loadImage(src) {
-    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('ছবি লোড হয়নি')); im.src = src; });
+    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('ছবি লোড হয়নি')); im.src = src; });
   }
 
   /** পাতা → উচ্চ-রেজোলিউশন ক্যানভাস {canvas, widthIn} (ক্যাশসহ) */
@@ -450,15 +450,15 @@
     return result;
   }
 
-  /** পাতার পিক্সেল-ডেটা একবারই পড়া (৩০০ DPI A4 ≈ ৩৫ MB) — একই পাতার একাধিক চিত্রে পুনর্ব্যবহার */
+  /** পাতার পিক্সেল-ডেটা একবারই পড়া (৩০০ DPI A4 ≈ ৩৫ MB) — একই পাতার একাধিক চিত্রে পুনর্ব্যবহার */
   function pageImageData(pg) {
     if (!pg.imageData) pg.imageData = pg.canvas.getContext('2d').getImageData(0, 0, pg.canvas.width, pg.canvas.height);
     return pg.imageData;
   }
 
-  /** পাতা-ক্যানভাস + আয়তক্ষেত্র → পরিষ্কার চিত্র {dataUrl, pxW, pxH, cssW, widthIn, clamped} */
+  /** পাতা-ক্যানভাস + আয়তক্ষেত্র → পরিষ্কার চিত্র {dataUrl, pxW, pxH, cssW, widthIn, clamped} */
   function cropClean(pageCanvas, rect, pageWidthIn, maxIn, angleDeg) {
-    // Part-16.4: কাত সোজা করা — আয়তক্ষেত্রের কেন্দ্র ঘিরে পাতাকে −কাত ঘুরিয়ে আঁকা (কোণ কাটা না পড়তে চারপাশে বাড়তি জায়গা)
+    // Part-16.4: কাত সোজা করা — আয়তক্ষেত্রের কেন্দ্র ঘিরে পাতাকে −কাত ঘুরিয়ে আঁকা (কোণ কাটা না পড়তে চারপাশে বাড়তি জায়গা)
     const ang = Math.abs(angleDeg || 0) >= DESKEW_MIN_DEG ? angleDeg : 0;
     const pad = ang ? Math.ceil(Math.max(rect.w, rect.h) * Math.sin(Math.abs(ang) * Math.PI / 180)) + 2 : 0;
     const cw = rect.w + 2 * pad, ch = rect.h + 2 * pad;
@@ -504,7 +504,7 @@
       const item = { id: ids[i], page: tg.page, box: tg.box.slice(), maxWidthIn: maxIn, align: 'center' };
       try {
         const src = sources[tg.page - 1];
-        if (!src) throw new Error('পাতা ' + tg.page + ' পাওয়া যায়নি');
+        if (!src) throw new Error('পাতা ' + tg.page + ' পাওয়া যায়নি');
         const pg = await renderPage(src);
         const W = pg.canvas.width, H = pg.canvas.height;
         const img = pageImageData(pg);
@@ -524,7 +524,7 @@
     return { text: marked, items };
   }
 
-  /** রিভিউ স্ক্রিনে নতুন আয়তক্ষেত্রে আবার কাটা */
+  /** রিভিউ স্ক্রিনে নতুন আয়তক্ষেত্রে আবার কাটা */
   function recrop(item, rect, refine) {
     const W = item.pageCanvas.width, H = item.pageCanvas.height;
     let r = { x: clamp(Math.round(rect.x), 0, W - 1), y: clamp(Math.round(rect.y), 0, H - 1), w: 0, h: 0 };

@@ -2686,6 +2686,8 @@ function initUnifiedConverterEngine() {
 
       aiOcrOptionsBox?.classList.remove('hidden');
       officeDocOptionsBox?.classList.add('hidden');
+      // Part-17.6: লেআউট-মোড (আমাদের ফরম্যাট / মূলের মতো হুবহু) — js/faithful-mode-ui.js
+      if (window.FayzarFaithfulUI && aiOcrOptionsBox) window.FayzarFaithfulUI.mountModeCards(aiOcrOptionsBox);
 
       if (scan.totalFiles > 1) {
         aiOcrMultiThumbsContainer?.classList.remove('hidden');
@@ -2892,6 +2894,12 @@ function initUnifiedConverterEngine() {
     }
 
     try {
+      // Part-17.6: হুবহু-লেআউট মোড — আলাদা পথ (js/faithful-mode-ui.js), সাধারণ OCR-পথ অপরিবর্তিত
+      if (window.FayzarFaithfulUI && window.FayzarFaithfulUI.isFaithful()) {
+        await window.FayzarFaithfulUI.runWizard({ fileName: currentScanResult.file && currentScanResult.file.name });
+        if (window.FayzarAiOcrEngine && window.FayzarAiOcrEngine.state) window.FayzarAiOcrEngine.state.isProcessing = false;
+        return;
+      }
       const res = await window.FayzarAiOcrEngine.startUnifiedOcr(
         'none',
         (statusText, pct) => {

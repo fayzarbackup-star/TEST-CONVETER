@@ -1979,6 +1979,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         return `✅ সফল — ${s.model || ''} থেকে আউটপুট আসছে…`;
       case 'waiting':
         return `⏳ ${s.model || ''} — ${s.waitingSec || 0} সেকেন্ড ধরে অপেক্ষা করছি…`;
+      case 'thinking':
+        return `🧠 Gemini পুরো ফাইল পড়ে দুইবার যাচাই করছে — ${s.waitingSec || 0} সেকেন্ড…`;
       case 'fatal':
         return '⚠️ ফাইল/পেলোডে সমস্যা — অন্য কি বা মডেলে চেষ্টা করে লাভ নেই।';
       default:
@@ -2074,6 +2076,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
       let proxyFailure = null;
       let proxyTruncated = false;      // finishReason: MAX_TOKENS — আউটপুট কেটে গেছে
+      let proxyStopReason = null;      // Part-17.2: RECITATION/SAFETY/OTHER
       const absorb = (data) => {
         if (!data || typeof data !== 'object') return;
         // Worker-এর লাইভ হার্টবিট: সফল হওয়ার আগেই অবস্থা দেখা যায় (আর "জমে থাকা" নয়)
@@ -2091,9 +2094,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         // আউটপুট সীমায় পৌঁছালে সেটি লুকিয়ে না রেখে স্পষ্ট চিহ্ন দেওয়া হয় (নইলে অর্ধেক প্রশ্নপত্র
         // "সফল" ভেবে ডাউনলোড হয়ে যেত) — ক্লায়েন্টের অটো-ডাউনলোড ব্লকার এটি চিনে ফেলে।
         if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') proxyTruncated = true;
+        // Part-17.2: RECITATION (প্রকাশিত লেখায় কপিরাইট-ছাঁকনি) / SAFETY / OTHER — লেখা মাঝপথে থামে; আগে চুপচাপ "সফল" হতো
+        { const fr = data.candidates?.[0]?.finishReason; if (fr && !/^(STOP|MAX_TOKENS|FINISH_REASON_UNSPECIFIED)$/.test(fr)) proxyStopReason = fr; }
         const parts = data.candidates?.[0]?.content?.parts;
         if (Array.isArray(parts)) {
-          const t = parts.map(pp => pp.text || '').join('');
+          // Part-17.0: Gemini-র চিন্তার সারাংশ (thought) কখনো লেখায় নয় — Worker বাদ দেয়, এখানেও নিরাপত্তা-ছাঁকনি
+          const t = parts.filter(pp => !pp.thought).map(pp => pp.text || '').join('');
           if (t) fullText += t;
         } else if (typeof data.text === 'string' && data.text) {
           fullText += data.text;
@@ -2169,6 +2175,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
       if (fullText.trim() && proxyTruncated && !/\[অসম্পূর্ণ:/.test(fullText)) {
         fullText += '\n\n[অসম্পূর্ণ: MAX_TOKENS — আউটপুট সীমায় পৌঁছেছে, শেষ অংশ কাটা পড়তে পারে। ফাইলটি ছোট করে বা মডেল বদলে পুনরায় চেষ্টা করুন।]';
+      }
+      if (fullText.trim() && proxyStopReason && !/\[অসম্পূর্ণ:/.test(fullText)) {
+        fullText += '\n\n[অসম্পূর্ণ: ' + proxyStopReason + ' — Gemini লেখা মাঝপথে থামিয়েছে' +
+          (proxyStopReason === 'RECITATION' ? ' (প্রকাশিত লেখা হুবহু লেখায় Google-এর কপিরাইট-ছাঁকনি)' : '') + '; শেষ অংশ আসেনি।]';
       }
 
       if (!fullText.trim() && proxyFailure) {
@@ -2254,6 +2264,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         temperature: 0.2,
         maxOutputTokens: isFallbackFormat ? 8192 : 65536
       };
+      // Part-17.1: চিন্তার মাত্রা (Gemini 3 thinkingLevel: low | medium | high) — মাপার পরীক্ষার জন্য;
+      // সেটিং না থাকলে আগের মতো (মডেলের নিজস্ব স্বয়ংক্রিয় মাত্রা)। নিয়ম ১৮ (প্রম্পট) অপরিবর্তিত।
+      try {
+        const lvl = (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_thinking_level')) || '';
+        if (!isFallbackFormat && /^(low|medium|high)$/.test(lvl)) genConfig.thinkingConfig = { thinkingLevel: lvl };
+      } catch (e) { /* localStorage নেই */ }
 
       const safetySettings = [
         { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -2564,7 +2580,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                     }
                     
                     if (candidate?.content?.parts) {
-                      const chunkPart = candidate.content.parts.map(p => p.text || '').join('');
+                      const chunkPart = candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join('');
                       if (chunkPart) {
                         fullStreamedText += chunkPart;
                         if (fullStreamedText.includes('.......')) {
@@ -2624,7 +2640,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                     const chunkObj = JSON.parse(dataJson);
                     const candidate = chunkObj.candidates?.[0];
                     if (candidate?.content?.parts) {
-                      fullStreamedText += candidate.content.parts.map(p => p.text || '').join('');
+                      fullStreamedText += candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join('');
                     }
                   } catch (e) {}
                 }

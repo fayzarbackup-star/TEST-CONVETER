@@ -9,5 +9,6 @@ const { log = [] } = await res.json();
 for (const r of log.slice(-n)) {
   const when = new Date(r.at).toISOString().replace('T', ' ').slice(0, 19);
   const atts = r.attempts.map((a) => `${a.key}/${a.model.replace('gemini-', '')}:${a.class}${a.sec ? '@' + a.sec + 's' : ''}`).join(' ');
-  console.log(`${when}Z ${r.colo || '?'}/${r.country || '?'} ${Math.round(r.bytes / 1024)}KB → ${r.outcome} ttfb=${r.ttfbSec}s total=${r.totalSec}s finish=${r.finish} | ${atts}`);
+  const th = r.firstThoughtMs != null ? ` firstThought=${Math.round(r.firstThoughtMs / 1000)}s` : '';
+  console.log(`${when}Z ${r.colo || '?'}/${r.country || '?'} ${Math.round(r.bytes / 1024)}KB → ${r.outcome} ttfb=${r.ttfbSec}s${th} thoughts=${r.thoughtChunks ?? '-'} total=${r.totalSec}s finish=${r.finish} | ${atts}`);
 }

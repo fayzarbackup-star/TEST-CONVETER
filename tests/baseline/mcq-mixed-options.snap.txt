@@ -277,7 +277,7 @@
 <h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">আপনার প্রতিষ্ঠান এর নাম</h1>
 <div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">ঠিকানা লিখুন</div>
 <div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">পরীক্ষার নাম লিখুন</div>
-<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ ................  |  বিষয়ঃ ................</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ ................  |  বিষয়ঃ ................</div>
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
 <div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ................</div>
 <div style="text-align: center; flex: 1;">
@@ -508,7 +508,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
+<w:t xml:space="preserve">শ্রেণিঃ ................  |  বিষয়ঃ ................</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -525,7 +525,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">সময়: ................</w:t>
+<w:t xml:space="preserve">সময়: ................</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1284,8 +1284,8 @@
 {\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472? \u2447?\u2480? \u2472?\u2494?\u2478?}\par}
 {\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
 {\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
-{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2479?\u2492?\u2435? ................}\par}
-{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2479?\u2492?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2527?\u2435? ................}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2527?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
 {\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
 \sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
 {\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480?\u2503?\u2480? \u2476?\u2509?\u2480?\u2503?\u2439?\u2472? \u2476?\u2482?\u2494? \u2489?\u2527? \u2453?\u2494?\u2453?\u2503??}\par}
