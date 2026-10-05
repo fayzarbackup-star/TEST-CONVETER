@@ -66,6 +66,12 @@
       return { kind: 'all_cooling', waitSec: wait, detail: String(b.error || 'all keys cooling'), attempts };
     }
 
+    // Part-16.5: Google-এর "User location is not supported" — Worker-অবস্থানের সাময়িক অঞ্চল-সীমা,
+    // ফাইলের দোষ নয় (আগে ৪০০ বলে "পেলোড/ছবি সমস্যা" দেখাত)। কয়েক মিনিটে নিজেই কেটে যায়।
+    if (attempts.some(a => a.class === 'LOCATION') || /user location is not supported/i.test(lastDetail)) {
+      return { kind: 'location', waitSec: 90, detail: lastDetail || 'location', attempts };
+    }
+
     // ৪০০-শ্রেণির পেলোড-ত্রুটি: Worker তখনই ৫০২ দেয় যখন প্রতিটি প্রচেষ্টা FATAL_INPUT
     // (যেমন: "Unable to process input image") — কি বদলে বা বারবার চেষ্টা করে লাভ নেই।
     const allFatal = attempts.length > 0 && attempts.every(a => a.class === 'FATAL_INPUT');
@@ -103,6 +109,18 @@
           action: 'abort', kind: info.kind, waitSec: 0, tone: 'error',
           message: '⚠️ প্রক্সি ফাইলটি প্রসেস করতে পারেনি (পেলোড/ছবি সমস্যা)। কি বদলে বা বারবার চেষ্টা করে লাভ নেই — ' +
                    'ছবি/PDF-এর মান যাচাই করে আবার দিন।' + (info.detail ? ` (${String(info.detail).slice(0, 120)})` : '')
+        };
+
+      case 'location':
+        if (hasOwnKey) {
+          return {
+            action: 'direct', kind: info.kind, waitSec: info.waitSec, tone: 'info',
+            message: '⚡ Google সাময়িকভাবে সার্ভারের অঞ্চল থেকে অনুরোধ নিচ্ছে না — আপনার নিজের API Key দিয়ে সরাসরি চেষ্টা করা হচ্ছে...'
+          };
+        }
+        return {
+          action: 'abort', kind: info.kind, waitSec: info.waitSec, tone: 'warning',
+          message: '⏳ Google এই মুহূর্তে আমাদের সার্ভারের অঞ্চল থেকে অনুরোধ নিচ্ছে না (সাময়িক সমস্যা, ফাইলের দোষ নয়) — ১–২ মিনিট পরে আবার চেষ্টা করুন।'
         };
 
       case 'all_cooling':

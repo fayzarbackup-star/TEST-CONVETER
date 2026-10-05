@@ -136,6 +136,18 @@
     // বাংলা ডিজিট ('২') বা '২ কলাম' জাতীয় মানও গণনায় চলে (UI/OCR দুই পাথের জন্যই)
     count: (v, fb, lo, hi) => clamp(Math.round(finiteOr(parseFloat(bnDigits(v)), fb)), lo, hi),
     linePitchTwips,
+    /** এক-অঙ্কের ক্রমিকের (১।–৯।) হ্যাঙ্গিং ইনডেন্ট — ০.২" (Part-15.4, সব প্রশ্নপত্র-পথে একই নিয়ম) */
+    COMPACT_NUMBER_INDENT: 288,
+    /**
+     * প্রশ্ন-নম্বর অনুযায়ী হ্যাঙ্গিং ইনডেন্ট: ১–৯ → ০.২" (নম্বরের পরে স্বাভাবিক এক-ফাঁক),
+     * ১০ বা বেশি / নম্বরহীন → base (০.৩")। বাংলা/ইংরেজি দুই অঙ্কই চেনে।
+     */
+    questionIndent: (num, base, compact) => {
+      const b = Number.isFinite(+base) && +base > 0 ? +base : 432;
+      const c = Number.isFinite(+compact) && +compact > 0 ? +compact : 288;
+      const n = parseInt(bnDigits(String(num == null ? '' : num)).replace(/[^\d]/g, ''), 10);
+      return Number.isFinite(n) && n >= 1 && n <= 9 ? Math.min(b, c) : b;
+    },
     /** DOCX-এর "মাল্টিপল" স্পেসিং (= ২৪০ = single) — ফন্ট-সাইজ-আপেক্ষিক, তাই NaN-মুক্ত */
     docxLineRule: (factor) => Math.round(240 * clamp(finiteOr(factor, 1.5), 0.8, 3))
   };

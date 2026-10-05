@@ -3125,7 +3125,7 @@ function initUnifiedConverterEngine() {
 
       // ── MD File: direct Word download via ExportDualEngine ──
       if (scan.isMdFile || scan.ext === 'md' || scan.ext === 'txt') {
-        const mdText = scan.mdText || '';
+        let mdText = scan.mdText || '';
         if (!mdText.trim()) { alert('MD ফাইলটি খালি।'); return; }
         try {
           // Auto-detect document type from content
@@ -3152,6 +3152,10 @@ function initUnifiedConverterEngine() {
             margin: (document.getElementById('ai-target-page-margin') || {}).value || 'normal'
           };
           let blob;
+          // Part-16.2: .md ফাইলে মূল পাতা নেই ⇒ কাঁচা চিত্র-ট্যাগ লেখা হিসেবে ফাইলে যাবে না
+          if (typeof FayzarFigureExtractor !== 'undefined' && FayzarFigureExtractor.hasLooseTags(mdText)) {
+            mdText = FayzarFigureExtractor.stripTags(mdText);
+          }
           if (typeof ExportDualEngine !== 'undefined') {
             blob = await ExportDualEngine.generateWordDoc(mdText, mdDocType, mdOptions);
           } else {

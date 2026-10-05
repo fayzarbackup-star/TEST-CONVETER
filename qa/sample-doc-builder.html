@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>নমুনা Word-নির্মাতা (Part-16.0 যাচাই)</title>
+<style>
+  body { font-family: "Kalpurush", "Nirmala UI", sans-serif; background: #f4f6f8; color: #1e293b; margin: 0; padding: 24px; }
+  main { max-width: 920px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p.lead { margin: 0 0 18px; color: #475569; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+  .card h2 { font-size: 17px; margin: 0 0 4px; }
+  .card .what { color: #475569; font-size: 14px; margin: 0 0 10px; }
+  button { font: inherit; font-size: 14px; padding: 7px 12px; margin: 0 6px 6px 0; border-radius: 7px; border: 1px solid #0f766e; background: #0f766e; color: #fff; cursor: pointer; }
+  button.alt { background: #fff; color: #0f766e; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 10px 12px; border-radius: 8px; font-size: 12.5px; white-space: pre-wrap; min-height: 2em; }
+  .check { font-size: 14px; }
+  .check li { margin-bottom: 4px; }
+  canvas { border: 1px dashed #cbd5e1; display: block; margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>নমুনা Word-নির্মাতা — একক রপ্তানি-পথ যাচাই</h1>
+  <p class="lead">প্রতিটি নমুনা নতুন <code>FayzarExport</code> পথে তৈরি হয় (মাস্টার .docx → বিজয় → Word 2003 .doc → ছবি-প্যাকেজার)। চালু অ্যাপের কোনো পথ এতে বদলায় না। ফাইলগুলো Word 2003 ও নতুন Word দুটোতেই খুলে নিচের চেকলিস্ট মিলিয়ে দেখুন।</p>
+
+  <div class="card">
+    <h2>১. সমীকরণসহ সৃজনশীল বুকলেট</h2>
+    <p class="what">ভগ্নাংশ, ঘাত, বর্গমূল, বাংলা অঙ্কের ভগ্নাংশ, ডিগ্রি।</p>
+    <button data-s="1" data-f="doc">Word 2003 (.doc)</button>
+    <button class="alt" data-s="1" data-f="docx-bijoy">বিজয় .docx</button>
+    <button class="alt" data-s="1" data-f="docx-unicode">ইউনিকোড .docx</button>
+  </div>
+
+  <div class="card">
+    <h2>২. যৌথ পত্র (বিভাজক-চিহ্ন ছাড়া)</h2>
+    <p class="what">সৃজনশীল অংশ ল্যান্ডস্কেপ বুকলেটে, তারপর নতুন পাতায় বহুনির্বাচনি অংশ পোর্ট্রেট ২-কলাম গ্রিডে।</p>
+    <button data-s="2" data-f="doc">Word 2003 (.doc)</button>
+    <button class="alt" data-s="2" data-f="docx-bijoy">বিজয় .docx</button>
+    <button class="alt" data-s="2" data-f="docx-unicode">ইউনিকোড .docx</button>
+  </div>
+
+  <div class="card">
+    <h2>৩. চিত্রসহ প্রশ্ন</h2>
+    <p class="what">নিচের চিত্রটি (এই পেজেই আঁকা) প্রশ্নের নিচে মাঝখানে ২" প্রস্থে বসবে। .doc-এ ছবি MHTML প্যাকেজে যায়।</p>
+    <button data-s="3" data-f="doc">Word 2003 (.doc)</button>
+    <button class="alt" data-s="3" data-f="docx-bijoy">বিজয় .docx</button>
+    <button class="alt" data-s="3" data-f="docx-unicode">ইউনিকোড .docx</button>
+    <canvas id="fig" width="400" height="300"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>লগ</h2>
+    <pre id="log">প্রস্তুত।</pre>
+    <ul class="check">
+      <li>ফাইলটি খুলছে কি না, কোনো সতর্কবার্তা বা "ফাইল নষ্ট" বার্তা আসছে কি না।</li>
+      <li>সমীকরণ ঠিক দেখাচ্ছে কি না; Word 2003-এ ডাবল-ক্লিক করে এডিটে অক্ষর বদলায় কি না।</li>
+      <li>বাংলা ৩/৫ বাংলাতেই আছে কি না (জানা সমস্যা: পুরোনো পথে ইংরেজি হতে পারে)।</li>
+      <li>যৌথ পত্রে দ্বিতীয় অংশ পোর্ট্রেট পাতায় ও ২-কলামে কি না।</li>
+      <li>চিত্রটি দেখা যাচ্ছে কি না, সঠিক মাপে ও মাঝখানে কি না।</li>
+    </ul>
+  </div>
+</main>
+
+<!-- মূল অ্যাপের একই ইঞ্জিন-ক্রম (UI/OCR বাদে) -->
+<script src="../js/jszip.min.js"></script>
+<script src="../js/bangla-converter-engine.js"></script>
+<script src="../js/equation-converter.js"></script>
+<script src="../js/docx-to-doc-engine.js"></script>
+<script src="../js/doc-binary-engine.js"></script>
+<script src="../js/docx-handler.js"></script>
+<script src="../js/layout-engine/theme-config.js"></script>
+<script src="../js/layout-engine/docx-builder.js"></script>
+<script src="../js/layout-engine/schema-validator.js"></script>
+<script src="../js/engines/doc-classifier.js"></script>
+<script src="../js/engines/question-engine.js"></script>
+<script src="../js/layout-engine/layout-units.js"></script>
+<script src="../js/layout-engine/mcq-layout-planner.js"></script>
+<script src="../js/layout-engine/cq-booklet-planner.js"></script>
+<script src="../js/engines/stamp-engine.js"></script>
+<script src="../js/engines/application-engine.js"></script>
+<script src="../js/engines/certificate-engine.js"></script>
+<script src="../js/engines/export-dual-engine.js"></script>
+<script src="../js/layout-engine/text-run-processor.js"></script>
+<script src="../js/layout-engine/eq-field-rtf.js"></script>
+<script src="../js/layout-engine/frontmatter-header.js"></script>
+<script src="../js/layout-engine/exam-renumber.js"></script>
+<script src="../js/layout-engine/fayzar-pipeline.js"></script>
+<script src="../js/engines/studio-figure-pipeline.js"></script>
+<script src="../js/layout-engine/doc-mhtml-packager.js"></script>
+<script src="../js/layout-engine/fayzar-export.js"></script>
+<script>
+(function () {
+  'use strict';
+  const logEl = document.getElementById('log');
+  const log = (t) => { logEl.textContent += '\n' + t; };
+
+  const SAMPLES = {
+    1: { name: 'নমুনা-১_সমীকরণ', docType: 'EXAM_CQ', text: [
+      '---', 'doc_type: EXAM_CQ', 'institute: ফুলবাড়ী আদর্শ উচ্চ বিদ্যালয়', 'exam: বার্ষিক পরীক্ষা - ২০২৬',
+      'grade: অষ্টম', 'subject: গণিত', 'time: ৩ ঘন্টা', 'fullMarks: ৫০', '---',
+      '## সৃজনশীল প্রশ্ন',
+      '১। একজন চাল ব্যবসায়ী মুনাফা আসলের $\\frac{৩}{৫}$ অংশ পায়।',
+      'ক. সরল মুনাফার সূত্র লেখো। ২',
+      'খ. $x + \\frac{1}{x} = \\sqrt{5}$ হলে $x^2$ নির্ণয় করো। ৪',
+      'গ. $\\angle AOB = 100^\\circ$ হলে $\\angle OAB$ নির্ণয় করো। ৪',
+      '২। $P = 1 - x + x^2$ এবং $R = 1 + x^2 + x^4$ দুটি বীজগাণিতিক রাশি।',
+      'ক. $R$ কে উৎপাদকে বিশ্লেষণ করো। ২',
+      'খ. $\\frac{1}{P} - \\frac{2x}{R}$ এর মান নির্ণয় করো। ৪',
+      'গ. প্রমাণ করো যে, $x^6 - 4x^3 - 1 = 0$। ৪'
+    ].join('\n') },
+    2: { name: 'নমুনা-২_যৌথ', docType: 'EXAM_CQ', text: [
+      '## সৃজনশীল প্রশ্ন',
+      '১। বার্ষিক ১০% হারে ২৫,০০০ টাকা ব্যাংকে জমা রাখা হলো।',
+      'ক. ২ বছরের মুনাফা-আসল নির্ণয় করো। ২',
+      'খ. সরল ও চক্রবৃদ্ধি মুনাফার পার্থক্য নির্ণয় করো। ৪',
+      '## বহুনির্বাচনি প্রশ্ন',
+      '১। ২৮, ৬, ২০, ৮, ১২ সংখ্যাগুলোর মধ্যক কত?', 'ক. ১৬', 'খ. ১৭', 'গ. ২১', 'ঘ. ২৪',
+      '২। ৪, ৭, ৫, ৬, ৮ উপাত্তসমূহের কততম পদ মধ্যক হবে?', 'ক. ৫তম পদ', 'খ. ৪তম পদ', 'গ. ৬তম পদ', 'ঘ. ৭তম পদ',
+      '৩। একটি বৃত্তের ব্যাস ১০ সে.মি. হলে পরিধি কত?', 'ক. ৩.১৪', 'খ. ৩১.৪', 'গ. ৬২.৮', 'ঘ. ৩১৪'
+    ].join('\n') },
+    3: { name: 'নমুনা-৩_চিত্র', docType: 'EXAM_CQ', text: [
+      '## সৃজনশীল প্রশ্ন',
+      '১। নিচের চিত্রে O বৃত্তের কেন্দ্র এবং $\\angle AOB = 100^\\circ$।',
+      'QZFIG1QZ',
+      'ক. বৃত্তের জ্যা কাকে বলে? ২',
+      'খ. $\\angle OAB$ নির্ণয় করো। ৪',
+      'গ. প্রমাণ করো যে, $OA = OB$। ৪'
+    ].join('\n') }
+  };
+
+  // নমুনা-চিত্র: বৃত্ত, কেন্দ্র O, জ্যা AB, ব্যাসার্ধ OA, OB
+  function drawFigure() {
+    const c = document.getElementById('fig');
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+    g.strokeStyle = '#000'; g.lineWidth = 2; g.fillStyle = '#000'; g.font = 'italic 20px "Times New Roman", serif';
+    const cx = 200, cy = 150, r = 110;
+    g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.stroke();
+    const A = [cx + r * Math.cos(Math.PI * 0.80), cy + r * Math.sin(Math.PI * 0.80)];
+    const B = [cx + r * Math.cos(Math.PI * 0.20), cy + r * Math.sin(Math.PI * 0.20)];
+    g.beginPath(); g.moveTo(A[0], A[1]); g.lineTo(cx, cy); g.lineTo(B[0], B[1]); g.lineTo(A[0], A[1]); g.stroke();
+    g.beginPath(); g.arc(cx, cy, 3, 0, Math.PI * 2); g.fill();
+    g.fillText('O', cx - 8, cy - 10); g.fillText('A', A[0] - 22, A[1] + 18); g.fillText('B', B[0] + 8, B[1] + 18);
+    return { dataUrl: c.toDataURL('image/png'), pxW: c.width, pxH: c.height, cssW: 192, align: 'center', name: 'চিত্র ১' };
+  }
+
+  function download(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  const EXT = { 'doc': '_Word2003.doc', 'docx-bijoy': '_Bijoy.docx', 'docx-unicode': '_Unicode.docx' };
+  document.querySelectorAll('button[data-s]').forEach((btn) => btn.addEventListener('click', async () => {
+    const s = SAMPLES[btn.dataset.s];
+    const format = btn.dataset.f;
+    try {
+      const figures = btn.dataset.s === '3' ? { 1: drawFigure() } : undefined;
+      log('→ ' + s.name + ' (' + format + ') তৈরি হচ্ছে…');
+      const res = await FayzarExport.produce(s.text, { format, docType: s.docType, figures, pageSize: 'a4', margin: 'normal' });
+      log('   ধাপ: ' + res.steps.join(' → ') + (res.mhtmlImages ? '  [ছবি MHTML-এ]' : '') + '  | আকার ' + Math.round(res.blob.size / 1024) + ' KB');
+      download(res.blob, s.name + EXT[format]);
+    } catch (e) {
+      log('   ✗ ত্রুটি: ' + (e && e.message));
+      console.error(e);
+    }
+  }));
+  drawFigure();
+})();
+</script>
+</body>
+</html>

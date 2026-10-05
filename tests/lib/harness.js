@@ -171,7 +171,10 @@ async function buildSnapshot(engines, fx) {
 
   // 4.6 Legacy RTF / .doc output
   try {
-    push('RTF', Export.generateLegacyDoc(fx.body, docType, {}));
+    // Part-15.5: generateLegacyDoc একটি Blob দেয় — আগে এখানে "[object Blob]" স্ন্যাপশট হতো, ফলে
+    // .doc-এর আসল RTF (EQ-ফিল্ড ইত্যাদি) কখনো রিগ্রেশন-যাচাইয়ে আসেনি। এখন পূর্ণ RTF টেক্সট।
+    const rtfOut = Export.generateLegacyDoc(fx.body, docType, {});
+    push('RTF', rtfOut && typeof rtfOut.text === 'function' ? await rtfOut.text() : rtfOut);
   } catch (e) { push('RTF', '', e.message); }
 
   return `# fixture: ${fx.id}\n# docType: ${docType}\n\n` + sections.join('\n\n') + '\n';

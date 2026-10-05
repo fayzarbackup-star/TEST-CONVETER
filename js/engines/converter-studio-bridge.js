@@ -45,6 +45,7 @@
         docType: options.docType || 'AUTO',
         font: options.font || 'kalpurush',
         paperSize: options.paperSize || (options.text.length > 500 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(options.text) ? 'a4-landscape' : 'a4-portrait'),
+        figuresKey: options.figuresKey || null,   // Part-16.2: IndexedDB-তে রাখা সোর্স-চিত্রের চাবি
         source: 'fayzar-converter',
         timestamp: Date.now()
       };

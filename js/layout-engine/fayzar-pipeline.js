@@ -225,6 +225,11 @@
       } else {
         classification = { type: docType, confidence: 1.0, reason: 'Explicit user selection' };
       }
+      // Part-15.9: সৃজনশীল/সাধারণ পত্রের ভেতরে আলাদা বহুনির্বাচনি অংশ থাকলে → যৌথ (MCQ নিজের ফরম্যাটে)
+      if (classifier && typeof classifier.promoteCombined === 'function' && !options.noCombinedPromotion) {
+        const promoted = classifier.promoteCombined(docType, text);
+        if (promoted !== docType) { docType = promoted; classification = Object.assign({}, classification, { type: promoted, reason: 'MCQ section detected → EXAM_COMBINED' }); }
+      }
 
       // Step 2: Parse (with Graceful Fallback)
       // Part-13.1: Studio-এডিট-ব্রিজ — প্রি-পার্সড ও এডিটেড parsedData এলে পুনঃপার্স নয়;
@@ -232,10 +237,18 @@
       let parsedData = null;
       let parserError = null;
 
+      // ফ্রন্টম্যাটার (OCR-এর `---` ব্লক) আলাদা — পার্সার কেবল বডি দেখে; হেডারের ফাঁকা ঘর এ থেকে পূরণ
+      let FM = (typeof FayzarFrontmatter !== 'undefined') ? FayzarFrontmatter
+        : (typeof globalThis !== 'undefined' && globalThis.FayzarFrontmatter) ? globalThis.FayzarFrontmatter : null;
+      if (!FM && typeof require === 'function') { try { FM = require('./frontmatter-header.js'); } catch (e) {} }
+      const fmSplit = FM ? FM.split(text) : { fields: null, body: text };
+      if (fmSplit.fields && !options.__frontmatter) options = Object.assign({}, options, { __frontmatter: fmSplit.fields });
+
       if (options.parsedData && options.parsedData.__fzDocType === docType) {
         parsedData = options.parsedData;
       } else try {
-        parsedData = this._parseByDocType(docType, text, options);
+        parsedData = this._parseByDocType(docType, fmSplit.body, options);
+        if (FM && options.__frontmatter && parsedData && parsedData.header) FM.applyToHeader(parsedData.header, options.__frontmatter);
       } catch (err) {
         parserError = err;
         console.warn(`[FayzarPipeline] Parser error for ${docType}, falling back to general representation:`, err);

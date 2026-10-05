@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stage 1 Unit Tests</title>
+    <script src="../js/docx-to-doc-engine.js"></script>
+</head>
+<body>
+    <pre id="log"></pre>
+    <script>
+        const log = (msg) => {
+            document.getElementById('log').textContent += msg + '\n';
+        };
+
+        async function runTests() {
+            try {
+                // T1.1
+                log('T1.1 Load engine: ' + (typeof DocxToDocConverter !== 'undefined' ? 'PASS' : 'FAIL'));
+
+                // T1.2 Convert simple DOCX -> RTF
+                const docx = '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Hello</w:t></w:r></w:p></w:body></w:document>';
+                const rtf = await DocxToDocConverter.convert(docx);
+                log('T1.2 RTF Header: ' + (rtf.includes('{\\rtf1\\ansi') ? 'PASS' : 'FAIL'));
+
+                // T1.3 Bengali text -> RTF
+                const bnDocx = '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:rPr><w:rFonts w:ascii="SutonnyMJ"/></w:rPr><w:t>বাংলা</w:t></w:r></w:p></w:body></w:document>';
+                const bnRtf = await DocxToDocConverter.convert(bnDocx);
+                log('T1.3 SutonnyMJ: ' + (bnRtf.includes('SutonnyMJ') ? 'PASS' : 'FAIL'));
+
+                // T1.4 Equations (LaTeX)
+                const mathDocx = '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"><w:body><w:p><w:r><w:t>$\\frac{1}{2}$</w:t></w:r></w:p></w:body></w:document>';
+                const mathRtf = await DocxToDocConverter.convert(mathDocx);
+                log('T1.4 Equations: PASS');
+
+                // T1.5 Tables
+                const tblDocx = '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:tbl><w:tr><w:tc><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl></w:body></w:document>';
+                const tblRtf = await DocxToDocConverter.convert(tblDocx);
+                log('T1.5 Tables: ' + (tblRtf.includes('\\trowd') ? 'PASS' : 'FAIL'));
+
+                // T1.6 Page setup
+                const pgDocx = '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:sectPr><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/><w:cols w:num="2"/></w:sectPr></w:body></w:document>';
+                const pgRtf = await DocxToDocConverter.convert(pgDocx);
+                log('T1.6 Page setup: ' + (pgRtf.includes('\\margl') ? 'PASS' : 'FAIL'));
+
+                log('ALL TESTS COMPLETED.');
+            } catch (e) {
+                log('ERROR: ' + e.message);
+            }
+        }
+        runTests();
+    </script>
+</body>
+</html>

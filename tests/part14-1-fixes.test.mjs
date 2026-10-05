@@ -196,12 +196,14 @@ test('MCQ choices adapt to 4-across, 2×2, and one-per-row grids consistently', 
   assert.deepEqual(mixedPlan.items[0].grid.rows, [[0, 1], [2, 3]]);
   assert.deepEqual(mixedPlan.items[0].grid.tabJumps, [1, 1]);
 
+  // Part-15.5: MCQ-তে সব প্রশ্নে ০.৩" — অপশন-স্টপ প্ল্যানের হুবহু (সরানো নেই)
+  const dI = 0;
   const rtf = ExportDualEngine.generateMcqExamRtf(mixedParsed, { returnInnerRtf: true });
-  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(rtf.includes(`\\tx${stop}`), `RTF tab stop ${stop}`);
+  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(rtf.includes(`\\tx${stop + dI}`), `RTF tab stop ${stop + dI}`);
   assert.ok(rtf.includes('\\tab'), 'short first option uses tab to reach the half-width stop');
 
   const docx = await ExportDualEngine.generateMcqExamDocx(mixedParsed, { returnInnerXml: true });
-  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(docx.bodyXml.includes(`<w:tab w:val="left" w:pos="${stop}"/>`), `DOCX tab stop ${stop}`);
+  for (const stop of mixedPlan.items[0].grid.stops) assert.ok(docx.bodyXml.includes(`<w:tab w:val="left" w:pos="${stop + dI}"/>`), `DOCX tab stop ${stop + dI}`);
   assert.ok(countMatches(docx.bodyXml, /<w:r><w:tab\/><\/w:r>/g) >= 4, 'Word options and question text remain tab-adjustable');
 });
 

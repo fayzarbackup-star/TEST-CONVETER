@@ -156,6 +156,45 @@ const near = (a, b, tol) => Math.abs(a - b) <= tol;
   const fairPlan3 = L.buildAttemptPlan({ keys: {} }, many, ['m-a', 'm-b', 'm-c'], NOW, 8);
   T('তিন মডেলেও সবাই সুযোগ পায়', ['m-a', 'm-b', 'm-c'].every(m => fairPlan3.some(p => p.model === m)));
 
+  // ── ১১. Part-16.5: শ্রেণিবিভাগ সংশোধন, টাইমআউট, মাইগ্রেশন, লোড-ভাগ ─────────
+  let c = L.classifyGeminiError(404, { error: { message: 'Requested entity was not found.' } }, { now: NOW });
+  T('16.5: মডেল-বার্তা ছাড়া ৪০৪ → MODEL_NA নয় (১ মিনিট)', c.class === 'UNKNOWN' && c.reopenAfterMs === 60000, c);
+  c = L.classifyGeminiError(404, { error: { message: 'models/gemini-x is not found for API version v1beta, or is not supported for generateContent.' } }, { now: NOW });
+  T('16.5: আসল মডেল-নেই বার্তা → MODEL_NA', c.class === 'MODEL_NA', c);
+  c = L.classifyGeminiError(400, { error: { message: 'Unsupported MIME type: image/heic is not supported for this model' } }, { now: NOW });
+  T('16.5: ৪০০ "not supported for" → পেলোড-ত্রুটি, মডেল বন্ধ নয়', c.class === 'FATAL_INPUT', c);
+  c = L.classifyGeminiError(0, { error: { message: 'attempt timeout (240s)' } }, { now: NOW, timeout: true });
+  T('16.5: টাইমআউট → TIMEOUT, কোনো কুলডাউন নেই', c.class === 'TIMEOUT' && !c.reopenAfterMs, c);
+  c = L.classifyGeminiError(503, { error: { message: 'This model is currently experiencing high demand.' } }, { now: NOW });
+  T('16.5: ৫০৩-এর আসল বার্তা detail-এ থাকে', c.class === 'SERVER' && /high demand/.test(c.detail), c);
+
+  c = L.classifyGeminiError(400, { error: { code: 400, message: 'User location is not supported for the API use.', status: 'FAILED_PRECONDITION' } }, { now: NOW });
+  T('16.5: "User location is not supported" → LOCATION (সাময়িক, শাস্তি নেই) — FATAL নয়', c.class === 'LOCATION' && !c.reopenAfterMs, c);
+
+  const tl = { keys: {} };
+  L.recordFailure(tl, KEYS[0], MODELS[0], L.classifyGeminiError(0, {}, { now: NOW, timeout: true }), NOW);
+  T('16.5: টাইমআউটের পর কি+মডেল সঙ্গে সঙ্গে ব্যবহারযোগ্য', L.isAvailable(tl, KEYS[0], MODELS[0], NOW + 1));
+  T('16.5: শেষ ত্রুটি (lastError) খতিয়ানে থাকে', tl.keys[L.maskKey(KEYS[0])].models[MODELS[0]].lastError.class === 'TIMEOUT');
+
+  const old = { keys: {} };
+  L.recordFailure(old, KEYS[1], MODELS[0], { class: 'MODEL_NA', reopenAfterMs: 6 * 3600000, scope: 'model', detail: 'x' }, NOW);
+  L.recordFailure(old, KEYS[2], MODELS[0], L.classifyGeminiError(429, body429day, { now: NOW }), NOW);
+  T('16.5: (পূর্বশর্ত) v1-এ ভুল MODEL_NA কি বন্ধ', !L.isAvailable(old, KEYS[1], MODELS[0], NOW + 1000));
+  L.migrateLedger(old);
+  T('16.5: মাইগ্রেশনে ভুল MODEL_NA বন্ধ খুলে যায়', L.isAvailable(old, KEYS[1], MODELS[0], NOW + 1000));
+  T('16.5: মাইগ্রেশনে দৈনিক-কোটা (RPD) বন্ধ অটুট', !L.isAvailable(old, KEYS[2], MODELS[0], NOW + 1000));
+  T('16.5: মাইগ্রেশন একবারই (version=2)', old.version === 2);
+
+  const lru = { keys: {} };
+  L.recordSuccess(lru, KEYS[0], MODELS[0], 20000, NOW - 1000);        // সদ্য সফল
+  L.recordSuccess(lru, KEYS[1], MODELS[0], 20000, NOW - 600000);      // ১০ মিনিট আগে সফল
+  const order = L.rankKeys(lru, KEYS, MODELS[0], NOW);
+  T('16.5: LRU — অব্যবহৃত কি আগে, সদ্য-ব্যবহৃত কি শেষে', order[0] === KEYS[2] && order[2] === KEYS[0], order.map(L.maskKey));
+  L.recordFailure(lru, KEYS[2], MODELS[1], L.classifyGeminiError(503, {}, { now: NOW - 5000, consecutiveServerFails: 0 }), NOW - 400000);
+  L.recordFailure(lru, KEYS[2], MODELS[1], L.classifyGeminiError(503, {}, { now: NOW - 5000, consecutiveServerFails: 1 }), NOW - 400000);
+  const order2 = L.rankKeys(lru, KEYS, MODELS[0], NOW);
+  T('16.5: পরপর ২+ সার্ভার-ব্যর্থ কি পেছনে যায়', order2[order2.length - 1] === KEYS[2], order2.map(L.maskKey));
+
   console.log(results.join('\n'));
   console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
   process.exit(fail ? 1 : 0);

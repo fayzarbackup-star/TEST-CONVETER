@@ -202,9 +202,15 @@
      * বাংলা শব্দের পাশে ইংরেজি বন্ধনী (যেমন: রূপকল্প (Vision & Mission)) সম্পূর্ণ অক্ষত রাখতে হবে।
      * যুক্ত বা হাইফেনযুক্ত বাংলা শব্দসমূহ (যেমন: শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের, যুগোপযোগী, আর্থ-সামাজিক) এর ভেতরের হাইফেন (-) কোনোভাবেই বাদ বা মুছে ফেলা যাবে না!
 
-9. DIAGRAMS & IMAGES (ছবি বা ডায়াগ্রামের ক্ষেত্রে শুধুমাত্র পেজ নম্বর উল্লেখ, কোনো বর্ণনা নয়):
-   - Whenever there is a diagram, geometric figure, circuit, chart, or image, DO NOT write any description or details of the picture.
-   - Simply write: [ছবি আছে-পৃ:০১] (বা পেজ নম্বর অনুযায়ী [ছবি আছে-পৃ:০২], [ছবি আছে-পৃ:০৩] ইত্যাদি)।
+9. DIAGRAMS & IMAGES (চিত্রের অবস্থান — কোনো বর্ণনা নয়; সিস্টেম মূল পাতা থেকে চিত্রটি কেটে বসাবে):
+   - Whenever there is a diagram, geometric figure, graph, circuit, chart, or picture, DO NOT write any description or details of the picture.
+   - At the exact place where the figure appears in the reading order (usually right after the line/stem it belongs to), write ONE tag on its own line:
+     [[FIG:p=<page>;box=<ymin>,<xmin>,<ymax>,<xmax>]]
+     * <page> = 1-based position of the page/image in the order the pages were given to you (ASCII digits).
+     * box = the tight bounding box of the WHOLE figure on that page, INCLUDING its labels/letters/numbers drawn around it (A, B, O, 5 cm, x, y, axis marks), in normalized 0–1000 coordinates of that page image: ymin,xmin,ymax,xmax (integers, ASCII digits). Do NOT include surrounding question text.
+     * Example: [[FIG:p=2;box=412,96,640,488]]
+   - One tag per separate figure. If two figures sit side by side and belong together (e.g. (i) and (ii)), use ONE box covering both.
+   - Text written inside a figure is part of the figure — do NOT transcribe it separately.
 
 10. CLEAN PROFESSIONAL OUTPUT (NO CHATTER / NO CODE BLOCKS / NO MARKDOWN ASTERISKS):
     - Output ONLY the clean transcribed document text directly.
@@ -379,7 +385,7 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
    - STIMULUS & QUESTION FULL FIDELITY: Never summarize or shorten stimulus (উদ্দীপক) or question text.
    - Preserve all legitimate content parentheses e.g. (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল), and retain hyphens in compound words (শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের).
    - Never merge or collapse sub-articles or clause lines (৪.১, ৪.২, ৫.১, ৫.২); ensure each remains on its own separate line.
-   - For diagrams/images, simply write: [ছবি আছে-পৃ:০১].
+   - For diagrams/images, write ONE tag on its own line where the figure appears: [[FIG:p=<page>;box=<ymin>,<xmin>,<ymax>,<xmax>]] (0–1000 normalized box of the whole figure incl. its labels; no description).
    - No markdown bold asterisks (**). No asterisks on roman numerals (*i.* -> i.).
    - No empty blank lines or double Enters between consecutive questions or lines.
    - Never output long chains of dots. Keep dotted lines to at most 3 to 6 dots (......) and preserve the rest of the letter/form.
@@ -906,7 +912,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           size: Math.round(base64.length * 0.75),
           isPdf: false,
           mimeType: 'image/jpeg',
-          base64: base64
+          base64: base64,
+          // Part-16.1: সোর্স-চিত্র কাটার জন্য — মূল PDF-এর কোন পাতা ও তার প্রকৃত মাপ (পয়েন্ট)
+          pdfPage: pageNum,
+          pageWidthPt: unscaled.width,
+          pageHeightPt: unscaled.height
         });
       }
       return pageItems;
@@ -1958,7 +1968,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         // part-7: অপেক্ষার কারণ স্পষ্ট — কোটা শেষ নাকি মডেল ব্যস্ত
         const why = (s.reason === 'RPD' || s.reason === 'RPM') ? 'কোটা শেষ'
           : (s.reason === 'MODEL_NA') ? 'এই কি-তে মডেল নেই'
-          : (s.reason === 'INVALID') ? 'কি অবৈধ' : 'মডেল ব্যস্ত (৫০৩)';
+          : (s.reason === 'INVALID') ? 'কি অবৈধ'
+          : (s.reason === 'TIMEOUT') ? 'উত্তর আসতে অনেক দেরি (৪ মিনিট)'
+          : (s.reason === 'LOCATION') ? 'Google সাময়িকভাবে সংযোগ নেয়নি (অঞ্চল-সীমা)' : 'মডেল ব্যস্ত (৫০৩)';
         return `⚡ ${why} — বিকল্প কি-তে যাচ্ছি…`;
       }
       case 'switch_model':
@@ -3334,6 +3346,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       l = l.replace(/(\?|।|:|[a-zA-Z\u0980-\u09FF"'”’\$])\s*\[\s*([০-৯0-9\s]+)\s*\]\s*$/g, '$1\t$2');
       l = l.replace(/(\?|।|:|[a-zA-Z\u0980-\u09FF"'”’\$])\s*[\(（]\s*([০-৯0-9\s]+)\s*[\)）]\s*$/g, '$1\t$2');
 
+      // Part-16.1: চিত্র-ট্যাগ [[FIG:p=..;box=..]] হুবহু রাখা (প্রশ্ন-ফরম্যাটার/রেফারেন্স-ক্লিনার যেন না ছোঁয়)
+      if (/^\s*\[\[\s*FIG\s*:/i.test(l)) { cleanedLines.push(l.trim()); continue; }
+
       // 4a. Remove references & source brackets (e.g. [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], (দিনাজপুর বোর্ড), [অধ্যায়-৩], মান: ১ ইত্যাদি)
       // Strictly constrained to exam board tags so legitimate content parentheses like (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল) are never stripped
       l = l.replace(/\s*\[\s*(?:[^\]\n]*(?:(?:ঢাকা|রাজশাহী|দিনাজপুর|কুমিল্লা|চট্টগ্রাম|সিলেট|বরিশাল|যশোর|ময়মনসিংহ|মাদ্রাসা|কারিগরি|সকল)?\s*বোর্ড|ক্যাডেট\s*কলেজ|জিলা\s*স্কুল|অধ্যায়\s*[-–—:]\s*[০-৯0-9]+|অনুশীলনী\s*[-–—:]\s*[০-৯0-9]+|পরিপত্র\s*[-–—:]\s*[০-৯0-9]+))[^\]\n]*\]\s*/gi, ' ');
@@ -3805,6 +3820,51 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     return runsXml;
   }
 
+  /**
+   * Part-16.2: সোর্স-চিত্র প্রস্তুতি — ডাউনলোড ও স্টুডিও-হস্তান্তর দুই পথেই একই কাজ।
+   * লেখায় [[FIG:..]] থাকলে মূল পাতা থেকে কেটে রিভিউ স্ক্রিন → { text (QZFIGnQZ মার্কারসহ), figures }।
+   * বাতিল → { cancelled: true }। কাটা ব্যর্থ হলে ট্যাগ মুছে চিত্র ছাড়া লেখা (ট্যাগ কখনো ফাইলে যায় না)।
+   */
+  async function prepareSourceFigures(text, docType) {
+    const FX = (typeof FayzarFigureExtractor !== 'undefined') ? FayzarFigureExtractor : null;
+    if (!FX) return { text, figures: null };
+    if (!FX.hasTags(text)) {
+      if (!FX.hasLooseTags(text)) return { text, figures: null };
+      console.warn('[Fayzar] চিত্র-ট্যাগ পড়া যায়নি:', text.match(/\[\[\s*FIG[^\n]*/gi));
+      showToast('চিত্রের অবস্থান-তথ্য (ট্যাগ) অসম্পূর্ণ — চিত্র ছাড়া ফাইল তৈরি হচ্ছে', 'warning');
+      return { text: FX.stripTags(text), figures: null };
+    }
+    if (state.figureReviewCache && state.figureReviewCache.key === text) {
+      showToast('আগে রিভিউ করা চিত্রগুলো ব্যবহার হচ্ছে', 'info');
+      return { text: state.figureReviewCache.text, figures: state.figureReviewCache.figures };
+    }
+    try {
+      showToast('মূল পাতা থেকে চিত্র কাটা হচ্ছে...', 'info');
+      const queue = (state.filesQueue && state.filesQueue.length)
+        ? state.filesQueue
+        : [{ file: state.selectedFile, base64: state.imageBase64, mimeType: state.imageMimeType }];
+      const ext = await FX.extract(text, queue, { docType });
+      const review = (typeof FayzarFigureReview !== 'undefined')
+        ? await FayzarFigureReview.open(ext.items, { docType })
+        : { figures: Object.fromEntries(ext.items.filter((i) => i.fig).map((i) => [i.id, i.fig])) };
+      if (!review) return { cancelled: true };
+      const figures = review.figures || {};
+      Object.keys(figures).forEach((k) => { figures[k].id = parseInt(k, 10); });
+      if (!Object.keys(figures).length) {
+        // সব চিত্র বাদ দেওয়া হয়েছে → মার্কার মুছে পুরনো প্রমাণিত পথ
+        const plain = ext.text.replace(/[ \t]*QZFIG\d+QZ/g, '');
+        state.figureReviewCache = { key: text, text: plain, figures: null };
+        return { text: plain, figures: null };
+      }
+      state.figureReviewCache = { key: text, text: ext.text, figures };
+      return { text: ext.text, figures };
+    } catch (err) {
+      console.warn('[Fayzar] চিত্র কাটা ব্যর্থ:', err);
+      showToast('চিত্র কাটা যায়নি (' + (err && err.message ? err.message : err) + ') — ফাইল চিত্র ছাড়া তৈরি হচ্ছে', 'warning');
+      return { text: FX.stripTags(text), figures: null };
+    }
+  }
+
   let isDownloadingDocument = false;
   async function downloadWordDocument(format) {
     if (isDownloadingDocument) {
@@ -3830,10 +3890,12 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
 
       let parsedDocType = 'EXAM_CQ';
       let exportText = text;
+      let ocrFrontmatter = null;   // প্রতিষ্ঠান/পরীক্ষা/সময়/পূর্ণমান — হেডারের ফাঁকা ঘর পূরণে (frontmatter-header.js)
       const fmMatch = text.match(/^---\s*\n([\s\S]*?)\n---/);
       if (fmMatch) {
         const typeMatch = fmMatch[1].match(/doc_type:\s*(\w+)/);
         if (typeMatch) parsedDocType = typeMatch[1];
+        if (typeof FayzarFrontmatter !== 'undefined') ocrFrontmatter = FayzarFrontmatter.split(text).fields;
         exportText = text.substring(fmMatch[0].length).trim();
       }
 
@@ -3857,8 +3919,39 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       }
       
       const isStudentCopy = document.getElementById('cleanCopyCheckbox')?.checked;
+
+      // Part-16.1: সোর্স-চিত্র — লেখায় [[FIG:p=..;box=..]] থাকলে মূল পাতা থেকে কেটে, রিভিউ স্ক্রিনে
+      // দেখিয়ে, একক রপ্তানি-পথে (FayzarExport) ফাইল। চিত্র না থাকলে নিচের পুরনো প্রমাণিত পথ অপরিবর্তিত।
+      let reviewedFigures = null;
+      {
+        const prep = await prepareSourceFigures(exportText, parsedDocType);
+        if (prep.cancelled) { showToast('ডাউনলোড বাতিল করা হয়েছে', 'warning'); return; }
+        exportText = prep.text;
+        reviewedFigures = prep.figures;
+      }
       
       const processDownload = async (isClean, suffix) => {
+        if (reviewedFigures && typeof FayzarExport !== 'undefined') {
+          const fmt = format === 'doc' ? 'doc' : (format === 'bijoy_docx' ? 'docx-bijoy' : 'docx-unicode');
+          showToast('চিত্রসহ ওয়ার্ড ফাইল প্রস্তুত হচ্ছে...', 'info');
+          const res = await FayzarExport.produce(exportText, {
+            format: fmt,
+            docType: parsedDocType,
+            figures: reviewedFigures,
+            pageSize: pageSizeVal,
+            margin: marginVal,
+            fontSize: fontSizeVal,
+            columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
+            auditNote: isClean ? null : auditNote,
+            suppressAuditNote: !!isClean,
+            __frontmatter: ocrFrontmatter || undefined
+          });
+          const outName = fmt === 'doc' ? `${baseName}${suffix}_Word2003.doc`
+            : (fmt === 'docx-bijoy' ? `${baseName}${suffix}_Bijoy.docx` : `${baseName}${suffix}_Master_Unicode.docx`);
+          triggerDownload(res.blob, outName);
+          showToast(`চিত্রসহ ফাইল ডাউনলোড হয়েছে (${Object.keys(reviewedFigures).length}টি চিত্র)`, 'success');
+          return;
+        }
         showToast(`মাস্টার ওয়ার্ড (.docx) ফাইল প্রস্তুত হচ্ছে...`, 'info');
         
         let masterDocxBlob = null;
@@ -3869,7 +3962,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             margin: marginVal,
             fontSize: fontSizeVal,
             columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
-            auditNote: isClean ? null : auditNote
+            auditNote: isClean ? null : auditNote,
+            suppressAuditNote: !!isClean,
+            __frontmatter: ocrFrontmatter || undefined
           });
         } catch (err) {
           console.warn('Failed to generate master docx in download process:', err);
@@ -3885,7 +3980,32 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
           showToast(`ওয়ার্ড ২০০৩ (.doc) ফাইল প্রস্তুত হচ্ছে...`, 'info');
           let docBlob = null;
 
-          if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
+          // Part-15.8 (ব্যবহারকারীর নির্দেশ): OCR .doc আবার পুরনো, পরীক্ষিত docx→doc পথে (ডিফল্ট) —
+          // RTF পথের EQ-ফিল্ড Word 2003-এ দেখতে ঠিক হলেও ডাবল-ক্লিকে এডিট করলে অক্ষর বদলে যায় (x → ξ)।
+          // RTF পথ কেবল পরীক্ষার জন্য: localStorage `fayzar_doc_engine = rtf`।
+          let useLegacyDoc = true;
+          try { useLegacyDoc = localStorage.getItem('fayzar_doc_engine') !== 'rtf'; } catch (e) {}
+          if (!useLegacyDoc && typeof FayzarPipeline !== 'undefined' && typeof FayzarPipeline.exportDoc === 'function') {
+            try {
+              const rtfRes = await FayzarPipeline.exportDoc(exportText, {
+                docType: parsedDocType,
+                font: 'bijoy',
+                pageSize: pageSizeVal,
+                margin: marginVal,
+                fontSize: fontSizeVal,
+                auditNote: isClean ? null : auditNote,
+                suppressAuditNote: !!isClean,
+                __frontmatter: ocrFrontmatter || undefined
+              });
+              if (rtfRes && rtfRes.content && rtfRes.content.size > 0) docBlob = rtfRes.content;
+            } catch (rtfErr) {
+              console.warn('[OCR .doc] RTF path failed, falling back to legacy docx→doc:', rtfErr);
+            }
+          }
+
+          if (docBlob) {
+            // RTF পথ সফল
+          } else if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
             const bijoyDocxRes = await DocxHandler.convertDocx(masterDocxBlob, {
               direction: 'u2b',
               targetFont: 'SutonnyMJ'
@@ -4025,11 +4145,35 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
    * স্টুডিও প্রিভিউ ও এডিটর অপশন
    * মাস্টার ফাইল ও টেক্সটকে সরাসরি মাইক্রোসফট ওয়ার্ড স্টুডিও এডিটরে ট্রান্সফার করে
    */
-  function openStudioPreviewEditor(customText, customName) {
-    const text = customText || (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
+  async function openStudioPreviewEditor(customText, customName) {
+    let text = customText || (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
     if (!text || !text.trim()) {
       showToast('স্টুডিওতে ওপেন করার মতো কোনো টেক্সট নেই', 'warning');
       return;
+    }
+
+    // Part-16.2: সোর্স-চিত্র স্টুডিওতে — স্টুডিও আলাদা ট্যাবে, সেখানে মূল PDF নেই; তাই কাটা-রিভিউ এখানেই,
+    // চিত্রগুলো IndexedDB-তে (FayzarFigureTransfer), পেলোডে শুধু চাবি। ডাউনলোডের সাথে একই রিভিউ-ক্যাশ।
+    let figuresKey = null;
+    {
+      const fm = text.match(/^---\s*\n[\s\S]*?\n---/);
+      const head = fm ? fm[0] : '';
+      const body = fm ? text.substring(fm[0].length).trim() : text;
+      let fmDocType = 'EXAM_CQ';
+      const tm = head.match(/doc_type:\s*(\w+)/);
+      if (tm) fmDocType = tm[1];
+      const prep = await prepareSourceFigures(body, fmDocType);
+      if (prep.cancelled) { showToast('স্টুডিওতে পাঠানো বাতিল করা হয়েছে', 'warning'); return; }
+      text = head ? head + '\n\n' + prep.text : prep.text;
+      if (prep.figures && typeof FayzarFigureTransfer !== 'undefined') {
+        try {
+          figuresKey = await FayzarFigureTransfer.put(prep.figures);
+        } catch (e) {
+          console.warn('[Fayzar] চিত্র-হস্তান্তর ব্যর্থ:', e);
+          showToast('চিত্রগুলো স্টুডিওতে পাঠানো যায়নি — সরাসরি এখান থেকে ডাউনলোড করুন', 'warning');
+          text = text.replace(/[ \t]*QZFIG\d+QZ/g, '');
+        }
+      }
     }
 
     const rawName = customName || state.selectedFile?.name || state.filesQueue?.[0]?.name || 'Document';
@@ -4051,7 +4195,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       fileName: `${baseName}_Master`,
       docType: docType,
       font: 'kalpurush',
-      paperSize: (text.length > 400 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(text)) ? 'a4-landscape' : 'a4-portrait'
+      paperSize: (text.length > 400 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(text)) ? 'a4-landscape' : 'a4-portrait',
+      figuresKey: figuresKey
     };
 
     if (typeof ConverterStudioBridge !== 'undefined' && typeof ConverterStudioBridge.sendToStudio === 'function') {
@@ -4066,7 +4211,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     }
 
     showToast('ওয়ার্ড স্টুডিও লাইভ প্রিভিউ ও এডিটর চালু হচ্ছে...', 'info');
-    window.open('studio.html?source=converter', '_blank');
+    const studioWin = window.open('studio.html?source=converter', '_blank');
+    if (!studioWin) showToast('ব্রাউজার নতুন ট্যাব আটকে দিল — পপআপ অনুমতি দিন, অথবা উপরের স্টুডিও লিংক খুলুন (লেখা ও চিত্র প্রস্তুত)', 'warning');
   }
 
   async function createDocxBlob(text, isBijoy = false, customOptions = {}) {

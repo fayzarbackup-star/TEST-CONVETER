@@ -20,13 +20,17 @@
 
 import {
   classifyGeminiError, recordSuccess, recordFailure,
-  buildAttemptPlan, buildStatus, maskKey, ensureEntry
+  buildAttemptPlan, buildStatus, maskKey, ensureEntry, migrateLedger
 } from './ledger.js';
 
 const MAX_ATTEMPTS = 24;         // সময়-বাজেটের সাথে সমন্বিত (subrequest সীমার নিরাপদ ভেতরে)
 const MAX_TOTAL_MS = 420000;     // part-7: বড় ফাইলে বেশি চেষ্টার সুযোগ (~৭ মিনিট); env.MAX_TOTAL_MS দিয়ে বদলানো যায়
-const SERVER_RETRY_DELAY_MS = 2500; // 503 transient হলে একবার ছোট বিরতি দিয়ে আবার
-const ATTEMPT_TIMEOUT_MS = 150000;  // part-6b: একটি চেষ্টার সর্বোচ্চ সময় — ঝুলে থাকা সংযোগ আটকাতে
+const SERVER_RETRY_DELAY_MS = 3000; // Part-16.5: ৫০৩ হলে ছোট বিরতি দিয়ে *অন্য* কি-তে (আগে একই কি-তে)
+// Part-16.5: ১৫০s → ২৪০s — নিয়ম ১৮-এর দুই-ধাপ অভ্যন্তরীণ যাচাইয়ে ভারী ফাইলে প্রথম টোকেন দেরিতে আসে;
+// আগে সেই বৈধ চিন্তা মাঝপথে কেটে শূন্য থেকে আবার শুরু হতো (ব্যবহারকারীর "অপেক্ষার পর আবার শুরু")।
+const ATTEMPT_TIMEOUT_MS = 240000;
+const SERVER_KEYS_BEFORE_SWITCH = 3; // Part-16.5: একই মডেলে ৩টি ভিন্ন কি "ব্যস্ত" হলে তবে মডেল বদল
+const OCR_LOG_MAX = 30;              // Part-16.5: শেষ ৩০টি OCR-এর বিস্তারিত লগ (KV: OCR_LOG, GET /log)
 // নির্ভুলতা আগে: 3-flash-preview (বাংলা/টেবিল) → 3.8-flash (গণিত) → 3.6-flash (দ্রুত)
 const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'];
 
@@ -217,11 +221,31 @@ export default {
 
     // ---------------------------------------------------------------- STATUS
     if (request.method === 'GET') {
+      // Part-16.6: Worker আসলে কোথায় চলছে (placement যাচাই) + সেখান থেকে Google পর্যন্ত সংযোগ-সময়
+      if (url.pathname === '/where') {
+        const out = { edgeColo: (request.cf && request.cf.colo) || null };
+        try {
+          const t0 = Date.now();
+          const tr = await (await fetch('https://cloudflare.com/cdn-cgi/trace')).text();
+          out.runColo = (tr.match(/^colo=(.+)$/m) || [])[1] || null;
+          out.runLoc = (tr.match(/^loc=(.+)$/m) || [])[1] || null;
+          out.traceMs = Date.now() - t0;
+        } catch (e) { out.traceErr = String(e.message || e); }
+        try {
+          const t1 = Date.now();
+          await (await fetch('https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta', { method: 'HEAD' })).arrayBuffer();
+          out.googleMs = Date.now() - t1;
+        } catch (e) { out.googleErr = String(e.message || e); }
+        return json(out, 200, env, request);
+      }
+      if (url.pathname === '/log') {
+        return json({ log: await loadJson(env, 'OCR_LOG', []) }, 200, env, request);
+      }
       if (url.pathname !== '/status') {
-        return json({ ok: true, service: 'fayzar-ocr-proxy', endpoints: ['POST /', 'GET /status'] }, 200, env, request);
+        return json({ ok: true, service: 'fayzar-ocr-proxy', endpoints: ['POST /', 'GET /status', 'GET /log'] }, 200, env, request);
       }
       const apiKeys = await loadJson(env, 'API_KEYS', []);
-      const ledger = await loadJson(env, 'KEY_LEDGER', { keys: {} });
+      const ledger = migrateLedger(await loadJson(env, 'KEY_LEDGER', { keys: {} }));
       return json(buildStatus(ledger, apiKeys, Date.now()), 200, env, request);
     }
 
@@ -246,8 +270,22 @@ export default {
       const apiKeys = await loadJson(env, 'API_KEYS', []);
       if (!apiKeys.length) return json({ error: 'KV-তে কোনো API key কনফিগার করা নেই' }, 500, env, request);
 
-      const ledger = await loadJson(env, 'KEY_LEDGER', { keys: {} });
+      const ledger = migrateLedger(await loadJson(env, 'KEY_LEDGER', { keys: {} }));
       const now = Date.now();
+      // Part-16.5: ৮MB পেলোড প্রতিটি চেষ্টায় আবার JSON বানানো হতো (Worker-CPU অপচয়) — একবারই
+      const bodyStr = JSON.stringify(payload);
+      // Part-16.5: এই অনুরোধের লগ-রেকর্ড (কি মাস্কড)
+      // colo/country: Cloudflare-এর কোন ডেটা-সেন্টারে Worker চলল — Google-এর "অঞ্চল-সীমা" নির্ণয়ের জন্য
+      const cf = request.cf || {};
+      const logRec = { at: now, bytes: bodyStr.length, models, colo: cf.colo || null, country: cf.country || null, attempts: [], outcome: null, ttfbSec: null, totalSec: null, streamedBytes: 0, finish: null };
+      const saveLog = async () => {
+        try {
+          const cur = await loadJson(env, 'OCR_LOG', []);
+          const arr = Array.isArray(cur) ? cur : [];
+          arr.push(logRec);
+          await env.FAYZAR_OCR_KEYS.put('OCR_LOG', JSON.stringify(arr.slice(-OCR_LOG_MAX)));
+        } catch (e) { /* লগ ব্যর্থ হলেও OCR চলবে */ }
+      };
 
       let plan = buildAttemptPlan(ledger, apiKeys, models, now, MAX_ATTEMPTS);
       if (!plan.length) {
@@ -268,28 +306,14 @@ export default {
       const startedAll = Date.now();
       const encoder = new TextEncoder();
       const retryMs = Math.max(0, parseInt(env.SERVER_RETRY_MS || String(SERVER_RETRY_DELAY_MS), 10));
-      const serverRetry = { used: false };
       const attemptTimeoutMs = Math.max(1000, parseInt(env.ATTEMPT_TIMEOUT_MS || String(ATTEMPT_TIMEOUT_MS), 10));
       const waitTickMs = Math.max(1, parseInt(env.WAIT_TICK_MS || '15000', 10));
       const serverFailKeys = Object.create(null);   // model → Set(key) — কয়টি কি ৫০৩ খেয়েছে
+      let locationFails = 0;                        // Part-16.5: অঞ্চল-সীমা — একই অনুরোধে বারবার হলে থামা
+      const LOCATION_MAX = 6;
 
-      // খতিয়ান থেকে "ধরা-পড়া" কি আনা (sticky) — কিন্তু মডেলের ক্রম কখনো বদলায় না।
-      // গুণমান-অগ্রাধিকার: ১ নম্বর মডেলই আগে; sticky শুধু ওই মডেলের ভেতরে সেই কি-টিকে সবার আগে আনে।
-      try {
-        const lastGood = await loadJson(env, 'LAST_GOOD', null);
-        if (lastGood && lastGood.mask) {
-          const idx = plan.findIndex(p => maskKey(p.key) === lastGood.mask && p.model === lastGood.model);
-          if (idx > 0) {
-            const item = plan[idx];
-            const firstSame = plan.findIndex(p => p.model === item.model);
-            if (firstSame !== -1 && firstSame !== idx) {
-              const rest = plan.filter((_, j) => j !== idx);
-              rest.splice(firstSame, 0, item);
-              plan = rest;
-            }
-          }
-        }
-      } catch (e) { /* sticky ব্যর্থ হলেও চলবে */ }
+      // Part-16.5: "শেষ সফল কি সবার আগে" (sticky) বাদ — তাতে প্রায় সব কাজ একটি কি-তে যেত এবং
+      // সেটির প্রতি-মিনিট সীমা ভরে যেত। এখন খতিয়ানের LRU-ক্রম (rankKeys) কাজ সব কি-তে ভাগ করে।
 
       // ---- লাইভ স্ট্রিম: সফল হওয়ার আগেই ক্লায়েন্ট অবস্থা দেখতে পাবে (হার্টবিট) ----
       const stream = new ReadableStream({
@@ -327,14 +351,14 @@ export default {
                 res = await fetch(geminiUrl, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(payload),
+                  body: bodyStr,
                   signal: attemptAbort.signal
                 });
               } catch (netErr) {
                 const entry = ensureEntry(ledger, key, Date.now());
                 const aborted = netErr && (netErr.name === 'AbortError' || /abort/i.test(String(netErr.message || '')));
                 verdict = classifyGeminiError(0, { error: { message: aborted ? `attempt timeout (${Math.round(attemptTimeoutMs / 1000)}s)` : netErr.message } }, {
-                  now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails
+                  now: Date.now(), consecutiveServerFails: entry.consecutiveServerFails, timeout: aborted
                 });
               } finally {
                 clearTimeout(attemptTimer);
@@ -355,6 +379,7 @@ export default {
 
                 recordFailure(ledger, key, model, verdict, Date.now());
                 attempts.push({ key: maskKey(key), model, class: verdict.class, reopenInSec: Math.ceil((verdict.reopenAfterMs || 0) / 1000) });
+                logRec.attempts.push({ key: maskKey(key), model, class: verdict.class, status: lastError.status, detail: String(verdict.detail || '').slice(0, 200), sec: Math.round((Date.now() - started) / 1000) });
 
                 // পেলোড নিজেই অবৈধ — অন্য কি/মডেলে চেষ্টা করে লাভ নেই
                 if (verdict.class === 'FATAL_INPUT') {
@@ -362,23 +387,26 @@ export default {
                   break;
                 }
 
-                // 503: মডেলই অসুস্থ — প্রথমে ছোট বিরতিতে একবার, তারপর কি, শেষে মডেল বদল
+                // Part-16.5: অঞ্চল-সীমা (সাময়িক) — ছোট বিরতিতে পরের কি (নতুন সংযোগ = সম্ভবত অন্য পথ)
+                if (verdict.class === 'LOCATION') {
+                  // একই Worker-অবস্থান থেকে পরপর ব্যর্থ হলে আরও চেষ্টা বৃথা (২০২৬-১০-০৫: এক অনুরোধে ২৪/২৪) — থামা
+                  if (++locationFails >= LOCATION_MAX) break;
+                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'LOCATION', waitSec: 1, elapsedSec: elapsed() });
+                  await new Promise(r => setTimeout(r, Math.min(1500, retryMs || 1500)));
+                  continue;
+                }
+
+                // Part-16.5: ৫০৩/ব্যস্ত — ছোট বিরতিতে একই মডেলে *অন্য* সুস্থ কি; ৩টি ভিন্ন কি ব্যর্থ হলে মডেল বদল
                 if (verdict.class === 'SERVER') {
                   const set = (serverFailKeys[model] = serverFailKeys[model] || new Set());
-                  if (!serverRetry.used) {
-                    serverRetry.used = true;
-                    note({ event: 'retry_same_key', status: lastError.status, waitSec: Math.round(retryMs / 1000), key: maskKey(key), model, elapsedSec: elapsed() });
-                    if (retryMs) await new Promise(r => setTimeout(r, retryMs));
-                    i--;                     // একই এন্ট্রি আবার চেষ্টা
-                    continue;
-                  }
                   set.add(key);
-                  if (set.size >= 2) {       // একই মডেলে দুই কি ব্যর্থ → মডেল বদল
+                  if (set.size >= SERVER_KEYS_BEFORE_SWITCH) {
                     note({ event: 'switch_model', from: model, reason: 'server', elapsedSec: elapsed() });
                     i = skipRestOfModel(plan, i, model);
                     continue;
                   }
-                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'server', elapsedSec: elapsed() });
+                  note({ event: 'switch_key', key: maskKey(key), model, reason: 'server', waitSec: Math.round(retryMs / 1000), elapsedSec: elapsed() });
+                  if (retryMs) await new Promise(r => setTimeout(r, retryMs));
                   continue;
                 }
 
@@ -388,26 +416,48 @@ export default {
 
               // ---------- সফল ----------
               recordSuccess(ledger, key, model, Date.now() - started, Date.now());
+              logRec.ttfbSec = Math.round((Date.now() - started) / 1000);
+              logRec.ttfbMs = Date.now() - started;   // Part-16.6: অঞ্চল-তুলনার জন্য মিলিসেকেন্ডে
+              logRec.attempts.push({ key: maskKey(key), model, class: 'OK', status: res.status, sec: logRec.ttfbSec });
               ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
               ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() })));
               note({ event: 'streaming', attempt: i + 1, key: maskKey(key), model, elapsedSec: elapsed() });
 
               const reader = res.body.getReader();
-              while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                controller.enqueue(value);
+              const dec = new TextDecoder();
+              let tail = '';
+              try {
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  logRec.streamedBytes += value.byteLength;
+                  tail = (tail + dec.decode(value, { stream: true })).slice(-3000);
+                  controller.enqueue(value);
+                }
+                const fm = tail.match(/"finishReason"\s*:\s*"([A-Z_]+)"/g);
+                logRec.finish = fm ? fm[fm.length - 1].replace(/.*"([A-Z_]+)"$/, '$1') : 'NONE';
+                logRec.outcome = 'success';
+              } catch (streamErr) {
+                logRec.outcome = 'stream_error';
+                logRec.finish = String(streamErr && streamErr.message || streamErr).slice(0, 200);
               }
+              logRec.totalSec = elapsed();
+              await saveLog();
               try { controller.close(); } catch (e) {}
               return;
             }
 
             // সব চেষ্টা শেষ/সময় শেষ — খতিয়ান সংরক্ষণ করে ক্লায়েন্টকে জানানো
             await env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger));
+            logRec.outcome = 'failed'; logRec.totalSec = elapsed();
+            logRec.finish = lastError ? String(lastError.detail || lastError.status) : null;
+            await saveLog();
             note({
               event: 'failed', status: 502, elapsedSec: elapsed(),
               body: {
-                error: lastError && lastError.status === 503
+                error: locationFails >= LOCATION_MAX
+                  ? 'Google এই মুহূর্তে আমাদের সার্ভারের অঞ্চল থেকে অনুরোধ নিচ্ছে না (সাময়িক) — ১–২ মিনিট পরে আবার চেষ্টা করুন।'
+                  : lastError && lastError.status === 503
                   ? 'Google-এর সার্ভার এখন ব্যস্ত (৫০৩) — কিছুক্ষণ পরে আবার চেষ্টা করুন।'
                   : 'সবগুলো কি/মডেল ব্যর্থ হয়েছে।',
                 lastError, attempts,

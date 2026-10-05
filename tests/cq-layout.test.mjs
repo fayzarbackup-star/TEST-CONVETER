@@ -171,6 +171,10 @@ const plan6 = planOf('cq-booklet-6');
 const parsed6 = (() => { const p = L['cq-booklet-6'].parsed; p.header = { institute: 'মডেল হাই স্কুল', location: 'রংপুর জেলা', exam: 'বার্ষিক পরীক্ষা - ২০২', classAndSubject: 'শ্রেণিঃ অষ্টম | বিষয়ঃ বিজ্ঞান', time: '২ ঘণ্টা ৩০ মিনিট', marks: '৭০', examType: '' }; return p; })();
 const P10 = (() => { const p = L['cq-booklet-10'].parsed; p.header = { institute: 'মডেল হাই স্কুল', location: 'রংপুর জেলা', exam: 'বার্ষিক পরীক্ষা - ২০২', classAndSubject: 'শ্রেণিঃ অষ্টম | বিষয়ঃ বিজ্ঞান', time: '২ ঘণ্টা ৩০ মিনিট', marks: '৭০', examType: '' }; return p; })();
 let rtf6 = '', xml6 = '', html6 = '';
+// Part-15.4: প্রশ্ন-ইনডেন্ট — নম্বর ১–৯ → ২৮৮, ১০+ → ৪৩২; উপ-প্রশ্ন = ইনডেন্ট + ৪৩২ (cq-booklet-6-এর সব প্রশ্ন ১–৯)
+const SI = (parsed) => P.questionIndent(parsed.sections[0].questions[0], geo);
+const si6 = SI(parsed6), sub6 = si6 + geo.subHanging;
+const pt = (tw) => +(tw / 20).toFixed(2) + 'pt';
 {
   rtf6 = EX.generateCqExamRtf(parsed6, {});
   const breaks = plan6.columns.filter((c) => c.breakBefore).length;
@@ -178,8 +182,8 @@ let rtf6 = '', xml6 = '', html6 = '';
   T('.doc  margl/margr/margt/margb 720', rtf6.includes('\\margl720\\margr720\\margt720\\margb720'));
   T('.doc  \\cols2\\colsx1008 (কলাম লাইন নেই)', rtf6.includes('\\cols2\\colsx1008') && !rtf6.includes('\\linebetcol'));
   T(`.doc  {\column} সংখ্যা ${breaks} == প্ল্যান`, (rtf6.match(/\{\\column\}/g) || []).length === breaks, (rtf6.match(/\{\\column\}/g) || []).length);
-  T('.doc  স্টেম হ্যাঙ্গিং \\li432\\fi-432', /\{\\ql\\b\\fs24\\f0[^\n]*\\li432\\fi-432/.test(rtf6));
-  T('.doc  উপ-প্রশ্ন \\li864\\fi-432', /\{\\ql\\f0[^\n]*\\li864\\fi-432/.test(rtf6));
+  T('.doc  স্টেম হ্যাঙ্গিং \\li' + si6 + '\\fi-' + si6 + ' (সেকশন-ইনডেন্ট)', new RegExp('\\{\\\\ql\\\\b\\\\fs24\\\\f0[^\\n]*\\\\li' + si6 + '\\\\fi-' + si6).test(rtf6));
+  T('.doc  উপ-প্রশ্ন \\li' + sub6 + '\\fi-432', new RegExp('\\{\\\\ql\\\\f0[^\\n]*\\\\li' + sub6 + '\\\\fi-432').test(rtf6));
   T('.doc  নম্বর রাইট ট্যাবে \\tqr\\tx' + geo.rightTab, rtf6.includes('\\tqr\\tx' + geo.rightTab));
   T('.doc  হেডারে মাঝ-ট্যাব \\tqc\\tx' + Math.round(geo.rightTab / 2) + ' ও \\b\\ul লেবেল',
     rtf6.includes('\\tqc\\tx' + Math.round(geo.rightTab / 2)) && /\\tqc\\tx\d+[\s\S]{0,900}?\\b\\ul/.test(rtf6));
@@ -204,8 +208,8 @@ let rtf6 = '', xml6 = '', html6 = '';
   T('.docx  কলাম-ব্রেক সংখ্যা .doc-এর সমান',
     (xml6.match(/<w:br w:type="column"\/>/g) || []).length === (rtf6.match(/\{\\column\}/g) || []).length,
     [(xml6.match(/<w:br w:type="column"\/>/g) || []).length, (rtf6.match(/\{\\column\}/g) || []).length]);
-  T('.docx  ind left=432 hanging=432 (স্টেম) ও left=864 hanging=432 (উপ-প্রশ্ন)',
-    /<w:ind w:left="432" w:hanging="432"\/>/.test(xml6) && /<w:ind w:left="864" w:hanging="432"\/>/.test(xml6));
+  T('.docx  ind left=' + si6 + ' hanging=' + si6 + ' (স্টেম) ও left=' + sub6 + ' hanging=432 (উপ-প্রশ্ন)',
+    xml6.includes('<w:ind w:left="' + si6 + '" w:hanging="' + si6 + '"/>') && xml6.includes('<w:ind w:left="' + sub6 + '" w:hanging="432"/>'));
   T('.docx  right tab w:pos=' + geo.rightTab, xml6.includes('<w:tab w:val="right" w:pos="' + geo.rightTab + '"/>'));
   T('.docx  টেবিল শেডিং নেই, অটো উইডথ', !/w:fill="(E8E8E8|D9D9D9|F1F1F1)"/i.test(xml6) && !/<w:tblW w:w="[1-9]/.test(xml6));
   const xml10 = await (async () => { const b = await EX.generateCqExamDocx(P10, {}); const z2 = await g.jszip.loadAsync(Buffer.from(await b.arrayBuffer())); return z2.file('word/document.xml').async('string'); })();
@@ -226,15 +230,15 @@ let rtf6 = '', xml6 = '', html6 = '';
     colCount === plan6.columns.length && (html6.match(/qp-col-skip-box/g) || []).length === padded - plan6.columns.length,
     [colCount, plan6.columns.length, (html6.match(/qp-col-skip-box/g) || []).length, padded - plan6.columns.length]);
   T('প্রিভিউতে কলাম-গ্যাপ 0.7" (50.4pt)', html6.includes('column-gap: 50.4pt'));
-  T('প্রিভিউতে হ্যাঙ্গিং 21.6pt / উপ-প্রশ্ন 43.2pt (৪৩/৮৬৪ dxa)',
-    html6.includes('padding-left: 21.6pt; text-indent: -21.6pt;') && html6.includes('padding-left: 43.2pt; text-indent: -21.6pt;'));
+  T('প্রিভিউতে হ্যাঙ্গিং ' + pt(si6) + ' / উপ-প্রশ্ন ' + pt(sub6) + ' (সেকশন-ইনডেন্ট)',
+    html6.includes('padding-left: ' + pt(si6) + '; text-indent: -' + pt(si6) + ';') && html6.includes('padding-left: ' + pt(sub6) + '; text-indent: -21.6pt;'));
   T('প্রিভিউতে নম্বর কলামের ডানে float করা (রাইট ট্যাবের সমতুল্য)', html6.includes('float: right'));
   T('প্রিভিউ A4 ল্যান্ডস্কেপ শীট + শীট-লেবেল', /size-a4-landscape/.test(html6) && /শীট /.test(html6));
   T('তিন পাথেই একই প্রশ্ন-সংখ্যা (ক্ষয়/দ্বৈত নেই)', (() => {
     const n = (s, re) => (s.match(re) || []).length;
-    const a = n(rtf6, /\\li432\\fi-432/g), b = n(xml6, /<w:ind w:left="432" w:hanging="432"\/>/g), c = n(html6, /cq-q-row/g);
+    const a = n(rtf6, new RegExp('\\\\li' + si6 + '\\\\fi-' + si6, 'g')), b = n(xml6, new RegExp('<w:ind w:left="' + si6 + '" w:hanging="' + si6 + '"/>', 'g')), c = n(html6, /cq-q-row/g);
     return a === b && b === c && a === plan6.items.filter((i) => i.kind === 'question').length;
-  })(), [(rtf6.match(/\\li432\\fi-432/g) || []).length, (xml6.match(/<w:ind w:left="432" w:hanging="432"\/>/g) || []).length, (html6.match(/cq-q-row/g) || []).length]);
+  })(), [si6, (html6.match(/cq-q-row/g) || []).length]);
 }
 
 // ═════════════ (চ) TC-LAY-34 — কম্বাইন্ড: ল্যান্ডস্কেপ CQ → পোর্ট্রেট MCQ ═════════════
@@ -290,8 +294,9 @@ console.log('\n— (ছ) TC-LAY-35: ইনভ্যারিয়েন্ট �
     T(`${id}: প্রশ্ন-নম্বর মার্কার ×count মিল (ক্ষয়/দ্বৈত নেই)`, numOk, [...byNum.entries()].slice(0, 4));
     // (২) উপ-প্রশ্নের সংখ্যা মিল (ব্যাক্তিগত অথবা-ডিভাইডার বাদে)
     const wantSubs = qs.reduce((a, q) => a + (q.subQuestions || []).filter((sq) => sq && !sq.isAlternative).length, 0);
-    const gotSubs = (rtf.match(/\\li864\\fi-432/g) || []).length;
-    T(`${id}: উপ-প্রশ্ন ${wantSubs}টি — প্রিন্টে ${gotSubs}টি (864/432 ইনডেন্টে)`, wantSubs === gotSubs, { wantSubs, gotSubs });
+    const subI = '720|864';   // Part-15.4: ১–৯ প্রশ্নের উপ-প্রশ্ন ৭২০, ১০+ প্রশ্নের ৮৬৪
+    const gotSubs = (rtf.match(/\\li(?:720|864)\\fi-432/g) || []).length;
+    T(`${id}: উপ-প্রশ্ন ${wantSubs}টি — প্রিন্টে ${gotSubs}টি (${subI}/432 ইনডেন্টে)`, wantSubs === gotSubs, { wantSubs, gotSubs });
     // (৩) উদ্দীপক-লেখা প্রিন্টে থাকে (preContext কনটেন্ট হারাত না)
     const preLines = qs.reduce((a, q) => a + String(q.preContext || '').split('\n').filter(Boolean).length, 0);
     if (preLines > 0) {

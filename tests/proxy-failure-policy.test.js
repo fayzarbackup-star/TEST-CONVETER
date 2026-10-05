@@ -106,6 +106,14 @@ T('দৈনিক ক্যাপে waitSec লুকানো তথ্য �
 const withByokDaily = FayzarProxyPolicy.decideProxyFallback(429, dailyBody, true);
 T('BYOK থাকলেও দৈনিক ক্যাপে abort (কোটা বাঁচাতে)', withByokDaily.action === 'abort', withByokDaily);
 
+// Part-16.5: Google অঞ্চল-সীমা — ফাইলের দোষ নয়
+const locBody = { error: 'x', lastError: { status: 400, detail: 'User location is not supported for the API use.' }, attempts: [{ class: 'LOCATION' }] };
+const loc = FayzarProxyPolicy.decideProxyFallback(502, locBody, false);
+T('16.5: অঞ্চল-সীমা → kind location, "পেলোড/ছবি সমস্যা" নয়', loc.kind === 'location' && !/পেলোড/.test(loc.message) && /আবার চেষ্টা/.test(loc.message), loc);
+T('16.5: অঞ্চল-সীমায় BYOK থাকলে সরাসরি চেষ্টা', FayzarProxyPolicy.decideProxyFallback(502, locBody, true).action === 'direct');
+T('16.5: আসল পেলোড-ত্রুটি আগের মতোই fatal_input',
+  FayzarProxyPolicy.decideProxyFallback(502, { lastError: { status: 400, detail: 'Unable to process input image' }, attempts: [{ class: 'FATAL_INPUT' }] }, false).kind === 'fatal_input');
+
 console.log(results.join('\n'));
 console.log(`\nফল: ${pass} পাস, ${fail} ব্যর্থ`);
 process.exit(fail ? 1 : 0);

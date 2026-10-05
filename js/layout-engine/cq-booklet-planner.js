@@ -150,6 +150,8 @@
       colGap: 1008,          // ০.৭" ()
       colSep: false,         // বুকলেটে মাঝখানে দৃশ্যমান লাইন নয় (ভাঁজই বিভাজক)
       indent: 432,           // প্রশ্নের হ্যাঙ্গিং ইনডেন্ট ০.৩" (৪)
+      // এক-অঙ্কের নম্বর (১।–৯।): ০.২" — নম্বরের পরে একটি স্বাভাবিক ফাঁকের মতো দেখায়; ১০+ প্রশ্নে ০.৩"
+      compactIndent: 288,
       subIndent: 864,        // উপ-প্রশ্নের ইনডেন্ট (৬)
       subHanging: 432,
       lineFactor: 1.50,
@@ -178,6 +180,105 @@
       marks: '৭০'
     },
 
+    /**
+     * EXAM_GENERAL (প্রাথমিক/সাধারণ) হেডার-ফলব্যাক — কাল্পনিক সময়/নম্বর নয়, ফাঁকা ডট-প্লেসহোল্ডার;
+     * "সৃজনশীল অভীক্ষা" লেবেলও নেই।
+     */
+    GENERAL_HEADER_FALLBACK: {
+      institute: 'আপনার প্রতিষ্ঠানের নাম',
+      location: 'ঠিকানা লিখুন',
+      exam: 'পরীক্ষার নাম লিখুন',
+      classAndSubject: 'শ্রেণি: ................  |  বিষয়: ................',
+      time: '................',
+      examType: '',
+      marks: '................'
+    },
+
+    /**
+     * ডকটাইপ-ভিত্তিক লেআউট প্রোফাইল — নতুন প্রশ্নপত্র-লেআউট যোগ করতে শুধু এখানে একটি এন্ট্রি দিন।
+     *  landscape  : পৃষ্ঠার দিক          colGap/colSep : কলাম-গ্যাপ (twips) ও মাঝের লাইন
+     *  booklet    : ব্যাক-কভার সংরক্ষিত ভাঁজ-বুকলেট কি না
+     *  headerSpan : 'column' = হেডার প্রথম কলামের শীর্ষে; 'page' = পুরো প্রস্থে ১-কলাম হেডার,
+     *               তারপর কন্টিনিউয়াস সেকশনে ২-কলাম বডি
+     *  examTypeLabel / fallback : হেডারের মাঝের লেবেল ও ফলব্যাক-সেট
+     */
+    LAYOUT_PROFILES: {
+      EXAM_CQ: { landscape: true, colGap: 1008, colSep: false, booklet: true, headerSpan: 'column', examTypeLabel: 'সৃজনশীল অভীক্ষা', fallback: 'CQ_HEADER_FALLBACK' },
+      EXAM_MATH: { landscape: true, colGap: 1008, colSep: false, booklet: true, headerSpan: 'column', examTypeLabel: 'সৃজনশীল অভীক্ষা', fallback: 'CQ_HEADER_FALLBACK' },
+      EXAM_COMBINED: { landscape: true, colGap: 1008, colSep: false, booklet: true, headerSpan: 'column', examTypeLabel: 'সৃজনশীল অভীক্ষা', fallback: 'CQ_HEADER_FALLBACK' },
+      // স্পেক: A4 পোর্ট্রেট, ১-কলাম হেডার + ২-কলাম বডি (০.২৫" = ৩৬০ গ্যাপ, সলিড ডিভাইডার), কলাম ১ থেকে শুরু
+      EXAM_GENERAL: { landscape: false, colGap: 360, colSep: true, booklet: false, headerSpan: 'page', examTypeLabel: '', fallback: 'GENERAL_HEADER_FALLBACK' }
+    },
+
+    profile(docType) {
+      const key = String(docType || 'EXAM_CQ').toUpperCase();
+      return Object.assign({}, this.LAYOUT_PROFILES[key] || this.LAYOUT_PROFILES.EXAM_CQ);
+    },
+
+    /** ইংরেজি প্রশ্নপত্রের ফলব্যাক (বাংলা প্লেসহোল্ডার বা কাল্পনিক মান নয়) */
+    ENGLISH_HEADER_FALLBACK: {
+      institute: 'Name of Institution',
+      location: 'Address',
+      exam: 'Name of Examination',
+      classAndSubject: 'Class: ................  |  Subject: ................',
+      time: '................',
+      examType: '',
+      marks: '................'
+    },
+
+    /** হেডারের মেট্রিক্স-লেবেল ভাষাভেদে */
+    HEADER_LABELS: {
+      bn: { time: 'সময়: ', marks: 'পূর্ণমান: ' },
+      en: { time: 'Time: ', marks: 'Full Marks: ' }
+    },
+
+    headerFallback(docType, lang) {
+      if (lang === 'en') return this.ENGLISH_HEADER_FALLBACK;
+      return this[this.profile(docType).fallback] || this.CQ_HEADER_FALLBACK;
+    },
+
+    /** পত্রের ভাষা: ল্যাটিন অক্ষর বাংলার ৩ গুণের বেশি হলে 'en' (স্পেক §৮: খাঁটি ইংরেজি পত্র) */
+    paperLang(parsedData) {
+      const p = parsedData || {};
+      let s = Object.values(p.header || {}).join(' ');
+      for (const sec of (p.sections || [])) {
+        s += ' ' + (sec.title || '');
+        for (const q of (sec.questions || [])) {
+          s += ' ' + (q.text || '') + ' ' + (q.stimulus || '') + ' ' + (q.subQuestions || []).map((x) => x && x.text).join(' ');
+        }
+      }
+      const bn = (s.match(/[অ-হড়-য়]/g) || []).length;
+      const en = (s.match(/[A-Za-z]/g) || []).length;
+      return en >= 20 && en > bn * 3 ? 'en' : 'bn';
+    },
+
+    /** প্রশ্ন-নম্বরের পরের চিহ্ন: ইংরেজি প্রশ্ন (ASCII নম্বর, বাংলা অক্ষর নেই) → `.`, অন্যথায় দাঁড়ি `।` */
+    numDelimiter(q) {
+      const num = String((q && q.num) || '');
+      const txt = String((q && (q.text || q.stimulus)) || '');
+      return /^[0-9]+$/.test(num) && /[A-Za-z]/.test(txt) && !/[ঀ-৿]/.test(txt) ? '.' : '।';
+    },
+
+    /** উপ-প্রশ্ন লেবেল: ইংরেজি `a` → `(a)`, বাংলা `ক` → `ক.` */
+    subLabelText(label) {
+      const l = String(label || '');
+      if (!l) return '';
+      return /^[a-z]$/i.test(l) ? '(' + l + ')' : l + '.';
+    },
+
+    /**
+     * স্টেমের শেষে লেখা নম্বর আলাদা করা (রাইট-ট্যাবে বসানোর জন্য, স্পেক §৩):
+     * `[0.5×10=5]`, `[১০]`, `১×৫=৫`, `… কর: ৫` — উৎসে যা আছে শুধু তা-ই, কিছু বানানো হয় না।
+     */
+    splitStemMark(text) {
+      const s = String(text == null ? '' : text).trim();
+      const m = s.match(/\s*(\[[^\[\]]*[\d০-৯][^\[\]]*\]|[\d০-৯.]+\s*[×xX]\s*[\d০-৯.]+\s*=\s*[\d০-৯.]+)\s*$/);
+      if (m && m.index > 0) return { text: s.slice(0, m.index).trim(), mark: m[1].trim() };
+      const c = s.match(/[:ঃ]\s*([\d০-৯]{1,3})\s*$/);
+      if (c && c.index > 0) return { text: s.slice(0, c.index + 1).trim(), mark: c[1] };
+      return { text: s, mark: '' };
+    },
+
     // ------------------------------------------------------------- প্রকাশ্য মাপক
     measure(str, sz) { return measure(str, sz); },
     lineCount(str, sz, availW) { return lineCount(str, sz, availW); },
@@ -185,6 +286,10 @@
     geometry(options) {
       const o = options || {};
       const g = Object.assign({}, this.GEOMETRY);
+      const prof = this.profile(o.docType);
+      g.colGap = prof.colGap;
+      g.colSep = prof.colSep;
+      if (!prof.landscape) { const w = g.pageW; g.pageW = g.pageH; g.pageH = w; }
       // Part-12: সব দৈর্ঘ্য U দিয়েই আসে — স্ট্রিং ('normal'), ইঞ্চি, টুইপ, একক-সহ
       // যা-ই আসুক আউটপুট সর্বদা সসীম টুইপ (NaN জ্যামিতিতে ঢোকে না)।
       const U = layoutUnits();
@@ -200,7 +305,7 @@
       if (o.headerLineFactor) g.headerLineFactor = Number.isFinite(parseFloat(o.headerLineFactor)) ? Math.min(3, Math.max(0.8, parseFloat(o.headerLineFactor))) : g.headerLineFactor;
       if (o.fillRatio) g.fillRatio = Number.isFinite(parseFloat(o.fillRatio)) ? Math.min(1, Math.max(0.5, parseFloat(o.fillRatio))) : g.fillRatio;
       if (o.colSep !== undefined) g.colSep = !!o.colSep;
-      if (o.landscape === false) { const w = g.pageW; g.pageW = g.pageH; g.pageH = w; }
+      if (o.landscape === false && g.pageW > g.pageH) { const w = g.pageW; g.pageW = g.pageH; g.pageH = w; }
 
       g.landscape = g.pageW > g.pageH;
       g.usableW = g.pageW - 2 * g.margin;
@@ -218,6 +323,26 @@
       return g;
     },
 
+    /**
+     * প্রশ্নের হ্যাঙ্গিং ইনডেন্ট (Part-15.4, ব্যবহারকারীর নিয়ম): নম্বর ১–৯ → compactIndent (০.২"),
+     * ১০+ → indent (০.৩")। প্রতিটি প্রশ্ন আলাদা — হাতে-টাইপ করা প্রশ্নপত্রের মতো।
+     * নিয়মের একমাত্র উৎস FayzarLayoutUnits.questionIndent (MCQ-পথও একই নিয়ম নেয়)।
+     */
+    questionIndent(q, g) {
+      const geo = g || this.GEOMETRY;
+      if (!geo.compactIndent) return geo.indent;
+      const U = layoutUnits();
+      if (typeof U.questionIndent === 'function') return U.questionIndent(q && q.num, geo.indent, geo.compactIndent);
+      const n = parseInt(String((q && q.num) || '').replace(/[০-৯]/g, (d) => String(d.charCodeAt(0) - 0x09E6)), 10);
+      return Number.isFinite(n) && n >= 1 && n <= 9 ? Math.min(geo.indent, geo.compactIndent) : geo.indent;
+    },
+
+    /** প্রশ্ন-আইটেমের জ্যামিতি — সেকশন-ইনডেন্ট আলাদা হলে indent/subIndent সেই অনুযায়ী (উপ-প্রশ্নের লেবেল স্টেম-লেখার সঙ্গে সোজা) */
+    itemGeometry(g, item) {
+      if (!item || !item.indent || item.indent === g.indent) return g;
+      return Object.assign({}, g, { indent: item.indent, subIndent: item.indent + g.subHanging, textW: g.colW - item.indent, subTextW: g.colW - item.indent - g.subHanging });
+    },
+
     lineH(sz, g) {
       return Math.round((sz / 2) * TWP_PER_PT * (g ? g.lineFactor : this.GEOMETRY.lineFactor));
     },
@@ -230,7 +355,10 @@
     buildHeader(header, options) {
       const h = header || {};
       const useFallback = !!(options && options.fallback);
-      const FB = this.CQ_HEADER_FALLBACK;
+      const prof = this.profile(options && options.docType);
+      const lang = (options && options.lang) || 'bn';
+      const FB = this.headerFallback(options && options.docType, lang);
+      const LBL = this.HEADER_LABELS[lang] || this.HEADER_LABELS.bn;
       const S = this.HEADER_SIZES;
       const lines = [];
       const value = (key, fallbackKey) => {
@@ -257,12 +385,12 @@
       add('classSubject', classSubject, { bold: false, sz: S.classSubject });
       if (useFallback || h.time || h.marks || h.examType || h.institute || h.exam || h.location || h.classAndSubject) {
         // বাস্তব মান থাকলে পুরনো লেবেল/আচরণ অটুট; fallback-এ নির্দিষ্ট CQ লেবেলসহ পূর্ণ লাইন।
-        const timeLabel = time.fallbackUsed ? 'সময়: ' : 'সময়: ';
+        const timeLabel = lang === 'en' ? LBL.time : time.fallbackUsed ?'সময়: ' : 'সময়: ';
         lines.push({
           kind: 'metrics',
           text: time.text ? timeLabel + time.text : '',
-          center: examType.text || (!useFallback ? 'সৃজনশীল অভীক্ষা' : ''),
-          right: marks.text ? 'পূর্ণমান: ' + marks.text : '',
+          center: examType.text || (!useFallback && lang !== 'en' ? prof.examTypeLabel : ''),
+          right: marks.text ? LBL.marks + marks.text : '',
           fallbackUsed: time.fallbackUsed || examType.fallbackUsed || marks.fallbackUsed,
           fallbackFields: { time: time.fallbackUsed, examType: examType.fallbackUsed, marks: marks.fallbackUsed },
           align: 'left', bold: true, sz: S.metrics
@@ -290,19 +418,21 @@
         else if (l.kind === 'metrics') {
           m.examType = l.center || '';
           m.time = String(l.text || '').replace(/^(?:সময়|সময়):\s*/, '');
-          m.marks = String(l.right || '').replace(/^পূর্ণমান:\s*/, '');
+          m.marks = String(l.right || '').replace(/^(?:পূর্ণমান|Full Marks):\s*/, '');
+          m.time = m.time.replace(/^Time:\s*/, '');
         }
       }
       return m;
     },
 
-    headerHeight(headerLines, g) {
+    headerHeight(headerLines, g, width) {
       if (!headerLines || !headerLines.length) return 0;
+      const w = width || g.colW;
       let h = 0;
       for (const l of headerLines) {
         const sz = l.sz || g.baseSz;
         const per = Math.round((sz / 2) * TWP_PER_PT * g.headerLineFactor);
-        const n = Math.max(1, lineCount(l.text || l.center || '', sz, g.colW - 240));
+        const n = Math.max(1, lineCount(l.text || l.center || '', sz, w - 240));
         h += per * n;
       }
       return Math.round(h + 120);   // + বর্ডার ডিভাইডার ও তার নিচের ফাঁকা
@@ -368,25 +498,36 @@
       // বুকলেট সংযোজন (২): শীট-১-এর ১ম কলাম ব্যাক কভার হিসেবে সংরক্ষিত।
       // o.skipFirstColumn === false → বুকলেট নয়, কলামে ক্রমাগত ফ্লো;
       // o.skipFirstColumn === true  → সংরক্ষিত কলাম অবশ্যই ফাঁকা (টেল-ভরতি বন্ধ)।
-      const reserve = o.skipFirstColumn !== false;
+      const prof = this.profile(docType);
+      // বুকলেট নয় এমন প্রোফাইল (EXAM_GENERAL) — কলাম ১ থেকে ক্রমাগত ফ্লো, স্পষ্ট true ছাড়া সংরক্ষণ নেই
+      const reserve = prof.booklet ? o.skipFirstColumn !== false : o.skipFirstColumn === true;
       const backFill = reserve && o.skipFirstColumn !== true;
       const cap = g.capacity;
+      // 'page' হেডার পুরো প্রস্থে — প্রথম পৃষ্ঠার সব কলাম থেকেই হেডারের উচ্চতা বাদ যায়
+      const fullHeader = prof.headerSpan === 'page';
 
       const items = [];
       for (const sec of ((parsedData && parsedData.sections) || [])) {
         if (sec && sec.title) items.push({ kind: 'sectionTitle', text: sec.title, height: lineH + 40, lines: 1 });
         for (const q of ((sec && sec.questions) || [])) {
           const m = this.measureQuestion(q, g.baseSz, g);
-          items.push({ kind: 'question', q, lines: m.lines, height: m.height, parts: m.parts });
+          const it = { kind: 'question', q, lines: m.lines, height: m.height, parts: m.parts };
+          const qIndent = this.questionIndent(q, g);
+          if (qIndent !== g.indent) it.indent = qIndent;
+          items.push(it);
         }
       }
 
+      const lang = this.paperLang(parsedData);
       const headerLines = this.buildHeader(parsedData && parsedData.header, {
+        docType,
+        lang,
         fallback: docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL' || docType === 'EXAM_COMBINED' || o.cqHeaderFallback === true
       });
-      const headH = this.headerHeight(headerLines, g);
+      const headH = this.headerHeight(headerLines, g, fullHeader ? g.usableW : g.colW);
+      const firstPageCap = (idx) => (idx === 0 || (fullHeader && idx < g.cols)) ? Math.max(lineH * 3, cap - headH) : cap;
       const empty = {
-        geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 }, headerLines, headerHeight: headH,
+        geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 }, headerLines, headerHeight: headH, headerSpan: prof.headerSpan,
         skipFirstColumn: false, columns: [], items: [],
         metrics: { count: 0, capacity: cap, columnsTotal: 0, docPages: 0, sheets: 0, printedPages: 0, reservedUsed: false, tailMoved: 0, headHeight: headH }
       };
@@ -399,7 +540,7 @@
         if (bins[bi].left - it.height < 0) {
           // একটি আইটেমও বাকি না থাকলে নতুন কলাম; অনেক বড় আইটেম হলেও নতুন কলামেই বসবে
           bi += 1;
-          if (!bins[bi]) bins[bi] = { items: [], left: cap };
+          if (!bins[bi]) bins[bi] = { items: [], left: firstPageCap(bi) };
         }
         bins[bi].items.push(it);
         bins[bi].left -= it.height;
@@ -440,7 +581,7 @@
       }
       for (let i = 0; i < used; i++) {
         const flowIdx = columns.length;
-        const colCap = i === 0 ? Math.max(lineH * 3, cap - headH) : cap;
+        const colCap = firstPageCap(i);
         columns.push({
           role: i === 0 ? 'page1' : 'page',
           slot: i + 1,
@@ -464,7 +605,7 @@
       return {
         geometry: g,
         font: { sz: g.baseSz, pt: g.baseSz / 2 },
-        headerLines, headerHeight: headH,
+        headerLines, headerHeight: headH, headerSpan: prof.headerSpan, lang,
         skipFirstColumn,
         columns, items,
         metrics: {
@@ -507,7 +648,7 @@
 
     /** RTF পেজ-সেটআপ লাইন (ল্যান্ডস্কেপ ২-কলাম বুকলেট) */
     rtfPageSetup(g) {
-      return '\\landscape\\paperw' + g.pageW + '\\paperh' + g.pageH +
+      return (g.landscape ? '\\landscape' : '') + '\\paperw' + g.pageW + '\\paperh' + g.pageH +
         '\\margl' + g.margin + '\\margr' + g.margin + '\\margt' + g.margin + '\\margb' + g.margin +
         '\\cols' + g.cols + '\\colsx' + g.colGap + (g.colSep ? '\\linebetcol' : '');
     },

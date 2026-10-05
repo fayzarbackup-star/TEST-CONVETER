@@ -25,6 +25,28 @@
       GENERAL: 'GENERAL'
     },
 
+    /**
+     * Part-15.9: OCR-এর `doc_type` (বা ক্লাসিফায়ার) EXAM_CQ/MATH/GENERAL বললেও লেখায় প্রশ্নের পরে
+     * আলাদা বহুনির্বাচনি অংশ (শিরোনাম + নিচে ≥৮টি ক/খ/গ/ঘ বিকল্প-লাইন) থাকলে → EXAM_COMBINED,
+     * যাতে MCQ অংশ নিজের পোর্ট্রেট ২-কলাম গ্রিডে যায় (Gemini সবসময় `---SECTION_BREAK:MCQ---` দেয় না)।
+     */
+    promoteCombined(type, text) {
+      const t = String(type || '').toUpperCase();
+      if (!['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL'].includes(t)) return type;
+      const s = String(text || '');
+      if (/---\s*SECTION_?BREAK:MCQ/i.test(s)) return this.DOC_TYPES.EXAM_COMBINED;
+      const lines = s.split(/\r?\n/);
+      const isQ = (l) => /^\s*(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-:ঃ.]*)?[০-৯\d]+[।.)]/.test(l);
+      const head = lines.findIndex((l) => {
+        const c = l.trim().replace(/^#{1,6}\s*/, '').replace(/^[*_\s]+|[*_\s]+$/g, '');
+        return c.length > 0 && c.length < 80 && !isQ(c) &&
+          /^(?:[কখগঘ]\s*[-–—]?\s*(?:বিভাগ|অংশ)\s*[:ঃ\-–—(]?\s*)?(?:বহুনির্বাচন[িী]|নৈর্ব্যক্তিক|MCQ\b|multiple[\s-]*choice)/i.test(c);
+      });
+      if (head < 1 || !lines.slice(0, head).some(isQ)) return type;
+      const optLines = lines.slice(head + 1).filter((l) => /^\s*\(?\s*[কখগঘ]\s*[.)।]\s*\S/.test(l)).length;
+      return optLines >= 8 ? this.DOC_TYPES.EXAM_COMBINED : type;
+    },
+
     classify(text) {
       if (!text || typeof text !== 'string') return { type: this.DOC_TYPES.GENERAL, confidence: 0 };
       const t = text.trim();

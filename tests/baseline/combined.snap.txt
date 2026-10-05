@@ -444,9 +444,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -486,9 +486,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -503,9 +503,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -520,9 +520,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -537,9 +537,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -568,9 +568,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -597,9 +597,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -614,9 +614,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -631,9 +631,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -648,9 +648,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -665,9 +665,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -694,9 +694,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -719,9 +719,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -744,9 +744,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -769,9 +769,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -1255,4 +1255,39 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\column}
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2451? \u2476?\u2495?\u2487?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqc\tx3598\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2536? \u2456?\u2467?\u2509?\u2463?\u2494? \u2537?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\b\ul {\f0 \u2488?\u2499?\u2460?\u2472?\u2486?\u2496?\u2482? \u2437?\u2477?\u2496?\u2453?\u2509?\u2487?\u2494?}}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2541?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa20 {\f0 \u2447?\u2453?\u2463?\u2495? \u2455?\u2494?\u2524?\u2495?\u2480? \u2476?\u2503?\u2455? \u2488?\u2478?\u2527?\u2503?\u2480? \u2488?\u2494?\u2469?\u2503? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2495?\u2468? \u2489?\u2458?\u2509?\u2459?\u2503?\u2404? \u2455?\u2494?\u2524?\u2495?\u2463?\u2495? \u2474?\u2509?\u2480?\u2469?\u2478? \u2539? \u2488?\u2503?\u2453?\u2503?\u2472?\u2509?\u2465?\u2503? \u2488?\u2478?\u2468?\u2509?\u2476?\u2480?\u2467?\u2503? \u2458?\u2482?\u2503?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2453?. \u2476?\u2503?\u2455? \u2453?\u2496??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2454?. \u2488?\u2478?\u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2482?\u2468?\u2503? \u2453?\u2496? \u2476?\u2507?\u2461?\u2494?\u2527??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2438?\u2482?\u2507?\u2453?\u2503? \u2455?\u2494?\u2524?\u2495?\u2463?\u2495?\u2480? \u2468?\u2509?\u2476?\u2480?\u2467? \u2472?\u2495?\u2480?\u2509?\u2467?\u2527? \u2453?\u2480?\u2507?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2456?. \u2455?\u2494?\u2524?\u2495?\u2463?\u2495?\u2480? \u2478?\u2507?\u2463? \u2437?\u2468?\u2495?\u2453?\u2509?\u2480?\u2494?\u2472?\u2509?\u2468? \u2470?\u2498?\u2480?\u2468?\u2509?\u2476? \u2455?\u2494?\u2467?\u2495?\u2468?\u2495?\u2453?\u2477?\u2494?\u2476?\u2503? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\par}
+\sect\sbkpage
+\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols1
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472? \u2447?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? ................  |  \u2476?\u2495?\u2487?\u2479?\u2492?\u2435? ................}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2479?\u2492?: ................}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? ................}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
+\sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2476?\u2482?\u2503?\u2480? \u2447?\u2453?\u2453? \u2453?\u2496??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2460?\u2497?\u2482?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2472?\u2495?\u2441?\u2463?\u2472?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2451?\u2527?\u2494?\u2463?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2474?\u2509?\u2479?\u2494?\u2488?\u2453?\u2503?\u2482?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2536?\u2404?}\tab {\f0 \u2453?\u2494?\u2460?\u2503?\u2480? \u2488?\u2478?\u2496?\u2453?\u2480?\u2467? \u2453?\u2507?\u2472?\u2463?\u2495??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f1 W = F / S}\tab ({\f0 {\f0 \u2454?}}) {\f1 W = F * S}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f1 W = m * a}\tab ({\f0 {\f0 \u2456?}}) {\f1 W = v / t}\par}
+}

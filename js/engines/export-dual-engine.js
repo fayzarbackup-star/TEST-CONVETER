@@ -353,18 +353,32 @@
           }
           if (_eqOut) {
             let rtfSafe = this.escapeUnicodeRtf(_eqOut);
-            const _hp = this._scriptHalfPt(options);   // Part-13.4 (রিপোর্ট-৩)
-            rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super\\fs' + _hp + ' $1}');
-            rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub\\fs' + _hp + ' $1}');
-            if (docMathMode === 'plain' || !/\\[FRIBXA]\b/i.test(_eqOut)) {
-              // সরল রাশি / plain মোড → ফিল্ড ছাড়া ইটালিক পাঠ্য (সব Word-এ পড়া যায়)
-              out += '{\\f1 ' + rtfSafe + '}';
+            const _hp = this._scriptHalfPt(options);   // Part-13.4 (রিপোর্ট-৩): EQ-ফিল্ডের ভেতরের ঘাত ৮pt
+            // Part-15.6: সরল রাশিতে `\super`/`\sub` নিজেই ~৬৭% ছোট করে — আগে সঙ্গে \fs16 দেওয়ায় দ্বিগুণ
+            // ছোট (~৫pt) হয়ে ঘাত প্রায় অদৃশ্য হতো; এখন Word-এর স্বাভাবিক সুপার/সাবস্ক্রিপ্ট (≈৮pt)
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\up\d*\((.*?)\)/gi, '{\\super $1}');
+            rtfSafe = rtfSafe.replace(/\\\\S\\\\do\d*\((.*?)\)/gi, '{\\sub $1}');
+            // Part-15.7: পুরনো docx→doc পথের হুবহু শর্ত (docx-to-doc-engine.js `hasSwitches`) — `\S` (ঘাত/সূচক)
+            // ও `\U`-ও EQ-ফিল্ড; আগে এখানে S বাদ থাকায় x², a³, H₂O সাধারণ লেখা হয়ে যেত (এডিটযোগ্য সমীকরণ নয়)
+            if (docMathMode === 'plain' || !/\\[FRISBXUA]\b/i.test(_eqOut)) {
+              // সরল রাশি / plain মোড → ফিল্ড ছাড়া পাঠ্য; চলক-অক্ষর ইটালিক (eq-field-rtf.js-এর নিয়ম)
+              let _EqI = (typeof FayzarEqFieldRtf !== 'undefined') ? FayzarEqFieldRtf
+                : (typeof globalThis !== 'undefined' && globalThis.FayzarEqFieldRtf) ? globalThis.FayzarEqFieldRtf : null;
+              if (!_EqI && typeof require === 'function') { try { _EqI = require('../layout-engine/eq-field-rtf.js'); } catch (e) {} }
+              out += '{\\f1 ' + (_EqI && _EqI.italicVars ? _EqI.italicVars(rtfSafe) : rtfSafe) + '}';
             } else {
-              // Equation Editor 3.0 EQ ফিল্ড → Word 2003-এ নেটিভ ও এডিটযোগ্য
-              let escapedEq = this.escapeUnicodeRtf(_eqOut);
-              // EQ সুইচগুলো Word যেন চিনতে পারে (escaped form → switch form)
-              escapedEq = escapedEq.replace(/\\\\(F|R|I|B|X|A|S|up|do|al|ar|ac|con)/gi, '\\$1');
-              out += '{\\field{\\*\\fldinst EQ ' + escapedEq + '}{\\fldrslt }}';
+              // Equation Editor 3.0 EQ ফিল্ড → Word 2003-এ নেটিভ ও এডিটযোগ্য।
+              // ফিল্ড-কোডের ফন্ট-রান (বিজয়ে ল্যাটিন→TNR, বাংলা→বিজয়+SutonnyMJ) আলাদা মডিউলে।
+              let _EqF = (typeof FayzarEqFieldRtf !== 'undefined') ? FayzarEqFieldRtf
+                : (typeof globalThis !== 'undefined' && globalThis.FayzarEqFieldRtf) ? globalThis.FayzarEqFieldRtf : null;
+              if (!_EqF && typeof require === 'function') { try { _EqF = require('../layout-engine/eq-field-rtf.js'); } catch (e) {} }
+              if (_EqF) {
+                out += _EqF.build(_eqOut, { isBijoy, toBijoy: (t) => this.toBijoy(t), escapeRtf: (t) => this.escapeRtf(t), scriptSz: _hp });
+              } else {
+                // Part-15.5: RTF-এ লিটারাল ব্যাকস্ল্যাশ `\\` থাকতে হবে — একক `\F` হলে RTF-পার্সার
+                // সেটিকে কন্ট্রোল-ওয়ার্ড ধরে বাদ দেয় (Word শুধু "(3,5)" দেখায়)
+                out += '{\\field{\\*\\fldinst EQ ' + this.escapeUnicodeRtf(_eqOut) + '}{\\fldrslt }}';
+              }
             }
           } else {
             out += '{\\f1 ' + this.escapeRtf(rawLatex) + '}';
@@ -502,10 +516,23 @@
       if (normalizedDocType === 'STAMPDEED') normalizedDocType = 'STAMP_DEED';
       if (normalizedDocType === 'GOVTAPP') normalizedDocType = 'GOVT_APP';
 
-      // 2. Strip YAML frontmatter from rawText robustly
+      // 2. Strip YAML frontmatter from rawText robustly — তার আগে হেডার-তথ্য সংরক্ষণ (frontmatter-header.js)
+      const _FM = this._getFrontmatter();
+      if (_FM && !options.__frontmatter) {
+        const fm = _FM.split(rawText);
+        if (fm.fields) options = Object.assign({}, options, { __frontmatter: fm.fields });
+      }
       let cleanText = rawText.trimStart();
       cleanText = cleanText.replace(/^---[\s\S]*?---\s*/, '');
       cleanText = stripOcrArtifacts(cleanText);
+
+      // Part-15.9: সৃজনশীল/সাধারণ পত্রে আলাদা বহুনির্বাচনি অংশ থাকলে যৌথ (সিদ্ধান্ত doc-classifier.js-এ)
+      let _Cls = (typeof DocClassifier !== 'undefined') ? DocClassifier
+        : (typeof globalThis !== 'undefined' && globalThis.DocClassifier) ? globalThis.DocClassifier : null;
+      if (!_Cls && typeof require === 'function') { try { _Cls = require('./doc-classifier.js'); } catch (e) {} }
+      if (_Cls && typeof _Cls.promoteCombined === 'function' && !options.noCombinedPromotion) {
+        normalizedDocType = _Cls.promoteCombined(normalizedDocType, cleanText);
+      }
 
       const format = (options.format || 'doc').toLowerCase();
       if (format === 'docx') {
@@ -532,7 +559,19 @@
      * পার্সার হুবহু ট্রান্সক্রিপ্ট রাখে; চূড়ান্ত ১।, ২।, ৩। … এখানেই বসে —
      * মডেল-প্রম্পটে নম্বর বদলানোর নির্দেশ না দিয়ে (প্লেসহোল্ডার-ঝুঁকি শূন্য)।
      */
+    _getFrontmatter() {
+      if (typeof FayzarFrontmatter !== 'undefined') return FayzarFrontmatter;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarFrontmatter) return globalThis.FayzarFrontmatter;
+      if (typeof require === 'function') { try { return require('../layout-engine/frontmatter-header.js'); } catch (e) {} }
+      return null;
+    },
+
     _applyExamRenumber(parsed, docType, options) {
+      // ফ্রন্টম্যাটারের প্রতিষ্ঠান/পরীক্ষা/সময়/পূর্ণমান দিয়ে হেডারের ফাঁকা ঘর পূরণ (উৎস-লেখার মান অগ্রাধিকার)
+      try {
+        const FM = options && options.__frontmatter ? this._getFrontmatter() : null;
+        if (FM && parsed && parsed.header) FM.applyToHeader(parsed.header, options.__frontmatter);
+      } catch (e) { /* হেডার-পূরণ ঐচ্ছিক */ }
       try {
         let RN = (typeof FayzarExamRenumber !== 'undefined' && FayzarExamRenumber)
           || (typeof globalThis !== 'undefined' && globalThis.FayzarExamRenumber)
@@ -545,12 +584,45 @@
       return parsed;
     },
 
+    /**
+     * যৌথ পত্রকে [CQ অংশ, MCQ অংশ]-এ ভাগ — প্রথমে স্পষ্ট `---SECTION_BREAK:MCQ---`;
+     * না থাকলে (স্পেক TC-LAY-17) প্রথম প্রশ্নের পরে আসা (ক) MCQ-বিভাগ শিরোনাম অথবা
+     * (খ) দ্বিতীয় প্রাতিষ্ঠানিক হেডার (প্রতিষ্ঠান-লাইন + পরের ৫ লাইনে পরীক্ষা/সময়/পূর্ণমান)।
+     * কিছু না মিললে আগের আচরণ (পুরোটা CQ) — কনটেন্ট কখনো বাদ পড়ে না।
+     */
+    _splitCombined(rawText) {
+      const s = String(rawText || '');
+      const parts = s.split(/---SECTION_?BREAK:MCQ---/i);
+      if (parts.length > 1) return parts;
+      const lines = s.split(/\r?\n/);
+      const isQ = (t) => /^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-:ঃ.]*)?[০-৯\d]+[।.)]/.test(t);
+      const strip = (t) => t.replace(/^#{1,6}\s*/, '').replace(/^[*_\s]+|[*_\s]+$/g, '');
+      const isMcqHead = (t) => { const c = strip(t); return c.length > 0 && c.length < 80 && !isQ(c) &&
+        /^(?:[কখগঘ]\s*[-–—]?\s*(?:বিভাগ|অংশ)\s*[:ঃ\-–—(]?\s*)?(?:বহুনির্বাচন[িী]|নৈর্ব্যক্তিক|MCQ\b|multiple[\s-]*choice)/i.test(c); };
+      const isInstLine = (t) => { const c = strip(t); return c.length > 3 && c.length < 70 && !/[।?]$/.test(c) && !isQ(c) &&
+        (/স্কুল|কলেজ|মাদরাসা|মাদ্রাসা|একাডেমী/.test(c) || /বিদ্যাল(?:য়|য়)/.test(c) || /\b(?:school|college|madrasah?|academy)\b/i.test(c)); };
+      const metaNear = (i) => lines.slice(i + 1, i + 6).some((l) => /পরীক্ষা|পূর্ণমান|শ্রেণি|বহুনির্বাচন|নৈর্ব্যক্তিক|সম(?:য়|য়)|examination|full\s*marks|time\s*[:\-]/i.test(l));
+      const firstQ = lines.findIndex((l) => isQ(l.trim()));
+      if (firstQ < 0) return [s];
+      for (let i = firstQ + 1; i < lines.length; i++) {
+        const t = lines[i].trim();
+        if (isInstLine(t) && metaNear(i)) return [lines.slice(0, i).join('\n'), lines.slice(i).join('\n')];
+        if (isMcqHead(t)) {
+          // শিরোনামের ঠিক উপরে MCQ-র নিজস্ব প্রতিষ্ঠান-হেডার থাকলে সেটিও MCQ অংশে যায়
+          let cut = i;
+          for (let k = i - 1; k > firstQ && k >= i - 6; k--) { const u = lines[k].trim(); if (isQ(u)) break; if (isInstLine(u)) { cut = k; break; } }
+          return [lines.slice(0, cut).join('\n'), lines.slice(cut).join('\n')];
+        }
+      }
+      return [s];
+    },
+
     generateLegacyDoc(rawText, docType = 'EXAM_CQ', options = {}) {
       rawText = stripOcrArtifacts(String(rawText || ''));
       let qEngine = this._getQuestionEngine();
 
       if (qEngine && docType === 'EXAM_COMBINED') {
-        const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
+        const parts = this._splitCombined(rawText);
         const parsedCq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' }), 'EXAM_CQ', options);
         const parsedMcq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' }), 'EXAM_MCQ', options);
         const validator = this._getSchemaValidator();
@@ -650,6 +722,9 @@
      *  (HTML preview ও DOCX/RTF ডাউনলোডে একই অডিট-শীট ⇒ preview == download)। */
     _withAuditNote(options = {}, ...parsedList) {
       if (options && options.auditNote) return options;
+      // `suppressAuditNote` (যৌথ পত্রের CQ/MCQ অংশ, বা ছাত্র-কপি) = নোট ছাপা নিষেধ — parsed থেকে আবার টানা নয়
+      // (আগে MCQ-অংশ নিজের parsed-নোট ছাপত ⇒ শেষ প্রশ্নের মাঝে দ্বিতীয় "যাচাই প্রতিবেদন")
+      if (options && options.suppressAuditNote) return Object.assign({}, options, { auditNote: null });
       const hit = (parsedList || []).find((p) => p && p.auditNote && String(p.auditNote).trim());
       if (!hit) return options;
       return Object.assign({}, options, { auditNote: String(hit.auditNote) });
@@ -701,6 +776,7 @@
 
       const childOptions = { ...options };
       delete childOptions.auditNote;
+      childOptions.suppressAuditNote = true;   // অংশগুলো নিজে নোট ছাপবে না — শেষে একবারই (নিচে)
 
       // ---- সেকশন ১: CQ বুকলেট ----
       const cqRes = await this.generateCqExamDocx(parsedCq, { ...childOptions, returnInnerXml: true });
@@ -732,7 +808,7 @@
       let qEngine = this._getQuestionEngine();
 
       if (qEngine && docType === 'EXAM_COMBINED') {
-        const parts = rawText.split(/---SECTION_?BREAK:MCQ---/i);
+        const parts = this._splitCombined(rawText);
         const parsedCq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[0] || '', { docType: 'EXAM_CQ' }), 'EXAM_CQ', options);
         const parsedMcq = this._applyExamRenumber(qEngine.parseQuestionPaper(parts[1] || '', { docType: 'EXAM_MCQ' }), 'EXAM_MCQ', options);
         const validator = this._getSchemaValidator();
@@ -945,7 +1021,7 @@
           const p = planner.plan(parsedData, {
             docType: options.docType || 'EXAM_CQ',
             margin: options.margin || 0.5,
-            columnGap: options.columnGap || 0.7,
+            columnGap: options.columnGap,   // না দিলে প্ল্যানারের ডকটাইপ-প্রোফাইল (CQ ০.৭" / GENERAL ০.২৫")
             cols: options.columns || 2,
             rightTab: options.rightTab,
             skipFirstColumn: options.skipFirstColumn,
@@ -1049,7 +1125,9 @@
       const h = (parsedData && parsedData.header) || {};
       const docType = options.docType || 'EXAM_CQ';
       const useCqFallback = usesCreativeHeaderFallback(docType) || options.cqHeaderFallback === true;
-      const cqFb = { institute: 'আপনার প্রতিষ্ঠানের নাম', location: 'ঠিকানা লিখুন', exam: 'পরীক্ষার নাম লিখুন', classAndSubject: 'শ্রেণি ও বিষয়', time: '২ ঘণ্টা ৩০ মিনিট', examType: 'সৃজনশীল অভীক্ষা', marks: '৭০' };
+      const cqFb = docType === 'EXAM_GENERAL'
+        ? { institute: 'আপনার প্রতিষ্ঠানের নাম', location: 'ঠিকানা লিখুন', exam: 'পরীক্ষার নাম লিখুন', classAndSubject: 'শ্রেণি: ................  |  বিষয়: ................', time: '................', examType: '', marks: '................' }
+        : { institute: 'আপনার প্রতিষ্ঠানের নাম', location: 'ঠিকানা লিখুন', exam: 'পরীক্ষার নাম লিখুন', classAndSubject: 'শ্রেণি ও বিষয়', time: '২ ঘণ্টা ৩০ মিনিট', examType: 'সৃজনশীল অভীক্ষা', marks: '৭০' };
       const field = (key) => {
         const v = h[key];
         return v !== null && v !== undefined && String(v).trim()
@@ -1138,10 +1216,46 @@
     },
 
     /** RTF পেজ-সেটআপ্র (ল্যান্ডস্কেপ A4, ০.৫" মার্জিন, ২ কলাম, 0.7" গ্যাপ) — নম্বর সব প্ল্যানার থেকে */
-    _cqPageSetupRtf(g) {
-      return '\\landscape\\paperw' + g.pageW + '\\paperh' + g.pageH +
+    _cqPageSetupRtf(g, singleColumn) {
+      return (g.landscape !== false ? '\\landscape' : '') + '\\paperw' + g.pageW + '\\paperh' + g.pageH +
         '\\margl' + g.margin + '\\margr' + g.margin + '\\margt' + g.margin + '\\margb' + g.margin +
-        '\\cols' + g.cols + '\\colsx' + g.colGap + (g.colSep ? '\\linebetcol' : '');
+        (singleColumn ? '\\cols1' : '\\cols' + g.cols + '\\colsx' + g.colGap + (g.colSep ? '\\linebetcol' : ''));
+    },
+
+    /**
+     * প্রশ্ন-লাইনের ভাষা/প্রোফাইল-নির্ভর ফরম্যাট (প্ল্যানার থেকে; প্ল্যানার না থাকলে পুরনো আচরণ):
+     * delim = `।` বা ইংরেজিতে `.`; subLabel = `ক.` বা `(a)`; splitStem = স্টেমের শেষের নম্বর রাইট-ট্যাবে
+     * (শুধু বুকলেট-নয় প্রোফাইলে — CQ বুকলেটের আচরণ অপরিবর্তিত)।
+     */
+    _cqFormat(q, options) {
+      const P = this._getCqPlanner();
+      const prof = (P && P.profile) ? P.profile((options && options.docType) || 'EXAM_CQ') : null;
+      const splitMarks = !!(prof && prof.booklet === false && P.splitStemMark);
+      return {
+        delim: (P && P.numDelimiter) ? P.numDelimiter(q) : '।',
+        subLabel: (l) => ((P && P.subLabelText) ? P.subLabelText(l) : l + '.'),
+        splitStem: (t) => (splitMarks ? P.splitStemMark(t) : { text: t, mark: '' })
+      };
+    },
+
+    /** প্রশ্ন-নম্বর অনুযায়ী হ্যাঙ্গিং (১–৯ → ০.২") — নিয়মের উৎস FayzarLayoutUnits.questionIndent */
+    _numIndent(num, base) {
+      let U = (typeof FayzarLayoutUnits !== 'undefined') ? FayzarLayoutUnits
+        : (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutUnits) ? globalThis.FayzarLayoutUnits : null;
+      if (!U && typeof require === 'function') { try { U = require('../layout-engine/layout-units.js'); } catch (e) {} }
+      return (U && typeof U.questionIndent === 'function') ? U.questionIndent(num, base, U.COMPACT_NUMBER_INDENT) : base;
+    },
+
+    /** প্রশ্ন-আইটেমের ctx — প্রশ্ন-ইনডেন্ট (১–৯ নম্বরে ০.২") প্ল্যানার থেকে */
+    _cqItemCtx(ctx, it) {
+      const P = this._getCqPlanner();
+      if (!P || typeof P.itemGeometry !== 'function' || !it || !it.indent) return ctx;
+      return Object.assign({}, ctx, { geometry: P.itemGeometry(ctx.geometry, it) });
+    },
+
+    /** 'page' হেডার (EXAM_GENERAL): হেডারের ট্যাব পুরো লেখার প্রস্থে — কলামের নয় */
+    _cqFullWidthHeaderPlan(plan) {
+      return Object.assign({}, plan, { geometry: Object.assign({}, plan.geometry, { rightTab: plan.geometry.usableW }) });
     },
 
     /** DOCX সেকশন-প্রপারটি (কলাম/পেজ) — sectPr র‍্যাপার ছাড়া, দুই জায়গায় বসে */
@@ -1244,9 +1358,12 @@
       }
 
       const sp = this._cqSplitStimulus(q);
+      const fmt = this._cqFormat(q, options);
+      const stem = fmt.splitStem(sp.firstLineText);
       // (৪) ক্রমিক নম্বর বাম প্রান্তে, ট্যাবের পর লেখা; হ্যাঙ্গিং 432 → নম্বরের নিচে র‍্যাপ করে না
       rtf += '{\\ql\\b\\fs' + sz + '\\f0' + line + '\\sb30\\sa0\\li' + g.indent + '\\fi-' + g.indent +
-        '\\tx' + g.indent + '\\tqr\\tx' + rightTab + ' ' + esc(q.num + '।') + '\\tab ' + esc(sp.firstLineText) + '\\par}\n';
+        '\\tx' + g.indent + '\\tqr\\tx' + rightTab + ' ' + esc(q.num + fmt.delim) + '\\tab ' + esc(stem.text) +
+        (stem.mark ? '\\tab ' + esc(stem.mark) : '') + '\\par}\n';
 
       for (const sLine of sp.remaining) {
         const t = sLine.trim();
@@ -1271,7 +1388,7 @@
           continue;
         }
         const mark = (sub && sub.mark) ? esc(sub.mark) : '';
-        let subTextRtf = esc((sub.label ? sub.label + '. ' : '') + (sub.text || ''));
+        let subTextRtf = esc((sub.label ? fmt.subLabel(sub.label) + ' ' : '') + (sub.text || ''));
         // OCR এক লাইনে গুঁজে দেওয়া (খ)/(গ) আলাদা লাইনে বসে (অপরিবর্তিত আচরণ)
         const parts = subTextRtf.replace(/\s*\(খ\)\s*/g, '\n(খ) ').replace(/\s*\(গ\)\s*/g, '\n(গ) ').split('\n');
         parts.forEach((piece, i) => {
@@ -1323,7 +1440,14 @@
         rtf += '{\\rtf1\\ansi\\deff0\n';
         rtf += '{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + fontName + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n';
         rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
-        rtf += this._cqPageSetupRtf(g) + '\n';
+        rtf += this._cqPageSetupRtf(g, plan.headerSpan === 'page') + '\n';
+      }
+
+      // 'page' হেডার: ১-কলাম হেডার-সেকশন → কন্টিনিউয়াস (\sbknone) ২-কলাম বডি (MCQ-র মতো)
+      const fullHeader = plan.headerSpan === 'page' && !options.returnInnerRtf;
+      if (fullHeader) {
+        rtf += this._cqHeaderRtf(this._cqFullWidthHeaderPlan(plan), options);
+        rtf += '\\sect\\sbknone\\cols' + g.cols + '\\colsx' + g.colGap + (g.colSep ? '\\linebetcol' : '') + '\n';
       }
 
       let firstCol = true;
@@ -1331,11 +1455,11 @@
         if (!col.items || (!col.items.length && !col.headerFirst)) continue;
         if (col.breakBefore) rtf += '{\\column}\n';
         firstCol = false;
-        if (col.headerFirst) rtf += this._cqHeaderRtf(plan, options);
+        if (col.headerFirst && !fullHeader) rtf += this._cqHeaderRtf(plan, options);
         for (const it of col.items) {
           rtf += it.kind === 'sectionTitle'
             ? ('{\\qc\\b\\f0\\fs' + ctx.sz + '\\sl240\\slmult1\\sb40\\sa40 ' + this.formatRtfText(it.text, options) + '\\par}\n')
-            : this._cqQuestionRtf(it.q, ctx);
+            : this._cqQuestionRtf(it.q, this._cqItemCtx(ctx, it));
         }
       }
 
@@ -1368,12 +1492,12 @@
       rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
       // ---- সেকশন ১: CQ বুকলেট (A4 ল্যান্ডস্কেপ, ২ কলাম, 0.7" গ্যাপ) ----
       rtf += this._cqPageSetupRtf(cqPlan.geometry) + '\n';
-      rtf += this.generateCqExamRtf(parsedCq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
+      rtf += this.generateCqExamRtf(parsedCq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null, suppressAuditNote: true });
 
       if (parsedMcq && parsedMcq.sections && parsedMcq.sections.length > 0) {
         // ---- সেকশন ২: MCQ পোর্ট্রেট — next-page সেকশন ব্রেক; নিজস্ব প্রপার্টি MCQ-র ----
         rtf += '\\sect\\sbkpage\n';
-        rtf += this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null });
+        rtf += this.generateMcqExamRtf(parsedMcq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null, suppressAuditNote: true });
       }
 
       if (!options.returnInnerRtf) rtf += this._auditSectionRtf(options);
@@ -1402,11 +1526,14 @@
       }
 
       const sp = this._cqSplitStimulus(q);
+      const fmt = this._cqFormat(q, options);
+      const stem = fmt.splitStem(sp.firstLineText);
       // (৪) নম্বর কলামের বাম প্রান্তে + হ্যাঙ্গিং 432
       xml += '<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>' +
         '<w:ind w:left="' + g.indent + '" w:hanging="' + g.indent + '"/>' +
         tabsXml('<w:tab w:val="left" w:pos="' + g.indent + '"/>') + '</w:pPr>' +
-        run(q.num + '।', '<w:b/>') + '<w:r><w:tab/></w:r>' + this.renderDocxRuns(sp.firstLineText, options, { sz, bold: true }) + '</w:p>';
+        run(q.num + fmt.delim, '<w:b/>') + '<w:r><w:tab/></w:r>' + this.renderDocxRuns(stem.text, options, { sz, bold: true }) +
+        (stem.mark ? '<w:r><w:tab/></w:r>' + run(stem.mark, '<w:b/>') : '') + '</w:p>';
 
       let inTable = false;
       const closeTable = () => { if (inTable) { xml += '</w:tbl>'; inTable = false; } };
@@ -1442,7 +1569,7 @@
           xml += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="40" w:after="40" w:line="240" w:lineRule="auto"/></w:pPr>' + run(sub.text || '--- অথবা ---', '<w:b/>') + '</w:p>';
           continue;
         }
-        let rawText = (sub.label ? sub.label + '. ' : '') + (sub.text || '');
+        let rawText = (sub.label ? fmt.subLabel(sub.label) + ' ' : '') + (sub.text || '');
         rawText = rawText.replace(/\s*\((খ|গ)\)\s*/g, '\n($1) ');
         const subLines = String(rawText).split('\n');
         subLines.forEach((sl, i) => {
@@ -1493,24 +1620,34 @@
       const ctx = { geometry: g, options, sz: plan.font ? plan.font.sz : g.baseSz };
 
       let bodyXml = '';
+      // 'page' হেডার: ১-কলাম হেডার-সেকশন (ইনলাইন sectPr) → কন্টিনিউয়াস ২-কলাম বডি
+      const fullHeader = plan.headerSpan === 'page' && !options.returnInnerXml;
+      if (fullHeader) {
+        const hp = this._cqFullWidthHeaderPlan(plan);
+        bodyXml += this._cqHeaderDocx(hp, Object.assign({}, ctx, { geometry: hp.geometry }));
+        bodyXml += '<w:p><w:pPr><w:sectPr><w:type w:val="continuous"/>' +
+          this._cqSectPrInnerDocx(g).replace(/<w:cols [^>]*\/>/, '<w:cols w:num="1"/>') + '</w:sectPr></w:pPr></w:p>';
+      }
       let firstCol = true;
       for (const col of plan.columns) {
         if (!col.items || (!col.items.length && !col.headerFirst)) continue;
         if (col.breakBefore) bodyXml += '<w:p><w:r><w:br w:type="column"/></w:r></w:p>';
         firstCol = false;
-        if (col.headerFirst) bodyXml += this._cqHeaderDocx(plan, ctx);
+        if (col.headerFirst && !fullHeader) bodyXml += this._cqHeaderDocx(plan, ctx);
         for (const it of col.items) {
           bodyXml += it.kind === 'sectionTitle'
             ? ('<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="60" w:after="60" w:line="240" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:b/>' +
               '<w:sz w:val="' + ctx.sz + '"/><w:szCs w:val="' + ctx.sz + '"/></w:rPr><w:t xml:space="preserve">' + this.formatDocxText(it.text, options) + '</w:t></w:r></w:p>')
-            : this._cqQuestionDocx(it.q, ctx);
+            : this._cqQuestionDocx(it.q, this._cqItemCtx(ctx, it));
         }
       }
 
       bodyXml += this._auditSectionDocx(options);
 
       bodyXml = this._fixDocxSpacing(bodyXml, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১+৫)
-      const sectPr = this._cqSectPrDocx(g);
+      const sectPr = fullHeader
+        ? '<w:sectPr><w:type w:val="continuous"/>' + this._cqSectPrInnerDocx(g) + '</w:sectPr>'
+        : this._cqSectPrDocx(g);
       if (options.returnInnerXml) {
         return { bodyXml, sectPr };
       }
@@ -1552,6 +1689,7 @@
       const marginTwips = g.margin;
       const pageWidth = g.usableW;
       const indent = g.indent;
+      const baseIndent = indent;
       const lineRtf = '\\sl240\\slmult1';  // Part-12: single লাইন (পোস্ট-পাস সব প্যারাগ্রাফে একই রেশিও লক করে)
 
       // ---- Section 1: হেডার ব্লক — ১-কলাম, সেন্টারড, ৫ লাইন (খ.২–খ.৩) ----
@@ -1585,6 +1723,10 @@
       const renderRtfItem = (it) => {
         const q = it.q;
         let block = '';
+        // Part-15.5 (ব্যবহারকারীর নির্দেশ): MCQ-তে সব প্রশ্নে ০.৩" — ১–৯-এর ০.২" নিয়ম কেবল CQ/সাধারণ পথে;
+        // এখানে বিকল্প-গ্রিড সব প্রশ্নে একই স্টপে সোজা থাকে
+        const indent = baseIndent;
+        const dI = 0;
 
         if (q.preContext) {
           const ctxLines = String(q.preContext).split('\n').map((l) => l.trim()).filter(Boolean);
@@ -1613,7 +1755,7 @@
         if (q.options && q.options.length > 0 && it.grid && it.grid.cols > 0) {
           const grid = it.grid;
           const activeStops = Array.isArray(grid.stops) ? grid.stops : [];
-          const stopsRtf = activeStops.map((p) => '\\tx' + p).join('');
+          const stopsRtf = activeStops.map((p) => '\\tx' + (p + dI)).join('');
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
             const tabJumpRtf = '\\tab ';
@@ -1680,6 +1822,7 @@
       const marginTwips = g.margin;
       const pageWidth = g.usableW;
       const indent = g.indent;
+      const baseIndent = indent;
 
       let bodyXml = '';
 
@@ -1726,6 +1869,9 @@
       const renderDocxItem = (it) => {
         const q = it.q;
         let qXml = '';
+        // Part-15.5: MCQ-তে সব প্রশ্নে ০.৩" (বিকল্প-গ্রিড সোজা) — ১–৯-এর ০.২" কেবল CQ/সাধারণ পথে
+        const indent = baseIndent;
+        const dI = 0;
 
         if (q.preContext) {
           const ctxLines = String(q.preContext).split('\n').map((l) => l.trim()).filter(Boolean);
@@ -1757,7 +1903,7 @@
           const grid = it.grid;
           const activeStops = Array.isArray(grid.stops) ? grid.stops : [];
           const tabsXml = activeStops.length
-            ? `<w:tabs>${activeStops.map((p) => `<w:tab w:val="left" w:pos="${p}"/>`).join('')}</w:tabs>`
+            ? `<w:tabs>${activeStops.map((p) => `<w:tab w:val="left" w:pos="${p + dI}"/>`).join('')}</w:tabs>`
             : '';
           for (let r = 0; r < grid.rows.length; r++) {
             const isLastRow = r === grid.rows.length - 1;
@@ -2629,12 +2775,23 @@
 
 
     _getSchemaValidator() {
-      if (typeof global !== 'undefined' && global.FayzarSchemaValidator) return global.FayzarSchemaValidator;
-      if (typeof window !== 'undefined' && window.FayzarSchemaValidator) return window.FayzarSchemaValidator;
-      if (typeof require === 'function') {
-        try { return require('../layout-engine/schema-validator.js'); } catch (e) { }
+      let v = null;
+      if (typeof global !== 'undefined' && global.FayzarSchemaValidator) v = global.FayzarSchemaValidator;
+      else if (typeof window !== 'undefined' && window.FayzarSchemaValidator) v = window.FayzarSchemaValidator;
+      else if (typeof require === 'function') {
+        try { v = require('../layout-engine/schema-validator.js'); } catch (e) { }
       }
-      return null;
+      if (!v || typeof v.validate !== 'function') return null;
+      // যাচাই শুধু সতর্কবার্তা — অসম্পূর্ণ তথ্যেও (যেমন দলিলে ২য় পক্ষ নেই) ফাইল তৈরি বন্ধ হয় না;
+      // আগে index.html-এ validator লোড থাকায় এখানে throw হয়ে পুরো এক্সপোর্ট ব্যর্থ হতো।
+      return {
+        validate: (docType, data) => {
+          try { return v.validate(docType, data); } catch (e) {
+            if (typeof console !== 'undefined') console.warn('[Schema]', e && e.message);
+            return false;
+          }
+        }
+      };
     },
 
     _getThemeConfig() {

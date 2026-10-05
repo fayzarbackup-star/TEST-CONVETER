@@ -44,6 +44,7 @@
 | **এমসিকিউ মাস্টার লেআউট প্ল্যানার** | `js/layout-engine/mcq-layout-planner.js` | 📐 **PART-10 / 14.1:** বহুনির্বাচনী প্রশ্নের ২-কলাম, ০.২" গ্যাপ, ডিভাইডার লাইন, ১-কলাম হেডার প্লেসহোল্ডার, ৪/২/১ অপশন গ্রিড, ২৫% কোয়ার্টার-স্টপ ইন্টারভ্যাল ও স্মার্ট পেজ-ফিট প্ল্যানার |
 | **সৃজনশীল বুকলেট মাস্টার লেআউট প্ল্যানার** | `js/layout-engine/cq-booklet-planner.js` | 📐 **PART-11 / 13.4 / 14.1:** সৃজনশীল প্রশ্নপত্র (CQ) বুকলেটের A4 ল্যান্ডস্কেপ ২-কলাম, ০.৭" গ্যাপ, CQ হেডার ফলব্যাক প্লেসহোল্ডার, ৪-পৃষ্ঠা বিলম্বিত ব্যাক-ফিল (১-৩ পৃষ্ঠা স্বাভাবিক ক্রম রক্ষা), ১/২/৩/৪ শীট ভাঁজ ও .doc ≡ .docx ≡ প্রিভিউ সমতা প্ল্যানার |
 | **শেয়ার্ড লেআউট ইউনিট ও নর্মালাইজার** | `js/layout-engine/layout-units.js` | 📏 **PART-12 / 12.2:** ইঞ্চি/পয়েন্ট/টুইপস রূপান্তর, UI মার্জিন ম্যাপ (`margin-narrow`, `margin-standard`, `margin-normal`, `margin-wide`, `margin-stamp`), কলাম গ্যাপ, ইনডেন্ট ও পিচ ইউটিলিটি সহ পূর্ণাঙ্গ NaN-রোধী একক সুরক্ষক (`FayzarLayoutUnits`) |
+| **বিজয় EQ-ফিল্ড RTF ফরম্যাটার** | `js/layout-engine/eq-field-rtf.js`<br>`tests/part-15.1-eq-field-bijoy.test.js` | 🧮 **PART-15.1:** বিজয় (SutonnyMJ) মোডে Word 2003 RTF সমীকরণ (EQ ফিল্ড) ফন্ট-রান প্রসেসর; ইংরেজি/ল্যাটিন রাশি `\f1` (TNR) এবং বাংলা সংখ্যা/অক্ষর বিজয় কোডসহ `\f0` (SutonnyMJ)-এ ম্যাপিং |
 | **স্টুডিও এডিট-ব্রিজ (Studio Edit Bridge)** | `js/engines/studio-edit-bridge.js` | 🌉 **PART-13.1:** Studio প্রিভিউতে সরাসরি এডিট (contenteditable) সংগ্রহ ও parsedData-তে DP-সিঙ্ক ব্রিজ (`collectFromDom`, `applyEdits`) — পুনঃপার্স ছাড়া গণিত/EQ অক্ষত রেখে Word .doc ও .docx এক্সপোর্ট |
 | **স্টুডিও ফিগার এক্সপোর্ট পাইপলাইন (Studio Figure Pipeline)** | `js/engines/studio-figure-pipeline.js` | 🖼️ **PART-14.0:** মার্কার টোকেন (`QZFIGnQZ`) থেকে ইমেজ উদ্ধার, Word 2003 (.doc) RTF `\pict\pngblip` এবং Modern Word (.docx) `word/media/figureN.png` ও `<w:drawing>` ইনজেকশন পাইপলাইন |
 | **ধারাবাহিক পরীক্ষা নম্বরায়ন ও লেবেল স্ট্রিপার** | `js/layout-engine/exam-renumber.js` | 🔢 **PART-13.2 / 13.3:** পরীক্ষা আর্কিটাইপে প্রতি সেকশনের প্রশ্ন ১ থেকে ধারাবাহিক নম্বরে (`১।, ২।, ৩। ...`) রূপান্তর ও মেটাডাটা মন্তব্য (`সহজমান`, `মধ্যমান`, `কঠিনমান`) স্ট্রিপিং মাস্টার ইঞ্জিন (`FayzarExamRenumber`), পার্সার ফিডেলিটি ও জ্যামিতিক বিবরণ অক্ষুণ্ণ রেখে রেন্ডার ও ডাউনলোডে অটো-নম্বরায়ন ও ক্লিন লেআউট |
@@ -267,6 +268,94 @@ Layout সংক্রান্ত সব কাজ → শুধুমাত্
 ---
 
 ## ⚠️ Fix Log & Part Releases
+
+### Part-16.2 (২০২৬-১০-০৫) — চিত্র-ট্যাগ লিক বন্ধ + OCR→স্টুডিও চিত্র-হস্তান্তর
+| # | বিষয় | ফাইল | Status |
+| - | ---- | ---- | ------ |
+| 1 | বাগ: স্টুডিও থেকে নামানো ফাইলে "[[FIG: p=..; box=..]]" লেখা হিসেবে আসত (স্টুডিওতে মূল PDF নেই) | — | ✅ |
+| 2 | একক সহায়ক `prepareSourceFigures` — ডাউনলোড ও "স্টুডিওতে পাঠান" দুই পথেই কাটা→রিভিউ; ব্যর্থ হলে ট্যাগ মুছে চিত্র ছাড়া ফাইল | js/ai-ocr-engine.js | ✅ |
+| 3 | IndexedDB হস্তান্তর-স্টোর (`FayzarFigureTransfer.put/take`); ব্রিজ-পেলোডে `figuresKey`; স্টুডিও নতুন ডকুমেন্টে পুরনো চিত্র মুছে নতুনগুলো নেয় | js/engines/figure-transfer-store.js (নতুন), converter-studio-bridge.js, studio-controller.js | ✅ |
+| 4 | নিরাপত্তা-জাল: `stripTags/hasLooseTags` — স্টুডিও প্রিভিউ/ডাউনলোড ও .md পথে কাঁচা ট্যাগ কখনো ফাইলে যায় না | figure-extractor.js, studio-controller.js, main.js | ✅ |
+| 5 | টেস্ট `tests/part-16.2-figure-handoff.test.js` (২৩ গেট) | tests/ | ✅ 1299/1299 PASS |
+
+### Part-16.1 (২০২৬-১০-০৫) — সোর্স থেকে চিত্র কেটে বসানো (পথ-১) + রিভিউ স্ক্রিন
+| # | বিষয় | ফাইল | Status |
+| - | ---- | ---- | ------ |
+| 1 | Gemini প্রম্পট: চিত্রের জায়গায় `[[FIG:p=<পাতা>;box=ymin,xmin,ymax,xmax]]` (০–১০০০, লেবেলসহ); OCR-ক্লিনার ট্যাগ অক্ষত রাখে; PDF-পাতায় `pdfPage`/`pageWidthPt` সংরক্ষণ | js/ai-ocr-engine.js | ✅ |
+| 2 | চিত্র-কাটার ইঞ্জিন: ৩০০ DPI-তে পাতা আঁকা, বক্স নিখুঁত (কালি-সীমা + গায়ে-লাগা লেবেল, ফাঁকে থামা), পটভূমি সাদা, দাগ মোছা, ছাঁটা, প্রকৃত মাপ (কলামে সীমিত), ট্যাগ→`QZFIGnQZ` | js/layout-engine/figure-extractor.js (নতুন, `FayzarFigureExtractor`) | ✅ |
+| 3 | রিভিউ স্ক্রিন (ডাউনলোডের আগে): মূল পাতা + লাল বক্স, মাউসে নতুন বক্স, নিখুঁত/বড়/ছোট, প্রস্থ (ইঞ্চি), অবস্থান, বাদ | js/figure-review-ui.js (নতুন, `FayzarFigureReview`) | ✅ |
+| 4 | OCR ডাউনলোড: চিত্র-ট্যাগ থাকলে কাটা → রিভিউ → `FayzarExport` (তিন ফরম্যাট); না থাকলে পুরনো পথ অপরিবর্তিত; index/converter-এ স্ক্রিপ্ট | js/ai-ocr-engine.js, index.html, converter.html | ✅ |
+| 5 | টেস্ট `tests/part-16.1-figure-extractor.test.js` (২৩ গেট) | tests/ | ✅ 1276/1276 PASS |
+
+### Part-16.0 (২০২৬-১০-০৫) — একক রপ্তানি-পথের ভিত্তি (চালু পথ অপরিবর্তিত, যাচাই-অপেক্ষমাণ)
+| # | বিষয় | ফাইল | Status |
+| - | ---- | ---- | ------ |
+| 1 | একক রপ্তানি-ফাংশন `FayzarExport.produce(text, {format: 'docx-unicode' \| 'docx-bijoy' \| 'doc', figures, …})` — মাস্টার .docx → চিত্র → বিজয় → DocxToDoc → ছবি-প্যাকেজার | js/layout-engine/fayzar-export.js (নতুন) | ✅ |
+| 2 | Word 2003 ছবি-প্যাকেজার: .doc-এর `data:` ছবি → MHTML (multipart/related, UTF-8 quoted-printable HTML + base64 ছবি) | js/layout-engine/doc-mhtml-packager.js (নতুন, `FayzarDocMhtml`) | ✅ |
+| 3 | ব্যবহারকারীর Word-যাচাইয়ের নমুনা-পেজ (৩ নমুনা × ৩ ফরম্যাট) — `http://localhost:3008/qa/sample-doc-builder.html` | qa/sample-doc-builder.html (নতুন) | ⏳ Word-যাচাই বাকি |
+| 4 | টেস্ট `tests/part-16.0-export-and-mhtml.test.js` (২৩ গেট) | tests/ | ✅ 1253/1253 PASS |
+
+### Part-15.8 (২০২৬-১০-০৫) — সিদ্ধান্ত: OCR .doc আবার পুরনো docx→doc পথে
+| # | বিষয় | ফাইল | Status |
+| - | ---- | ---- | ------ |
+| 1 | RTF পথের EQ-ফিল্ড দেখতে ঠিক, কিন্তু Word 2003-এ এডিট করলে অক্ষর বদলায় (x → ξ) ⇒ OCR .doc ডিফল্ট পুরনো পরীক্ষিত পথ; RTF কেবল `localStorage fayzar_doc_engine=rtf` | js/ai-ocr-engine.js | ✅ |
+
+### Part-15.7 Release (২০২৬-১০-০৫) — ঘাত/সূচকওয়ালা সব রাশি EQ-ফিল্ডে
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | RTF পথ কেবল `\F \R \I \B \X \A` থাকলে EQ-ফিল্ড বানাত ⇒ x², a³, H₂O সাধারণ লেখা। এখন পুরনো docx→doc পথের হুবহু শর্ত `\F \R \I \S \B \X \U \A` — ঘাত/সূচকও এডিটযোগ্য EQ-ফিল্ড (আর্গুমেন্ট ৮pt); সুইচ-ছাড়া রাশি (y = x − 3) ইটালিক লেখা | js/engines/export-dual-engine.js | ✅ |
+| 2 | eq-hardening, part13-4, part-15.1, part-15.3 টেস্ট নতুন নিয়মে; ৩টি স্ন্যাপশট | tests/ | ✅ 1226/1226 PASS |
+
+### Part-15.6 Release (২০২৬-১০-০৫) — .doc-এ ঘাত/সূচকের মাপ
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | সরল রাশিতে `{\super\fs16}` দ্বিগুণ-সংকোচনে (~৫pt) ঘাত প্রায় অদৃশ্য — এখন Word-এর স্বাভাবিক `{\super}`/`{\sub}` (≈৮pt) | js/engines/export-dual-engine.js | ✅ |
+| 2 | EQ-ফিল্ডের ভেতরের ঘাত (`\S\up(…)`) আগে পূর্ণ ১২pt — এখন কেবল আর্গুমেন্টটুকু ৮pt (`splitRuns`) | js/layout-engine/eq-field-rtf.js | ✅ |
+| 3 | part13-4 ও part-15.1 টেস্ট নতুন নিয়মে; ৩টি স্ন্যাপশট (শুধু `\fs16` বাদ) | tests/ | ✅ 1225/1225 PASS |
+
+### Part-15.5 Release (২০২৬-১০-০৫) — .doc সমীকরণ ঠিক, MCQ ০.৩"-এ ফেরত
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | RTF EQ-ফিল্ডে সুইচ একক `\F` লেখা হতো ⇒ RTF-পার্সার ফেলে দিত ⇒ Word-এ "(৩,৫)", "(1,P)"। এখন লিটারাল `\\F` `\\R` `\\S\\up`; চলক-অক্ষর ইটালিক (`italicVars`), ফিল্ড-ছাড়া সরল রাশিতেও | js/layout-engine/eq-field-rtf.js, js/engines/export-dual-engine.js | ✅ |
+| 2 | MCQ-তে আবার সব প্রশ্নে ০.৩" (বিকল্প-গ্রিড সোজা); ১–৯ → ০.২" কেবল CQ/সাধারণ পথে | js/engines/export-dual-engine.js, js/engines/question-engine.js | ✅ |
+| 3 | টেস্ট-ফাঁক বন্ধ: রিগ্রেশন-হার্নেস RTF-কে "[object Blob]" স্ন্যাপশট করত — এখন পূর্ণ RTF টেক্সট (১৫ বেসলাইন পুনর্লিখিত) | tests/lib/harness.js, tests/baseline/ | ✅ |
+| 4 | part-15.1 টেস্ট পুনর্লিখিত (১৪ গেট), eq-hardening-এ ইটালিক গেট, mcq-layout/part14-1/part-14.2/part-15.3 MCQ-নিয়মে | tests/ | ✅ 1223/1223 PASS |
+
+### Part-15.4 Release (২০২৬-১০-০৫) — সব পথে প্রশ্নভিত্তিক ক্রমিক-দূরত্ব
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | প্রতিটি প্রশ্নে ১–৯ → ০.২" (২৮৮), ১০+ → ০.৩" (৪৩২) — CQ/সাধারণ/MCQ/প্রিভিউ সব পথে; নিয়মের একক উৎস `FayzarLayoutUnits.questionIndent` | js/layout-engine/layout-units.js, js/layout-engine/cq-booklet-planner.js (`questionIndent`), js/engines/export-dual-engine.js (`_numIndent`, MCQ RTF/DOCX), js/engines/question-engine.js (MCQ প্রিভিউ) | ✅ |
+| 2 | ৮টি স্ন্যাপশট আবার হালনাগাদ (পার্থক্য কেবল ইনডেন্ট/ট্যাব/প্রিভিউ-স্টাইল, যাচাইকৃত); mcq-layout, cq-layout, part14-1, part-14.2, part-15.3 টেস্ট নতুন নিয়মে | tests/ | ✅ 1218/1218 PASS |
+
+### Part-15.3 Release (২০২৬-১০-০৫) — ডিগ্রি চিহ্ন ও ক্রমিক-দূরত্ব
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | `80^\circ` .docx-এ sSup ৮pt হয়ে খুব ছোট — এখন সমীকরণ-রূপান্তরের আগে সাধারণ `°` (`TextRunProcessor.normalizeDegrees`) | js/layout-engine/text-run-processor.js | ✅ |
+| 2 | ১–৯ নম্বরের সেকশনে হ্যাঙ্গিং ০.২" (২৮৮), ১০+ সেকশনে ০.৩" (৪৩২) অপরিবর্তিত; উপ-প্রশ্ন স্টেমের সঙ্গে সোজা (`sectionIndent`, `itemGeometry`) | js/layout-engine/cq-booklet-planner.js, js/engines/export-dual-engine.js (`_cqItemCtx`), js/engines/question-engine.js (প্রিভিউ) | ✅ |
+| 3 | ৮টি স্ন্যাপশট বেসলাইন হালনাগাদ (পার্থক্য কেবল ইনডেন্ট-মানে, যাচাইকৃত); cq-layout ইনডেন্ট-গেট সেকশন-ইনডেন্টে; নতুন টেস্ট `tests/part-15.3-degree-and-indent.test.js` (২০ গেট) | tests/ | ✅ 1217/1217 PASS |
+
+### Part-15.2 Release (২০২৬-১০-০৫) — OCR .doc → RTF পথ, ফ্রন্টম্যাটার-হেডার, অডিট নোট
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | OCR-এর .doc এখন `FayzarPipeline.exportDoc` (RTF) দিয়ে; ব্যর্থ হলে/`localStorage fayzar_doc_engine=legacy` হলে পুরনো docx→doc | js/ai-ocr-engine.js | ✅ |
+| 2 | Gemini ফ্রন্টম্যাটার (institute/exam/grade/subject/time/fullMarks) দিয়ে হেডারের ফাঁকা ঘর পূরণ; প্রশ্নের আগের সময়/পূর্ণমান লাইন হেডারে যায় (আর পুনরাবৃত্তি নয়) | js/layout-engine/frontmatter-header.js (নতুন, `FayzarFrontmatter`), js/layout-engine/fayzar-pipeline.js, js/engines/export-dual-engine.js, js/engines/question-engine.js (`_metaLine`) | ✅ |
+| 3 | যৌথ পত্রের MCQ-অংশে দ্বিতীয় "যাচাই প্রতিবেদন" বন্ধ (`suppressAuditNote`); শেষ MCQ-এর বিকল্প-লাইন আর নোটে টানা হয় না; ছাত্র-কপিতে নোট নয় | js/engines/export-dual-engine.js, js/engines/question-engine.js, js/ai-ocr-engine.js | ✅ |
+| 4 | নতুন টেস্ট `tests/part-15.2-ocr-doc-path.test.js` (২১ গেট) | tests/ | ✅ 1197/1197 PASS |
+
+### Part-15.1 Release (২০২৬-১০-০৫) — বিজয় .doc-এ EQ ফিল্ডের ফন্ট-রান
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | বিজয় মোডে EQ ফিল্ড প্যারাগ্রাফের SutonnyMJ নিত ⇒ ইউনিকোড ৩/৫ বক্স ও ল্যাটিন `x` বাংলা গ্লিফ। নতুন মডিউল: ল্যাটিন/সুইচ → TNR, বাংলা → বিজয়-কোড + SutonnyMJ; ইউনিকোড মোড অপরিবর্তিত | js/layout-engine/eq-field-rtf.js (নতুন, `FayzarEqFieldRtf`), js/engines/export-dual-engine.js (শুধু কল), index/converter/studio.html | ✅ |
+| 2 | নতুন টেস্ট `tests/part-15.1-eq-field-bijoy.test.js` (১০ গেট); part-14.2-এর বিজয়-EQ চেক নতুন নিয়মে | tests/ | ✅ 1176/1176 PASS |
+
+### Part-15.0 Release (২০২৬-১০-০৫) — অডিট ধাপ ১–৪
+| # | সমস্যা / ফিচার | ফাইল | Status |
+| - | -------------- | ---- | ------ |
+| 1 | `EXAM_GENERAL` = A4 পোর্ট্রেট, ১-কলাম হেডার + কন্টিনিউয়াস ২-কলাম বডি (০.২৫", লাইন); "সৃজনশীল অভীক্ষা"/কাল্পনিক সময়-নম্বর বন্ধ; ডকটাইপ-ভিত্তিক `LAYOUT_PROFILES` | js/layout-engine/cq-booklet-planner.js, js/engines/export-dual-engine.js, js/engines/question-engine.js | ✅ |
+| 2 | ইংরেজি হেডার (School/Examination/Class/Time/Full Marks), `Part-A` শিরোনাম, `1.` নম্বর, `(a)` উপ-প্রশ্ন, স্টেমের মার্ক ডানে; `বিদ্যালয়` দুই বানান; প্রথম প্রশ্নের আগের লাইন আর হারায় না | js/engines/question-engine.js, js/layout-engine/cq-booklet-planner.js, js/engines/export-dual-engine.js | ✅ |
+| 3 | `index.html`-এ admit-card/salary-slip/routine/cv ইঞ্জিন; schema-validator ব্যর্থতা এখন শুধু সতর্কবার্তা | index.html, js/engines/export-dual-engine.js | ✅ |
+| 4 | যৌথ পত্র `---SECTION_BREAK:MCQ---` ছাড়াও MCQ শিরোনাম/২য় হেডার দেখে ভাগ (`_splitCombined`) | js/engines/export-dual-engine.js | ✅ |
+| 5 | নতুন টেস্ট `tests/part-15.0-layout-profile-fixes.test.js` (৩৪ গেট); part-14.2 টেস্ট নতুন GENERAL নিয়মে হালনাগাদ | tests/ | ✅ 1163/1163 PASS |
 
 ### Part-14.3 Release (২০২৬-১০-০৪)
 | # | সমস্যা / ফিচার | ফাইল | Status |

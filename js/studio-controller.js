@@ -407,8 +407,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  /**
+   * Part-16.2: নিরাপত্তা-জাল — স্টুডিওতে মূল PDF নেই, তাই কাঁচা [[FIG:..]] ট্যাগ (কাটা না হওয়া চিত্র)
+   * প্রিভিউ/ফাইলে লেখা হিসেবে যাবে না। চিত্র আনতে হলে কনভার্টার-পাতার "স্টুডিও" বোতাম দিয়ে পাঠাতে হয়।
+   */
+  function withoutFigTags(t) {
+    const FX = (typeof FayzarFigureExtractor !== 'undefined') ? FayzarFigureExtractor : null;
+    return FX ? FX.stripTags(t) : String(t).replace(/[ \t]*\\?\[\\?\[\s*FIG\s*:[^\]\n]*\\?\]\\?\]/gi, '');
+  }
+
   async function updatePreview() {
-    const raw = inputText.value.trim();
+    const raw = withoutFigTags(inputText.value.trim());
     if (!raw) {
       previewContainer.innerHTML = `<div class="text-center py-20 text-slate-400 font-medium"><i class="fas fa-file-word text-5xl mb-3 block text-blue-500/50"></i>বামপাশের বক্সে কোনো প্রশ্নপত্র বা দলিল পেস্ট করুন অথবা উপরের <b>ইনসার্ট ও টেমপ্লেট</b> থেকে নির্বাচন করুন।</div>`;
       updateStatusBar();
@@ -1095,7 +1104,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Multi-Format Download Suite (Word 2003 .doc / Modern .docx / PDF in Bijoy & Unicode)
   async function downloadDocument(format, font) {
-    const raw = inputText.value.trim();
+    const rawWithTags = inputText.value.trim();
+    const raw = withoutFigTags(rawWithTags);
+    if (raw !== rawWithTags) {
+      showToast('লেখায় কাটা-না-হওয়া চিত্র-ট্যাগ ছিল — মূল পাতা স্টুডিওতে নেই, তাই বাদ দেওয়া হলো। চিত্রসহ পেতে কনভার্টার পাতা থেকে স্টুডিওতে পাঠান।', 'warning');
+    }
     if (!raw) {
       showToast('অনুগ্রহ করে প্রথমে বক্সে কিছু টেক্সট লিখুন বা টেমপ্লেট সিলেক্ট করুন।', 'warning');
       return;
@@ -1463,6 +1476,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!payload || !payload.text) return;
     if (inputText) {
       inputText.value = payload.text;
+    }
+    // Part-16.2: নতুন ডকুমেন্ট ⇒ পুরনো সেশনের চিত্র বাদ (একই id-র মার্কারে ভুল ছবি বসত);
+    // কনভার্টার মূল পাতা থেকে চিত্র কেটে পাঠালে IndexedDB থেকে নেওয়া হয়
+    studioState.figures = {};
+    if (payload.figuresKey && typeof FayzarFigureTransfer !== 'undefined') {
+      FayzarFigureTransfer.take(payload.figuresKey).then((figs) => {
+        if (!figs || !Object.keys(figs).length) return;
+        Object.keys(figs).forEach((k) => { figs[k].id = parseInt(k, 10); });
+        studioState.figures = figs;
+        updatePreview();
+        HistoryManager.snapshot();
+        AutoSave.markDirty();
+        showToast(Object.keys(figs).length + 'টি চিত্র মূল ফাইল থেকে যুক্ত হয়েছে', 'success');
+      }).catch((e) => {
+        console.warn('[StudioController] চিত্র-হস্তান্তর পড়া যায়নি:', e);
+        showToast('চিত্রগুলো স্টুডিওতে আনা যায়নি — কনভার্টার পাতা থেকে সরাসরি ডাউনলোড করুন', 'warning');
+      });
     }
     if (modeSelect && payload.docType) {
       modeSelect.value = payload.docType;

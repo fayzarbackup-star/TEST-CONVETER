@@ -18,3 +18,8 @@ REQUIRE_ORIGIN = "true"
 
 # part-4: প্রতি IP-তে দৈনিক OCR সীমা (শেয়ার্ড NAT-এ ইচ্ছেমতো বাড়ান)
 DAILY_PER_IP = "500"
+
+# Part-16.6: Worker Google-এর মূল অঞ্চলের পাশে চলে (মাপা: DAC/SIN/BOM/US — Google-এর উত্তর US-এ দ্রুততম,
+# অঞ্চল-সীমার ঝুঁকিও নেই)। ব্যবহারকারী ঢাকার Cloudflare-এই যুক্ত হন; ফিরিয়ে নিতে এই অংশ মুছে deploy।
+[placement]
+region = "gcp:us-central1"

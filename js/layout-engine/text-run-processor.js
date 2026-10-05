@@ -40,7 +40,20 @@
     return null;
   }
 
+  /**
+   * ডিগ্রি-সুপারস্ক্রিপ্ট → সাধারণ `°` (U+00B0): `80^\circ`, `80^{\circ}`, `80^{o}`, `80^°`, `^\degree`।
+   * `°` গ্লিফ নিজেই ওপরে ওঠানো — আগে .docx-এ এটি sSup (৮pt) হয়ে দ্বিগুণ ছোট দেখাত।
+   * `x^0`-জাতীয় প্রকৃত ঘাত অপরিবর্তিত (শুধু ° / \circ / \degree / অক্ষর o)।
+   */
+  function normalizeDegrees(latex) {
+    return String(latex == null ? '' : latex)
+      .replace(/\^\s*\{\s*(?:\\circ|\\degree|°|o)\s*\}/g, '°')
+      .replace(/\^\s*(?:\\circ\b|\\degree\b|°)/g, '°')
+      .replace(/\^\s*o(?![A-Za-z])/g, '°');
+  }
+
   const TextRunProcessor = {
+    normalizeDegrees,
     /**
      * Splits mixed text containing LaTeX math, Bengali, and English into structured runs.
      * @param {string} text - Raw input string.
@@ -75,7 +88,7 @@
 
         // Math segment: defensive check for value or text property
         if (seg.type === 'math') {
-          const rawVal = seg.value || seg.text || '';
+          const rawVal = normalizeDegrees(seg.value || seg.text || '');
           let cleanVal = rawVal;
           if (EqConv && typeof EqConv.cleanLatexSymbols === 'function') {
             cleanVal = EqConv.cleanLatexSymbols(rawVal);
