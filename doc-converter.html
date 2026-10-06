@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ওয়ার্ড ডকুমেন্ট ইউনিকোড ➔ বিজয় কনভার্টার | ফয়জার কম্পিউটার</title>
+  <title>ওয়ার্ড ডকুমেন্ট ইউনিকোড ➔ বিজয় কনভার্টার | ফয়জার এআই কম্পোজ</title>
   <meta name="description" content="মাইক্রোসফট ওয়ার্ড (.docx) ডকুমেন্টের সকল ফরমেট, টেবিল, স্টাইল ঠিক রেখে ইউনিকোড থেকে বিজয় (SutonnyMJ) এবং বিজয় থেকে ইউনিকোডে শতভাগ নির্ভুল কনভার্টার।">
   <meta name="keywords" content="Word docx Unicode to Bijoy converter, ইউনিকোড টু বিজয় কনভার্টার, SutonnyMJ converter, docx format preserve bangla converter">
   <meta name="author" content="ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট">
@@ -132,6 +132,7 @@
   <script src="js/docx-handler.js"></script>
   <script src="js/docx-to-doc-engine.js"></script>
   <script src="js/doc-binary-engine.js"></script>
+  <!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><script src="js/fayzar-nav.js" defer></script>
 </head>
 
 <body class="bg-slate-50 dark:bg-[#111a2e] text-slate-800 dark:text-slate-100 font-sans antialiased selection:bg-emerald-200 selection:text-emerald-900 min-h-screen flex flex-col transition-colors duration-300">
@@ -139,83 +140,36 @@
   <!-- ==========================================
        ১. হেডার ও নেভিগেশন বার
        ========================================== -->
-  <header class="sticky top-0 z-40 bg-white/90 dark:bg-[#111a2e]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
-    <div class="container mx-auto max-w-7xl px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between">
-      <!-- Logo & Brand -->
-      <a href="index.html" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-          <i class="fa-solid fa-file-word text-xl"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white tracking-tight">ওয়ার্ড ডকুমেন্ট কনভার্টার</span>
-            <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-700">১০০% ফরমেট ফিক্সড</span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট | ফুলবাড়ী, দিনাজপুর</p>
-        </div>
-      </a>
-
-      <!-- Quick Nav -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Theme Toggle Button -->
-        <button id="doc-theme-toggle-btn" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 transition flex items-center justify-center" title="ডে / নাইট মোড পরিবর্তন করুন">
-          <i class="fa-solid fa-moon text-sm dark:hidden"></i>
-          <i class="fa-solid fa-sun text-sm hidden dark:inline-block text-amber-400"></i>
-        </button>
-
-        <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 transition border border-slate-200 dark:border-slate-700">
-          <i class="fa-solid fa-house"></i> হোম পেজ
-        </a>
-        <a href="index.html#tools" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition">
-          <i class="fa-solid fa-toolbox"></i> সব টুলস
-        </a>
-        <a href="tel:01717101919" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">
-          <i class="fa-solid fa-phone"></i> ০১৭১৭-১০১৯১৯
-        </a>
-      </div>
-    </div>
-  </header>
+  <!-- FZ-NAV:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
+<header class="fz-nav">
+  <div class="fz-nav-in">
+    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম"><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><path d="M35 4C18 4 6 13 6 26c0 4 1 7 3 10 2-9 9-17 19-21-8 6-13 13-15 22 3 1 6 1 9 0C33 33 37 18 35 4z" fill="#2E8B5E"/></svg><span class="fz-full">ফয়জার এআই কম্পোজ</span><span class="fz-short">AI Compose</span></a>
+    <nav class="fz-links" id="fzLinks" aria-label="প্রধান মেনু">
+      <a href="index.html">হোম</a>
+      <a href="services.html">সার্ভিস</a>
+      <a href="samples.html">নমুনা</a>
+      <a href="samples.html#how">কীভাবে কাজ করে</a>
+      <a href="index.html#history" class="fz-hist">ইতিহাস</a>
+      <a href="#login" class="fz-soon">লগইন</a>
+      <a href="#register" class="fz-cta fz-soon">রেজিস্ট্রেশন</a>
+    </nav>
+    <div class="fz-tools"><button type="button" id="doc-theme-toggle-btn" class="fz-icon-btn" title="ডে / নাইট মোড"><i class="fa-solid fa-moon dark:hidden"></i><i class="fa-solid fa-sun hidden dark:inline text-amber-300"></i></button><button type="button" class="fz-burger" id="fzBurger" aria-label="মেনু" aria-expanded="false"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<!-- FZ-NAV:END -->
 
   <!-- ==========================================
        ২. ব্যানার ও পরিচিতি সেকশন
        ========================================== -->
-  <section class="relative bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white py-10 px-4 sm:px-6 overflow-hidden">
-    <!-- Decorative background elements -->
-    <div class="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="container mx-auto max-w-5xl text-center relative z-10">
-      <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full mb-4">
-        <i class="fa-solid fa-wand-magic-sparkles"></i> মাইক্রোসফট ওয়ার্ড স্পেশাল বাংলা কনভার্টার
-      </div>
-      <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-3">
-        ওয়ার্ড ডকুমেন্ট <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">ইউনিকোড ➔ বিজয়</span> কনভার্টার
-      </h1>
-      <p class="text-sm sm:text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-        ডকুমেন্টের টেবিল, ছবি, হেডার-ফুটার, বোল্ড, ইটালিক, আন্ডারলাইন ও ফন্ট সাইজ সহ <strong>সকল ফরমেট ১০০% অক্ষুণ্ণ রেখে</strong> নিমেষেই পুরো ওয়ার্ড ফাইল কনভার্ট করুন। 
-      </p>
-      
-      <div class="mt-4 mb-2 inline-block bg-emerald-500/15 border border-emerald-500/30 text-emerald-50 text-sm px-5 py-2.5 rounded-xl font-medium shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-        <i class="fa-solid fa-file-export text-emerald-400 mr-1.5"></i> কনভার্ট শেষে আপনি <strong class="text-emerald-300 font-bold tracking-wide">.DOCX</strong> এবং <strong class="text-emerald-300 font-bold tracking-wide">.DOC (2003)</strong> দুটি ফরম্যাটেই ফাইল ডাউনলোড করতে পারবেন!
-      </div>
-
-      <!-- Key Highlights Pills -->
-      <div class="flex flex-wrap justify-center gap-2 sm:gap-4 mt-6 text-xs text-slate-300">
-        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-          <i class="fa-solid fa-shield-halved text-emerald-400"></i> ১০০% গোপনীয় (ব্রাউজারে প্রসেস)
-        </div>
-        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-          <i class="fa-solid fa-table text-cyan-400"></i> সকল টেবিল ও বক্স অক্ষুণ্ণ
-        </div>
-        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-          <i class="fa-solid fa-font text-amber-400"></i> অটোমেটিক SutonnyMJ ফন্ট সেট
-        </div>
-        <div class="flex items-center gap-1.5 bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg">
-          <i class="fa-solid fa-layer-group text-purple-400"></i> ব্যাচ কনভার্সন সাপোর্ট
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- FZ-HERO -->
+<section class="fz-tool-hero">
+  <div class="fz-in">
+    <span class="fz-kicker">মাইক্রোসফট ওয়ার্ড ফাইলের জন্য বাংলা কনভার্টার</span>
+    <h1 class="fz-h1">ওয়ার্ড ডকুমেন্ট <span class="fz-accent">ইউনিকোড ➔ বিজয়</span> কনভার্টার</h1>
+    <p class="fz-lead">টেবিল, ছবি, হেডার-ফুটার, বোল্ড-ইটালিক ও ফন্ট-সাইজ ঠিক রেখে পুরো .docx ফাইল বিজয়ে রূপান্তর করুন। শেষে .docx ও Word 2003 .doc — দুটোই নামাতে পারবেন।</p>
+    <div class="fz-chips"><span>ব্রাউজারেই প্রসেস — ফাইল সার্ভারে যায় না</span><span>টেবিল ও বক্স বজায়</span><span>SutonnyMJ ফন্ট স্বয়ংক্রিয়</span><span>একাধিক ফাইল একসাথে</span></div>
+  </div>
+</section>
 
   <!-- ==========================================
        ৩. মূল কনভার্টার অ্যাপ (ট্যাব ভিত্তিক)
@@ -523,17 +477,17 @@
   <!-- ==========================================
        ৫. ফুটার সেকশন
        ========================================== -->
-  <footer class="bg-slate-900 text-white py-6 border-t border-slate-800 text-xs">
-    <div class="container mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-      <div>
-        <p class="font-bold text-slate-200">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট | ফুলবাড়ী সরকারি কলেজ গেট, দিনাজপুর</p>
-        <p class="text-slate-400 text-[11px]">স্মার্ট অনলাইন সেবা, ডিজিটাল চাকরি আবেদন ও ভূমিসেবা কেন্দ্র</p>
-      </div>
-      <div class="text-slate-400 text-[11px]">
-        &copy; <span id="currentYear"></span> সর্বস্বত্ব সংরক্ষিত | হেল্পলাইন: ০১৭১৭-১০১৯১৯
-      </div>
-    </div>
-  </footer>
+  <!-- FZ-FOOT:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
+<footer class="fz-foot">
+  <div class="fz-foot-in">
+    <div><div class="fz-foot-brand">ফয়জার এআই কম্পোজ</div><p>ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট — ছবি ও PDF থেকে Word, বাংলা ফন্ট-রূপান্তর ও প্রশ্নপত্রের লেআউট।</p><p>সরকার অনুমোদিত ডিজিটাল ও উন্মুক্ত ভূমিসেবা কেন্দ্র (LSFC)। অনুমোদন নং: দিনাজ/ফুল/এলএসএসএফসি-০৭/২০২৫</p></div>
+    <div><h4>টুলস</h4><ul><li><a href="index.html">ছবি / PDF → Word</a></li><li><a href="services.html#tool-text">ইউনিকোড ⇄ বিজয়</a></li><li><a href="services.html#tool-word">Word ফাইল → বিজয়</a></li><li><a href="services.html#tool-doc">DOCX → DOC (Word 2003)</a></li><li><a href="services.html#tool-md">MD → Word</a></li><li><a href="studio.html">ওয়ার্ড স্টুডিও</a></li></ul></div>
+    <div><h4>কাজের সময়</h4><ul><li>শনি – বৃহস্পতি: সকাল ৮:০০ – রাত ৯:০০</li><li>শুক্রবার: বিকাল ৪:০০ – রাত ৯:০০</li><li>স্বত্বাধিকারী: মোঃ ফয়জার আলী</li><li>ইমেইল: fayzar.computer@gmail.com</li></ul></div>
+    <div><h4>দোকানের ঠিকানা</h4><p>ফুলবাড়ী সরকারি কলেজ গেটের পশ্চিম পার্শ্বে, ফুলবাড়ী, দিনাজপুর - ৫২৬০</p><p><a href="tel:01717101919">০১৭১৭-১০১৯১৯</a> · <a href="https://wa.me/8801717101919" target="_blank" rel="noopener">হোয়াটসঅ্যাপ</a></p></div>
+  </div>
+  <div class="fz-copy"><span>© <span id="currentYear">২০২৬</span> ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট। সর্বস্বত্ব সংরক্ষিত।</span><span><a href="portal.html">জব পোর্টাল</a> · <a href="tools.html">ছবি ও স্বাক্ষর রিসাইজার</a> · <a href="results.html">ফলাফল</a> · <a href="admin.html">এডমিন</a></span></div>
+</footer>
+<!-- FZ-FOOT:END -->
 
   <!-- Toast Notification Container -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>

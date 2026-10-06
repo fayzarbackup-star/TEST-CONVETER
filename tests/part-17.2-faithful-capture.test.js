@@ -93,7 +93,7 @@ const check = (cond, msg) => { assert.ok(cond, msg); gates++; };
   // ---- ৫) ওয়্যারিং ----
   const ocr = fs.readFileSync(path.join(ROOT, 'js/ai-ocr-engine.js'), 'utf8');
   check(/proxyStopReason = fr/.test(ocr) && /\[অসম্পূর্ণ: ' \+ proxyStopReason/.test(ocr), 'RECITATION/SAFETY now flagged as incomplete in proxy path');
-  for (const f of ['index.html', 'converter.html']) {
+  for (const f of ['index.html']) {  // converter.html এখন হোম-পাতা (২০২৬-১০-০৬), টুল-স্ক্রিপ্ট লোড করে না
     const h = fs.readFileSync(path.join(ROOT, f), 'utf8');
     check(h.includes('faithful/faithful-prompt.js') && h.includes('faithful/layout-tags.js') && h.includes('faithful/faithful-capture.js'), f + ' loads faithful modules');
   }

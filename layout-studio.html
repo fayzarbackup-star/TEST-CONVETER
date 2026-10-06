@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ফয়জার লেআউট স্টুডিও | জেমিনি এমডি টু ওয়ার্ড (.doc & .docx) কনভার্টার</title>
+  <title>লেআউট স্টুডিও — MD থেকে Word | ফয়জার এআই কম্পোজ</title>
   <meta name="description" content="জেমিনি থেকে প্রাপ্ত মার্কডাউন (.md) ফাইল দিয়ে স্কুল প্রশ্নপত্র, নোটিশ, রেজাল্ট শিট ও দলিলের নির্ভুল ওয়ার্ড ২০০৩ ও আধুনিক ওয়ার্ড ফাইল তৈরি করুন।">
 
   <!-- Favicon & Styles -->
@@ -52,9 +52,27 @@
       .a4-canvas { box-shadow: none !important; margin: 0 !important; width: 100% !important; min-height: auto !important; }
     }
   </style>
+  <!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><script src="js/fayzar-nav.js" defer></script>
 </head>
 
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<!-- FZ-NAV:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
+<header class="fz-nav fz-static">
+  <div class="fz-nav-in">
+    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম"><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><path d="M35 4C18 4 6 13 6 26c0 4 1 7 3 10 2-9 9-17 19-21-8 6-13 13-15 22 3 1 6 1 9 0C33 33 37 18 35 4z" fill="#2E8B5E"/></svg><span class="fz-full">ফয়জার এআই কম্পোজ</span><span class="fz-short">AI Compose</span></a>
+    <nav class="fz-links" id="fzLinks" aria-label="প্রধান মেনু">
+      <a href="index.html">হোম</a>
+      <a href="services.html">সার্ভিস</a>
+      <a href="samples.html">নমুনা</a>
+      <a href="samples.html#how">কীভাবে কাজ করে</a>
+      <a href="index.html#history" class="fz-hist">ইতিহাস</a>
+      <a href="#login" class="fz-soon">লগইন</a>
+      <a href="#register" class="fz-cta fz-soon">রেজিস্ট্রেশন</a>
+    </nav>
+    <div class="fz-tools"><button type="button" class="fz-burger" id="fzBurger" aria-label="মেনু" aria-expanded="false"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<!-- FZ-NAV:END -->
 
   <!-- ========================================================================= -->
   <!-- 1. TOP HEADER & TOOLBAR                                                  -->
@@ -69,7 +87,7 @@
         </a>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-base font-black text-slate-900 leading-none">ফয়জার লেআউট স্টুডিও</span>
+            <span class="text-base font-black text-slate-900 leading-none">লেআউট স্টুডিও</span>
             <span class="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">v1.0</span>
           </div>
           <span class="text-[11px] font-medium text-slate-500">জেমিনি এমডি (.md) ⇄ ওয়ার্ড ২০০৩ (.doc) ও আপডেট ওয়ার্ড (.docx)</span>

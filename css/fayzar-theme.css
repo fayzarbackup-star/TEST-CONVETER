@@ -1,0 +1,118 @@
+/* ফয়জার এআই কম্পোজ — সব পাতার অভিন্ন থিম: রং, হেডার (fz-nav), ফুটার (fz-foot)।
+ * টুল-পাতাগুলো Tailwind-এ; সংঘাত এড়াতে সব ক্লাস fz- উপসর্গে। ডার্ক মোড: html.dark (theme-lang.js যা বসায়)।
+ * হোম-পাতার নিজস্ব অংশ css/home.css-এ।
+ */
+:root {
+  --fz-g-900: #14523A;
+  --fz-g-700: #2E8B5E;
+  --fz-g-600: #3E9C6E;
+  --fz-g-200: #BFE6D2;
+  --fz-g-150: #CDEBDD;
+  --fz-g-100: #E3F4EB;
+  --fz-g-50: #F2FAF6;
+  --fz-ink: #16241D;
+  --fz-ink-2: #44554C;
+  --fz-ink-3: #6E7E75;
+  --fz-white: #fff;
+  --fz-red: #E5383B;
+  --fz-max: 1480px;
+  --fz-font: 'Noto Sans Bengali', 'Hind Siliguri', 'Segoe UI', sans-serif;
+  /* নেভের রং (ডার্কে বদলায়) */
+  --fz-nav-bg: rgba(255, 255, 255, .96);
+  --fz-nav-line: #E8EFEA;
+  --fz-nav-ink: var(--fz-ink);
+  --fz-nav-hover: var(--fz-g-50);
+  --fz-nav-active: var(--fz-g-150);
+}
+html.dark {
+  --fz-nav-bg: rgba(8, 13, 26, .96);
+  --fz-nav-line: #1E2A40;
+  --fz-nav-ink: #E5EDF0;
+  --fz-nav-hover: #13213A;
+  --fz-nav-active: #173A2C;
+}
+
+/* ===== হেডার ===== */
+.fz-nav { position: sticky; top: 0; z-index: 60; background: var(--fz-nav-bg); backdrop-filter: blur(8px); border-bottom: 1px solid var(--fz-nav-line); font-family: var(--fz-font); }
+.fz-nav.fz-static { position: relative; }
+.fz-nav-in { max-width: var(--fz-max); margin: 0 auto; height: 72px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.fz-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fz-nav-ink); font-weight: 800; font-size: 1.35rem; white-space: nowrap; }
+.fz-brand svg { flex: none; }
+.fz-brand .fz-short { display: none; }
+.fz-links { display: flex; align-items: center; gap: 4px; }
+.fz-links a { text-decoration: none; font-size: .97rem; font-weight: 500; color: var(--fz-nav-ink); padding: 8px 12px; border-radius: 10px; white-space: nowrap; transition: background .2s, color .2s; }
+.fz-links a:hover { background: var(--fz-nav-hover); color: var(--fz-g-700); }
+.fz-links a[aria-current="page"] { background: var(--fz-nav-active); color: var(--fz-g-900); font-weight: 600; }
+html.dark .fz-links a[aria-current="page"] { color: #9FE3C2; }
+.fz-links a.fz-cta { border: 1.5px solid var(--fz-g-700); color: var(--fz-g-700); font-weight: 600; margin-left: 4px; }
+.fz-links a.fz-cta:hover { background: var(--fz-g-700); color: var(--fz-white); }
+html.dark .fz-links a.fz-cta { color: #7FD3AA; border-color: #3E9C6E; }
+.fz-tools { display: flex; align-items: center; gap: 8px; }
+.fz-tools .fz-lang { display: flex; border: 1px solid var(--fz-g-200); border-radius: 8px; overflow: hidden; font-size: .78rem; font-weight: 700; }
+.fz-tools .fz-lang button { padding: 4px 8px; border: 0; cursor: pointer; }
+.fz-icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--fz-nav-line); background: transparent; color: var(--fz-nav-ink); cursor: pointer; }
+.fz-icon-btn:hover { background: var(--fz-nav-hover); }
+.fz-burger { display: none; flex-direction: column; gap: 5px; background: none; border: 0; padding: 8px; cursor: pointer; }
+.fz-burger span { width: 24px; height: 2.5px; border-radius: 2px; background: var(--fz-nav-ink); }
+
+/* ===== টুল-পাতার ব্যানার (হোমের মতো হালকা সবুজ, দুই পাশে তির্যক প্যানেল) ===== */
+.fz-tool-hero { position: relative; overflow: hidden; background: var(--fz-g-100); padding: 40px 24px 46px; text-align: center; font-family: var(--fz-font); color: var(--fz-ink); }
+.fz-tool-hero::before, .fz-tool-hero::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; background: linear-gradient(180deg, var(--fz-g-150), var(--fz-g-200)); pointer-events: none; }
+.fz-tool-hero::before { left: 0; clip-path: polygon(0 0, 80% 0, 100% 100%, 0 100%); }
+.fz-tool-hero::after { right: 0; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%); }
+.fz-tool-hero .fz-in { position: relative; z-index: 1; max-width: 880px; margin: 0 auto; }
+.fz-kicker { display: inline-block; font-size: .82rem; font-weight: 600; color: var(--fz-g-900); background: var(--fz-white); padding: 4px 14px; border-radius: 999px; box-shadow: 0 1px 4px rgba(20,82,58,.12); margin-bottom: 14px; }
+.fz-h1 { font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 800; line-height: 1.3; margin: 0 0 12px; color: var(--fz-ink); }
+.fz-accent { color: var(--fz-g-700); }
+.fz-lead { font-size: 1.05rem; line-height: 1.7; color: var(--fz-ink-2); margin: 0 auto; max-width: 720px; }
+.fz-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 10px; margin-top: 18px; }
+.fz-chips > * { font-size: .85rem; font-weight: 500; color: var(--fz-ink); background: rgba(255,255,255,.8); border: 1px solid rgba(46,139,94,.18); padding: 5px 12px; border-radius: 10px; text-decoration: none; }
+.fz-chips a:hover { border-color: var(--fz-g-700); color: var(--fz-g-700); }
+html.dark .fz-tool-hero { background: #0B1A14; color: #E5EDF0; }
+html.dark .fz-tool-hero::before, html.dark .fz-tool-hero::after { background: linear-gradient(180deg, #10261C, #143224); }
+html.dark .fz-h1 { color: #F1F7F3; }
+html.dark .fz-accent { color: #7FD3AA; }
+html.dark .fz-lead { color: #B9C9C0; }
+html.dark .fz-kicker, html.dark .fz-chips > * { background: #13241C; color: #CDE7DA; border-color: #24443A; }
+@media (max-width: 640px) {
+  .fz-tool-hero { padding: 28px 16px 34px; }
+  .fz-tool-hero::before, .fz-tool-hero::after { display: none; }
+}
+
+/* ===== ফুটার ===== */
+.fz-foot { background: var(--fz-g-900); color: #DCEDE4; padding: 40px 24px 18px; font-family: var(--fz-font); margin-top: 48px; }
+.fz-foot a { color: inherit; text-decoration: none; }
+.fz-foot a:hover { color: var(--fz-white); text-decoration: underline; }
+.fz-foot-in { max-width: var(--fz-max); margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.1fr; gap: 28px; }
+.fz-foot h4 { color: var(--fz-white); font-size: 1rem; font-weight: 700; margin: 0 0 10px; }
+.fz-foot .fz-foot-brand { font-size: 1.2rem; font-weight: 800; color: var(--fz-white); }
+.fz-foot p, .fz-foot li { font-size: .9rem; line-height: 1.7; margin: 0; }
+.fz-foot ul { list-style: none; margin: 0; padding: 0; }
+.fz-foot .fz-copy { max-width: var(--fz-max); margin: 26px auto 0; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.15); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: .82rem; opacity: .85; }
+
+/* ===== টোস্ট ===== */
+.fz-toasts { position: fixed; right: 16px; top: 84px; pointer-events: none; z-index: 100; display: flex; flex-direction: column; gap: 8px; max-width: min(380px, calc(100vw - 32px)); }
+.fz-toast { font-family: var(--fz-font); font-size: .9rem; color: #fff; background: #1F3A2E; padding: 11px 14px; border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,.18); transition: opacity .3s, transform .3s; }
+.fz-toast.success { background: var(--fz-g-700); }
+.fz-toast.warning { background: #9A5B00; }
+.fz-toast.error { background: #B42318; }
+.fz-toast.out { opacity: 0; transform: translateY(-6px); }
+
+/* ===== রেসপন্সিভ ===== */
+@media (max-width: 1180px) {
+  .fz-links { display: none; position: absolute; top: 72px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 2px; padding: 12px 16px 16px; background: var(--fz-nav-bg); box-shadow: 0 12px 24px rgba(0,0,0,.08); }
+  .fz-links.open { display: flex; }
+  .fz-links a.fz-cta { margin: 6px 0 0; text-align: center; }
+  .fz-burger { display: flex; }
+  .fz-foot-in { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .fz-nav-in { height: 62px; padding: 0 16px; }
+  .fz-links { top: 62px; }
+  .fz-brand { font-size: 1.1rem; }
+  .fz-brand .fz-full { display: none; }
+  .fz-brand .fz-short { display: inline; }
+  .fz-foot { padding: 32px 16px 16px; }
+  .fz-foot-in { grid-template-columns: 1fr; }
+}
+@media print { .fz-nav, .fz-foot { display: none !important; } }

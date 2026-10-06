@@ -121,7 +121,7 @@ check(/FayzarFigureTransfer\.take\(payload\.figuresKey\)/.test(studio), 'studio 
 const md = read('js/main.js');
 check(/FayzarFigureExtractor\.stripTags\(mdText\)/.test(md), '.md upload path strips tags');
 
-for (const f of ['index.html', 'converter.html', 'studio.html']) {
+for (const f of ['index.html', 'studio.html']) {  // converter.html এখন হোম-পাতা (২০২৬-১০-০৬)
   const h = read(f);
   check(h.includes('js/engines/figure-transfer-store.js') && h.includes('js/layout-engine/figure-extractor.js'), f + ' loads extractor + transfer store');
 }

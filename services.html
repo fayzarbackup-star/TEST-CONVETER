@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>সার্ভিস ও টুলস | ফয়জার এআই কম্পোজ</title>
+  <meta name="description" content="ইউনিকোড ⇄ বিজয়, Word ফাইল → বিজয়, DOCX → DOC ও MD → Word — ব্রাউজারেই।">
+  <link rel="stylesheet" href="css/google-fonts.css">
+  <link rel="stylesheet" href="css/home.css">
+  <!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><script src="js/fayzar-nav.js" defer></script>
+</head>
+<body class="page-sub">
+<!-- FZ-NAV:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
+<header class="fz-nav">
+  <div class="fz-nav-in">
+    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম"><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><path d="M35 4C18 4 6 13 6 26c0 4 1 7 3 10 2-9 9-17 19-21-8 6-13 13-15 22 3 1 6 1 9 0C33 33 37 18 35 4z" fill="#2E8B5E"/></svg><span class="fz-full">ফয়জার এআই কম্পোজ</span><span class="fz-short">AI Compose</span></a>
+    <nav class="fz-links" id="fzLinks" aria-label="প্রধান মেনু">
+      <a href="index.html">হোম</a>
+      <a href="services.html">সার্ভিস</a>
+      <a href="samples.html">নমুনা</a>
+      <a href="samples.html#how">কীভাবে কাজ করে</a>
+      <a href="index.html#history" class="fz-hist">ইতিহাস</a>
+      <a href="#login" class="fz-soon">লগইন</a>
+      <a href="#register" class="fz-cta fz-soon">রেজিস্ট্রেশন</a>
+    </nav>
+    <div class="fz-tools"><button type="button" class="fz-burger" id="fzBurger" aria-label="মেনু" aria-expanded="false"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<!-- FZ-NAV:END -->
+
+  <!-- ===== সার্ভিস (কার্ডে চাপলে এই পাতাতেই কাজ খোলে) ===== -->
+  <section class="sec" id="services">
+    <h2>আমাদের সার্ভিস</h2>
+    <p class="sec-sub">একই জায়গায় কাগজ থেকে Word, ফন্ট-রূপান্তর আর প্রশ্নপত্রের লেআউট</p>
+    <div class="cards">
+      <a class="card" href="index.html"><b class="ic">OCR</b><h3>ছবি / PDF → Word</h3><p>এআই দিয়ে লেখা পড়ে সম্পাদনাযোগ্য .docx ও .doc — প্রশ্নপত্র, আবেদন, দলিল, রুটিন ইত্যাদি চিনে লেআউট দেয়।</p></a>
+      <a class="card" href="index.html?mode=faithful"><b class="ic">১:১</b><h3>হুবহু লেআউট মোড</h3><p>মূল পাতার বর্ডার, টেবিল, লোগো ও অবস্থান যতটা সম্ভব আগের মতো রেখে Word ফাইল।</p></a>
+      <a class="card" href="#tool-text"><b class="ic">অ</b><h3>ইউনিকোড ⇄ বিজয়</h3><p>লেখা পেস্ট করে ইউনিকোড থেকে বিজয় (SutonnyMJ) বা উল্টোটা — সঙ্গে সঙ্গে।</p></a>
+      <a class="card" href="#tool-word"><b class="ic">W</b><h3>Word ফাইল → বিজয়</h3><p>পুরো .docx/.doc ফাইলের লেখা বিজয়ে (বা ইউনিকোডে) রূপান্তর, ফরম্যাটিং ঠিক রেখে।</p></a>
+      <a class="card" href="#tool-doc"><b class="ic">⇩</b><h3>DOCX → DOC (Word 2003)</h3><p>পুরোনো কম্পিউটারে খোলার জন্য .docx থেকে Word 2003 .doc ফাইল।</p></a>
+      <a class="card" href="#tool-md"><b class="ic">MD</b><h3>MD / লেখা → Word</h3><p>Gemini বা অন্য জায়গার মার্কডাউন লেখা থেকে সাজানো প্রশ্নপত্র/নথি — .doc ও .docx।</p></a>
+    </div>
+  </section>
+
+  <!-- ===== অন্যান্য টুল (এই পাতাতেই) ===== -->
+  <section class="sec alt" id="tools">
+    <h2>টুলস</h2>
+    <p class="sec-sub">ফাইল আপনার ব্রাউজারেই প্রসেস হয় — কোথাও আপলোড হয় না</p>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="tool-text" aria-selected="true">ইউনিকোড ⇄ বিজয়</button>
+      <button type="button" role="tab" data-tab="tool-word">Word ফাইল → বিজয়</button>
+      <button type="button" role="tab" data-tab="tool-doc">DOCX → DOC</button>
+      <button type="button" role="tab" data-tab="tool-md">MD → Word</button>
+    </div>
+
+    <div class="tool" id="tool-text" role="tabpanel">
+      <div class="two">
+        <label class="tl">ইউনিকোড<textarea id="txtUni" placeholder="এখানে ইউনিকোড বাংলা লিখুন বা পেস্ট করুন…"></textarea></label>
+        <label class="tl">বিজয় (SutonnyMJ)<textarea id="txtBij" class="bijoy" placeholder="এখানে বিজয় লেখা পেস্ট করুন…"></textarea></label>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="btnU2B">ইউনিকোড → বিজয়</button>
+        <button type="button" class="btn-o" id="btnB2U">বিজয় → ইউনিকোড</button>
+        <button type="button" class="link" id="btnCopyUni">ইউনিকোড কপি</button>
+        <button type="button" class="link" id="btnCopyBij">বিজয় কপি</button>
+      </div>
+    </div>
+
+    <div class="tool" id="tool-word" role="tabpanel" hidden>
+      <div class="file-row">
+        <input type="file" id="wordFile" accept=".docx,.doc">
+        <select id="wordDir" aria-label="রূপান্তরের দিক">
+          <option value="u2b">ইউনিকোড → বিজয় (SutonnyMJ)</option>
+          <option value="b2u">বিজয় → ইউনিকোড (Kalpurush)</option>
+        </select>
+        <button type="button" class="btn" id="btnWord">রূপান্তর করুন</button>
+      </div>
+      <p class="tool-status" id="wordStatus"></p>
+      <div class="actions" id="wordOut" hidden></div>
+    </div>
+
+    <div class="tool" id="tool-doc" role="tabpanel" hidden>
+      <div class="file-row">
+        <input type="file" id="docFile" accept=".docx">
+        <select id="docPage" aria-label="পাতার মাপ">
+          <option value="a4">A4</option>
+          <option value="letter">Letter</option>
+          <option value="legal">Legal</option>
+        </select>
+        <button type="button" class="btn" id="btnDoc">Word 2003 (.doc) বানান</button>
+      </div>
+      <p class="tool-status" id="docStatus"></p>
+      <div class="actions" id="docOut" hidden></div>
+    </div>
+
+    <div class="tool" id="tool-md" role="tabpanel" hidden>
+      <label class="tl">মার্কডাউন / লেখা<textarea id="mdText" class="tall" placeholder="---&#10;institute: &quot;প্রতিষ্ঠানের নাম&quot;&#10;exam: &quot;পরীক্ষার নাম&quot;&#10;---&#10;&#10;১. প্রশ্ন…&#10;ক. …"></textarea></label>
+      <div class="actions">
+        <button type="button" class="btn" data-md="doc">Word 2003 (.doc)</button>
+        <button type="button" class="btn-o" data-md="docx-bijoy">বিজয় .docx</button>
+        <button type="button" class="btn-o" data-md="docx-unicode">ইউনিকোড .docx</button>
+      </div>
+      <p class="tool-status" id="mdStatus"></p>
+    </div>
+  </section>
+
+<!-- FZ-FOOT:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
+<footer class="fz-foot">
+  <div class="fz-foot-in">
+    <div><div class="fz-foot-brand">ফয়জার এআই কম্পোজ</div><p>ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট — ছবি ও PDF থেকে Word, বাংলা ফন্ট-রূপান্তর ও প্রশ্নপত্রের লেআউট।</p><p>সরকার অনুমোদিত ডিজিটাল ও উন্মুক্ত ভূমিসেবা কেন্দ্র (LSFC)। অনুমোদন নং: দিনাজ/ফুল/এলএসএসএফসি-০৭/২০২৫</p></div>
+    <div><h4>টুলস</h4><ul><li><a href="index.html">ছবি / PDF → Word</a></li><li><a href="services.html#tool-text">ইউনিকোড ⇄ বিজয়</a></li><li><a href="services.html#tool-word">Word ফাইল → বিজয়</a></li><li><a href="services.html#tool-doc">DOCX → DOC (Word 2003)</a></li><li><a href="services.html#tool-md">MD → Word</a></li><li><a href="studio.html">ওয়ার্ড স্টুডিও</a></li></ul></div>
+    <div><h4>কাজের সময়</h4><ul><li>শনি – বৃহস্পতি: সকাল ৮:০০ – রাত ৯:০০</li><li>শুক্রবার: বিকাল ৪:০০ – রাত ৯:০০</li><li>স্বত্বাধিকারী: মোঃ ফয়জার আলী</li><li>ইমেইল: fayzar.computer@gmail.com</li></ul></div>
+    <div><h4>দোকানের ঠিকানা</h4><p>ফুলবাড়ী সরকারি কলেজ গেটের পশ্চিম পার্শ্বে, ফুলবাড়ী, দিনাজপুর - ৫২৬০</p><p><a href="tel:01717101919">০১৭১৭-১০১৯১৯</a> · <a href="https://wa.me/8801717101919" target="_blank" rel="noopener">হোয়াটসঅ্যাপ</a></p></div>
+  </div>
+  <div class="fz-copy"><span>© <span id="currentYear">২০২৬</span> ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট। সর্বস্বত্ব সংরক্ষিত।</span><span><a href="portal.html">জব পোর্টাল</a> · <a href="tools.html">ছবি ও স্বাক্ষর রিসাইজার</a> · <a href="results.html">ফলাফল</a> · <a href="admin.html">এডমিন</a></span></div>
+</footer>
+<!-- FZ-FOOT:END -->
+
+  <!-- ===== ইঞ্জিন (টুলের জন্য) ===== -->
+  <script src="js/offline-data.js"></script>
+  <script src="js/vendor/pdf.min.js"></script>
+  <script src="js/jszip.min.js"></script>
+  <script src="js/bangla-converter-engine.js"></script>
+  <script src="js/equation-converter.js"></script>
+  <script src="js/docx-to-doc-engine.js"></script>
+  <script src="js/doc-binary-engine.js"></script>
+  <script src="js/docx-handler.js"></script>
+  <script src="js/xlsx-handler.js"></script>
+  <script src="js/pptx-handler.js"></script>
+  <!-- Fayzar Publishing Studio & Board Standard Layout Suite -->
+  <script src="js/layout-engine/theme-config.js"></script>
+  <script src="js/layout-engine/docx-builder.js"></script>
+  <script src="js/layout-engine/rtf-builder.js"></script>
+  <script src="js/layout-engine/schema-validator.js"></script>
+  <script src="js/layout-engine/docx-layouts.js"></script>
+  <script src="js/engines/doc-classifier.js"></script>
+  <script src="js/engines/question-engine.js"></script>
+  <script src="js/layout-engine/layout-units.js"></script>
+  <script src="js/layout-engine/mcq-layout-planner.js"></script>
+  <script src="js/layout-engine/cq-booklet-planner.js"></script>
+  <script src="js/engines/stamp-engine.js"></script>
+  <script src="js/engines/application-engine.js"></script>
+  <script src="js/engines/certificate-engine.js"></script>
+  <script src="js/engines/admit-card-engine.js"></script>
+  <script src="js/engines/salary-slip-engine.js"></script>
+  <script src="js/engines/routine-engine.js"></script>
+  <script src="js/engines/cv-engine.js"></script>
+  <script src="js/engines/omr-engine.js"></script>
+  <script src="js/engines/export-dual-engine.js"></script>
+  <script src="js/engines/converter-studio-bridge.js"></script>
+  <script src="js/templates/academic-templates.js"></script>
+  <script src="js/templates/legal-templates.js"></script>
+  <script src="js/templates/govt-templates.js"></script>
+  <!-- Fayzar Auto-Layout Engine Suite -->
+  <script src="js/layout-engine/gemini-prompt-factory.js"></script>
+  <script src="js/layout-engine/text-run-processor.js"></script>
+  <script src="js/layout-engine/eq-field-rtf.js"></script>
+  <script src="js/layout-engine/frontmatter-header.js"></script>
+  <script src="js/layout-engine/archetype-map.js"></script>
+  <script src="js/layout-engine/exam-renumber.js"></script>
+<script src="js/layout-engine/fayzar-pipeline.js"></script>
+  <!-- Part-16: একক রপ্তানি-পথ + সোর্স-চিত্র (কাটা, রিভিউ, Word 2003 ছবি-প্যাকেজ) -->
+  <script src="js/engines/studio-figure-pipeline.js"></script>
+  <script src="js/layout-engine/doc-mhtml-packager.js"></script>
+  <script src="js/layout-engine/fayzar-export.js"></script>
+  <script src="js/layout-engine/figure-extractor.js"></script>
+  <script src="js/figure-review-ui.js"></script>
+  <script src="js/engines/figure-transfer-store.js"></script>
+  <script src="js/layout-engine/faithful/faithful-prompt.js"></script>
+  <script src="js/layout-engine/faithful/layout-tags.js"></script>
+  <script src="js/layout-engine/faithful/faithful-capture.js"></script>
+  <script src="js/layout-engine/faithful/page-geometry.js"></script>
+  <script src="js/layout-engine/faithful/layout-ir.js"></script>
+  <script src="js/layout-engine/faithful/faithful-docx-builder.js"></script>
+  <script src="js/layout-engine/faithful/faithful-pipeline.js"></script>
+  <script src="js/faithful-mode-ui.js"></script>
+  <script src="js/markdown-layout-engine.js"></script>
+  <script src="js/proxy-failure-policy.js?v=20260930"></script>
+  <script src="js/fayzar-ocr-config.js"></script>
+  <script src="js/ai-ocr-engine.js?v=20260930"></script>
+  <script src="js/tools-app.js"></script>
+</body>
+</html>
