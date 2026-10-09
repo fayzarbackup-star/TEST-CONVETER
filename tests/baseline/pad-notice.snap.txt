@@ -1,0 +1,180 @@
+# fixture: pad-notice
+# docType: OFFICE_PAD
+
+===== CLASSIFIER =====
+{
+  "type": "OFFICIAL_NOTICE"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "letterhead",
+      "lines": [
+        {
+          "role": "org",
+          "text": "দিনাজপুর জেলা আহ্বায়ক কমিটি"
+        },
+        {
+          "role": "addr",
+          "text": "(অস্থায়ী কার্যালয়: গণেশতলা, দিনাজপুর)"
+        }
+      ]
+    },
+    {
+      "kind": "memoDate",
+      "left": "স্মারক: সংগঠন/দিনা/শোকজ/২০২৬/০২",
+      "right": "তারিখ: ১৯/০৫/২০২৬ খ্রি."
+    },
+    {
+      "kind": "lines",
+      "label": "বরাবর,",
+      "lines": [
+        "জনাব করিম উদ্দিন",
+        "জেলা সদস্য, দিনাজপুর ও সদস্য, চিরিরবন্দর উপজেলা শাখা"
+      ],
+      "role": "receiver"
+    },
+    {
+      "kind": "subject",
+      "label": "বিষয়:",
+      "text": "কারণ দর্শানোর নোটিশ।"
+    },
+    {
+      "kind": "line",
+      "role": "salutation",
+      "text": "জনাব,"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "সংগঠনের দিনাজপুর জেলা শাখার এবং চিরিরবন্দর উপজেলা শাখার দায়িত্বশীল পদে আসীন থেকে ইতোপূর্বে সতর্ক করার পরও আপনার বিরুদ্ধে সাংগঠনিক শৃঙ্খলা ভঙ্গের অভিযোগ পাওয়া গেছে। তাই উক্ত অভিযোগের ভিত্তিতে আপনার বিরুদ্ধে কেন স্থায়ী সাংগঠনিক শাস্তিমূলক ব্যবস্থা গ্রহণ করা হবে না, এই মর্মে আগামী ২৪/০৫/২০২৬ খ্রি. তারিখের মধ্যে জেলা কার্যালয়ে উপস্থিত হয়ে ব্যাখ্যা প্রদানের নির্দেশ দেওয়া হলো।"
+    },
+    {
+      "groups": [
+        [
+          "(আবুল হাসান)",
+          "আহ্বায়ক",
+          "দিনাজপুর জেলা শাখা"
+        ],
+        [
+          "(মোঃ রফিকুল ইসলাম)",
+          "সদস্য সচিব (ভারপ্রাপ্ত)",
+          "দিনাজপুর জেলা শাখা"
+        ]
+      ],
+      "kind": "signature"
+    },
+    {
+      "items": [
+        "১। মুখ্য সংগঠক (উত্তরাঞ্চল)।",
+        "২। রংপুর বিভাগীয় সাংগঠনিক সম্পাদক।",
+        "৩। প্রধান, শৃঙ্খলা কমিটি।"
+      ],
+      "kind": "list",
+      "label": "অনুলিপি প্রেরণ:",
+      "role": "copy"
+    }
+  ],
+  "kind": "LETTER_LAYOUT",
+  "variant": "pad",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-letter-layout letter-pad font-kalpurush" style="padding: 0.50in 0.50in 0.50in 0.75in; font-size: 13pt; box-sizing: border-box;">
+<div style="margin-left: -0.25in; text-align: center; line-height: 1.25; padding-bottom: 3px; border-bottom: 2px solid #000;">
+<div style="font-size: 36pt; font-weight: 700;">দিনাজপুর জেলা আহ্বায়ক কমিটি</div>
+<div style="font-size: 16pt;">(অস্থায়ী কার্যালয়: গণেশতলা, দিনাজপুর)</div>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;display: flex; justify-content: space-between;">
+<span>স্মারক: সংগঠন/দিনা/শোকজ/২০২৬/০২</span>
+<span>তারিখ: ১৯/০৫/২০২৬ খ্রি.</span>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>বরাবর,</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">জনাব করিম উদ্দিন</div>
+<div style="min-height: 1.47em; line-height: 1.47;">জেলা সদস্য, দিনাজপুর ও সদস্য, চিরিরবন্দর উপজেলা শাখা</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify; padding-left: 0.46in; text-indent: -0.46in;">
+<b>বিষয়: কারণ দর্শানোর নোটিশ।</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>জনাব,</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify;">সংগঠনের দিনাজপুর জেলা শাখার এবং চিরিরবন্দর উপজেলা শাখার দায়িত্বশীল পদে আসীন থেকে ইতোপূর্বে সতর্ক করার পরও আপনার বিরুদ্ধে সাংগঠনিক শৃঙ্খলা ভঙ্গের অভিযোগ পাওয়া গেছে। তাই উক্ত অভিযোগের ভিত্তিতে আপনার বিরুদ্ধে কেন স্থায়ী সাংগঠনিক শাস্তিমূলক ব্যবস্থা গ্রহণ করা হবে না, এই মর্মে আগামী ২৪/০৫/২০২৬ খ্রি. তারিখের মধ্যে জেলা কার্যালয়ে উপস্থিত হয়ে ব্যাখ্যা প্রদানের নির্দেশ দেওয়া হলো।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="display: flex; text-align: center; line-height: 1.34; font-size: 13pt;">
+<div style="flex: 1;">
+<div>(আবুল হাসান)</div>
+<div>আহ্বায়ক</div>
+<div>দিনাজপুর জেলা শাখা</div>
+</div>
+<div style="flex: 1;">
+<div>(মোঃ রফিকুল ইসলাম)</div>
+<div>সদস্য সচিব (ভারপ্রাপ্ত)</div>
+<div>দিনাজপুর জেলা শাখা</div>
+</div>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>অনুলিপি প্রেরণ:</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">১। মুখ্য সংগঠক (উত্তরাঞ্চল)।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">২। রংপুর বিভাগীয় সাংগঠনিক সম্পাদক।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">৩। প্রধান, শৃঙ্খলা কমিটি।</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType OFFICE_PAD)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1080\margr720\margt720\margb720\cols1
+{\pard\plain\f0\fs72\sl240\slmult1\sb0\sa0\qc\li-360 {\b {\f0 \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2460?\u2503?\u2482?\u2494? \u2438?\u2489?\u2509?\u2476?\u2494?\u2527?\u2453? \u2453?\u2478?\u2495?\u2463?\u2495?}}\par}
+{\pard\plain\f0\fs32\sl240\slmult1\sb0\sa0\qc\li-360\brdrb\brdrs\brdrw30\brsp80 {\f0 (\u2437?\u2488?\u2509?\u2469?\u2494?\u2527?\u2496? \u2453?\u2494?\u2480?\u2509?\u2479?\u2494?\u2482?\u2527?: \u2455?\u2467?\u2503?\u2486?\u2468?\u2482?\u2494?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?)}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql\tqr\tx10106 {\f0 \u2488?\u2509?\u2478?\u2494?\u2480?\u2453?: \u2488?\u2434?\u2455?\u2464?\u2472?}{\f1 /}{\f0 \u2470?\u2495?\u2472?\u2494?}{\f1 /}{\f0 \u2486?\u2507?\u2453?\u2460?}{\f1 /}{\f0 \u2536?\u2534?\u2536?\u2540?}{\f1 /}{\f0 \u2534?\u2536?}\tab {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: \u2535?\u2543?}{\f1 /}{\f0 \u2534?\u2539?}{\f1 /}{\f0 \u2536?\u2534?\u2536?\u2540? \u2454?\u2509?\u2480?\u2495?.}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\b {\f0 \u2476?\u2480?\u2494?\u2476?\u2480?,}}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\f0 \u2460?\u2472?\u2494?\u2476? \u2453?\u2480?\u2495?\u2478? \u2441?\u2470?\u2509?\u2470?\u2495?\u2472?}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\f0 \u2460?\u2503?\u2482?\u2494? \u2488?\u2470?\u2488?\u2509?\u2479?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2451? \u2488?\u2470?\u2488?\u2509?\u2479?, \u2458?\u2495?\u2480?\u2495?\u2480?\u2476?\u2472?\u2509?\u2470?\u2480? \u2441?\u2474?\u2460?\u2503?\u2482?\u2494? \u2486?\u2494?\u2454?\u2494?}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\qj\li661\fi-661 {\b {\f0 \u2476?\u2495?\u2487?\u2527?: \u2453?\u2494?\u2480?\u2467? \u2470?\u2480?\u2509?\u2486?\u2494?\u2472?\u2507?\u2480? \u2472?\u2507?\u2463?\u2495?\u2486?\u2404?}}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\b {\f0 \u2460?\u2472?\u2494?\u2476?,}}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\qj {\f0 \u2488?\u2434?\u2455?\u2464?\u2472?\u2503?\u2480? \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2460?\u2503?\u2482?\u2494? \u2486?\u2494?\u2454?\u2494?\u2480? \u2447?\u2476?\u2434? \u2458?\u2495?\u2480?\u2495?\u2480?\u2476?\u2472?\u2509?\u2470?\u2480? \u2441?\u2474?\u2460?\u2503?\u2482?\u2494? \u2486?\u2494?\u2454?\u2494?\u2480? \u2470?\u2494?\u2527?\u2495?\u2468?\u2509?\u2476?\u2486?\u2496?\u2482? \u2474?\u2470?\u2503? \u2438?\u2488?\u2496?\u2472? \u2469?\u2503?\u2453?\u2503? \u2439?\u2468?\u2507?\u2474?\u2498?\u2480?\u2509?\u2476?\u2503? \u2488?\u2468?\u2480?\u2509?\u2453? \u2453?\u2480?\u2494?\u2480? \u2474?\u2480?\u2451? \u2438?\u2474?\u2472?\u2494?\u2480? \u2476?\u2495?\u2480?\u2497?\u2470?\u2509?\u2471?\u2503? \u2488?\u2494?\u2434?\u2455?\u2464?\u2472?\u2495?\u2453? \u2486?\u2499?\u2457?\u2509?\u2454?\u2482?\u2494? \u2477?\u2457?\u2509?\u2455?\u2503?\u2480? \u2437?\u2477?\u2495?\u2479?\u2507?\u2455? \u2474?\u2494?\u2451?\u2527?\u2494? \u2455?\u2503?\u2459?\u2503?\u2404? \u2468?\u2494?\u2439? \u2441?\u2453?\u2509?\u2468? \u2437?\u2477?\u2495?\u2479?\u2507?\u2455?\u2503?\u2480? \u2477?\u2495?\u2468?\u2509?\u2468?\u2495?\u2468?\u2503? \u2438?\u2474?\u2472?\u2494?\u2480? \u2476?\u2495?\u2480?\u2497?\u2470?\u2509?\u2471?\u2503? \u2453?\u2503?\u2472? \u2488?\u2509?\u2469?\u2494?\u2527?\u2496? \u2488?\u2494?\u2434?\u2455?\u2464?\u2472?\u2495?\u2453? \u2486?\u2494?\u2488?\u2509?\u2468?\u2495?\u2478?\u2498?\u2482?\u2453? \u2476?\u2509?\u2479?\u2476?\u2488?\u2509?\u2469?\u2494? \u2455?\u2509?\u2480?\u2489?\u2467? \u2453?\u2480?\u2494? \u2489?\u2476?\u2503? \u2472?\u2494?, \u2447?\u2439? \u2478?\u2480?\u2509?\u2478?\u2503? \u2438?\u2455?\u2494?\u2478?\u2496? \u2536?\u2538?}{\f1 /}{\f0 \u2534?\u2539?}{\f1 /}{\f0 \u2536?\u2534?\u2536?\u2540? \u2454?\u2509?\u2480?\u2495?. \u2468?\u2494?\u2480?\u2495?\u2454?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2460?\u2503?\u2482?\u2494? \u2453?\u2494?\u2480?\u2509?\u2479?\u2494?\u2482?\u2527?\u2503? \u2441?\u2474?\u2488?\u2509?\u2469?\u2495?\u2468? \u2489?\u2527?\u2503? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2474?\u2509?\u2480?\u2470?\u2494?\u2472?\u2503?\u2480? \u2472?\u2495?\u2480?\u2509?\u2470?\u2503?\u2486? \u2470?\u2503?\u2451?\u2527?\u2494? \u2489?\u2482?\u2507?\u2404?}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft0\trkeep\cellx5053\cellx10106
+\pard\plain\intbl\qc\f0\fs26\sl240\slmult1 {\f0 (\u2438?\u2476?\u2497?\u2482? \u2489?\u2494?\u2488?\u2494?\u2472?)}\line {\f0 \u2438?\u2489?\u2509?\u2476?\u2494?\u2527?\u2453?}\line {\f0 \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2460?\u2503?\u2482?\u2494? \u2486?\u2494?\u2454?\u2494?}\cell \pard\plain\intbl\qc\f0\fs26\sl240\slmult1 {\f0 (\u2478?\u2507?\u2435? \u2480?\u2475?\u2495?\u2453?\u2497?\u2482? \u2439?\u2488?\u2482?\u2494?\u2478?)}\line {\f0 \u2488?\u2470?\u2488?\u2509?\u2479? \u2488?\u2458?\u2495?\u2476? (\u2477?\u2494?\u2480?\u2474?\u2509?\u2480?\u2494?\u2474?\u2509?\u2468?)}\line {\f0 \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2460?\u2503?\u2482?\u2494? \u2486?\u2494?\u2454?\u2494?}\cell \row}
+\pard\plain
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\keepn\ql {\b {\f0 \u2437?\u2472?\u2497?\u2482?\u2495?\u2474?\u2495? \u2474?\u2509?\u2480?\u2503?\u2480?\u2467?:}}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\f0 \u2535?\u2404? \u2478?\u2497?\u2454?\u2509?\u2479? \u2488?\u2434?\u2455?\u2464?\u2453? (\u2441?\u2468?\u2509?\u2468?\u2480?\u2494?\u2462?\u2509?\u2458?\u2482?)\u2404?}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\f0 \u2536?\u2404? \u2480?\u2434?\u2474?\u2497?\u2480? \u2476?\u2495?\u2477?\u2494?\u2455?\u2496?\u2527? \u2488?\u2494?\u2434?\u2455?\u2464?\u2472?\u2495?\u2453? \u2488?\u2478?\u2509?\u2474?\u2494?\u2470?\u2453?\u2404?}\par}
+{\pard\plain\f0\fs26\sl264\slmult1\sb0\sa0\ql {\f0 \u2537?\u2404? \u2474?\u2509?\u2480?\u2471?\u2494?\u2472?, \u2486?\u2499?\u2457?\u2509?\u2454?\u2482?\u2494? \u2453?\u2478?\u2495?\u2463?\u2495?\u2404?}\par}
+}

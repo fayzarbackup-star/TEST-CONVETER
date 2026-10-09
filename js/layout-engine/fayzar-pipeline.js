@@ -113,6 +113,51 @@
       return null;
     },
 
+    _getApplicationLayout() {
+      if (typeof FayzarApplicationLayout !== 'undefined') return FayzarApplicationLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarApplicationLayout) return globalThis.FayzarApplicationLayout;
+      if (typeof require === 'function') {
+        try { return require('./application-layout.js'); } catch (e) {
+          try { return require('../layout-engine/application-layout.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
+    /** Part-19.2: সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র */
+    _getCertificateLayout() {
+      if (typeof FayzarCertificateLayout !== 'undefined') return FayzarCertificateLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCertificateLayout) return globalThis.FayzarCertificateLayout;
+      if (typeof require === 'function') {
+        try { return require('./certificate-layout.js'); } catch (e) {
+          try { return require('../layout-engine/certificate-layout.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
+    _getCvLayout() {
+      if (typeof FayzarCvLayout !== 'undefined') return FayzarCvLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCvLayout) return globalThis.FayzarCvLayout;
+      if (typeof require === 'function') {
+        try { return require('./cv-layout.js'); } catch (e) {
+          try { return require('../layout-engine/cv-layout.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
+    _getLetterLayout() {
+      if (typeof FayzarLetterLayout !== 'undefined') return FayzarLetterLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarLetterLayout) return globalThis.FayzarLetterLayout;
+      if (typeof require === 'function') {
+        try { return require('./letter-layout.js'); } catch (e) {
+          try { return require('../layout-engine/letter-layout.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
     _getAdmitCardEngine() {
       if (typeof AdmitCardEngine !== 'undefined') return AdmitCardEngine;
       if (typeof window !== 'undefined' && window.AdmitCardEngine) return window.AdmitCardEngine;
@@ -346,6 +391,9 @@
         }
 
         case 'GOVT_APP': {
+          // Part-18.9: নতুন আবেদন-লেআউট (দোকানের নমুনা) — প্রিভিউ ও ডাউনলোড একই মডেল থেকে
+          const AL = this._getApplicationLayout();
+          if (AL) return AL.parse(text);
           const aEngine = this._getApplicationEngine();
           if (aEngine && typeof aEngine.parseApplication === 'function') {
             return aEngine.parseApplication(text);
@@ -378,6 +426,9 @@
         }
 
         case 'CV_RESUME': {
+          // Part-19.1: বাংলা জীবনবৃত্তান্ত — দোকানের ছাঁচ; ইংরেজি সিভি পুরোনো ইঞ্জিনে
+          const CL = this._getCvLayout();
+          if (CL && CL.isBangla(text)) return CL.parse(text);
           const cvEngine = this._getCVEngine();
           if (cvEngine && typeof cvEngine.parseCV === 'function') {
             return cvEngine.parseCV(text);
@@ -385,7 +436,15 @@
           break;
         }
 
+        case 'OFFICE_PAD':
         case 'PROTTOYON': {
+          // Part-19.2: ল্যান্ডস্কেপ/মুড়িসহ সনদ আলাদা মডিউলে
+          const CT = docType === 'PROTTOYON' ? this._getCertificateLayout() : null;
+          if (CT && CT.wants(text, options.__frontmatter)) return CT.parse(text);
+          // Part-19.0: প্যাড/প্রত্যয়ন-লেআউট (দোকানের নমুনা) — প্রিভিউ ও ডাউনলোড একই মডেল থেকে
+          const LL = this._getLetterLayout();
+          if (LL) return LL.parse(text, docType === 'PROTTOYON' ? 'prottoyon' : 'pad');
+          if (docType === 'OFFICE_PAD') break;
           const certEngine = this._getCertificateEngine();
           if (certEngine && typeof certEngine.parseCertificate === 'function') {
             return certEngine.parseCertificate(text);
@@ -431,6 +490,10 @@
         }
 
         case 'GOVT_APP': {
+          const AL = this._getApplicationLayout();
+          if (AL && parsedData && parsedData.kind === 'GOVT_APP_LAYOUT') {
+            return AL.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+          }
           const aEngine = this._getApplicationEngine();
           if (aEngine && typeof aEngine.renderToHtml === 'function') {
             inner = aEngine.renderToHtml(parsedData, options);
@@ -463,6 +526,10 @@
         }
 
         case 'CV_RESUME': {
+          const CL = this._getCvLayout();
+          if (CL && parsedData && parsedData.kind === 'CV_LAYOUT') {
+            return CL.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+          }
           const cvEngine = this._getCVEngine();
           if (cvEngine && typeof cvEngine.renderToHtml === 'function') {
             inner = cvEngine.renderToHtml(parsedData, options);
@@ -470,9 +537,18 @@
           break;
         }
 
+        case 'OFFICE_PAD':
         case 'PROTTOYON': {
+          const CT = this._getCertificateLayout();
+          if (CT && parsedData && parsedData.kind === 'CERT_LAYOUT') {
+            return CT.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+          }
+          const LL = this._getLetterLayout();
+          if (LL && parsedData && parsedData.kind === 'LETTER_LAYOUT') {
+            return LL.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+          }
           const certEngine = this._getCertificateEngine();
-          if (certEngine && typeof certEngine.renderToHtml === 'function') {
+          if (docType === 'PROTTOYON' && certEngine && typeof certEngine.renderToHtml === 'function') {
             inner = certEngine.renderToHtml(parsedData, options);
           }
           break;

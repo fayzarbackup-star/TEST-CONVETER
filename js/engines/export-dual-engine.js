@@ -648,6 +648,14 @@
         return new Blob([rtf], { type: 'application/msword' });
       }
 
+      // Part-19.2: সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র (ল্যান্ডস্কেপ বা মুড়িসহ) — বাকি প্রত্যয়ন নিচের প্যাড-লেআউটে
+      if (docType === 'PROTTOYON' && this._getCertificateLayout() && this._getCertificateLayout().wants(rawText, options.__frontmatter)) {
+        return new Blob([this._certificateLayoutRtf(rawText, options)], { type: 'application/msword' });
+      }
+      // Part-19.0: প্যাড/অফিস চিঠি ও প্রত্যয়নপত্র — নতুন লেআউট-মডিউল (দোকানের নমুনা); না থাকলে পুরোনো ইঞ্জিন
+      if ((docType === 'OFFICE_PAD' || docType === 'PROTTOYON') && this._getLetterLayout()) {
+        return new Blob([this._letterLayoutRtf(rawText, docType, options)], { type: 'application/msword' });
+      }
       let cEngine = this._getCertificateEngine();
       if (cEngine && docType === 'PROTTOYON') {
         const parsed = cEngine.parseCertificate(rawText);
@@ -666,6 +674,10 @@
         return new Blob([rtf], { type: 'application/msword' });
       }
 
+      // Part-18.9: আবেদনপত্র — নতুন লেআউট-মডিউল থাকলে সেটি (দোকানের নমুনার নকশা), না থাকলে পুরোনো ইঞ্জিন
+      if (docType === 'GOVT_APP' && this._getApplicationLayout()) {
+        return new Blob([this._applicationLayoutRtf(rawText, options)], { type: 'application/msword' });
+      }
       let aEngine = this._getApplicationEngine();
       if (aEngine && docType === 'GOVT_APP') {
         const parsed = aEngine.parseApplication(rawText);
@@ -702,6 +714,10 @@
         return new Blob([rtf], { type: 'application/msword' });
       }
 
+      // Part-19.1: বাংলা জীবনবৃত্তান্ত — দোকানের ছাঁচ (cv-layout.js); ইংরেজি সিভি পুরোনো ইঞ্জিনে
+      if (docType === 'CV_RESUME' && this._getCvLayout() && this._getCvLayout().isBangla(rawText)) {
+        return new Blob([this._cvLayoutRtf(rawText, options)], { type: 'application/msword' });
+      }
       let cvEngine = this._getCVEngine();
       if (cvEngine && docType === 'CV_RESUME') {
         const parsed = cvEngine.parseCV(rawText);
@@ -831,6 +847,12 @@
         return await this.generateMcqExamDocx(parsed, options);
       }
 
+      if (docType === 'PROTTOYON' && this._getCertificateLayout() && this._getCertificateLayout().wants(rawText, options.__frontmatter)) {
+        return await this._certificateLayoutDocx(rawText, options);   // Part-19.2
+      }
+      if ((docType === 'OFFICE_PAD' || docType === 'PROTTOYON') && this._getLetterLayout()) {
+        return await this._letterLayoutDocx(rawText, docType, options);   // Part-19.0
+      }
       let cEngine = this._getCertificateEngine();
       if (cEngine && docType === 'PROTTOYON') {
         const parsed = cEngine.parseCertificate(rawText);
@@ -847,6 +869,9 @@
         return await this.generateStampDeedDocx(parsed, options);
       }
 
+      if (docType === 'GOVT_APP' && this._getApplicationLayout()) {
+        return await this._applicationLayoutDocx(rawText, options);   // Part-18.9
+      }
       let aEngine = this._getApplicationEngine();
       if (aEngine && docType === 'GOVT_APP') {
         const parsed = aEngine.parseApplication(rawText);
@@ -879,6 +904,9 @@
         return await this.generateRoutineDocx_v2(parsed, options);
       }
 
+      if (docType === 'CV_RESUME' && this._getCvLayout() && this._getCvLayout().isBangla(rawText)) {
+        return await this._cvLayoutDocx(rawText, options);   // Part-19.1
+      }
       let cvEngine = this._getCVEngine();
       if (cvEngine && docType === 'CV_RESUME') {
         const parsed = cvEngine.parseCV(rawText);
@@ -915,6 +943,116 @@
         try { return require('./stamp-engine.js'); } catch (e) { }
       }
       return null;
+    },
+
+    /** Part-18.9: আবেদনপত্রের নতুন লেআউট (দোকানের আসল নমুনা থেকে) — js/layout-engine/application-layout.js */
+    _getApplicationLayout() {
+      if (typeof FayzarApplicationLayout !== 'undefined') return FayzarApplicationLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarApplicationLayout) return globalThis.FayzarApplicationLayout;
+      if (typeof require === 'function') { try { return require('../layout-engine/application-layout.js'); } catch (e) { } }
+      return null;
+    },
+
+    /** আবেদনপত্র → .docx (নতুন লেআউট) */
+    async _applicationLayoutDocx(rawText, options = {}) {
+      const AL = this._getApplicationLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
+      const model = AL.parse(rawText);
+      // এক পাতায় ধরানোর মাপ — বডি ও sectPr একই। সাইটের বিজয়/.doc ইউনিকোড-মাস্টার থেকে রূপান্তরে হয় ⇒
+      // মাস্টার বানানোর সময় শেষ ফন্ট (targetFont: 'bijoy') দিয়ে মাপা — নইলে কালপুরুষের মাপে অকারণে দুই পাতা
+      const geometry = AL.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
+      const body = AL.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
+      if (options.returnInnerXml) return { bodyXml: body, sectPr: AL.docxSectPr(geometry) };
+      return await this._packageDocx(body + AL.docxSectPr(geometry), fontName);
+    },
+
+    /** আবেদনপত্র → Word 2003 RTF (নতুন লেআউট) */
+    _applicationLayoutRtf(rawText, options = {}) {
+      const AL = this._getApplicationLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
+      return AL.renderRtf(AL.parse(rawText), { rtf: (t) => this.formatRtfText(t, options), fontName, isBijoy });
+    },
+
+    /** Part-19.0: প্যাড/অফিস চিঠি ও প্রত্যয়নপত্র — js/layout-engine/letter-layout.js */
+    _getLetterLayout() {
+      if (typeof FayzarLetterLayout !== 'undefined') return FayzarLetterLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarLetterLayout) return globalThis.FayzarLetterLayout;
+      if (typeof require === 'function') { try { return require('../layout-engine/letter-layout.js'); } catch (e) { } }
+      return null;
+    },
+
+    async _letterLayoutDocx(rawText, docType, options = {}) {
+      const LL = this._getLetterLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
+      const model = LL.parse(rawText, docType === 'PROTTOYON' ? 'prottoyon' : 'pad');
+      // আবেদনপত্রের মতো: সাইটের বিজয়/.doc মাস্টার থেকে রূপান্তরে হয় ⇒ শেষ ফন্ট দিয়ে মাপা
+      const geometry = LL.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
+      const body = LL.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
+      if (options.returnInnerXml) return { bodyXml: body, sectPr: LL.docxSectPr(geometry) };
+      // শেষ ফাইল বিজয় হলে মাস্টারের ডিফল্ট ফন্টও SutonnyMJ — u2b রূপান্তর স্টাইল বদলায় না, তাই খালি লাইন/অনুচ্ছেদ-চিহ্ন
+      // কালপুরুষের উঁচু লাইন নিত (Word-এ মাপা: স্কুলের আবেদন সাইটের শিকলে দুই পাতা)। প্রতিটি রানে ফন্ট আলাদা বসানো, লেখা অপরিবর্তিত।
+      return await this._packageDocx(body + LL.docxSectPr(geometry), options.targetFont === 'bijoy' ? 'SutonnyMJ' : fontName);
+    },
+
+    /** Part-19.1: বাংলা জীবনবৃত্তান্ত — js/layout-engine/cv-layout.js */
+    _getCvLayout() {
+      if (typeof FayzarCvLayout !== 'undefined') return FayzarCvLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCvLayout) return globalThis.FayzarCvLayout;
+      if (typeof require === 'function') { try { return require('../layout-engine/cv-layout.js'); } catch (e) { } }
+      return null;
+    },
+
+    async _cvLayoutDocx(rawText, options = {}) {
+      const CL = this._getCvLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
+      const model = CL.parse(rawText);
+      const geometry = CL.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
+      const body = CL.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
+      if (options.returnInnerXml) return { bodyXml: body, sectPr: CL.docxSectPr(geometry) };
+      // প্যাড-লেআউটের মতো: শেষ ফাইল বিজয় হলে মাস্টারের ডিফল্ট ফন্টও SutonnyMJ (খালি লাইনের উচ্চতা)
+      return await this._packageDocx(body + CL.docxSectPr(geometry), options.targetFont === 'bijoy' ? 'SutonnyMJ' : fontName);
+    },
+
+    _cvLayoutRtf(rawText, options = {}) {
+      const CL = this._getCvLayout();
+      const isBijoy = this.isBijoyFont(options);
+      return CL.renderRtf(CL.parse(rawText), { rtf: (t) => this.formatRtfText(t, options), fontName: isBijoy ? 'SutonnyMJ' : 'Kalpurush', isBijoy });
+    },
+
+    /** Part-19.2: সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র — js/layout-engine/certificate-layout.js */
+    _getCertificateLayout() {
+      if (typeof FayzarCertificateLayout !== 'undefined') return FayzarCertificateLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCertificateLayout) return globalThis.FayzarCertificateLayout;
+      if (typeof require === 'function') { try { return require('../layout-engine/certificate-layout.js'); } catch (e) { } }
+      return null;
+    },
+
+    async _certificateLayoutDocx(rawText, options = {}) {
+      const CT = this._getCertificateLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
+      const model = CT.parse(rawText);
+      const geometry = CT.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
+      const body = CT.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
+      if (options.returnInnerXml) return { bodyXml: body, sectPr: CT.docxSectPr(geometry) };
+      return await this._packageDocx(body + CT.docxSectPr(geometry), options.targetFont === 'bijoy' ? 'SutonnyMJ' : fontName);
+    },
+
+    _certificateLayoutRtf(rawText, options = {}) {
+      const CT = this._getCertificateLayout();
+      const isBijoy = this.isBijoyFont(options);
+      return CT.renderRtf(CT.parse(rawText), { rtf: (t) => this.formatRtfText(t, options), fontName: isBijoy ? 'SutonnyMJ' : 'Kalpurush', isBijoy });
+    },
+
+    _letterLayoutRtf(rawText, docType, options = {}) {
+      const LL = this._getLetterLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : 'Kalpurush';
+      return LL.renderRtf(LL.parse(rawText, docType === 'PROTTOYON' ? 'prottoyon' : 'pad'), { rtf: (t) => this.formatRtfText(t, options), fontName, isBijoy });
     },
 
     _getApplicationEngine() {
@@ -1026,7 +1164,12 @@
             cols: options.columns || 2,
             rightTab: options.rightTab,
             skipFirstColumn: options.skipFirstColumn,
-            cqHeaderFallback: options.cqHeaderFallback === true
+            cqHeaderFallback: options.cqHeaderFallback === true,
+            // Part-18.9: শ্রেণি (Gemini-র ফ্রন্টম্যাটার) — ২য়–৫ম শ্রেণির সাধারণ পত্র ল্যান্ডস্কেপ প্রোফাইলে
+            grade: options.grade,
+            __frontmatter: options.__frontmatter,
+            profileKey: options.profileKey,
+            layoutColumns: options.layoutColumns   // Part-18.9: ১/২ কলাম/স্বয়ংক্রিয়
           });
           if (p && p.geometry && Array.isArray(p.columns) && Array.isArray(p.items)) return this._ensureCqHeaderPlacement(p);
         } catch (e) {
@@ -1518,7 +1661,11 @@
       const szCs = '<w:sz w:val="' + sz + '"/><w:szCs w:val="' + sz + '"/>';
       const rightTab = g.rightTab;
       const tabsXml = (extra) => '<w:tabs>' + (extra || '') + '<w:tab w:val="right" w:pos="' + rightTab + '"/></w:tabs>';
-      const run = (txt, inner) => '<w:r><w:rPr>' + (inner || '') + szCs + '</w:rPr><w:t xml:space="preserve">' + this.formatDocxText(txt, options) + '</w:t></w:r>';
+      // Part-18.9: '_' '×' '÷' SutonnyMJ-তে ভুল অক্ষর (থ/ম) — রান-ভাগ (ঐ চিহ্ন আলাদা রানে)। ইউনিকোড-মাস্টারেও,
+      // কারণ সাইটের বিজয় ফাইল মাস্টার থেকে রূপান্তরে হয় (বাংলা-ছাড়া রান অক্ষত থাকে)
+      const run = (txt, inner) => (/[_×÷]/.test(String(txt || ''))
+        ? this.renderDocxRuns(txt, options, { sz, b: /<w:b\/>/.test(inner || '') })
+        : '<w:r><w:rPr>' + (inner || '') + szCs + '</w:rPr><w:t xml:space="preserve">' + this.formatDocxText(txt, options) + '</w:t></w:r>');
       let xml = '';
 
       // (৫) উদ্দীপক — বক্স/শেডিং ছাড়া সাদামাটা লেখা
@@ -1533,7 +1680,7 @@
       xml += '<w:p><w:pPr><w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>' +
         '<w:ind w:left="' + g.indent + '" w:hanging="' + g.indent + '"/>' +
         tabsXml('<w:tab w:val="left" w:pos="' + g.indent + '"/>') + '</w:pPr>' +
-        run(q.num + fmt.delim, '<w:b/>') + '<w:r><w:tab/></w:r>' + this.renderDocxRuns(stem.text, options, { sz, bold: true }) +
+        (q.num ? run(q.num + fmt.delim, '<w:b/>') : '') + '<w:r><w:tab/></w:r>' + this.renderDocxRuns(stem.text, options, { sz, bold: !!q.num }) +
         (stem.mark ? '<w:r><w:tab/></w:r>' + run(stem.mark, '<w:b/>') : '') + '</w:p>';
 
       let inTable = false;

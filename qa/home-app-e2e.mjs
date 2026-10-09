@@ -89,6 +89,34 @@ try {
   await page.click('#btnShowText');
   ok('লেখা দেখা ও ঠিক করা', await page.evaluate(() => !document.getElementById('wsText').hidden && document.getElementById('wizardPreviewContent').value.length > 100));
   await page.screenshot({ path: path.join(OUT, '4-text.png') });
+  // ---- সমস্যা জানান → ZIP (ডায়াগনস্টিক খতিয়ান) ----
+  await page.evaluate(() => {
+    window.__zip = null;
+    const c = HTMLAnchorElement.prototype.click;
+    HTMLAnchorElement.prototype.click = function () {
+      if (/\.zip$/.test(this.download || '')) {
+        fetch(this.href).then((r) => r.blob()).then((b) => window.JSZip.loadAsync(b)).then(async (z) => {
+          const rep = JSON.parse(await z.file('report.json').async('string'));
+          window.__zip = { files: Object.keys(z.files), rep };
+        });
+        return;
+      }
+      return c.call(this);
+    };
+  });
+  await page.click('#btnReport1');
+  await page.click('.rep-vote button[data-vote="bad"]');
+  await page.click('input[name=repIssue][value=layout] + span');
+  await page.type('#repComment', 'পরীক্ষামূলক মন্তব্য');
+  await page.click('#repDownload');
+  await page.waitForFunction(() => window.__zip, { timeout: 30000 });
+  const zr = await page.evaluate(() => window.__zip);
+  const ev = (zr.rep.run && zr.rep.run.events) || [];
+  ok('সমস্যা জানান → ZIP: report.json, ocr.md, মূল ফাইল', zr.files.includes('report.json') && zr.files.includes('ocr.md') && zr.files.some((f) => f.startsWith('input/')), zr.files.join(', '));
+  ok('রিপোর্টে মতামত ও খতিয়ান (অগ্রগতি, সফল, ডাউনলোড)', zr.rep.feedback.vote === 'bad' && zr.rep.feedback.issues.includes('layout') && zr.rep.run.result.ok === true && ev.some((e) => e.kind === 'progress') && zr.rep.run.downloads.length >= 3,
+    'events ' + ev.length + ', downloads ' + zr.rep.run.downloads.length + ', ms ' + zr.rep.run.ms);
+  await page.waitForFunction(() => document.getElementById('repModal').hidden, { timeout: 5000 }).catch(() => {});
+
   // ---- রিফ্রেশ: ফলাফল-পাতায় ----
   await sleep(600);
   await page.reload({ waitUntil: 'load' });

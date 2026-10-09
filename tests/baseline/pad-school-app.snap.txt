@@ -1,0 +1,278 @@
+# fixture: pad-school-app
+# docType: OFFICE_PAD
+
+===== CLASSIFIER =====
+{
+  "type": "GOVT_APP"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "letterhead",
+      "lines": [
+        {
+          "role": "top",
+          "text": "গণপ্রজাতন্ত্রী বাংলাদেশ সরকার"
+        },
+        {
+          "role": "org",
+          "text": "গোকুল সরকারি প্রাথমিক বিদ্যালয়"
+        },
+        {
+          "role": "addr",
+          "text": "ডাকঘর: মেলাবাড়ী, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।"
+        },
+        {
+          "role": "meta",
+          "text": "স্থাপিত: ১৯৯১ খ্রি. বিদ্যালয় কোড: ৯৯-৭০৩০৮৯০৫৪"
+        }
+      ]
+    },
+    {
+      "kind": "lines",
+      "label": "বরাবর,",
+      "lines": [
+        "উপজেলা নির্বাহী অফিসার।",
+        "ফুলবাড়ী, দিনাজপুর।"
+      ],
+      "role": "receiver"
+    },
+    {
+      "kind": "line",
+      "role": "via",
+      "text": "মাধ্যম: যথাযথ কর্তৃপক্ষ"
+    },
+    {
+      "kind": "subject",
+      "label": "বিষয়:",
+      "text": "গোকুল সরকারি প্রাথমিক বিদ্যালয় \"ব্যবস্থাপনা কমিটি\" গঠন নিমিত্তে বিদ্যোৎসাহী পুরুষ ও মহিলা সদস্য মনোনীত প্রসঙ্গে।"
+    },
+    {
+      "kind": "memoDate",
+      "left": "সূত্র: ৩৮.০০.০০০০.০০.০০৮.৯৯.০০০৪.২০-১২৬",
+      "right": "তারিখ: ১৬ মার্চ ২০২৬"
+    },
+    {
+      "kind": "line",
+      "role": "salutation",
+      "text": "জনাব,"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "উপযুক্ত বিষয়ের আলোকে অত্র বিদ্যালয়ের ব্যবস্থাপনা কমিটি গঠনের নিমিত্তে নিম্নোক্ত ছকে বর্ণিত বিদ্যালয়ে অধ্যয়নরত ছাত্র-ছাত্রীদের অভিভাবকদের মধ্য হতে একজন করে বিদ্যোৎসাহী পুরুষ ও মহিলা সদস্য অন্তর্ভুক্তি কল্পে আপনাকে মনোনীত ও অনুমোদনের জন্য সবিনয়ে অনুরোধ করছি।"
+    },
+    {
+      "header": true,
+      "kind": "table",
+      "rows": [
+        [
+          "ক্যাটাগরি",
+          "ক্র:",
+          "নাম",
+          "পিতা/স্বামীর নাম",
+          "শিক্ষাগত যোগ্যতা",
+          "ঠিকানা"
+        ],
+        [
+          "বিদ্যোৎসাহী পুরুষ",
+          "১",
+          "রহিম চন্দ্র",
+          "করিম চন্দ্র সরকার",
+          "এইচএসসি",
+          "গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী"
+        ],
+        [
+          "",
+          "২",
+          "কার্তিক চন্দ্র",
+          "ব্রজেন চন্দ্র",
+          "এসএসসি",
+          "গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী"
+        ],
+        [
+          "বিদ্যোৎসাহী মহিলা",
+          "১",
+          "মোছাঃ নাসিমা বেগম",
+          "মোঃ মজনুল হোসেন",
+          "বি.এ",
+          "গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী"
+        ],
+        [
+          "",
+          "২",
+          "অর্চনা রানী",
+          "তপন চন্দ্র",
+          "এসএসসি",
+          "গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী"
+        ]
+      ]
+    },
+    {
+      "kind": "line",
+      "role": "date",
+      "text": "তারিখ:"
+    },
+    {
+      "groups": [
+        [
+          "(মায়মুনা কবিতা)",
+          "প্রধান শিক্ষক (চ: দা:)",
+          "গোকুল সরকারি প্রাথমিক বিদ্যালয়",
+          "ফুলবাড়ী, দিনাজপুর।"
+        ]
+      ],
+      "kind": "signature"
+    }
+  ],
+  "kind": "LETTER_LAYOUT",
+  "variant": "pad",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-letter-layout letter-pad font-kalpurush" style="padding: 0.50in 0.50in 0.50in 0.75in; font-size: 11pt; box-sizing: border-box;">
+<div style="margin-left: -0.25in; text-align: center; line-height: 1.25; padding-bottom: 3px; border-bottom: 2px solid #000;">
+<div style="font-size: 15pt;">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</div>
+<div style="font-size: 32pt; font-weight: 700;">গোকুল সরকারি প্রাথমিক বিদ্যালয়</div>
+<div style="font-size: 16pt;">ডাকঘর: মেলাবাড়ী, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।</div>
+<div style="font-size: 14pt;">স্থাপিত: ১৯৯১ খ্রি. বিদ্যালয় কোড: ৯৯-৭০৩০৮৯০৫৪</div>
+</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">
+<b>বরাবর,</b>
+</div>
+<div style="min-height: 1.34em; line-height: 1.34;">উপজেলা নির্বাহী অফিসার।</div>
+<div style="min-height: 1.34em; line-height: 1.34;">ফুলবাড়ী, দিনাজপুর।</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">মাধ্যম: যথাযথ কর্তৃপক্ষ</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;text-align: justify; padding-left: 0.40in; text-indent: -0.40in;">
+<b>বিষয়: গোকুল সরকারি প্রাথমিক বিদ্যালয় &quot;ব্যবস্থাপনা কমিটি&quot; গঠন নিমিত্তে বিদ্যোৎসাহী পুরুষ ও মহিলা সদস্য মনোনীত প্রসঙ্গে।</b>
+</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;display: flex; justify-content: space-between;">
+<span>সূত্র: ৩৮.০০.০০০০.০০.০০৮.৯৯.০০০৪.২০-১২৬</span>
+<span>তারিখ: ১৬ মার্চ ২০২৬</span>
+</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">
+<b>জনাব,</b>
+</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;text-align: justify;">উপযুক্ত বিষয়ের আলোকে অত্র বিদ্যালয়ের ব্যবস্থাপনা কমিটি গঠনের নিমিত্তে নিম্নোক্ত ছকে বর্ণিত বিদ্যালয়ে অধ্যয়নরত ছাত্র-ছাত্রীদের অভিভাবকদের মধ্য হতে একজন করে বিদ্যোৎসাহী পুরুষ ও মহিলা সদস্য অন্তর্ভুক্তি কল্পে আপনাকে মনোনীত ও অনুমোদনের জন্য সবিনয়ে অনুরোধ করছি।</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<table style="border-collapse: collapse; margin: 0 auto; table-layout: fixed; font-size: 11pt;">
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.23in; font-weight: 700;">ক্যাটাগরি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.48in; font-weight: 700;">ক্র:</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.13in; font-weight: 700;">নাম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.32in; font-weight: 700;">পিতা/স্বামীর নাম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in; font-weight: 700;">শিক্ষাগত যোগ্যতা</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.65in; font-weight: 700;">ঠিকানা</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.23in;">বিদ্যোৎসাহী পুরুষ</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.48in;">১</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.13in;">রহিম চন্দ্র</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.32in;">করিম চন্দ্র সরকার</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এইচএসসি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.65in;">গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.23in;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.48in;">২</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.13in;">কার্তিক চন্দ্র</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.32in;">ব্রজেন চন্দ্র</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এসএসসি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.65in;">গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.23in;">বিদ্যোৎসাহী মহিলা</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.48in;">১</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.13in;">মোছাঃ নাসিমা বেগম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.32in;">মোঃ মজনুল হোসেন</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">বি.এ</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.65in;">গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.23in;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.48in;">২</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.13in;">অর্চনা রানী</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.32in;">তপন চন্দ্র</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এসএসসি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.65in;">গ্রাম: গোকুল, ডাকঘর: মেলাবাড়ী</td>
+</tr>
+</table>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">তারিখ:</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="min-height: 1.34em; line-height: 1.34;">&nbsp;</div>
+<div style="margin-left: 4.52in; text-align: center; line-height: 1.34; font-size: 11pt;">
+<div>(মায়মুনা কবিতা)</div>
+<div>প্রধান শিক্ষক (চ: দা:)</div>
+<div>গোকুল সরকারি প্রাথমিক বিদ্যালয়</div>
+<div>ফুলবাড়ী, দিনাজপুর।</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType OFFICE_PAD)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1080\margr720\margt720\margb720\cols1
+{\pard\plain\f0\fs30\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2455?\u2467?\u2474?\u2509?\u2480?\u2460?\u2494?\u2468?\u2472?\u2509?\u2468?\u2509?\u2480?\u2496? \u2476?\u2494?\u2434?\u2482?\u2494?\u2470?\u2503?\u2486? \u2488?\u2480?\u2453?\u2494?\u2480?}\par}
+{\pard\plain\f0\fs64\sl240\slmult1\sb0\sa0\qc\li-360 {\b {\f0 \u2455?\u2507?\u2453?\u2497?\u2482? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}}\par}
+{\pard\plain\f0\fs32\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2503?\u2482?\u2494?\u2476?\u2494?\u2524?\u2496?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li-360\brdrb\brdrs\brdrw30\brsp80 {\f0 \u2488?\u2509?\u2469?\u2494?\u2474?\u2495?\u2468?: \u2535?\u2543?\u2543?\u2535? \u2454?\u2509?\u2480?\u2495?. \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527? \u2453?\u2507?\u2465?: \u2543?\u2543?}{\f1 -}{\f0 \u2541?\u2534?\u2537?\u2534?\u2542?\u2543?\u2534?\u2539?\u2538?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\b {\f0 \u2476?\u2480?\u2494?\u2476?\u2480?,}}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\f0 \u2441?\u2474?\u2460?\u2503?\u2482?\u2494? \u2472?\u2495?\u2480?\u2509?\u2476?\u2494?\u2489?\u2496? \u2437?\u2475?\u2495?\u2488?\u2494?\u2480?\u2404?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\f0 \u2478?\u2494?\u2471?\u2509?\u2479?\u2478?: \u2479?\u2469?\u2494?\u2479?\u2469? \u2453?\u2480?\u2509?\u2468?\u2499?\u2474?\u2453?\u2509?\u2487?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\qj\li574\fi-574 {\b {\f0 \u2476?\u2495?\u2487?\u2527?: \u2455?\u2507?\u2453?\u2497?\u2482? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527? "\u2476?\u2509?\u2479?\u2476?\u2488?\u2509?\u2469?\u2494?\u2474?\u2472?\u2494? \u2453?\u2478?\u2495?\u2463?\u2495?" \u2455?\u2464?\u2472? \u2472?\u2495?\u2478?\u2495?\u2468?\u2509?\u2468?\u2503? \u2476?\u2495?\u2470?\u2509?\u2479?\u2507?\u2510?\u2488?\u2494?\u2489?\u2496? \u2474?\u2497?\u2480?\u2497?\u2487? \u2451? \u2478?\u2489?\u2495?\u2482?\u2494? \u2488?\u2470?\u2488?\u2509?\u2479? \u2478?\u2472?\u2507?\u2472?\u2496?\u2468? \u2474?\u2509?\u2480?\u2488?\u2457?\u2509?\u2455?\u2503?\u2404?}}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql\tqr\tx10106 {\f0 \u2488?\u2498?\u2468?\u2509?\u2480?: \u2537?\u2542?.\u2534?\u2534?.\u2534?\u2534?\u2534?\u2534?.\u2534?\u2534?.\u2534?\u2534?\u2542?.\u2543?\u2543?.\u2534?\u2534?\u2534?\u2538?.\u2536?\u2534?}{\f1 -}{\f0 \u2535?\u2536?\u2540?}\tab {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: \u2535?\u2540? \u2478?\u2494?\u2480?\u2509?\u2458? \u2536?\u2534?\u2536?\u2540?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\b {\f0 \u2460?\u2472?\u2494?\u2476?,}}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\qj {\f0 \u2441?\u2474?\u2479?\u2497?\u2453?\u2509?\u2468? \u2476?\u2495?\u2487?\u2527?\u2503?\u2480? \u2438?\u2482?\u2507?\u2453?\u2503? \u2437?\u2468?\u2509?\u2480? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?\u2503?\u2480? \u2476?\u2509?\u2479?\u2476?\u2488?\u2509?\u2469?\u2494?\u2474?\u2472?\u2494? \u2453?\u2478?\u2495?\u2463?\u2495? \u2455?\u2464?\u2472?\u2503?\u2480? \u2472?\u2495?\u2478?\u2495?\u2468?\u2509?\u2468?\u2503? \u2472?\u2495?\u2478?\u2509?\u2472?\u2507?\u2453?\u2509?\u2468? \u2459?\u2453?\u2503? \u2476?\u2480?\u2509?\u2467?\u2495?\u2468? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?\u2503? \u2437?\u2471?\u2509?\u2479?\u2527?\u2472?\u2480?\u2468? \u2459?\u2494?\u2468?\u2509?\u2480?}{\f1 -}{\f0 \u2459?\u2494?\u2468?\u2509?\u2480?\u2496?\u2470?\u2503?\u2480? \u2437?\u2477?\u2495?\u2477?\u2494?\u2476?\u2453?\u2470?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479? \u2489?\u2468?\u2503? \u2447?\u2453?\u2460?\u2472? \u2453?\u2480?\u2503? \u2476?\u2495?\u2470?\u2509?\u2479?\u2507?\u2510?\u2488?\u2494?\u2489?\u2496? \u2474?\u2497?\u2480?\u2497?\u2487? \u2451? \u2478?\u2489?\u2495?\u2482?\u2494? \u2488?\u2470?\u2488?\u2509?\u2479? \u2437?\u2472?\u2509?\u2468?\u2480?\u2509?\u2477?\u2497?\u2453?\u2509?\u2468?\u2495? \u2453?\u2482?\u2509?\u2474?\u2503? \u2438?\u2474?\u2472?\u2494?\u2453?\u2503? \u2478?\u2472?\u2507?\u2472?\u2496?\u2468? \u2451? \u2437?\u2472?\u2497?\u2478?\u2507?\u2470?\u2472?\u2503?\u2480? \u2460?\u2472?\u2509?\u2479? \u2488?\u2476?\u2495?\u2472?\u2527?\u2503? \u2437?\u2472?\u2497?\u2480?\u2507?\u2471? \u2453?\u2480?\u2459?\u2495?\u2404?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft1\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1778\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx2469\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4093\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5993\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7733\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx10105
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2453?\u2509?\u2479?\u2494?\u2463?\u2494?\u2455?\u2480?\u2495?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2453?\u2509?\u2480?:}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2472?\u2494?\u2478?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2474?\u2495?\u2468?\u2494?}{\f1 /}{\f0 \u2488?\u2509?\u2476?\u2494?\u2478?\u2496?\u2480? \u2472?\u2494?\u2478?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?\u2455?\u2468? \u2479?\u2507?\u2455?\u2509?\u2479?\u2468?\u2494?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?}}\cell \row}
+{\trowd\trgaph80\trleft1\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1778\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx2469\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4093\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5993\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7733\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx10105
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2507?\u2510?\u2488?\u2494?\u2489?\u2496? \u2474?\u2497?\u2480?\u2497?\u2487?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2535?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2480?\u2489?\u2495?\u2478? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2453?\u2480?\u2495?\u2478? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480? \u2488?\u2480?\u2453?\u2494?\u2480?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2447?\u2439?\u2458?\u2447?\u2488?\u2488?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?: \u2455?\u2507?\u2453?\u2497?\u2482?, \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2503?\u2482?\u2494?\u2476?\u2494?\u2524?\u2496?}\cell \row}
+{\trowd\trgaph80\trleft1\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1778\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx2469\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4093\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5993\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7733\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx10105
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 \cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2536?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2453?\u2494?\u2480?\u2509?\u2468?\u2495?\u2453? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2476?\u2509?\u2480?\u2460?\u2503?\u2472? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2447?\u2488?\u2447?\u2488?\u2488?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?: \u2455?\u2507?\u2453?\u2497?\u2482?, \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2503?\u2482?\u2494?\u2476?\u2494?\u2524?\u2496?}\cell \row}
+{\trowd\trgaph80\trleft1\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1778\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx2469\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4093\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5993\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7733\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx10105
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2507?\u2510?\u2488?\u2494?\u2489?\u2496? \u2478?\u2489?\u2495?\u2482?\u2494?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2535?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2478?\u2507?\u2459?\u2494?\u2435? \u2472?\u2494?\u2488?\u2495?\u2478?\u2494? \u2476?\u2503?\u2455?\u2478?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2478?\u2507?\u2435? \u2478?\u2460?\u2472?\u2497?\u2482? \u2489?\u2507?\u2488?\u2503?\u2472?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2476?\u2495?.\u2447?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?: \u2455?\u2507?\u2453?\u2497?\u2482?, \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2503?\u2482?\u2494?\u2476?\u2494?\u2524?\u2496?}\cell \row}
+{\trowd\trgaph80\trleft1\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1778\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx2469\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4093\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5993\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7733\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx10105
+\pard\plain\intbl\qc\f0\fs22\sl240\slmult1 \cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2536?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2437?\u2480?\u2509?\u2458?\u2472?\u2494? \u2480?\u2494?\u2472?\u2496?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2468?\u2474?\u2472? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2447?\u2488?\u2447?\u2488?\u2488?\u2495?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?: \u2455?\u2507?\u2453?\u2497?\u2482?, \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2503?\u2482?\u2494?\u2476?\u2494?\u2524?\u2496?}\cell \row}
+\pard\plain
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?:}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\keepn\qc\li6506 {\f0 (\u2478?\u2494?\u2527?\u2478?\u2497?\u2472?\u2494? \u2453?\u2476?\u2495?\u2468?\u2494?)}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\keepn\qc\li6506 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453? (\u2458?: \u2470?\u2494?:)}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\keepn\qc\li6506 {\f0 \u2455?\u2507?\u2453?\u2497?\u2482? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}\par}
+{\pard\plain\f0\fs22\sl240\slmult1\sb0\sa0\qc\li6506 {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+}

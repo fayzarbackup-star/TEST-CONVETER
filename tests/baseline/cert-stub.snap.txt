@@ -1,0 +1,322 @@
+# fixture: cert-stub
+# docType: PROTTOYON
+
+===== CLASSIFIER =====
+{
+  "type": "PROTTOYON"
+}
+
+===== PARSED =====
+{
+  "kind": "CERT_LAYOUT",
+  "parts": [
+    {
+      "blocks": [
+        {
+          "kind": "serial",
+          "left": "ক্রমিক নং-",
+          "right": "তারিখ: ......................"
+        },
+        {
+          "kind": "line",
+          "text": "নাম: ...................................................."
+        },
+        {
+          "kind": "line",
+          "text": "পিতার নাম: ...................................................."
+        },
+        {
+          "kind": "line",
+          "text": "মাতার নাম: ...................................................."
+        },
+        {
+          "kind": "line",
+          "text": "রোল নম্বর: ...................................................."
+        },
+        {
+          "kind": "line",
+          "text": "প্রাপ্ত জি.পি.এ ................ গ্রেড ................"
+        },
+        {
+          "kind": "line",
+          "text": "পরীক্ষার নাম: প্রাথমিক শিক্ষা সমাপনী পরীক্ষা- ২০........ খ্রি."
+        },
+        {
+          "kind": "line",
+          "text": "জন্ম তারিখ: ................................ খ্রি."
+        }
+      ],
+      "footer": {
+        "date": "তারিখ: ........................",
+        "sign": [
+          "প্রধান শিক্ষক"
+        ]
+      },
+      "head": [
+        {
+          "role": "top",
+          "text": "বিসমিল্লাহির রাহমানির রাহিম"
+        },
+        {
+          "role": "org",
+          "text": "১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়"
+        },
+        {
+          "role": "addr",
+          "text": "ডাকঘর: নদীপাড়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।"
+        },
+        {
+          "role": "meta",
+          "text": "বিদ্যালয় প্রতিষ্ঠার সন: ১৯৭২ খ্রি. সরকারি করণ: ১৯৯১ খ্রি."
+        }
+      ],
+      "role": "stub",
+      "tables": [],
+      "title": "প্রশংসা পত্র"
+    },
+    {
+      "blocks": [
+        {
+          "kind": "serial",
+          "left": "ক্রমিক নং-",
+          "right": "তারিখ: ...................... খ্রি."
+        },
+        {
+          "kind": "para",
+          "role": "body",
+          "text": "প্রত্যয়ন করা যাচ্ছে যে .................................................................. পিতা: ................................ মাতা: ................................ রোল নম্বর: ............. ১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর। সে প্রাথমিক শিক্ষা সমাপনী পরীক্ষা ২০........ খ্রি. এ অংশগ্রহণ করে জি.পি.এ .............. গ্রেড ............. পেয়ে উত্তীর্ণ হয়েছে। তার জন্ম তারিখ: ............................ খ্রি.।"
+        },
+        {
+          "kind": "para",
+          "role": "body",
+          "text": "আমার জানামতে সে উত্তম চরিত্রের অধিকারী। আমি তার জীবনের সর্বাঙ্গীন সাফল্য কামনা করি।"
+        }
+      ],
+      "footer": {
+        "date": "তারিখ: ............................ খ্রি.",
+        "sign": [
+          "স্বাক্ষর",
+          "প্রধান শিক্ষক",
+          "মোঃ আব্দুল করিম",
+          "মোবাইল: ০১৭০০-০০০০০০"
+        ]
+      },
+      "head": [
+        {
+          "role": "top",
+          "text": "বিসমিল্লাহির রাহমানির রাহিম"
+        },
+        {
+          "role": "org",
+          "text": "১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়"
+        },
+        {
+          "role": "addr",
+          "text": "ডাকঘর: নদীপাড়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।"
+        },
+        {
+          "role": "meta",
+          "text": "বিদ্যালয় প্রতিষ্ঠার সন: ১৯৭২ খ্রি.; সরকারি করণ: ১৯৯১ খ্রি."
+        },
+        {
+          "role": "addr",
+          "text": "(শিশু শ্রেণি থেকে ৮ম শ্রেণি পর্যন্ত পাঠদান চলে)"
+        },
+        {
+          "role": "meta",
+          "text": "EMIS: 91100000000 EIIN: 100000"
+        }
+      ],
+      "role": "main",
+      "tables": [],
+      "title": "প্রশংসা পত্র/ ছাড়পত্র"
+    }
+  ],
+  "variant": "stub",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-landscape official-certificate-layout font-kalpurush" style="padding: 0.50in 0.50in 0.50in 0.50in; box-sizing: border-box;">
+<div style="display: flex; gap: 0.28in; align-items: stretch; min-height: 6.85in;">
+<div style="width: 4.10in; box-sizing: border-box; border: 4.5pt solid #000; padding: 0.13in;">
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 14pt;">বিসমিল্লাহির রাহমানির রাহিম</span>
+</div>
+<div style="font-size: 15pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 15pt;">
+<b>১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়</b>
+</span>
+</div>
+<div style="font-size: 15pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 15pt;">ডাকঘর: নদীপাড়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।</span>
+</div>
+<div style="font-size: 13pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 13pt;">বিদ্যালয় প্রতিষ্ঠার সন: ১৯৭২ খ্রি. সরকারি করণ: ১৯৯১ খ্রি.</span>
+</div>
+<div style="font-size: 21pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-top: 8pt; margin-left: 0.80in; margin-right: 0.80in; border: 1.5px solid #000; padding: 0 4pt;">
+<span style="font-size: 21pt;">
+<b>প্রশংসা পত্র</b>
+</span>
+</div>
+<div style="font-size: 8pt; line-height: 1.34; min-height: 1.34em; text-align: left;">&nbsp;</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: left; margin-top: 3pt;">
+<span style="display: flex; justify-content: space-between;">
+<span style="font-size: 12pt;">ক্রমিক নং-</span>
+<span style="font-size: 12pt;">তারিখ: ......................</span>
+</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">নাম: ....................................................</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">পিতার নাম: ....................................................</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">মাতার নাম: ....................................................</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">রোল নম্বর: ....................................................</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">প্রাপ্ত জি.পি.এ ................ গ্রেড ................</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">পরীক্ষার নাম: প্রাথমিক শিক্ষা সমাপনী পরীক্ষা- ২০........ খ্রি.</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">
+<span style="font-size: 12pt;">জন্ম তারিখ: ................................ খ্রি.</span>
+</div>
+<div style="font-size: 12pt; line-height: 2.28; min-height: 2.28em; text-align: left;">&nbsp;</div>
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: left;">
+<span style="display: flex; justify-content: space-between;">
+<span style="font-size: 14pt;">তারিখ: ........................</span>
+<span style="font-size: 14pt;">প্রধান শিক্ষক</span>
+</span>
+</div>
+</div>
+<div style="width: 6.32in; box-sizing: border-box; border: 4.5pt solid #000; padding: 0.13in;">
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 14pt;">বিসমিল্লাহির রাহমানির রাহিম</span>
+</div>
+<div style="font-size: 24pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 24pt;">
+<b>১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়</b>
+</span>
+</div>
+<div style="font-size: 16pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 16pt;">
+<b>ডাকঘর: নদীপাড়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর।</b>
+</span>
+</div>
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 14pt;">
+<b>বিদ্যালয় প্রতিষ্ঠার সন: ১৯৭২ খ্রি.; সরকারি করণ: ১৯৯১ খ্রি.</b>
+</span>
+</div>
+<div style="font-size: 16pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 16pt;">
+<b>(শিশু শ্রেণি থেকে ৮ম শ্রেণি পর্যন্ত পাঠদান চলে)</b>
+</span>
+</div>
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: center;">
+<span style="font-size: 14pt;">
+<b>EMIS: 91100000000 EIIN: 100000</b>
+</span>
+</div>
+<div style="font-size: 23pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-top: 8pt; margin-left: 1.16in; margin-right: 1.16in; border: 1.5px solid #000; padding: 0 4pt;">
+<span style="font-size: 23pt;">
+<b>প্রশংসা পত্র/ ছাড়পত্র</b>
+</span>
+</div>
+<div style="font-size: 8pt; line-height: 1.34; min-height: 1.34em; text-align: left;">&nbsp;</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: left; margin-top: 3pt;">
+<span style="display: flex; justify-content: space-between;">
+<span style="font-size: 12pt;">ক্রমিক নং-</span>
+<span style="font-size: 12pt;">তারিখ: ...................... খ্রি.</span>
+</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.61; min-height: 1.61em; text-align: justify; text-indent: 0.33in;">
+<span style="font-size: 12pt;">প্রত্যয়ন করা যাচ্ছে যে .................................................................. পিতা: ................................ মাতা: ................................ রোল নম্বর: ............. ১২ নং নদীপাড় সরকারি প্রাথমিক বিদ্যালয়, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর। সে প্রাথমিক শিক্ষা সমাপনী পরীক্ষা ২০........ খ্রি. এ অংশগ্রহণ করে জি.পি.এ .............. গ্রেড ............. পেয়ে উত্তীর্ণ হয়েছে। তার জন্ম তারিখ: ............................ খ্রি.।</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.61; min-height: 1.61em; text-align: justify; text-indent: 0.33in;">
+<span style="font-size: 12pt;">আমার জানামতে সে উত্তম চরিত্রের অধিকারী। আমি তার জীবনের সর্বাঙ্গীন সাফল্য কামনা করি।</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.61; min-height: 1.61em; text-align: left;">&nbsp;</div>
+<div style="font-size: 14pt; line-height: 1.34; min-height: 1.34em; text-align: left;">
+<span style="font-size: 14pt;">তারিখ: ............................ খ্রি.</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: left;">&nbsp;</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-left: 3.57in;">
+<span style="font-size: 12pt;">স্বাক্ষর</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-left: 3.57in;">
+<span style="font-size: 12pt;">প্রধান শিক্ষক</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-left: 3.57in;">
+<span style="font-size: 12pt;">মোঃ আব্দুল করিম</span>
+</div>
+<div style="font-size: 12pt; line-height: 1.34; min-height: 1.34em; text-align: center; margin-left: 3.57in;">
+<span style="font-size: 12pt;">মোবাইল: ০১৭০০-০০০০০০</span>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType PROTTOYON)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols1
+{\trowd\trgaph180\trleft0\trkeep\trrh9866\trpaddt180\trpaddb180\trpaddft3\trpaddfb3
+\clvertalt\clbrdrt\brdrs\brdrw60\clbrdrl\brdrs\brdrw60\clbrdrb\brdrs\brdrw60\clbrdrr\brdrs\brdrw60\cellx5900\clvertalt\cellx6300\clvertalt\clbrdrt\brdrs\brdrw60\clbrdrl\brdrs\brdrw60\clbrdrb\brdrs\brdrw60\clbrdrr\brdrs\brdrw60\cellx15398
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs28 {\fs28 {\f0 \u2476?\u2495?\u2488?\u2478?\u2495?\u2482?\u2509?\u2482?\u2494?\u2489?\u2495?\u2480? \u2480?\u2494?\u2489?\u2478?\u2494?\u2472?\u2495?\u2480? \u2480?\u2494?\u2489?\u2495?\u2478?}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs30 {\fs30 {\b {\f0 \u2535?\u2536? \u2472?\u2434? \u2472?\u2470?\u2496?\u2474?\u2494?\u2524? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs30 {\fs30 {\f0 \u2465?\u2494?\u2453?\u2456?\u2480?: \u2472?\u2470?\u2496?\u2474?\u2494?\u2524?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs26 {\fs26 {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2480? \u2488?\u2472?: \u2535?\u2543?\u2541?\u2536? \u2454?\u2509?\u2480?\u2495?. \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2453?\u2480?\u2467?: \u2535?\u2543?\u2543?\u2535? \u2454?\u2509?\u2480?\u2495?.}}\par
+\pard\plain\intbl\box\brdrs\brdrw15\brsp80\sl240\slmult1\sb160\sa0\li1159\ri1159\qc\f0\fs42 {\fs42 {\b {\f0 \u2474?\u2509?\u2480?\u2486?\u2434?\u2488?\u2494? \u2474?\u2468?\u2509?\u2480?}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\ql\f0\fs16 \par
+\pard\plain\intbl\tqr\tx5540\sl240\slmult1\sb60\sa0\ql\f0\fs24 {\fs24 {\f0 \u2453?\u2509?\u2480?\u2478?\u2495?\u2453? \u2472?\u2434?}{\f1 -}}\tab {\fs24 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: ......................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2472?\u2494?\u2478?: ....................................................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2474?\u2495?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?: ....................................................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2478?\u2494?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?: ....................................................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2480?\u2507?\u2482? \u2472?\u2478?\u2509?\u2476?\u2480?: ....................................................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2474?\u2509?\u2480?\u2494?\u2474?\u2509?\u2468? \u2460?\u2495?.\u2474?\u2495?.\u2447? ................ \u2455?\u2509?\u2480?\u2503?\u2465? ................}}\par
+\pard\plain\intbl\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478?: \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2486?\u2495?\u2453?\u2509?\u2487?\u2494? \u2488?\u2478?\u2494?\u2474?\u2472?\u2496? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?}{\f1 - }{\f0 \u2536?\u2534?........ \u2454?\u2509?\u2480?\u2495?.}}\par
+\pard\plain\intbl\keepn\sl408\slmult1\sb0\sa0\ql\f0\fs24 {\fs24 {\f0 \u2460?\u2472?\u2509?\u2478? \u2468?\u2494?\u2480?\u2495?\u2454?: ................................ \u2454?\u2509?\u2480?\u2495?.}}\par
+\pard\plain\intbl\keepn\sl408\slmult1\sb0\sa0\ql\f0\fs24 \par
+\pard\plain\intbl\tqr\tx5540\sl240\slmult1\sb0\sa0\ql\f0\fs28 {\fs28 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: ........................}}\tab {\fs28 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?}}\cell
+\pard\plain\intbl \cell
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs28 {\fs28 {\f0 \u2476?\u2495?\u2488?\u2478?\u2495?\u2482?\u2509?\u2482?\u2494?\u2489?\u2495?\u2480? \u2480?\u2494?\u2489?\u2478?\u2494?\u2472?\u2495?\u2480? \u2480?\u2494?\u2489?\u2495?\u2478?}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs48 {\fs48 {\b {\f0 \u2535?\u2536? \u2472?\u2434? \u2472?\u2470?\u2496?\u2474?\u2494?\u2524? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs32 {\fs32 {\b {\f0 \u2465?\u2494?\u2453?\u2456?\u2480?: \u2472?\u2470?\u2496?\u2474?\u2494?\u2524?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs28 {\fs28 {\b {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2480? \u2488?\u2472?: \u2535?\u2543?\u2541?\u2536? \u2454?\u2509?\u2480?\u2495?.; \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2453?\u2480?\u2467?: \u2535?\u2543?\u2543?\u2535? \u2454?\u2509?\u2480?\u2495?.}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs32 {\fs32 {\b {\f0 (\u2486?\u2495?\u2486?\u2497? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2469?\u2503?\u2453?\u2503? \u2542?\u2478? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2474?\u2480?\u2509?\u2479?\u2472?\u2509?\u2468? \u2474?\u2494?\u2464?\u2470?\u2494?\u2472? \u2458?\u2482?\u2503?)}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\qc\f0\fs28 {\fs28 {\b {\f1 EMIS: 91100000000 EIIN: 100000}}}\par
+\pard\plain\intbl\box\brdrs\brdrw15\brsp80\sl240\slmult1\sb160\sa0\li1675\ri1675\qc\f0\fs46 {\fs46 {\b {\f0 \u2474?\u2509?\u2480?\u2486?\u2434?\u2488?\u2494? \u2474?\u2468?\u2509?\u2480?}{\f1 / }{\f0 \u2459?\u2494?\u2524?\u2474?\u2468?\u2509?\u2480?}}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\ql\f0\fs16 \par
+\pard\plain\intbl\tqr\tx8738\sl240\slmult1\sb60\sa0\ql\f0\fs24 {\fs24 {\f0 \u2453?\u2509?\u2480?\u2478?\u2495?\u2453? \u2472?\u2434?}{\f1 -}}\tab {\fs24 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: ...................... \u2454?\u2509?\u2480?\u2495?.}}\par
+\pard\plain\intbl\sl288\slmult1\sb0\sa0\fi480\qj\f0\fs24 {\fs24 {\f0 \u2474?\u2509?\u2480?\u2468?\u2509?\u2479?\u2527?\u2472? \u2453?\u2480?\u2494? \u2479?\u2494?\u2458?\u2509?\u2459?\u2503? \u2479?\u2503? .................................................................. \u2474?\u2495?\u2468?\u2494?: ................................ \u2478?\u2494?\u2468?\u2494?: ................................ \u2480?\u2507?\u2482? \u2472?\u2478?\u2509?\u2476?\u2480?: ............. \u2535?\u2536? \u2472?\u2434? \u2472?\u2470?\u2496?\u2474?\u2494?\u2524? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404? \u2488?\u2503? \u2474?\u2509?\u2480?\u2494?\u2469?\u2478?\u2495?\u2453? \u2486?\u2495?\u2453?\u2509?\u2487?\u2494? \u2488?\u2478?\u2494?\u2474?\u2472?\u2496? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494? \u2536?\u2534?........ \u2454?\u2509?\u2480?\u2495?. \u2447? \u2437?\u2434?\u2486?\u2455?\u2509?\u2480?\u2489?\u2467? \u2453?\u2480?\u2503? \u2460?\u2495?.\u2474?\u2495?.\u2447? .............. \u2455?\u2509?\u2480?\u2503?\u2465? ............. \u2474?\u2503?\u2527?\u2503? \u2441?\u2468?\u2509?\u2468?\u2496?\u2480?\u2509?\u2467? \u2489?\u2527?\u2503?\u2459?\u2503?\u2404? \u2468?\u2494?\u2480? \u2460?\u2472?\u2509?\u2478? \u2468?\u2494?\u2480?\u2495?\u2454?: ............................ \u2454?\u2509?\u2480?\u2495?.\u2404?}}\par
+\pard\plain\intbl\keepn\sl288\slmult1\sb0\sa0\fi480\qj\f0\fs24 {\fs24 {\f0 \u2438?\u2478?\u2494?\u2480? \u2460?\u2494?\u2472?\u2494?\u2478?\u2468?\u2503? \u2488?\u2503? \u2441?\u2468?\u2509?\u2468?\u2478? \u2458?\u2480?\u2495?\u2468?\u2509?\u2480?\u2503?\u2480? \u2437?\u2471?\u2495?\u2453?\u2494?\u2480?\u2496?\u2404? \u2438?\u2478?\u2495? \u2468?\u2494?\u2480? \u2460?\u2496?\u2476?\u2472?\u2503?\u2480? \u2488?\u2480?\u2509?\u2476?\u2494?\u2457?\u2509?\u2455?\u2496?\u2472? \u2488?\u2494?\u2475?\u2482?\u2509?\u2479? \u2453?\u2494?\u2478?\u2472?\u2494? \u2453?\u2480?\u2495?\u2404?}}\par
+\pard\plain\intbl\keepn\sl288\slmult1\sb0\sa0\ql\f0\fs24 \par
+\pard\plain\intbl\keepn\sl240\slmult1\sb0\sa0\ql\f0\fs28 {\fs28 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: ............................ \u2454?\u2509?\u2480?\u2495?.}}\par
+\pard\plain\intbl\keepn\sl240\slmult1\sb0\sa0\ql\f0\fs24 \par
+\pard\plain\intbl\keepn\sl240\slmult1\sb0\sa0\li5138\qc\f0\fs24 {\fs24 {\f0 \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}}\par
+\pard\plain\intbl\keepn\sl240\slmult1\sb0\sa0\li5138\qc\f0\fs24 {\fs24 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?}}\par
+\pard\plain\intbl\keepn\sl240\slmult1\sb0\sa0\li5138\qc\f0\fs24 {\fs24 {\f0 \u2478?\u2507?\u2435? \u2438?\u2476?\u2509?\u2470?\u2497?\u2482? \u2453?\u2480?\u2495?\u2478?}}\par
+\pard\plain\intbl\sl240\slmult1\sb0\sa0\li5138\qc\f0\fs24 {\fs24 {\f0 \u2478?\u2507?\u2476?\u2494?\u2439?\u2482?: \u2534?\u2535?\u2541?\u2534?\u2534?}{\f1 -}{\f0 \u2534?\u2534?\u2534?\u2534?\u2534?\u2534?}}\cell
+\row}
+\pard\plain\sl-20\slmult0\fs2\par
+}

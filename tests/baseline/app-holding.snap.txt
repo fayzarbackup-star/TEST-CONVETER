@@ -1,0 +1,244 @@
+# fixture: app-holding
+# docType: GOVT_APP
+
+===== CLASSIFIER =====
+{
+  "type": "GOVT_APP"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "line",
+      "role": "date",
+      "text": "তারিখ: ১৮-০৫-২০২৬ ইং"
+    },
+    {
+      "kind": "lines",
+      "label": "বরাবর,",
+      "lines": [
+        "সহকারী কমিশনার (ভূমি)",
+        "ফুলবাড়ী, দিনাজপুর।"
+      ],
+      "role": "receiver"
+    },
+    {
+      "kind": "subject",
+      "label": "বিষয়:",
+      "text": "স্থগিত হোল্ডিং চালুকরণ প্রসঙ্গে।"
+    },
+    {
+      "kind": "line",
+      "role": "salutation",
+      "text": "জনাব,"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "বিনীত নিবেদন এই যে, আমি ৩৮২২/২২-২৩ নং নামজারি (খারিজ) মোকাদ্দমার আদেশ ও চূড়ান্ত রায় পেয়েছি। কিন্তু হোল্ডিং স্থগিত থাকায় আমি জমির খাজনা পরিশোধ করতে পারছি না। তহশিল অফিসে যোগাযোগ করলে তহশিলদার জানান যে, স্থগিত হোল্ডিং খোলার কোনো এখতিয়ার তাঁর নেই। এমতাবস্থায়, আমার উক্ত স্থগিত হোল্ডিংটি চালুর জন্য আপনার সদয় অনুমতি একান্ত প্রয়োজন।"
+    },
+    {
+      "kind": "para",
+      "role": "prayer",
+      "text": "অতএব, বিনীত প্রার্থনা, উক্ত বিষয়টি বিবেচনা করে আমার স্থগিত হোল্ডিংটি পুনরায় চালুর সদয় আদেশ প্রদানে আপনার মর্জি হয়।"
+    },
+    {
+      "kind": "heading",
+      "text": "তফসিল:"
+    },
+    {
+      "kind": "caption",
+      "text": "জেলা: দিনাজপুর, উপজেলা: ফুলবাড়ী, মৌজা: আমড়া"
+    },
+    {
+      "header": true,
+      "kind": "table",
+      "rows": [
+        [
+          "খতিয়ান নং",
+          "জেএল নং",
+          "দাগ নং",
+          "জমির পরিমাণ"
+        ],
+        [
+          "১১৬",
+          "১৫৪",
+          "৯৭২",
+          "১.৭২ একর"
+        ]
+      ]
+    },
+    {
+      "kind": "closing",
+      "label": "নিবেদক,",
+      "lines": [
+        "(মোঃ আবুল কাশেম)",
+        "পিতা: মোঃ আব্দুল জব্বার",
+        "ঠিকানা: রামেশ্বরপুর, ফুলবাড়ী, দিনাজপুর",
+        "মোবা: ০১৭০০-০০০০০২"
+      ]
+    },
+    {
+      "items": [
+        {
+          "count": "১ কপি",
+          "text": "১. মিস কেসের আদেশপত্র"
+        },
+        {
+          "count": "১ কপি",
+          "text": "২. খারিজ খতিয়ান-৬১৯"
+        },
+        {
+          "count": "১ কপি",
+          "text": "৩. ডিসিআর এর কপি"
+        },
+        {
+          "count": "১ কপি",
+          "text": "৪. ২০২৩-২৪ অর্থবছরের খাজনা দাখিলা"
+        }
+      ],
+      "kind": "attach",
+      "label": "সংযুক্তি:",
+      "total": "মোট = ৪ কপি"
+    }
+  ],
+  "kind": "GOVT_APP_LAYOUT",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-application-layout font-kalpurush" style="padding: 0.50in 0.50in 0.38in 0.80in; font-size: 12pt; box-sizing: border-box;">
+<div style="min-height: 1.47em; line-height: 1.47;">তারিখ: ১৮-০৫-২০২৬ ইং</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>বরাবর,</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">সহকারী কমিশনার (ভূমি)</div>
+<div style="min-height: 1.47em; line-height: 1.47;">ফুলবাড়ী, দিনাজপুর।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify; padding-left: 0.43in; text-indent: -0.43in;">
+<b>বিষয়: স্থগিত হোল্ডিং চালুকরণ প্রসঙ্গে।</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>জনাব,</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify;">বিনীত নিবেদন এই যে, আমি ৩৮২২/২২-২৩ নং নামজারি (খারিজ) মোকাদ্দমার আদেশ ও চূড়ান্ত রায় পেয়েছি। কিন্তু হোল্ডিং স্থগিত থাকায় আমি জমির খাজনা পরিশোধ করতে পারছি না। তহশিল অফিসে যোগাযোগ করলে তহশিলদার জানান যে, স্থগিত হোল্ডিং খোলার কোনো এখতিয়ার তাঁর নেই। এমতাবস্থায়, আমার উক্ত স্থগিত হোল্ডিংটি চালুর জন্য আপনার সদয় অনুমতি একান্ত প্রয়োজন।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify;">অতএব, বিনীত প্রার্থনা, উক্ত বিষয়টি বিবেচনা করে আমার স্থগিত হোল্ডিংটি পুনরায় চালুর সদয় আদেশ প্রদানে আপনার মর্জি হয়।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: center;">
+<b>তফসিল:</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: center;">জেলা: দিনাজপুর, উপজেলা: ফুলবাড়ী, মৌজা: আমড়া</div>
+<table style="border-collapse: collapse; margin: 0 auto; table-layout: fixed; font-size: 11pt;">
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.92in; font-weight: 700;">খতিয়ান নং</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.76in; font-weight: 700;">জেএল নং</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.67in; font-weight: 700;">দাগ নং</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.07in; font-weight: 700;">জমির পরিমাণ</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.92in;">১১৬</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.76in;">১৫৪</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.67in;">৯৭২</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.07in;">১.৭২ একর</td>
+</tr>
+</table>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>নিবেদক,</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">(মোঃ আবুল কাশেম)</div>
+<div style="min-height: 1.47em; line-height: 1.47;">পিতা: মোঃ আব্দুল জব্বার</div>
+<div style="min-height: 1.47em; line-height: 1.47;">ঠিকানা: রামেশ্বরপুর, ফুলবাড়ী, দিনাজপুর</div>
+<div style="min-height: 1.47em; line-height: 1.47;">মোবা: ০১৭০০-০০০০০২</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>সংযুক্তি:</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<span style="display: inline-flex; width: 5.09in;">
+<span>১. মিস কেসের আদেশপত্র</span>
+<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 2px 0.3em;">
+</span>
+</span>১ কপি</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<span style="display: inline-flex; width: 5.09in;">
+<span>২. খারিজ খতিয়ান-৬১৯</span>
+<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 2px 0.3em;">
+</span>
+</span>১ কপি</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<span style="display: inline-flex; width: 5.09in;">
+<span>৩. ডিসিআর এর কপি</span>
+<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 2px 0.3em;">
+</span>
+</span>১ কপি</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<span style="display: inline-flex; width: 5.09in;">
+<span>৪. ২০২৩-২৪ অর্থবছরের খাজনা দাখিলা</span>
+<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 2px 0.3em;">
+</span>
+</span>১ কপি</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 4.46in;">মোট = ৪ কপি</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType GOVT_APP)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1152\margr720\margt720\margb540\cols1
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: \u2535?\u2542?}{\f1 -}{\f0 \u2534?\u2539?}{\f1 -}{\f0 \u2536?\u2534?\u2536?\u2540? \u2439?\u2434?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\b {\f0 \u2476?\u2480?\u2494?\u2476?\u2480?,}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2488?\u2489?\u2453?\u2494?\u2480?\u2496? \u2453?\u2478?\u2495?\u2486?\u2472?\u2494?\u2480? (\u2477?\u2498?\u2478?\u2495?)}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\qj\li618\fi-618 {\b {\f0 \u2476?\u2495?\u2487?\u2527?: \u2488?\u2509?\u2469?\u2455?\u2495?\u2468? \u2489?\u2507?\u2482?\u2509?\u2465?\u2495?\u2434? \u2458?\u2494?\u2482?\u2497?\u2453?\u2480?\u2467? \u2474?\u2509?\u2480?\u2488?\u2457?\u2509?\u2455?\u2503?\u2404?}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\b {\f0 \u2460?\u2472?\u2494?\u2476?,}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\qj {\f0 \u2476?\u2495?\u2472?\u2496?\u2468? \u2472?\u2495?\u2476?\u2503?\u2470?\u2472? \u2447?\u2439? \u2479?\u2503?, \u2438?\u2478?\u2495? \u2537?\u2542?\u2536?\u2536?}{\f1 /}{\f0 \u2536?\u2536?}{\f1 -}{\f0 \u2536?\u2537? \u2472?\u2434? \u2472?\u2494?\u2478?\u2460?\u2494?\u2480?\u2495? }{\f1 (}{\f0 \u2454?\u2494?\u2480?\u2495?\u2460?}{\f1 ) }{\f0 \u2478?\u2507?\u2453?\u2494?\u2470?\u2509?\u2470?\u2478?\u2494?\u2480? \u2438?\u2470?\u2503?\u2486? \u2451? \u2458?\u2498?\u2524?\u2494?\u2472?\u2509?\u2468? \u2480?\u2494?\u2527? \u2474?\u2503?\u2527?\u2503?\u2459?\u2495?\u2404? \u2453?\u2495?\u2472?\u2509?\u2468?\u2497? \u2489?\u2507?\u2482?\u2509?\u2465?\u2495?\u2434? \u2488?\u2509?\u2469?\u2455?\u2495?\u2468? \u2469?\u2494?\u2453?\u2494?\u2527? \u2438?\u2478?\u2495? \u2460?\u2478?\u2495?\u2480? \u2454?\u2494?\u2460?\u2472?\u2494? \u2474?\u2480?\u2495?\u2486?\u2507?\u2471? \u2453?\u2480?\u2468?\u2503? \u2474?\u2494?\u2480?\u2459?\u2495? \u2472?\u2494?\u2404? \u2468?\u2489?\u2486?\u2495?\u2482? \u2437?\u2475?\u2495?\u2488?\u2503? \u2479?\u2507?\u2455?\u2494?\u2479?\u2507?\u2455? \u2453?\u2480?\u2482?\u2503? \u2468?\u2489?\u2486?\u2495?\u2482?\u2470?\u2494?\u2480? \u2460?\u2494?\u2472?\u2494?\u2472? \u2479?\u2503?, \u2488?\u2509?\u2469?\u2455?\u2495?\u2468? \u2489?\u2507?\u2482?\u2509?\u2465?\u2495?\u2434? \u2454?\u2507?\u2482?\u2494?\u2480? \u2453?\u2507?\u2472?\u2507? \u2447?\u2454?\u2468?\u2495?\u2527?\u2494?\u2480? \u2468?\u2494?\u2433?\u2480? \u2472?\u2503?\u2439?\u2404? \u2447?\u2478?\u2468?\u2494?\u2476?\u2488?\u2509?\u2469?\u2494?\u2527?, \u2438?\u2478?\u2494?\u2480? \u2441?\u2453?\u2509?\u2468? \u2488?\u2509?\u2469?\u2455?\u2495?\u2468? \u2489?\u2507?\u2482?\u2509?\u2465?\u2495?\u2434?\u2463?\u2495? \u2458?\u2494?\u2482?\u2497?\u2480? \u2460?\u2472?\u2509?\u2479? \u2438?\u2474?\u2472?\u2494?\u2480? \u2488?\u2470?\u2527? \u2437?\u2472?\u2497?\u2478?\u2468?\u2495? \u2447?\u2453?\u2494?\u2472?\u2509?\u2468? \u2474?\u2509?\u2480?\u2527?\u2507?\u2460?\u2472?\u2404?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\qj {\f0 \u2437?\u2468?\u2447?\u2476?, \u2476?\u2495?\u2472?\u2496?\u2468? \u2474?\u2509?\u2480?\u2494?\u2480?\u2509?\u2469?\u2472?\u2494?, \u2441?\u2453?\u2509?\u2468? \u2476?\u2495?\u2487?\u2527?\u2463?\u2495? \u2476?\u2495?\u2476?\u2503?\u2458?\u2472?\u2494? \u2453?\u2480?\u2503? \u2438?\u2478?\u2494?\u2480? \u2488?\u2509?\u2469?\u2455?\u2495?\u2468? \u2489?\u2507?\u2482?\u2509?\u2465?\u2495?\u2434?\u2463?\u2495? \u2474?\u2497?\u2472?\u2480?\u2494?\u2527? \u2458?\u2494?\u2482?\u2497?\u2480? \u2488?\u2470?\u2527? \u2438?\u2470?\u2503?\u2486? \u2474?\u2509?\u2480?\u2470?\u2494?\u2472?\u2503? \u2438?\u2474?\u2472?\u2494?\u2480? \u2478?\u2480?\u2509?\u2460?\u2495? \u2489?\u2527?\u2404?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\qc {\b {\f0 \u2468?\u2475?\u2488?\u2495?\u2482?:}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\qc {\f0 \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2478?\u2508?\u2460?\u2494?: \u2438?\u2478?\u2524?\u2494?}\par}
+{\trowd\trgaph80\trleft2557\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3876\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4977\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5939\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7477
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2454?\u2468?\u2495?\u2527?\u2494?\u2472? \u2472?\u2434?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2460?\u2503?\u2447?\u2482? \u2472?\u2434?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2470?\u2494?\u2455? \u2472?\u2434?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2460?\u2478?\u2495?\u2480? \u2474?\u2480?\u2495?\u2478?\u2494?\u2467?}}\cell \row}
+{\trowd\trgaph80\trleft2557\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3876\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4977\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5939\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7477
+\pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2535?\u2535?\u2540?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2535?\u2539?\u2538?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2543?\u2541?\u2536?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2535?.\u2541?\u2536? \u2447?\u2453?\u2480?}\cell \row}
+\pard\plain
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql {\b {\f0 \u2472?\u2495?\u2476?\u2503?\u2470?\u2453?,}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 (\u2478?\u2507?\u2435? \u2438?\u2476?\u2497?\u2482? \u2453?\u2494?\u2486?\u2503?\u2478?)}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2474?\u2495?\u2468?\u2494?: \u2478?\u2507?\u2435? \u2438?\u2476?\u2509?\u2470?\u2497?\u2482? \u2460?\u2476?\u2509?\u2476?\u2494?\u2480?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?: \u2480?\u2494?\u2478?\u2503?\u2486?\u2509?\u2476?\u2480?\u2474?\u2497?\u2480?, \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql {\f0 \u2478?\u2507?\u2476?\u2494?: \u2534?\u2535?\u2541?\u2534?\u2534?}{\f1 -}{\f0 \u2534?\u2534?\u2534?\u2534?\u2534?\u2536?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql {\b {\f0 \u2488?\u2434?\u2479?\u2497?\u2453?\u2509?\u2468?\u2495?:}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\tldot\tx7325 {\f0 \u2535?. \u2478?\u2495?\u2488? \u2453?\u2503?\u2488?\u2503?\u2480? \u2438?\u2470?\u2503?\u2486?\u2474?\u2468?\u2509?\u2480?}\tab {\f0 \u2535? \u2453?\u2474?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\tldot\tx7325 {\f0 \u2536?. \u2454?\u2494?\u2480?\u2495?\u2460? \u2454?\u2468?\u2495?\u2527?\u2494?\u2472?}{\f1 -}{\f0 \u2540?\u2535?\u2543?}\tab {\f0 \u2535? \u2453?\u2474?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\tldot\tx7325 {\f0 \u2537?. \u2465?\u2495?\u2488?\u2495?\u2438?\u2480? \u2447?\u2480? \u2453?\u2474?\u2495?}\tab {\f0 \u2535? \u2453?\u2474?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\tldot\tx7325 {\f0 \u2538?. \u2536?\u2534?\u2536?\u2537?}{\f1 -}{\f0 \u2536?\u2538? \u2437?\u2480?\u2509?\u2469?\u2476?\u2459?\u2480?\u2503?\u2480? \u2454?\u2494?\u2460?\u2472?\u2494? \u2470?\u2494?\u2454?\u2495?\u2482?\u2494?}\tab {\f0 \u2535? \u2453?\u2474?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\tx6425 \tab {\f0 \u2478?\u2507?\u2463? }{\f1 = }{\f0 \u2538? \u2453?\u2474?\u2495?}\par}
+}

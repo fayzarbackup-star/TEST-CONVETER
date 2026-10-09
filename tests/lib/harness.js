@@ -44,6 +44,7 @@ function loadEngines() {
 
   // Document engines
   reg('DocClassifier', 'js/engines/doc-classifier.js');
+  reg('FayzarGeneralParser', 'js/layout-engine/general-paper-parser.js');   // Part-18.7
   reg('QuestionEngine', 'js/engines/question-engine.js');
   reg('RoutineEngine', 'js/engines/routine-engine.js');
   reg('CertificateEngine', 'js/engines/certificate-engine.js');

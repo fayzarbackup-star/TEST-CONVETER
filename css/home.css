@@ -334,3 +334,31 @@ body.ws-on .fz-foot { display: none; }
 .hist-foot { padding: 12px 20px 18px; border-top: 1px solid #EEF2EF; text-align: center; }
 .hist-foot .link { margin: 0 auto; }
 body.hist-on { overflow: hidden; }
+
+/* ===== সমস্যা জানান (মডাল) ===== */
+.rep { position: fixed; z-index: 72; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; background: var(--white); border-radius: 16px; padding: 22px 24px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+.rep h2 { font-size: 1.3rem; font-weight: 800; }
+.rep-sub { font-size: .88rem; color: var(--ink-3); margin: 6px 0 14px; }
+.rep-vote { display: flex; gap: 10px; margin-bottom: 14px; }
+.rep-vote button { flex: 1; font-family: var(--font); font-size: 1rem; font-weight: 600; padding: 10px; border-radius: 10px; border: 1.5px solid #D4E2DA; background: var(--white); cursor: pointer; }
+.rep-vote button[aria-pressed="true"] { border-color: var(--g-700); background: var(--g-50); color: var(--g-900); }
+.rep-label { font-size: .92rem; font-weight: 600; margin-bottom: 8px; }
+.rep-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.rep-chips label { cursor: pointer; }
+.rep-chips input { position: absolute; opacity: 0; pointer-events: none; }
+.rep-chips span { display: inline-block; font-size: .88rem; padding: 6px 12px; border-radius: 999px; border: 1px solid #D4E2DA; background: #FAFBFA; }
+.rep-chips input:checked + span { background: var(--g-700); border-color: var(--g-700); color: var(--white); }
+.rep-chips input:focus-visible + span { outline: 2px solid var(--g-700); outline-offset: 2px; }
+.rep .field { min-height: 70px; resize: vertical; margin-bottom: 10px; }
+.rep-check { display: flex; align-items: center; gap: 8px; font-size: .88rem; margin: 4px 0; cursor: pointer; }
+.rep-status { min-height: 1.4em; font-size: .88rem; color: var(--g-900); margin: 8px 0; }
+.rep-actions { display: flex; align-items: center; gap: 14px; }
+.rep-actions .link { margin: 0; }
+
+/* ===== Part-18.9: কলাম-বাছাই (ফলাফল-পাতা) ===== */
+.col-pick { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 4px 0 14px; }
+.col-pick-l { font-size: .92rem; font-weight: 600; }
+.col-pick button { font-family: var(--font); font-size: .9rem; padding: 5px 12px; border-radius: 999px; border: 1px solid #D4E2DA; background: #FAFBFA; cursor: pointer; }
+.col-pick button[aria-pressed="true"] { background: var(--g-700); border-color: var(--g-700); color: var(--white); }
+.col-pick button:focus-visible { outline: 2px solid var(--g-700); outline-offset: 2px; }
+.col-pick-h { width: 100%; text-align: center; font-size: .78rem; color: var(--ink-3); }

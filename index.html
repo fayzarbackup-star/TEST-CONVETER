@@ -7,13 +7,13 @@
   <meta name="description" content="ফয়জার এআই কম্পোজ — ছবি ও PDF থেকে সম্পাদনাযোগ্য Word (.docx / .doc), ইউনিকোড ও বিজয় দুই রূপেই।">
   <link rel="stylesheet" href="css/google-fonts.css">
   <link rel="stylesheet" href="css/home.css">
-  <!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><script src="js/fayzar-nav.js" defer></script>
+  <!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32.png"><link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png"><script src="js/fayzar-nav.js" defer></script>
 </head>
 <body id="top">
 <!-- FZ-NAV:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->
 <header class="fz-nav">
   <div class="fz-nav-in">
-    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম"><svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><path d="M35 4C18 4 6 13 6 26c0 4 1 7 3 10 2-9 9-17 19-21-8 6-13 13-15 22 3 1 6 1 9 0C33 33 37 18 35 4z" fill="#2E8B5E"/></svg><span class="fz-full">ফয়জার এআই কম্পোজ</span><span class="fz-short">AI Compose</span></a>
+    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম"><img src="assets/brand/logo-mark.svg" width="42" height="42" alt=""><span class="fz-brand-txt"><span class="fz-wordmark">AI Compose</span><span class="fz-brand-sub">ফয়জার এআই কম্পোজ</span></span></a>
     <nav class="fz-links" id="fzLinks" aria-label="প্রধান মেনু">
       <a href="index.html">হোম</a>
       <a href="services.html">সার্ভিস</a>
@@ -137,6 +137,7 @@
         <div class="proc-actions">
           <button type="button" class="btn" id="btnRetry">আবার চেষ্টা করুন</button>
           <button type="button" class="btn-o" id="btnBack1">পাতাগুলোতে ফিরে যান</button>
+          <button type="button" class="btn-o" id="btnReport2">সমস্যা জানান</button>
         </div>
       </div>
     </div>
@@ -148,6 +149,13 @@
     <div class="result-in">
       <h2 class="proc-h"><span class="tick" aria-hidden="true"></span> <span id="doneTitle">আপনার Word ফাইল প্রস্তুত!</span></h2>
       <p class="st-meta" id="doneMeta"></p>
+      <div class="col-pick" id="colPick" role="group" aria-label="প্রশ্নপত্রের কলাম">
+        <span class="col-pick-l">কলাম:</span>
+        <button type="button" data-cols="auto" aria-pressed="true">স্বয়ংক্রিয়</button>
+        <button type="button" data-cols="1" aria-pressed="false">১ কলাম</button>
+        <button type="button" data-cols="2" aria-pressed="false">২ কলাম</button>
+        <span class="col-pick-h">প্রশ্নপত্রে · আবার OCR লাগে না</span>
+      </div>
       <button type="button" class="big-dl" id="wizardDlDocBtn"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Word 2003 (.doc) ডাউনলোড</button>
       <div class="dl-row">
         <button type="button" class="btn-o" id="wizardDlDocxBtn">বিজয় .docx</button>
@@ -158,6 +166,7 @@
         <button type="button" class="link" id="btnShowText">লেখা দেখুন / ঠিক করুন</button>
         <button type="button" class="link" id="btnBack2">← পাতাগুলোতে ফিরে যান</button>
         <button type="button" class="link" id="btnNew2">নতুন ফাইল</button>
+        <button type="button" class="link" id="btnReport1">সমস্যা জানান</button>
       </div>
       <div class="result-text" id="wsText" hidden>
         <p class="result-text-head">রূপান্তরিত লেখা — এখানে ঠিক করলে ডাউনলোডেও সেটিই যাবে</p>
@@ -177,6 +186,35 @@
     <div class="hist-list" id="histList"></div>
     <div class="hist-foot"><button type="button" class="link" id="histClear">সব মুছুন</button></div>
   </aside>
+
+  <!-- ===== সমস্যা জানান (js/diag-log.js) ===== -->
+  <div class="hist-back" id="repBack" hidden></div>
+  <div class="rep" id="repModal" role="dialog" aria-labelledby="repTitle" hidden>
+    <h2 id="repTitle">সমস্যা জানান</h2>
+    <p class="rep-sub">আপনার মতামত আমাদের ঠিক করতে সাহায্য করবে। রিপোর্টটি আপনার কম্পিউটারেই নামবে — আমাদের পাঠিয়ে দিন।</p>
+    <div class="rep-vote" role="group" aria-label="ফলাফল কেমন">
+      <button type="button" data-vote="good" aria-pressed="false">👍 ঠিক আছে</button>
+      <button type="button" data-vote="bad" aria-pressed="false">👎 ঠিক হয়নি</button>
+    </div>
+    <p class="rep-label">কী সমস্যা হয়েছে? (একাধিক বাছতে পারেন)</p>
+    <div class="rep-chips">
+      <label><input type="checkbox" name="repIssue" value="layout"><span>লেআউট ভুল</span></label>
+      <label><input type="checkbox" name="repIssue" value="text"><span>লেখা বাদ / ভুল</span></label>
+      <label><input type="checkbox" name="repIssue" value="equation"><span>সমীকরণ ভুল</span></label>
+      <label><input type="checkbox" name="repIssue" value="figure"><span>ছবি / চিত্র</span></label>
+      <label><input type="checkbox" name="repIssue" value="slow"><span>ধীর / বারবার ব্যর্থ</span></label>
+      <label><input type="checkbox" name="repIssue" value="faithful"><span>হুবহু ঠিক হয়নি</span></label>
+      <label><input type="checkbox" name="repIssue" value="other"><span>অন্যান্য</span></label>
+    </div>
+    <textarea id="repComment" class="field" rows="3" placeholder="সংক্ষেপে লিখুন (ঐচ্ছিক) — যেমন: ৩ নং প্রশ্নের বিকল্প পাশাপাশি আসেনি"></textarea>
+    <label class="rep-check"><input type="checkbox" id="repFiles" checked> মূল ফাইল ও OCR-লেখা যোগ করুন</label>
+    <label class="rep-check"><input type="checkbox" id="repRecent" checked> সাম্প্রতিক রূপান্তরগুলোর খতিয়ান যোগ করুন (ফাইল ছাড়া)</label>
+    <p class="rep-status" id="repStatus" aria-live="polite"></p>
+    <div class="rep-actions">
+      <button type="button" class="btn" id="repDownload">রিপোর্ট ডাউনলোড (ZIP)</button>
+      <button type="button" class="link" id="repCancel">বাতিল</button>
+    </div>
+  </div>
 
   <input type="file" id="ocrFile" accept=".pdf,image/png,image/jpeg,image/webp" multiple hidden>
 
@@ -209,13 +247,18 @@
   <script src="js/layout-engine/rtf-builder.js"></script>
   <script src="js/layout-engine/schema-validator.js"></script>
   <script src="js/layout-engine/docx-layouts.js"></script>
-  <script src="js/engines/doc-classifier.js"></script>
+  <script src="js/engines/doc-classifier.js?v=20261006"></script>
+  <script src="js/layout-engine/general-paper-parser.js"></script>
   <script src="js/engines/question-engine.js"></script>
   <script src="js/layout-engine/layout-units.js"></script>
   <script src="js/layout-engine/mcq-layout-planner.js"></script>
   <script src="js/layout-engine/cq-booklet-planner.js"></script>
   <script src="js/engines/stamp-engine.js"></script>
   <script src="js/engines/application-engine.js"></script>
+  <script src="js/layout-engine/application-layout.js"></script>
+  <script src="js/layout-engine/letter-layout.js"></script>
+  <script src="js/layout-engine/cv-layout.js"></script>
+  <script src="js/layout-engine/certificate-layout.js"></script>
   <script src="js/engines/certificate-engine.js"></script>
   <script src="js/engines/admit-card-engine.js"></script>
   <script src="js/engines/salary-slip-engine.js"></script>
@@ -253,8 +296,9 @@
   <script src="js/markdown-layout-engine.js"></script>
   <script src="js/proxy-failure-policy.js?v=20260930"></script>
   <script src="js/fayzar-ocr-config.js"></script>
-  <script src="js/ai-ocr-engine.js?v=20260930"></script>
+  <script src="js/ai-ocr-engine.js?v=20261006"></script>
   <script src="js/session-store.js"></script>
+  <script src="js/diag-log.js"></script>
   <script src="js/home-app.js"></script>
 </body>
 </html>

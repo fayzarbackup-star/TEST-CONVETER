@@ -142,6 +142,7 @@
     $('wizardProgressPctText').textContent = bn(Math.round(pct)) + '%';
     $('wizardProgressBar').style.width = Math.max(0, Math.min(100, pct)) + '%';
     ring(pct);
+    if (W.FayzarDiag) W.FayzarDiag.ev('progress', { text: String(text).slice(0, 160), pct: Math.round(pct) });
   }
   // হুবহু-মোড নিজে wizardProgress* id-তে লেখে — শতাংশ বদলালে রিংও মেলাই
   new MutationObserver(() => {
@@ -158,6 +159,7 @@
     busy = false;
     if (Eng() && Eng().state) Eng().state.isProcessing = false;
     $('errMsg').textContent = 'রূপান্তর হয়নি: ' + ((e && e.message) || e || 'অজানা ত্রুটি');
+    if (W.FayzarDiag) W.FayzarDiag.end({ ok: false, error: String((e && e.message) || e || 'অজানা ত্রুটি').slice(0, 400) });
     $('procTitle').textContent = 'রূপান্তর সম্পন্ন হয়নি';
     ['procRing', 'wizardProgressTitle', 'procNote', 'btnCancel'].forEach((id) => { $(id).hidden = true; });
     $('procErr').hidden = false;
@@ -170,7 +172,13 @@
     if (!q.length) return;
     busy = true;
     const baseName = baseOf(q[0].name || (q[0].file && q[0].file.name));
-    procReset(mode() === 'faithful'); view('proc'); progress('এআই প্রসেসিং শুরু হচ্ছে…', 2);
+    procReset(mode() === 'faithful'); view('proc');
+    // ডায়াগনস্টিক খতিয়ান (js/diag-log.js) — পরীক্ষামূলক সময়ের জরিপ
+    const files = []; const seenF = new Set();
+    q.forEach((it) => { const f = it.file; if (f && !seenF.has(f)) { seenF.add(f); files.push({ name: f.name, size: f.size, type: f.type }); } });
+    if (W.FayzarDiag) W.FayzarDiag.begin({ mode: mode(), pages: q.length, files, directive: $('ai-custom-directive-input').value.trim().slice(0, 200) });
+    if (E.state) E.state.layoutColumns = 'auto';   // Part-18.9: নতুন ফাইলে কলাম আবার স্বয়ংক্রিয়
+    progress('এআই প্রসেসিং শুরু হচ্ছে…', 2);
     $('wizardPreviewContent').value = '';
     showText(false);
     try {
@@ -193,6 +201,11 @@
       if (E.state) E.state.isProcessing = false;
       busy = false;
       fromHistory = false;
+      if (W.FayzarDiag) {
+        const txt = $('wizardPreviewContent').value || '';
+        const cls = W.DocClassifier ? W.DocClassifier.classify(txt) : null;
+        W.FayzarDiag.end({ ok: true, mode: lastRun.mode, chars: txt.length, layout: cls && cls.type, reason: cls && cls.reason, frontmatter: (txt.match(/^---\s*[\r\n]([\s\S]*?)[\r\n]---/) || [])[1] || '' });
+      }
       bindDownloads();
       view('result');
       recordHistory(q, baseName);
@@ -203,6 +216,7 @@
     const map = { wizardDlDocBtn: ['doc', 'doc'], wizardDlDocxBtn: ['bijoy_docx', 'docx-bijoy'], wizardDlUnicodeDocxBtn: ['unicode_docx', 'docx-unicode'] };
     Object.entries(map).forEach(([id, [tplFmt, fFmt]]) => {
       $(id).onclick = async () => {
+        if (W.FayzarDiag) W.FayzarDiag.note('download', faithful ? fFmt : tplFmt);
         try {
           if (faithful) await faithfulDownload(fFmt);
           else await Eng().downloadWordDocument(tplFmt);
@@ -210,8 +224,23 @@
       };
     });
     $('btnStudio').hidden = faithful;   // স্টুডিও শুধু সাজানো-ফরম্যাটের লেখার জন্য
+    if ($('colPick')) { $('colPick').hidden = faithful; setCols((Eng() && Eng().state && Eng().state.layoutColumns) || 'auto'); }
     $('btnBack2').hidden = fromHistory && !queue().length;
   }
+  // Part-18.9: কলাম-বাছাই — ইঞ্জিনের state.layoutColumns (ডাউনলোডের সময় প্ল্যানারে যায়; আবার OCR লাগে না)
+  function setCols(v) {
+    const box = $('colPick');
+    if (!box) return;
+    box.querySelectorAll('button[data-cols]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cols === String(v))));
+    if (Eng() && Eng().state) Eng().state.layoutColumns = String(v) === 'auto' ? 'auto' : Number(v);
+  }
+  if ($('colPick')) $('colPick').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-cols]');
+    if (!b) return;
+    setCols(b.dataset.cols);
+    if (W.FayzarDiag) W.FayzarDiag.note('columns', b.dataset.cols);
+    toast(b.dataset.cols === 'auto' ? 'কলাম: স্বয়ংক্রিয় (উৎস অনুযায়ী)' : 'কলাম: ' + (b.dataset.cols === '1' ? '১' : '২') + ' — এখন ডাউনলোড করুন', 'info');
+  });
   function showText(on) {
     $('wsText').hidden = !on;
     $('btnShowText').textContent = on ? 'লেখা লুকান' : 'লেখা দেখুন / ঠিক করুন';
@@ -257,6 +286,7 @@
   $('btnCancel').addEventListener('click', () => {
     try { if (Eng() && typeof Eng().cancelCurrentConversion === 'function') Eng().cancelCurrentConversion(); } catch (e) { /* নীরব */ }
     busy = false;
+    if (W.FayzarDiag) W.FayzarDiag.end({ ok: false, cancelled: true });
     if (Eng() && Eng().state) Eng().state.isProcessing = false;
     view('ws');
     toast('রূপান্তর বাতিল করা হয়েছে', 'info');
@@ -344,6 +374,52 @@
     } finally { restoring = false; persist(); }
   }
   if (document.readyState === 'complete') restore(); else W.addEventListener('load', restore);
+
+  // =====================================================================
+  // "সমস্যা জানান" — মতামত + খতিয়ান + (ঐচ্ছিক) মূল ফাইল → ZIP (ব্যবহারকারীর কম্পিউটারেই)
+  // =====================================================================
+  const repModal = $('repModal');
+  function openReport() {
+    if (!repModal) return;
+    repModal.querySelectorAll('input[type=checkbox][name=repIssue]').forEach((c) => { c.checked = false; });
+    repModal.querySelectorAll('.rep-vote button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    $('repComment').value = '';
+    $('repStatus').textContent = '';
+    repModal.hidden = false; $('repBack').hidden = false;
+  }
+  function closeReport() { repModal.hidden = true; $('repBack').hidden = true; }
+  if (repModal) {
+    ['btnReport1', 'btnReport2'].forEach((id) => { const b = $(id); if (b) b.addEventListener('click', openReport); });
+    $('repCancel').addEventListener('click', closeReport);
+    $('repBack').addEventListener('click', closeReport);
+    repModal.querySelectorAll('.rep-vote button').forEach((b) => b.addEventListener('click', () => {
+      repModal.querySelectorAll('.rep-vote button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    }));
+    $('repDownload').addEventListener('click', async () => {
+      const vote = repModal.querySelector('.rep-vote button[aria-pressed="true"]');
+      const feedback = {
+        vote: vote ? vote.dataset.vote : '',
+        issues: Array.from(repModal.querySelectorAll('input[name=repIssue]:checked')).map((c) => c.value),
+        comment: $('repComment').value.trim(),
+        view: current, mode: lastRun ? lastRun.mode : mode()
+      };
+      $('repStatus').textContent = 'রিপোর্ট তৈরি হচ্ছে…';
+      try {
+        const blob = await W.FayzarDiag.buildReportZip({
+          feedback,
+          includeFiles: $('repFiles').checked,
+          includeRecent: $('repRecent').checked,
+          queue: queue(),
+          ocrText: $('wizardPreviewContent').value || (Eng() && Eng().state && Eng().state.unicodeText) || '',
+          faithful: lastRun && lastRun.mode === 'faithful' ? lastRun.ir : null
+        });
+        const d = new Date(), pad = (n) => String(n).padStart(2, '0');
+        saveBlob(blob, 'AI-Compose-রিপোর্ট-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.zip');
+        $('repStatus').textContent = 'রিপোর্ট নামানো হয়েছে — ফাইলটি আমাদের পাঠান।';
+        setTimeout(closeReport, 1500);
+      } catch (e) { $('repStatus').textContent = 'রিপোর্ট তৈরি হয়নি: ' + ((e && e.message) || e); }
+    });
+  }
 
   // =====================================================================
   // কনভার্ট-ইতিহাস: সফল রূপান্তর জমা (লেখা / হুবহু-ir), ডান প্যানেলে তালিকা — খুলুন, .doc, ✕

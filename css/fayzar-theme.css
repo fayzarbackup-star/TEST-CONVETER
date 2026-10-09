@@ -2,6 +2,7 @@
  * টুল-পাতাগুলো Tailwind-এ; সংঘাত এড়াতে সব ক্লাস fz- উপসর্গে। ডার্ক মোড: html.dark (theme-lang.js যা বসায়)।
  * হোম-পাতার নিজস্ব অংশ css/home.css-এ।
  */
+@font-face { font-family: 'Dancing Script'; src: url(../fonts/DancingScript-Variable.ttf) format('truetype'); font-weight: 400 700; font-display: swap; }   /* OFL — fonts/DancingScript-OFL.txt */
 :root {
   --fz-g-900: #14523A;
   --fz-g-700: #2E8B5E;
@@ -38,7 +39,11 @@ html.dark {
 .fz-nav-in { max-width: var(--fz-max); margin: 0 auto; height: 72px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .fz-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--fz-nav-ink); font-weight: 800; font-size: 1.35rem; white-space: nowrap; }
 .fz-brand svg { flex: none; }
-.fz-brand .fz-short { display: none; }
+.fz-brand img { flex: none; display: block; }
+.fz-brand-txt { display: flex; flex-direction: column; line-height: 1; }
+.fz-wordmark { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 1.85rem; color: #1F5E43; letter-spacing: .3px; }
+.fz-brand-sub { font-size: .68rem; font-weight: 600; color: var(--fz-ink-3); margin-top: 3px; letter-spacing: .2px; }
+html.dark .fz-wordmark { color: #9FE3C2; }
 .fz-links { display: flex; align-items: center; gap: 4px; }
 .fz-links a { text-decoration: none; font-size: .97rem; font-weight: 500; color: var(--fz-nav-ink); padding: 8px 12px; border-radius: 10px; white-space: nowrap; transition: background .2s, color .2s; }
 .fz-links a:hover { background: var(--fz-nav-hover); color: var(--fz-g-700); }
@@ -110,8 +115,9 @@ html.dark .fz-kicker, html.dark .fz-chips > * { background: #13241C; color: #CDE
   .fz-nav-in { height: 62px; padding: 0 16px; }
   .fz-links { top: 62px; }
   .fz-brand { font-size: 1.1rem; }
-  .fz-brand .fz-full { display: none; }
-  .fz-brand .fz-short { display: inline; }
+  .fz-brand img { width: 34px; height: 34px; }
+  .fz-wordmark { font-size: 1.5rem; }
+  .fz-brand-sub { display: none; }
   .fz-foot { padding: 32px 16px 16px; }
   .fz-foot-in { grid-template-columns: 1fr; }
 }

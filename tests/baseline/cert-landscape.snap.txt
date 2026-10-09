@@ -1,0 +1,208 @@
+# fixture: cert-landscape
+# docType: PROTTOYON
+
+===== CLASSIFIER =====
+{
+  "type": "PROTTOYON"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "letterhead",
+      "lines": [
+        {
+          "role": "org",
+          "text": "আলোকধারা রেসিডেন্সিয়াল মডেল স্কুল"
+        },
+        {
+          "role": "addr",
+          "text": "পলাশবাড়ী, ফুলবাড়ী, দিনাজপুর"
+        },
+        {
+          "role": "meta",
+          "text": "বিদ্যালয় প্রতিষ্ঠার সন: ২০২৪ খ্রি."
+        }
+      ]
+    },
+    {
+      "header": true,
+      "kind": "table",
+      "rows": [
+        [
+          "নম্বর",
+          "গ্রেড",
+          "শিখন অর্জিত মাত্রা"
+        ],
+        [
+          "৮০%-১০০%",
+          "এ",
+          "অতি উত্তম"
+        ],
+        [
+          "৬০%-৭৯%",
+          "বি",
+          "উত্তম"
+        ],
+        [
+          "৪০%-৫৯%",
+          "সি",
+          "সন্তোষজনক"
+        ],
+        [
+          "৪০% এর কম",
+          "ডি",
+          "অগ্রগতি প্রয়োজন"
+        ]
+      ]
+    },
+    {
+      "kind": "title",
+      "text": "প্রত্যয়ন পত্র"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, নাম ঃ ........................................................ পিতাঃ ........................................................ মাতাঃ ........................................................ সে অত্র আলোকধারা রেসিডেন্সিয়াল মডেল স্কুলে ২০২৫ ইং শিক্ষাবর্ষে পঞ্চম শ্রেণিতে অধ্যয়ন শেষে ধারাবাহিক ও চূড়ান্ত মূল্যায়নে অংশগ্রহণ করে ............... গ্রেড পেয়ে উত্তীর্ণ হয়েছে। তার শিখনের অর্জিত মাত্রা ...............।"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "তার শ্রেণি রোল ............. এবং জন্ম তারিখ ............................. খ্রি.।"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "আমি তার সর্বাঙ্গীন সাফল্য কামনা করছি।"
+    },
+    {
+      "kind": "line",
+      "role": "date",
+      "text": "তারিখঃ ................................."
+    },
+    {
+      "groups": [
+        [
+          "(রফিক উদ্দিন)",
+          "প্রধান শিক্ষক",
+          "আলোকধারা রেসিডেন্সিয়াল মডেল স্কুল",
+          "মোবাইল: ০১৭০০-০০০০০০"
+        ]
+      ],
+      "kind": "signature"
+    }
+  ],
+  "kind": "LETTER_LAYOUT",
+  "variant": "prottoyon",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-letter-layout letter-prottoyon font-kalpurush" style="padding: 0.50in 0.50in 0.50in 0.75in; font-size: 13pt; box-sizing: border-box;">
+<div style="margin-left: -0.25in; text-align: center; line-height: 1.25; padding-bottom: 3px; border-bottom: 2px solid #000;">
+<div style="font-size: 30pt; font-weight: 700;">আলোকধারা রেসিডেন্সিয়াল মডেল স্কুল</div>
+<div style="font-size: 16pt;">পলাশবাড়ী, ফুলবাড়ী, দিনাজপুর</div>
+<div style="font-size: 14pt;">বিদ্যালয় প্রতিষ্ঠার সন: ২০২৪ খ্রি.</div>
+</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<table style="border-collapse: collapse; margin: 0 auto; table-layout: fixed; font-size: 11pt;">
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.90in; font-weight: 700;">নম্বর</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.58in; font-weight: 700;">গ্রেড</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.57in; font-weight: 700;">শিখন অর্জিত মাত্রা</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.90in;">৮০%-১০০%</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.58in;">এ</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.57in;">অতি উত্তম</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.90in;">৬০%-৭৯%</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.58in;">বি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.57in;">উত্তম</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.90in;">৪০%-৫৯%</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.58in;">সি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.57in;">সন্তোষজনক</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.90in;">৪০% এর কম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.58in;">ডি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.57in;">অগ্রগতি প্রয়োজন</td>
+</tr>
+</table>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="text-align: center; font-weight: 700; text-decoration: underline; line-height: 1.3; font-size: 25pt;">প্রত্যয়ন পত্র</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;text-align: justify;">এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, নাম ঃ ........................................................ পিতাঃ ........................................................ মাতাঃ ........................................................ সে অত্র আলোকধারা রেসিডেন্সিয়াল মডেল স্কুলে ২০২৫ ইং শিক্ষাবর্ষে পঞ্চম শ্রেণিতে অধ্যয়ন শেষে ধারাবাহিক ও চূড়ান্ত মূল্যায়নে অংশগ্রহণ করে ............... গ্রেড পেয়ে উত্তীর্ণ হয়েছে। তার শিখনের অর্জিত মাত্রা ...............।</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;text-align: justify;">তার শ্রেণি রোল ............. এবং জন্ম তারিখ ............................. খ্রি.।</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;text-align: justify;">আমি তার সর্বাঙ্গীন সাফল্য কামনা করছি।</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;">তারিখঃ .................................</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="min-height: 1.54em; line-height: 1.54;">&nbsp;</div>
+<div style="margin-left: 3.78in; text-align: center; line-height: 1.34; font-size: 14pt;">
+<div>(রফিক উদ্দিন)</div>
+<div>প্রধান শিক্ষক</div>
+<div>আলোকধারা রেসিডেন্সিয়াল মডেল স্কুল</div>
+<div>মোবাইল: ০১৭০০-০০০০০০</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType PROTTOYON)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1080\margr720\margt720\margb720\cols1
+{\pard\plain\f0\fs60\sl240\slmult1\sb0\sa0\qc\li-360 {\b {\f0 \u2438?\u2482?\u2507?\u2453?\u2471?\u2494?\u2480?\u2494? \u2480?\u2503?\u2488?\u2495?\u2465?\u2503?\u2472?\u2509?\u2488?\u2495?\u2527?\u2494?\u2482? \u2478?\u2465?\u2503?\u2482? \u2488?\u2509?\u2453?\u2497?\u2482?}}\par}
+{\pard\plain\f0\fs32\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2474?\u2482?\u2494?\u2486?\u2476?\u2494?\u2524?\u2496?, \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li-360\brdrb\brdrs\brdrw30\brsp80 {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2480? \u2488?\u2472?: \u2536?\u2534?\u2536?\u2538? \u2454?\u2509?\u2480?\u2495?.}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft2859\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4151\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4986\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7247
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2472?\u2478?\u2509?\u2476?\u2480?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2455?\u2509?\u2480?\u2503?\u2465?}}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\b {\f0 \u2486?\u2495?\u2454?\u2472? \u2437?\u2480?\u2509?\u2460?\u2495?\u2468? \u2478?\u2494?\u2468?\u2509?\u2480?\u2494?}}\cell \row}
+{\trowd\trgaph80\trleft2859\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4151\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4986\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7247
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2542?\u2534?}{\f1 %-}{\f0 \u2535?\u2534?\u2534?}{\f1 %}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2447?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2437?\u2468?\u2495? \u2441?\u2468?\u2509?\u2468?\u2478?}\cell \row}
+{\trowd\trgaph80\trleft2859\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4151\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4986\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7247
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2540?\u2534?}{\f1 %-}{\f0 \u2541?\u2543?}{\f1 %}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2476?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2441?\u2468?\u2509?\u2468?\u2478?}\cell \row}
+{\trowd\trgaph80\trleft2859\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4151\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4986\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7247
+\pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2538?\u2534?}{\f1 %-}{\f0 \u2539?\u2543?}{\f1 %}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2488?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs22\sl240\slmult1 {\f0 \u2488?\u2472?\u2509?\u2468?\u2507?\u2487?\u2460?\u2472?\u2453?}\cell \row}
+{\trowd\trgaph80\trleft2859\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4151\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4986\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7247
+\pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2538?\u2534?% \u2447?\u2480? \u2453?\u2478?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2465?\u2495?}\cell \pard\plain\intbl\qc\f0\fs22\sl240\slmult1 {\f0 \u2437?\u2455?\u2509?\u2480?\u2455?\u2468?\u2495? \u2474?\u2509?\u2480?\u2527?\u2507?\u2460?\u2472?}\cell \row}
+\pard\plain
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs50\sl240\slmult1\sb0\sa0\qc {\b {\ul {\f0 \u2474?\u2509?\u2480?\u2468?\u2509?\u2479?\u2527?\u2472? \u2474?\u2468?\u2509?\u2480?}}}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\qj {\f0 \u2447?\u2439? \u2478?\u2480?\u2509?\u2478?\u2503? \u2474?\u2509?\u2480?\u2468?\u2509?\u2479?\u2527?\u2472? \u2453?\u2480?\u2494? \u2479?\u2494?\u2458?\u2509?\u2459?\u2503? \u2479?\u2503?, \u2472?\u2494?\u2478? \u2435? ........................................................ \u2474?\u2495?\u2468?\u2494?\u2435? ........................................................ \u2478?\u2494?\u2468?\u2494?\u2435? ........................................................ \u2488?\u2503? \u2437?\u2468?\u2509?\u2480? \u2438?\u2482?\u2507?\u2453?\u2471?\u2494?\u2480?\u2494? \u2480?\u2503?\u2488?\u2495?\u2465?\u2503?\u2472?\u2509?\u2488?\u2495?\u2527?\u2494?\u2482? \u2478?\u2465?\u2503?\u2482? \u2488?\u2509?\u2453?\u2497?\u2482?\u2503? \u2536?\u2534?\u2536?\u2539? \u2439?\u2434? \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?\u2476?\u2480?\u2509?\u2487?\u2503? \u2474?\u2462?\u2509?\u2458?\u2478? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2468?\u2503? \u2437?\u2471?\u2509?\u2479?\u2527?\u2472? \u2486?\u2503?\u2487?\u2503? \u2471?\u2494?\u2480?\u2494?\u2476?\u2494?\u2489?\u2495?\u2453? \u2451? \u2458?\u2498?\u2524?\u2494?\u2472?\u2509?\u2468? \u2478?\u2498?\u2482?\u2509?\u2479?\u2494?\u2527?\u2472?\u2503? \u2437?\u2434?\u2486?\u2455?\u2509?\u2480?\u2489?\u2467? \u2453?\u2480?\u2503? ............... \u2455?\u2509?\u2480?\u2503?\u2465? \u2474?\u2503?\u2527?\u2503? \u2441?\u2468?\u2509?\u2468?\u2496?\u2480?\u2509?\u2467? \u2489?\u2527?\u2503?\u2459?\u2503?\u2404? \u2468?\u2494?\u2480? \u2486?\u2495?\u2454?\u2472?\u2503?\u2480? \u2437?\u2480?\u2509?\u2460?\u2495?\u2468? \u2478?\u2494?\u2468?\u2509?\u2480?\u2494? ...............\u2404?}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\qj {\f0 \u2468?\u2494?\u2480? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2480?\u2507?\u2482? ............. \u2447?\u2476?\u2434? \u2460?\u2472?\u2509?\u2478? \u2468?\u2494?\u2480?\u2495?\u2454? ............................. \u2454?\u2509?\u2480?\u2495?.\u2404?}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\qj {\f0 \u2438?\u2478?\u2495? \u2468?\u2494?\u2480? \u2488?\u2480?\u2509?\u2476?\u2494?\u2457?\u2509?\u2455?\u2496?\u2472? \u2488?\u2494?\u2475?\u2482?\u2509?\u2479? \u2453?\u2494?\u2478?\u2472?\u2494? \u2453?\u2480?\u2459?\u2495?\u2404?}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?\u2435? .................................}\par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs26\sl276\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5437 {\f0 (\u2480?\u2475?\u2495?\u2453? \u2441?\u2470?\u2509?\u2470?\u2495?\u2472?)}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5437 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5437 {\f0 \u2438?\u2482?\u2507?\u2453?\u2471?\u2494?\u2480?\u2494? \u2480?\u2503?\u2488?\u2495?\u2465?\u2503?\u2472?\u2509?\u2488?\u2495?\u2527?\u2494?\u2482? \u2478?\u2465?\u2503?\u2482? \u2488?\u2509?\u2453?\u2497?\u2482?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li5437 {\f0 \u2478?\u2507?\u2476?\u2494?\u2439?\u2482?: \u2534?\u2535?\u2541?\u2534?\u2534?}{\f1 -}{\f0 \u2534?\u2534?\u2534?\u2534?\u2534?\u2534?}\par}
+}

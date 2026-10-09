@@ -1,0 +1,170 @@
+# fixture: cv-biodata
+# docType: CV_RESUME
+
+===== CLASSIFIER =====
+{
+  "type": "CV_RESUME"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "title",
+      "text": "বায়োডাটা"
+    },
+    {
+      "kind": "heading",
+      "text": "ব্যক্তিগত তথ্য"
+    },
+    {
+      "kind": "kv",
+      "rows": [
+        {
+          "label": "নাম",
+          "more": [],
+          "num": "",
+          "sep": ":",
+          "value": "সুমাইয়া আক্তার"
+        },
+        {
+          "label": "পিতার নাম",
+          "more": [],
+          "num": "",
+          "sep": ":",
+          "value": "মোঃ জসিম উদ্দিন"
+        },
+        {
+          "label": "মাতার নাম",
+          "more": [],
+          "num": "",
+          "sep": ":",
+          "value": "শাহানা বেগম"
+        },
+        {
+          "label": "বর্তমান ঠিকানা",
+          "more": [
+            "মিরপুর, ঢাকা"
+          ],
+          "num": "",
+          "sep": ":",
+          "value": "বাসা নং ১২, রোড নং ৩"
+        },
+        {
+          "label": "বৈবাহিক অবস্থা",
+          "more": [],
+          "num": "",
+          "sep": ":",
+          "value": "অবিবাহিত"
+        },
+        {
+          "label": "উচ্চতা",
+          "more": [],
+          "num": "",
+          "sep": ":",
+          "value": "৫ ফুট ২ ইঞ্চি"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "text": "অঙ্গীকার"
+    },
+    {
+      "kind": "para",
+      "text": "আমি এই মর্মে অঙ্গীকার করছি যে, উপরের সকল তথ্য সত্য ও সঠিক। কোনো তথ্য মিথ্যা প্রমাণিত হলে কর্তৃপক্ষ যে ব্যবস্থা নেবে তা মেনে নিতে বাধ্য থাকব।"
+    },
+    {
+      "date": "তারিখ: ০৫/০৯/২০২৬",
+      "kind": "footer",
+      "sign": [
+        "স্বাক্ষর",
+        "(সুমাইয়া আক্তার)"
+      ]
+    }
+  ],
+  "kind": "CV_LAYOUT",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-cv-layout font-kalpurush" style="padding: 1.00in 0.50in 0.50in 1.00in; font-size: 15pt; box-sizing: border-box;">
+<div style="text-align: center; font-weight: 700; text-decoration: underline; line-height: 1.3; font-size: 32pt; margin-bottom: 0.25em;">বায়োডাটা</div>
+<div style="min-height: 2.01em; line-height: 2.01;">
+<b>
+<u>ব্যক্তিগত তথ্য</u>
+</b>
+</div>
+<div style="min-height: 2.01em; line-height: 2.01;">&nbsp;</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">নাম</span>
+<b>: সুমাইয়া আক্তার</b>
+</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">পিতার নাম</span>: মোঃ জসিম উদ্দিন</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">মাতার নাম</span>: শাহানা বেগম</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">বর্তমান ঠিকানা</span>: বাসা নং ১২, রোড নং ৩</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in;">মিরপুর, ঢাকা</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">বৈবাহিক অবস্থা</span>: অবিবাহিত</div>
+<div style="min-height: 2.01em; line-height: 2.01;padding-left: 2.02in; text-indent: -2.02in;">
+<span style="display: inline-block; width: 1.81in; text-indent: 0;">উচ্চতা</span>: ৫ ফুট ২ ইঞ্চি</div>
+<div style="min-height: 2.01em; line-height: 2.01;">&nbsp;</div>
+<div style="min-height: 2.01em; line-height: 2.01;">
+<b>
+<u>অঙ্গীকার</u>
+</b>
+</div>
+<div style="min-height: 2.01em; line-height: 2.01;">&nbsp;</div>
+<div style="min-height: 2.01em; line-height: 2.01;text-align: justify;">আমি এই মর্মে অঙ্গীকার করছি যে, উপরের সকল তথ্য সত্য ও সঠিক। কোনো তথ্য মিথ্যা প্রমাণিত হলে কর্তৃপক্ষ যে ব্যবস্থা নেবে তা মেনে নিতে বাধ্য থাকব।</div>
+<div style="min-height: 2.01em; line-height: 2.01;">&nbsp;</div>
+<div style="min-height: 2.01em; line-height: 2.01;">&nbsp;</div>
+<div style="display: flex; align-items: flex-end; line-height: 1.34;">
+<div style="flex: 1;">তারিখ: ০৫/০৯/২০২৬</div>
+<div style="width: 2in; text-align: center;">
+<div style="border-top: 1px solid #000;">স্বাক্ষর</div>
+<div>(সুমাইয়া আক্তার)</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType CV_RESUME)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1440\margr720\margt1440\margb720\cols1
+{\pard\plain\f0\fs64\sl240\slmult1\sb0\sa0\qc {\b {\ul {\f0 \u2476?\u2494?\u2527?\u2507?\u2465?\u2494?\u2463?\u2494?}}}\par}
+{\pard\plain\f0\fs24\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\keepn\ql {\b {\ul {\f0 \u2476?\u2509?\u2479?\u2453?\u2509?\u2468?\u2495?\u2455?\u2468? \u2468?\u2469?\u2509?\u2479?}}}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2472?\u2494?\u2478?}\tab {\b {\f0 : \u2488?\u2497?\u2478?\u2494?\u2439?\u2527?\u2494? \u2438?\u2453?\u2509?\u2468?\u2494?\u2480?}}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2474?\u2495?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?}\tab {\f0 : \u2478?\u2507?\u2435? \u2460?\u2488?\u2495?\u2478? \u2441?\u2470?\u2509?\u2470?\u2495?\u2472?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2478?\u2494?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?}\tab {\f0 : \u2486?\u2494?\u2489?\u2494?\u2472?\u2494? \u2476?\u2503?\u2455?\u2478?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2476?\u2480?\u2509?\u2468?\u2478?\u2494?\u2472? \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?}\tab {\f0 : \u2476?\u2494?\u2488?\u2494? \u2472?\u2434? \u2535?\u2536?, \u2480?\u2507?\u2465? \u2472?\u2434? \u2537?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902 {\f0 \u2478?\u2495?\u2480?\u2474?\u2497?\u2480?, \u2466?\u2494?\u2453?\u2494?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2476?\u2504?\u2476?\u2494?\u2489?\u2495?\u2453? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?}\tab {\f0 : \u2437?\u2476?\u2495?\u2476?\u2494?\u2489?\u2495?\u2468?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql\li2902\fi-2902\tx2600 {\f0 \u2441?\u2458?\u2509?\u2458?\u2468?\u2494?}\tab {\f0 : \u2539? \u2475?\u2497?\u2463? \u2536? \u2439?\u2462?\u2509?\u2458?\u2495?}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\keepn\ql {\b {\ul {\f0 \u2437?\u2457?\u2509?\u2455?\u2496?\u2453?\u2494?\u2480?}}}\par}
+{\pard\plain\f0\fs30\sl360\slmult1\sb0\sa0\ql \par}
+{\pard\plain\keepn\f0\fs30\sl288\slmult1\sb0\sa0\qj {\f0 \u2438?\u2478?\u2495? \u2447?\u2439? \u2478?\u2480?\u2509?\u2478?\u2503? \u2437?\u2457?\u2509?\u2455?\u2496?\u2453?\u2494?\u2480? \u2453?\u2480?\u2459?\u2495? \u2479?\u2503?, \u2441?\u2474?\u2480?\u2503?\u2480? \u2488?\u2453?\u2482? \u2468?\u2469?\u2509?\u2479? \u2488?\u2468?\u2509?\u2479? \u2451? \u2488?\u2464?\u2495?\u2453?\u2404? \u2453?\u2507?\u2472?\u2507? \u2468?\u2469?\u2509?\u2479? \u2478?\u2495?\u2469?\u2509?\u2479?\u2494? \u2474?\u2509?\u2480?\u2478?\u2494?\u2467?\u2495?\u2468? \u2489?\u2482?\u2503? \u2453?\u2480?\u2509?\u2468?\u2499?\u2474?\u2453?\u2509?\u2487? \u2479?\u2503? \u2476?\u2509?\u2479?\u2476?\u2488?\u2509?\u2469?\u2494? \u2472?\u2503?\u2476?\u2503? \u2468?\u2494? \u2478?\u2503?\u2472?\u2503? \u2472?\u2495?\u2468?\u2503? \u2476?\u2494?\u2471?\u2509?\u2479? \u2469?\u2494?\u2453?\u2476?\u2404?}\par}
+{\pard\plain\keepn\f0\fs30\sl360\slmult1\sb0\sa0\ql \par}
+{\pard\plain\keepn\f0\fs30\sl360\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft0\trkeep\clvertalb\cellx6866\cellx9746
+\pard\plain\intbl\ql\f0\fs30\sl240\slmult1 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: \u2534?\u2539?}{\f1 /}{\f0 \u2534?\u2543?}{\f1 /}{\f0 \u2536?\u2534?\u2536?\u2540?}\cell \pard\plain\intbl\qc\brdrt\brdrs\brdrw10\brsp20\f0\fs30\sl240\slmult1 {\f0 \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\par \pard\plain\intbl\qc\f0\fs30\sl240\slmult1 {\f0 (\u2488?\u2497?\u2478?\u2494?\u2439?\u2527?\u2494? \u2438?\u2453?\u2509?\u2468?\u2494?\u2480?)}\cell \row}
+\pard\plain
+}

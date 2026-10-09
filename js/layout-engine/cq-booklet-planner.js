@@ -207,12 +207,87 @@
       EXAM_MATH: { landscape: true, colGap: 1008, colSep: false, booklet: true, headerSpan: 'column', examTypeLabel: 'সৃজনশীল অভীক্ষা', fallback: 'CQ_HEADER_FALLBACK' },
       EXAM_COMBINED: { landscape: true, colGap: 1008, colSep: false, booklet: true, headerSpan: 'column', examTypeLabel: 'সৃজনশীল অভীক্ষা', fallback: 'CQ_HEADER_FALLBACK' },
       // স্পেক: A4 পোর্ট্রেট, ১-কলাম হেডার + ২-কলাম বডি (০.২৫" = ৩৬০ গ্যাপ, সলিড ডিভাইডার), কলাম ১ থেকে শুরু
-      EXAM_GENERAL: { landscape: false, colGap: 360, colSep: true, booklet: false, headerSpan: 'page', examTypeLabel: '', fallback: 'GENERAL_HEADER_FALLBACK' }
+      EXAM_GENERAL: { landscape: false, colGap: 360, colSep: true, booklet: false, headerSpan: 'page', examTypeLabel: '', fallback: 'GENERAL_HEADER_FALLBACK' },
+      // Part-18.9 (ব্যবহারকারীর সিদ্ধান্ত ২০২৬-১০-০৯, দোকানের আসল ২য়–৫ম শ্রেণির পত্র থেকে মাপা):
+      // EXAM_GENERAL-এর ২য়–৫ম শ্রেণি → A4 ল্যান্ডস্কেপ, ২ কলাম, ০.৭" গ্যাপ, কলাম-লাইন নেই, হেডার কলামের শীর্ষে।
+      // booklet 'auto': লেখা ২ কলামে ধরলে এক পাতা (কলাম ১ থেকে); বেশি হলে বুকলেট (শীট-১-এর ১ম কলাম ব্যাক কভার)।
+      EXAM_PRIMARY: { landscape: true, colGap: 1008, colSep: false, booklet: 'auto', headerSpan: 'column', examTypeLabel: '', fallback: 'GENERAL_HEADER_FALLBACK' },
+      // Part-18.9 (ব্যবহারকারীর সিদ্ধান্ত ২০২৬-১০-০৯): এক কলামের পত্র (ইংরেজি/সৃজনশীল/সাধারণ) — A4 লম্বালম্বি, ১ কলাম,
+      // হেডার উপরে; দোকানের এক-কলামের বাংলা ২য় পত্রের মতো। উৎস এক কলামের হলে বা ব্যবহারকারী "১ কলাম" বাছলে।
+      EXAM_ONECOL: { landscape: false, cols: 1, colGap: 0, colSep: false, booklet: false, headerSpan: 'column', examTypeLabel: '', fallback: 'CQ_HEADER_FALLBACK' }
     },
 
     profile(docType) {
       const key = String(docType || 'EXAM_CQ').toUpperCase();
       return Object.assign({}, this.LAYOUT_PROFILES[key] || this.LAYOUT_PROFILES.EXAM_CQ);
+    },
+
+    /** EXAM_PRIMARY যে শ্রেণিগুলোতে প্রযোজ্য (ব্যবহারকারীর নিয়ম: ২য় থেকে ৫ম) */
+    PRIMARY_GRADES: { min: 2, max: 5 },
+
+    GRADE_WORDS: { 'প্রথম': 1, 'দ্বিতীয়': 2, 'তৃতীয়': 3, 'চতুর্থ': 4, 'পঞ্চম': 5, 'ষষ্ঠ': 6, 'সপ্তম': 7, 'অষ্টম': 8, 'নবম': 9, 'দশম': 10, 'একাদশ': 11, 'দ্বাদশ': 12,
+      one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 },
+
+    /** শ্রেণি-লেখা → সংখ্যা (৪ / 4 / ৪র্থ / চতুর্থ / Four); না পেলে 0 */
+    parseGrade(v) {
+      const s = String(v == null ? '' : v).trim().replace(/য়/g, 'য়')
+        .replace(/[০-৯]/g, (d) => String('০১২৩৪৫৬৭৮৯'.indexOf(d))).replace(/^["']|["']$/g, '');
+      if (!s) return 0;
+      const n = s.match(/\d{1,2}/);
+      if (n) { const g = parseInt(n[0], 10); return g >= 1 && g <= 12 ? g : 0; }
+      for (const w of Object.keys(this.GRADE_WORDS)) {
+        const wn = w.replace(/য়/g, 'য়');   // নুকতা-রূপ এক (s-ও একই রূপে)
+        if (/^[a-z]+$/.test(w) ? new RegExp('\\b' + w + '\\b', 'i').test(s) : s.indexOf(wn) === 0) return this.GRADE_WORDS[w];
+      }
+      return 0;
+    },
+
+    /** শ্রেণি: আগে স্পষ্ট অপশন / Gemini-র ফ্রন্টম্যাটার, না পেলে হেডারের "শ্রেণি: চতুর্থ" লেখা */
+    gradeOf(parsedData, o) {
+      const opt = o || {};
+      const fm = opt.__frontmatter || {};
+      const direct = this.parseGrade(opt.grade) || this.parseGrade(fm.grade || fm.class);
+      if (direct) return direct;
+      const h = (parsedData && parsedData.header) || {};
+      const s = [h.classAndSubject, h.exam, h.location, h.institute].filter(Boolean).join(' ; ');
+      const m = s.match(/(?:শ্রেণি|শ্রেণী|শ্রেনি|শ্রেনী|class|grade)\s*[:ঃ\-–]?\s*([^\s,;|।:ঃ]+)/i);
+      return m ? this.parseGrade(m[1]) : 0;
+    },
+
+    /**
+     * Part-18.9: ডকটাইপ + শ্রেণি → লেআউট-প্রোফাইলের চাবি। ডকটাইপ বদলায় না (পার্সার/হেডার-ফলব্যাক
+     * আগের মতো EXAM_GENERAL) — শুধু পাতার জ্যামিতি বাছাই। স্পষ্ট o.profileKey থাকলে সেটিই।
+     */
+    layoutKey(docType, parsedData, o) {
+      const opt = o || {};
+      if (opt.profileKey && this.LAYOUT_PROFILES[String(opt.profileKey).toUpperCase()]) return String(opt.profileKey).toUpperCase();
+      const key = String(docType || 'EXAM_CQ').toUpperCase();
+      const ONECOL_TYPES = ['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL', 'EXAM_COMBINED'];
+      const choice = this.columnsChoice(opt);   // 'one' | 'two' | 'auto'
+      // ব্যবহারকারী "১ কলাম" বাছলে সবকিছুর আগে
+      if (choice === 'one' && ONECOL_TYPES.includes(key)) return 'EXAM_ONECOL';
+      if (key === 'EXAM_GENERAL') {
+        const g = this.gradeOf(parsedData, opt);
+        if (g >= this.PRIMARY_GRADES.min && g <= this.PRIMARY_GRADES.max) return 'EXAM_PRIMARY';   // ২য়–৫ম: নিয়ম অগ্রাধিকার
+      }
+      // স্বয়ংক্রিয়: ছাপা উৎস এক কলামের হলে (Gemini-র source_columns তথ্য; হাতে-লেখায় দেওয়া হয় না)
+      if (choice === 'auto' && ONECOL_TYPES.includes(key) && this.sourceColumns(opt) === 1) return 'EXAM_ONECOL';
+      return key;
+    },
+
+    /** ব্যবহারকারীর কলাম-পছন্দ: o.layoutColumns = 1 | 2 | 'auto' (ফলাফল-পাতার বোতাম) */
+    columnsChoice(o) {
+      const v = String((o && o.layoutColumns) == null ? 'auto' : o.layoutColumns).trim().toLowerCase();
+      if (v === '1' || v === 'one') return 'one';
+      if (v === '2' || v === 'two') return 'two';
+      return 'auto';
+    },
+
+    /** উৎস-পাতার কলাম-সংখ্যা (Gemini ফ্রন্টম্যাটার `source_columns`); অজানা/হাতে-লেখা → 0 */
+    sourceColumns(o) {
+      const fm = (o && o.__frontmatter) || {};
+      const n = parseInt(String(fm.source_columns == null ? '' : fm.source_columns).replace(/[০-৯]/g, (d) => String('০১২৩৪৫৬৭৮৯'.indexOf(d))), 10);
+      return n === 1 || n === 2 ? n : 0;
     },
 
     /** ইংরেজি প্রশ্নপত্রের ফলব্যাক (বাংলা প্লেসহোল্ডার বা কাল্পনিক মান নয়) */
@@ -286,7 +361,7 @@
     geometry(options) {
       const o = options || {};
       const g = Object.assign({}, this.GEOMETRY);
-      const prof = this.profile(o.docType);
+      const prof = this.profile(o.profileKey || o.docType);
       g.colGap = prof.colGap;
       g.colSep = prof.colSep;
       if (!prof.landscape) { const w = g.pageW; g.pageW = g.pageH; g.pageH = w; }
@@ -298,6 +373,7 @@
       g.indent = U.indent(o.indent, g.indent);
       g.subIndent = U.indent(o.subIndent, g.subIndent);
       if (o.cols) g.cols = U.count(o.cols, 2, 1, 6);
+      if (prof.cols) g.cols = prof.cols;   // Part-18.9: এক-কলাম প্রোফাইল — রপ্তানির `columns: 2` ডিফল্ট উপেক্ষা
       if (o.pageWidth) g.pageW = U.count(o.pageWidth, g.pageW, 3000, 40000);
       if (o.pageHeight) g.pageH = U.count(o.pageHeight, g.pageH, 3000, 40000);
       if (o.baseSz) g.baseSz = U.count(o.baseSz, g.baseSz, 12, 96);
@@ -355,7 +431,9 @@
     buildHeader(header, options) {
       const h = header || {};
       const useFallback = !!(options && options.fallback);
-      const prof = this.profile(options && options.docType);
+      let prof = this.profile(options && (options.profileKey || options.docType));
+      // এক-কলাম প্রোফাইলে হেডারের মাঝের লেবেল মূল ডকটাইপের (সৃজনশীল পত্রে "সৃজনশীল অভীক্ষা" থাকে)
+      if (options && options.profileKey === 'EXAM_ONECOL') prof = Object.assign({}, prof, { examTypeLabel: this.profile(options.docType).examTypeLabel });
       const lang = (options && options.lang) || 'bn';
       const FB = this.headerFallback(options && options.docType, lang);
       const LBL = this.HEADER_LABELS[lang] || this.HEADER_LABELS.bn;
@@ -493,15 +571,18 @@
     plan(parsedData, options) {
       const o = options || {};
       const docType = o.docType || 'EXAM_CQ';
-      const g = this.geometry(o);
+      // Part-18.9: প্রোফাইল-চাবি (যেমন EXAM_GENERAL + ২য়–৫ম শ্রেণি → EXAM_PRIMARY); ডকটাইপ অপরিবর্তিত
+      const profileKey = this.layoutKey(docType, parsedData, o);
+      const g = this.geometry(Object.assign({}, o, { profileKey }));
       const lineH = this.lineH(g.baseSz, g);
       // বুকলেট সংযোজন (২): শীট-১-এর ১ম কলাম ব্যাক কভার হিসেবে সংরক্ষিত।
       // o.skipFirstColumn === false → বুকলেট নয়, কলামে ক্রমাগত ফ্লো;
       // o.skipFirstColumn === true  → সংরক্ষিত কলাম অবশ্যই ফাঁকা (টেল-ভরতি বন্ধ)।
-      const prof = this.profile(docType);
+      const prof = this.profile(profileKey);
       // বুকলেট নয় এমন প্রোফাইল (EXAM_GENERAL) — কলাম ১ থেকে ক্রমাগত ফ্লো, স্পষ্ট true ছাড়া সংরক্ষণ নেই
-      const reserve = prof.booklet ? o.skipFirstColumn !== false : o.skipFirstColumn === true;
-      const backFill = reserve && o.skipFirstColumn !== true;
+      // booklet 'auto' (EXAM_PRIMARY): কলাম গোনার পরে ঠিক হয় — ২ কলামের বেশি হলে তবেই বুকলেট
+      let reserve = prof.booklet === true ? o.skipFirstColumn !== false : o.skipFirstColumn === true;
+      let backFill = reserve && o.skipFirstColumn !== true;
       const cap = g.capacity;
       // 'page' হেডার পুরো প্রস্থে — প্রথম পৃষ্ঠার সব কলাম থেকেই হেডারের উচ্চতা বাদ যায়
       const fullHeader = prof.headerSpan === 'page';
@@ -521,13 +602,14 @@
       const lang = this.paperLang(parsedData);
       const headerLines = this.buildHeader(parsedData && parsedData.header, {
         docType,
+        profileKey,
         lang,
         fallback: docType === 'EXAM_CQ' || docType === 'EXAM_MATH' || docType === 'EXAM_GENERAL' || docType === 'EXAM_COMBINED' || o.cqHeaderFallback === true
       });
       const headH = this.headerHeight(headerLines, g, fullHeader ? g.usableW : g.colW);
       const firstPageCap = (idx) => (idx === 0 || (fullHeader && idx < g.cols)) ? Math.max(lineH * 3, cap - headH) : cap;
       const empty = {
-        geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 }, headerLines, headerHeight: headH, headerSpan: prof.headerSpan,
+        geometry: g, font: { sz: g.baseSz, pt: g.baseSz / 2 }, headerLines, headerHeight: headH, headerSpan: prof.headerSpan, profileKey,
         skipFirstColumn: false, columns: [], items: [],
         metrics: { count: 0, capacity: cap, columnsTotal: 0, docPages: 0, sheets: 0, printedPages: 0, reservedUsed: false, tailMoved: 0, headHeight: headH }
       };
@@ -548,6 +630,11 @@
       let used = bins.filter((b) => b.items.length).length;
       const lastNonEmpty = () => { for (let i = bins.length - 1; i >= 0; i--) if (bins[i].items.length) return i; return -1; };
       used = lastNonEmpty() + 1;
+      // Part-18.9: 'auto' বুকলেট — এক পাতায় (২ কলাম) ধরলে সাধারণ পাতা; বেশি হলে ভাঁজ-বুকলেট
+      if (prof.booklet === 'auto' && o.skipFirstColumn !== false && used > 2) {
+        reserve = true;
+        backFill = o.skipFirstColumn !== true;
+      }
 
       // (খ) উপচে যাওয়া অংশ ব্যাক-কভারে (শীট-১ কলাম-১) টেনে আনা — যাতে অতিরিক্ত শীট না লাগে
       const back = [];
@@ -605,7 +692,7 @@
       return {
         geometry: g,
         font: { sz: g.baseSz, pt: g.baseSz / 2 },
-        headerLines, headerHeight: headH, headerSpan: prof.headerSpan, lang,
+        headerLines, headerHeight: headH, headerSpan: prof.headerSpan, profileKey, lang,
         skipFirstColumn,
         columns, items,
         metrics: {

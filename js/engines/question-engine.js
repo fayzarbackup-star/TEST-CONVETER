@@ -112,6 +112,16 @@
 
     parseQuestionPaper(rawText, parseOptions = {}) {
       if (!rawText) rawText = '';
+      // Part-18.7: সাধারণ-ফরম্যাটের স্তরযুক্ত (প্রাথমিক/বৃত্তি) পত্র — (১)-উপপ্রশ্ন ও তার বিকল্প এক স্তরে চ্যাপ্টা না করে
+      let GP = (typeof FayzarGeneralParser !== 'undefined') ? FayzarGeneralParser : (typeof globalThis !== 'undefined' ? globalThis.FayzarGeneralParser : null);
+      // Part-18.9: node-এও (টেস্ট/স্ক্রিপ্ট) ব্রাউজারের মতো একই পথ — না হলে দুই পরিবেশে ফল আলাদা হতো
+      if (!GP && typeof require === 'function') { try { GP = require('../layout-engine/general-paper-parser.js'); } catch (e) { GP = null; } }
+      if (GP && parseOptions.docType === 'EXAM_GENERAL' && !parseOptions.__flat && GP.isNested(rawText)) {
+        const base = this.parseQuestionPaper(rawText, Object.assign({}, parseOptions, { __flat: true }));
+        base.sections = GP.parseSections(rawText);
+        base.__nestedGeneral = true;
+        return base;
+      }
       // 0. Strip vision layout tags
       rawText = rawText.replace(/^\s*\[LAYOUT:[^\]]*\]\s*[\r\n]?/im, '');
 
@@ -452,6 +462,19 @@
           }
         }
 
+        // Part-18.9: ঘ-এর পরে ঙ./চ./ছ./জ. = পরের উপ-প্রশ্ন (প্রাথমিক পত্রে ক–ঙ সাধারণ)। আগে "ঙ." একা
+        // বহুনির্বাচনি-বিকল্প হয়ে "(ঙ)" ছাপা হতো। শুধু ক্রম মিললে (আগের লেবেল ঠিক আগের অক্ষর) — MCQ-তে নয়।
+        if (_cqDocCtx && currentQuestion && (currentQuestion.options || []).length === 0 &&
+            currentQuestion.subQuestions.length > 0 && /^[ঙচছজ][\.\:।\-]\s*\S/.test(line)) {
+          const NEXT = { 'ঘ': 'ঙ', 'ঙ': 'চ', 'চ': 'ছ', 'ছ': 'জ' };
+          const lastLabel = currentQuestion.subQuestions[currentQuestion.subQuestions.length - 1].label;
+          if (NEXT[lastLabel] === line[0]) {
+            const bt = this._cqMarkTail(line.replace(/^[ঙচছজ][\.\:।\-]\s*/, ''));
+            currentQuestion.subQuestions.push({ label: line[0], text: bt.text, mark: bt.mark });
+            continue;
+          }
+        }
+
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions
@@ -780,7 +803,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           cols: options.columns || 2,
           rightTab: options.rightTab,
           skipFirstColumn: options.skipFirstColumn,
-          cqHeaderFallback: options.cqHeaderFallback === true
+          cqHeaderFallback: options.cqHeaderFallback === true,
+          grade: options.grade,
+          __frontmatter: options.__frontmatter,
+          profileKey: options.profileKey,
+          layoutColumns: options.layoutColumns   // Part-18.9: ১/২ কলাম/স্বয়ংক্রিয়
         });
         return (p && p.geometry && Array.isArray(p.columns)) ? p : null;
       } catch (e) {
@@ -1161,7 +1188,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         : { lang: paperLang };
       // ডাউনলোডের প্রোফাইল পোর্ট্রেট হলে (EXAM_GENERAL) প্রিভিউও বুকলেট নয় — preview == download
       const _prof = (_cqP && _cqP.profile) ? _cqP.profile(renderDocType) : null;
-      const useBooklet = isLandscape && !(_prof && _prof.landscape === false && usesCreativeHeaderFallback(renderDocType));
+      // Part-18.9: ২য়–৫ম শ্রেণির সাধারণ পত্র → ল্যান্ডস্কেপ প্রোফাইল; ডাউনলোডের মতো প্রিভিউও কলাম-প্ল্যানে
+      const _layoutKey = (_cqP && _cqP.layoutKey) ? _cqP.layoutKey(renderDocType, parsedData, options) : renderDocType;
+      const usePrimary = _layoutKey === 'EXAM_PRIMARY';
+      const useBooklet = usePrimary || (isLandscape && !(_prof && _prof.landscape === false && usesCreativeHeaderFallback(renderDocType)));
 
       // Flatten all questions with their section titles
       const allItems = [];
@@ -1177,6 +1207,32 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       // CASE A: BOOKLET MODE — Part-11: প্ল্যান-চালিত। কলাম-ভাগ, ব্যাক-কভার সংরক্ষণ ও
       // ইনডেন্ট সব এখানে নতুন করে গণনা করা হয় না — একই CqBookletPlanner-এর
       // plan.columns ব্যবহার হয় যা Word 2003 (.doc) ও .docx রেন্ডারার কনজিউম করে।
+      // Part-18.9: EXAM_ONECOL প্রিভিউ — ডাউনলোডের মতোই A4 লম্বালম্বি, ১ কলাম; প্ল্যানের প্রতিটি কলাম = একটি পাতা
+      if (_layoutKey === 'EXAM_ONECOL') {
+        const p1 = this._cqLayoutPlan(parsedData, options);
+        if (p1 && Array.isArray(p1.columns) && p1.columns.length) {
+          const P = this._getCqPlanner();
+          const hm = (P && P.headerPreviewModel) ? P.headerPreviewModel(p1) : parsedData.header;
+          const BND = '০১২৩৪৫৬৭৮৯';
+          const bn = (v) => String(v).split('').map((d) => (d >= '0' && d <= '9' ? BND[+d] : d)).join('');
+          let html = `<div class="${fontClass} dense-zero-gap">`;
+          p1.columns.forEach((col, ci) => {
+            const isLast = ci === p1.columns.length - 1;
+            html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ${bn(ci + 1)} (A4 লম্বালম্বি, ১ কলাম)</div>`;
+            html += `<div class="paper-sheet size-a4-portrait ${marginClass}${isLast ? '' : ' mb-8 page-break-indicator'}">`;
+            html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait cq-onecol" ${editableAttr} ${styleAttr}>`;
+            if (col.headerFirst) html += this.renderHeaderBlock(hm, { cqGeom: p1.geometry, lang: paperLang, docType: renderDocType, cqFallback: usesCreativeHeaderFallback(renderDocType) });
+            for (const it of (col.items || [])) {
+              html += it.kind === 'sectionTitle'
+                ? `<div class="font-bold text-center py-0.5 my-1" style="font-size: ${fontSize}; line-height: 1.35;">${this.escape(it.text)}</div>`
+                : this.renderQuestionItem(it.q, { cqGeom: (P && P.itemGeometry) ? P.itemGeometry(p1.geometry, it) : p1.geometry });
+            }
+            html += `</div></div>`;
+          });
+          return html + `</div>`;
+        }
+      }
+
       const cqPlan = useBooklet ? this._cqLayoutPlan(parsedData, options) : null;
       if (useBooklet && cqPlan && Array.isArray(cqPlan.columns) && cqPlan.columns.length) {
         const BND = '০১২৩৪৫৬৭৮৯';
@@ -1185,6 +1241,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         if (cqPlan.skipFirstColumn) slots.push(null);      // সংরক্ষিত ব্যাক কভার (খালি = কনটেন্ট নয়)
         for (const col of cqPlan.columns) slots.push(col);
         if (slots.length % 2) slots.push(null);
+        // Part-18.9: ব্যাক কভার আছে কি না (বুকলেট); না থাকলে (এক পাতার পত্র) সাধারণ পৃষ্ঠা-লেবেল
+        const coverMode = !!cqPlan.skipFirstColumn || cqPlan.columns.some((c) => c && c.role === 'backcover');
         const gapPt = +(cqPlan.geometry.colGap / 20).toFixed(1);
         const cqPlanner = this._getCqPlanner();
         const headerModel = (cqPlanner && cqPlanner.headerPreviewModel) ? cqPlanner.headerPreviewModel(cqPlan) : parsedData.header;
@@ -1196,10 +1254,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         for (let si = 0; si < slots.length; si += 2) {
           const sheetNo = si / 2 + 1;
           const isLastSheet = si + 2 >= slots.length;
-          html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ${bn(sheetNo)} (A4 ল্যান্ডস্কেপ, ২ কলাম) — ${bn(2 * sheetNo - 1)}য় কলাম: ${sheetNo === 1 ? 'ব্যাক কভার' : 'পৃষ্ঠা ' + bn(2 * sheetNo - 1)} · ${bn(2 * sheetNo)}য় কলাম: ${sheetNo === 1 ? 'ফ্রন্ট কভার (পৃষ্ঠা ১)' : 'পৃষ্ঠা ' + bn(2 * sheetNo)}</div>`;
+          html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ${bn(sheetNo)} (A4 ল্যান্ডস্কেপ, ২ কলাম) — ${bn(2 * sheetNo - 1)}য় কলাম: ${sheetNo === 1 && coverMode ? 'ব্যাক কভার' : 'পৃষ্ঠা ' + bn(2 * sheetNo - 1)} · ${bn(2 * sheetNo)}য় কলাম: ${sheetNo === 1 && coverMode ? 'ফ্রন্ট কভার (পৃষ্ঠা ১)' : 'পৃষ্ঠা ' + bn(2 * sheetNo)}</div>`;
           html += `<div class="paper-sheet size-a4-landscape ${marginClass}${isLastSheet ? '' : ' mb-8 page-break-indicator'}">`;
           html += `<div class="grid grid-cols-2 h-full ${fontClass} dense-zero-gap" style="column-gap: ${gapPt}pt;" ${editableAttr} ${styleAttr}>`;
           for (const col of [slots[si], slots[si + 1]]) {
+            if (!col && !coverMode) { html += `<div class="qp-col-empty"></div>`; continue; }
             if (!col) {
               html += `<div class="qp-col-skip-box" style="min-height: 200px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #94a3b8; font-size: 10pt; padding: 10px;">`;
               html += `<div style="font-weight: 700; color: #475569; font-size: 11pt; margin-bottom: 4px;">[ ব্যাক কভার — ${bn(2 * sheetNo - 1)}য় কলাম সংরক্ষিত ]</div>`;

@@ -1,0 +1,187 @@
+# fixture: cv-english
+# docType: CV_RESUME
+
+===== CLASSIFIER =====
+{
+  "type": "CV_RESUME"
+}
+
+===== PARSED =====
+{
+  "contact": {
+    "address": "",
+    "email": "",
+    "phone": ""
+  },
+  "declaration": "I hereby declare that all the information given above is true and correct.",
+  "education": [
+    {
+      "board": "Dhaka",
+      "exam": "SSC",
+      "gpa": "5.00",
+      "year": "2014"
+    },
+    {
+      "board": "Dhaka",
+      "exam": "HSC",
+      "gpa": "4.80",
+      "year": "2016"
+    }
+  ],
+  "experience": [],
+  "name": "",
+  "personalInfo": [
+    {
+      "label": "Name",
+      "value": "Md. Example Rahman"
+    },
+    {
+      "label": "Father's Name",
+      "value": "Md. Sample Uddin"
+    },
+    {
+      "label": "Mother's Name",
+      "value": "Mst. Demo Begum"
+    },
+    {
+      "label": "Present Address",
+      "value": "House 10, Road 5, Dhaka"
+    },
+    {
+      "label": "Date of Birth",
+      "value": "01/01/1998"
+    },
+    {
+      "label": "Nationality",
+      "value": "Bangladeshi"
+    },
+    {
+      "label": "Mobile",
+      "value": "01700-000000"
+    }
+  ],
+  "skills": [],
+  "title": "Curriculum Vitae"
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait margin-normal"  style="font-size: 12pt; line-height: 1.35;">
+<div class="word-crop-marks no-print">
+<div class="crop-tl">
+</div>
+<div class="crop-tr">
+</div>
+<div class="crop-bl">
+</div>
+<div class="crop-br">
+</div>
+</div>
+<div class="cv-document font-kalpurush text-left p-4 leading-relaxed text-sm">
+<div class="text-center border-b-2 border-slate-700 pb-3 mb-4">
+<h1 class="text-2xl font-black text-slate-900 dark:text-slate-100">নাম</h1>
+<div class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1">Curriculum Vitae</div>
+</div>
+<div class="mb-4">
+<h3 class="font-bold text-sm border-b border-slate-400 pb-1 mb-2 text-slate-800 dark:text-slate-200">ব্যক্তিগত বিবরণী (Personal Details)</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Name:</span>
+<span class="text-slate-900 dark:text-slate-100">Md. Example Rahman</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Father's Name:</span>
+<span class="text-slate-900 dark:text-slate-100">Md. Sample Uddin</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Mother's Name:</span>
+<span class="text-slate-900 dark:text-slate-100">Mst. Demo Begum</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Present Address:</span>
+<span class="text-slate-900 dark:text-slate-100">House 10, Road 5, Dhaka</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Date of Birth:</span>
+<span class="text-slate-900 dark:text-slate-100">01/01/1998</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Nationality:</span>
+<span class="text-slate-900 dark:text-slate-100">Bangladeshi</span>
+</div>
+<div>
+<span class="font-bold text-slate-700 dark:text-slate-300">Mobile:</span>
+<span class="text-slate-900 dark:text-slate-100">01700-000000</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="font-bold text-sm border-b border-slate-400 pb-1 mb-2 text-slate-800 dark:text-slate-200">শিক্ষাগত যোগ্যতা (Educational Qualifications)</h3>
+<table class="w-full text-xs border-collapse border border-slate-600 text-center">
+<thead class="bg-slate-200 dark:bg-slate-800 font-bold">
+<tr>
+<th class="border border-slate-600 p-1">পরীক্ষার নাম</th>
+<th class="border border-slate-600 p-1">বোর্ড / বিশ্ববিদ্যালয়</th>
+<th class="border border-slate-600 p-1">পাসের সাল</th>
+<th class="border border-slate-600 p-1">জিপিএ / বিভাগ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border border-slate-600 p-1 text-left pl-2">SSC</td>
+<td class="border border-slate-600 p-1">Dhaka</td>
+<td class="border border-slate-600 p-1">2014</td>
+<td class="border border-slate-600 p-1 font-semibold">5.00</td>
+</tr>
+<tr>
+<td class="border border-slate-600 p-1 text-left pl-2">HSC</td>
+<td class="border border-slate-600 p-1">Dhaka</td>
+<td class="border border-slate-600 p-1">2016</td>
+<td class="border border-slate-600 p-1 font-semibold">4.80</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-8 pt-4 border-t border-slate-400 flex justify-between items-end text-xs">
+<div class="max-w-[60%] text-[11px] text-slate-600 dark:text-slate-400">I hereby declare that all the information given above is true and correct.</div>
+<div class="text-center font-bold border-t border-slate-700 pt-1 w-40">আবেদনকারীর স্বাক্ষর</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType CV_RESUME)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;\red240\green240\blue240;}
+\paperw11906\paperh16838\margl1080\margr1080\margt1080\margb1080\cols1
+{\qc\b\fs24\f0\sl260\slmult1\sb0\sa20 {\f1 Curriculum Vitae}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa60\brdrb\brdrs\brdrw15\brsp20 \par}
+{\ql\b\fs24\f0\sl260\slmult1\sb60\sa40 {\ul {\f0 \u2476?\u2509?\u2479?\u2453?\u2509?\u2468?\u2495?\u2455?\u2468? \u2476?\u2495?\u2476?\u2480?\u2467?\u2496? }{\f1 (Personal Details)}\ulnone}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Name:}}\tab {\f1 Md. Example Rahman}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Father's Name:}}\tab {\f1 Md. Sample Uddin}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Mother's Name:}}\tab {\f1 Mst. Demo Begum}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Present Address:}}\tab {\f1 House 10, Road 5, Dhaka}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Date of Birth:}}\tab {\f1 01/01/1998}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Nationality:}}\tab {\f1 Bangladeshi}\par}
+{\ql\fs22\f0\sl240\slmult1\sb0\sa20\li360\tx3000 {\b {\f1 Mobile:}}\tab {\f1 01700-000000}\par}
+{\ql\b\fs24\f0\sl260\slmult1\sb100\sa40 {\ul {\f0 \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?\u2455?\u2468? \u2479?\u2507?\u2455?\u2509?\u2479?\u2468?\u2494? }{\f1 (Educational Qualifications)}\ulnone}\par}
+\trowd\trgaph108\trleft360\clcbpat2\cellx3000\clcbpat2\cellx5500\clcbpat2\cellx7500\clcbpat2\cellx9746
+{\pard\intbl\qc\b\fs20\f0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478?}\cell}{\pard\intbl\qc\b\fs20\f0 {\f0 \u2476?\u2507?\u2480?\u2509?\u2465? }{\f1 / }{\f0 \u2476?\u2495?\u2486?\u2509?\u2476?\u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}\cell}{\pard\intbl\qc\b\fs20\f0 {\f0 \u2474?\u2494?\u2488?\u2503?\u2480? \u2488?\u2494?\u2482?}\cell}{\pard\intbl\qc\b\fs20\f0 {\f0 \u2460?\u2495?\u2474?\u2495?\u2447? }{\f1 / }{\f0 \u2476?\u2495?\u2477?\u2494?\u2455?}\cell}{\row}
+\trowd\trgaph108\trleft360\cellx3000\cellx5500\cellx7500\cellx9746
+{\pard\intbl\ql\fs20\f0 {\f1 SSC}\cell}{\pard\intbl\qc\fs20\f0 {\f1 Dhaka}\cell}{\pard\intbl\qc\fs20\f0 {\f1 2014}\cell}{\pard\intbl\qc\b\fs20\f0 {\f1 5.00}\cell}{\row}
+\trowd\trgaph108\trleft360\cellx3000\cellx5500\cellx7500\cellx9746
+{\pard\intbl\ql\fs20\f0 {\f1 HSC}\cell}{\pard\intbl\qc\fs20\f0 {\f1 Dhaka}\cell}{\pard\intbl\qc\fs20\f0 {\f1 2016}\cell}{\pard\intbl\qc\b\fs20\f0 {\f1 4.80}\cell}{\row}
+{\ql\fs20\f0\sl240\slmult1\sb160\sa100\fi360 {\f1 I hereby declare that all the information given above is true and correct.}\par}
+{\ql\b\fs22\f0\sl240\slmult1\sb240\sa0\li6946 {\f0 \u2438?\u2476?\u2503?\u2470?\u2472?\u2453?\u2494?\u2480?\u2496?\u2480? \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\par}
+}

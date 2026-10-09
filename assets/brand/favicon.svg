@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- ছোট আকারের (১৬–৩২px) সরল আইকন: সবুজ গোল পটভূমি, সাদা পালক + নিব, মোটা রেখা -->
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#1F5E43"/>
+  <g transform="translate(5.5 3) scale(0.86)">
+    <path d="M8 3 C 26 8, 38 22, 40.5 41 C 33 42.5, 18 34, 11 22 C 7 15, 6 8, 8 3 Z" fill="#CDEBDD"/>
+    <path d="M9.5 5.5 L 40 43.5" stroke="#1F5E43" stroke-width="3" stroke-linecap="round"/>
+    <path d="M44.6 45.4 L 48 49.6 L 48.8 60 L 40.4 53.8 L 38.4 48.8 Z" fill="#FFFFFF"/>
+    <path d="M43 42.2 L 44.8 45.2 L 38.6 48.6 L 36.8 45.6 Z" fill="#FFFFFF"/>
+  </g>
+</svg>

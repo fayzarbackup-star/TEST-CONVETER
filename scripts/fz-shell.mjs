@@ -4,7 +4,7 @@
 // প্রথমবার মার্কার না থাকলে: পাতার পুরোনো প্রথম <nav>/<header> ও <footer> ব্লক এর বদলে বসে (কনফিগ অনুযায়ী)।
 import fs from 'node:fs';
 
-const BRAND_SVG = '<svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true"><path d="M35 4C18 4 6 13 6 26c0 4 1 7 3 10 2-9 9-17 19-21-8 6-13 13-15 22 3 1 6 1 9 0C33 33 37 18 35 4z" fill="#2E8B5E"/></svg>';
+const BRAND_SVG = '<img src="assets/brand/logo-mark.svg" width="42" height="42" alt="">';
 
 // ২০২৬-১০-০৬: index.html = কাজ (আপলোড → ওয়ার্কস্পেস); সার্ভিস/টুলস ও নমুনা আলাদা পাতায়
 const LINKS = [
@@ -37,7 +37,7 @@ const nav = (tools, isStatic) => [
   '<!-- FZ-NAV:START — scripts/fz-shell.mjs থেকে তৈরি; এখানে হাতে বদলাবেন না -->',
   `<header class="fz-nav${isStatic ? ' fz-static' : ''}">`,
   '  <div class="fz-nav-in">',
-  `    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম">${BRAND_SVG}<span class="fz-full">ফয়জার এআই কম্পোজ</span><span class="fz-short">AI Compose</span></a>`,
+  `    <a href="index.html" class="fz-brand" aria-label="ফয়জার এআই কম্পোজ — হোম">${BRAND_SVG}<span class="fz-brand-txt"><span class="fz-wordmark">AI Compose</span><span class="fz-brand-sub">ফয়জার এআই কম্পোজ</span></span></a>`,
   '    <nav class="fz-links" id="fzLinks" aria-label="প্রধান মেনু">',
   ...LINKS.map(([href, label, cls]) => `      <a href="${href}"${cls ? ` class="${cls}"` : ''}>${label}</a>`),
   '    </nav>',
@@ -61,7 +61,7 @@ const FOOT = [
   '<!-- FZ-FOOT:END -->'
 ].join('\n');
 
-const HEAD = '<!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><script src="js/fayzar-nav.js" defer></script>';
+const HEAD = '<!-- FZ-HEAD --><link rel="stylesheet" href="css/fayzar-theme.css"><link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg"><link rel="icon" type="image/png" sizes="32x32" href="assets/brand/favicon-32.png"><link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png"><script src="js/fayzar-nav.js" defer></script>';
 
 // oldNav: প্রথমবার কোন ব্লক বদলাবে ('nav' | 'header' | 'insert' = <body> এর ঠিক পরে বসাও)
 // oldFoot: 'footer' | 'none' (ফুটার দেওয়া হবে না — পূর্ণ-পর্দার অ্যাপ-পাতা)
@@ -90,6 +90,7 @@ for (const p of PAGES) {
   const before = s;
   // হেড
   if (!s.includes('<!-- FZ-HEAD -->')) s = s.replace('</head>', `  ${HEAD}\n</head>`);
+  else s = s.replace(/<!-- FZ-HEAD -->[^\n]*/, () => HEAD);
   // নেভ
   const navHtml = nav(p.tools, p.isStatic);
   if (s.includes('<!-- FZ-NAV:START')) s = s.replace(/<!-- FZ-NAV:START[\s\S]*?<!-- FZ-NAV:END -->/, () => navHtml);

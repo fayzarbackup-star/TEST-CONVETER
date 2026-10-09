@@ -77,6 +77,7 @@
     for (const sec of sections) {
       const qs = (sec && Array.isArray(sec.questions)) ? sec.questions : [];
       if (!qs.length) continue;
+      if (sec.keepNumbers) continue;   // Part-18.7: সাধারণ-ফরম্যাটের স্তরযুক্ত পত্র — মূল নম্বর/লেবেল যেমন আছে
       const useBn = force ? (force === 'bn') : detectBengaliStyle(qs, true);
       qs.forEach((q, i) => {
         if (!q) return;

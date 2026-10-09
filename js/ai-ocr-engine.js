@@ -122,9 +122,20 @@
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
      ---
-     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | OFFICIAL_NOTICE | STAMP_DEED>
+     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | CV_RESUME | OFFICIAL_NOTICE | STAMP_DEED>
      columns: <1 or 2>
+     source_columns: <1, 2 or 0 — how many text columns the PRINTED/TYPED source page body actually uses; 0 for handwritten drafts or when unsure>
+     grade: <class number 1-12 exactly as printed (৫ম / পঞ্চম / Class Five → 5); 0 if not printed>
+     subject: <subject as printed>
+     content: <QUESTION_PAPER | SYLLABUS | OTHER>
+     sections: <every question category in source order as kind:count, e.g. mcq:10, fill_blank:10, short:16, problem:8>
      ---
+   - LAYOUT FACTS (Part-18.6 — these facts, not doc_type, decide the layout downstream; report ONLY what the pages actually show, never guess):
+     * grade: read the printed class (শ্রেণি/Class). Write 0 when no class is printed anywhere.
+     * source_columns (Part-18.9): look at the question body of a PRINTED or TYPED page — 1 if the questions run in one full-width column, 2 if the page is split into two side-by-side columns. Handwritten drafts are always 0 (they are re-typeset). Write 0 when unsure. This fact is separate from "columns" above.
+     * content: SYLLABUS for syllabus / question-pattern / marks-distribution pages (প্রশ্নের ধরণ ও মানবণ্টন, সিলেবাস, পাঠ্যসূচি); QUESTION_PAPER only when the pages ARE the questions; OTHER for anything else.
+     * sections kinds — use exactly these words: cq (সৃজনশীল: a stimulus/উদ্দীপক passage + sub-questions ক,খ,গ,ঘ carrying marks 1,2,3,4), mcq (বহুনির্বাচনি: a question + 4 short options ক/খ/গ/ঘ), short (সংক্ষিপ্ত/অতি সংক্ষিপ্ত one-line questions), fill_blank, matching, true_false, problem (a numbered problem with sub-parts that is NOT a stimulus-based creative question, e.g. primary/বৃত্তি math), essay, translation, table, other.
+     * Count each category's questions as printed (e.g. "১ x ১০ = ১০" → 10). List every category present, in order.
    - SECTOR DETERMINATION RULES (DO NOT RELY ON COLUMNS IN HANDWRITTEN DRAFTS; CLASSIFY BY INTENDED PURPOSE):
      * Creative Questions (CQ 70 marks, Class 6-12 with stimulus & ক,খ,গ,ঘ): doc_type: EXAM_CQ, columns: 2
      * A paper containing BOTH short/general questions and a clearly distinct creative/CQ section is still an exam: use doc_type: EXAM_CQ (or EXAM_MATH for a mathematics paper) and retain every category as a separate section; never flatten it into one generic flow.
@@ -135,7 +146,10 @@
      * Combined Exam (both Creative Questions & 20-30 MCQs): doc_type: EXAM_COMBINED, columns: 2
      * Institutional Office Pad / Letterhead Memo: doc_type: OFFICE_PAD, columns: 1
      * Testimonial / Character Certificate (প্রত্যয়নপত্র ও প্রশংসাপত্র): doc_type: PROTTOYON, columns: 1
+       -> Fact (Part-19.2): if the certificate page is printed sideways (wider than tall, e.g. a decorated school প্রশংসাপত্র/সনদ), add the frontmatter line page_orientation: landscape. If the page also carries a counterfoil (মুড়ি) copy beside the main certificate, transcribe the counterfoil first, then a line containing only ***, then the main certificate.
      * Government / Job Application (বরাবর, বিষয়, জনাব সংবলিত দরখাস্ত): doc_type: GOVT_APP, columns: 1
+     * Stand-alone CV / Resume / Bio-data (জীবন বৃত্তান্ত, বায়োডাটা, "নাম ঃ …" style rows): doc_type: CV_RESUME, columns: 1
+       -> A CV attached inside an application letter (বরাবর … বিষয় … followed by the applicant's details) stays GOVT_APP.
      * Official Government / Institutional Notice / Memo: doc_type: OFFICIAL_NOTICE, columns: 1
      * Legal Deed / 300 Tk Non-Judicial Stamp Contract: doc_type: STAMP_DEED, columns: 1
    - HEADER PLACEHOLDER MANDATE (FOR EXAM PAPERS):
@@ -3911,6 +3925,11 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       if (fmMatch) {
         const typeMatch = fmMatch[1].match(/doc_type:\s*(\w+)/);
         if (typeMatch) parsedDocType = typeMatch[1];
+        // Part-18.6: Gemini-র doc_type শুধু ইঙ্গিত — চূড়ান্ত লেআউট ক্লাসিফায়ারের নিয়মে (তথ্য + লেখার গঠন যাচাই)
+        if (typeof DocClassifier !== 'undefined' && typeof DocClassifier.classify === 'function') {
+          const ct = DocClassifier.classify(text).type;
+          if (ct) parsedDocType = (ct === 'GENERAL' && /^EXAM_/.test(parsedDocType)) ? 'EXAM_GENERAL' : ct;
+        }
         if (typeof FayzarFrontmatter !== 'undefined') ocrFrontmatter = FayzarFrontmatter.split(text).fields;
         exportText = text.substring(fmMatch[0].length).trim();
       }
@@ -3960,7 +3979,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
             auditNote: isClean ? null : auditNote,
             suppressAuditNote: !!isClean,
-            __frontmatter: ocrFrontmatter || undefined
+            __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
           });
           const outName = fmt === 'doc' ? `${baseName}${suffix}_Word2003.doc`
             : (fmt === 'docx-bijoy' ? `${baseName}${suffix}_Bijoy.docx` : `${baseName}${suffix}_Master_Unicode.docx`);
@@ -3980,7 +4001,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
             auditNote: isClean ? null : auditNote,
             suppressAuditNote: !!isClean,
-            __frontmatter: ocrFrontmatter || undefined
+            __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
           });
         } catch (err) {
           console.warn('Failed to generate master docx in download process:', err);
@@ -4011,7 +4034,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
                 fontSize: fontSizeVal,
                 auditNote: isClean ? null : auditNote,
                 suppressAuditNote: !!isClean,
-                __frontmatter: ocrFrontmatter || undefined
+                __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
               });
               if (rtfRes && rtfRes.content && rtfRes.content.size > 0) docBlob = rtfRes.content;
             } catch (rtfErr) {
@@ -4178,6 +4203,10 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       let fmDocType = 'EXAM_CQ';
       const tm = head.match(/doc_type:\s*(\w+)/);
       if (tm) fmDocType = tm[1];
+      if (typeof DocClassifier !== 'undefined' && typeof DocClassifier.classify === 'function') {   // Part-18.6
+        const ct = DocClassifier.classify(text).type;
+        if (ct) fmDocType = (ct === 'GENERAL' && /^EXAM_/.test(fmDocType)) ? 'EXAM_GENERAL' : ct;
+      }
       const prep = await prepareSourceFigures(body, fmDocType);
       if (prep.cancelled) { showToast('স্টুডিওতে পাঠানো বাতিল করা হয়েছে', 'warning'); return; }
       text = head ? head + '\n\n' + prep.text : prep.text;

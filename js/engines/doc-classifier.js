@@ -25,6 +25,102 @@
       GENERAL: 'GENERAL'
     },
 
+    // =====================================================================
+    // Part-18.6: তথ্য-ভিত্তিক লেআউট (Gemini লেআউটের নাম নয়, তথ্য দেয়: শ্রেণি, বিষয়বস্তু, অংশের ধরন ও সংখ্যা)
+    // সিদ্ধান্ত আমাদের নিয়মে; Gemini-র দাবি লেখার আসল গঠন (structureStats) দিয়ে যাচাই। সন্দেহ হলে সাধারণ ফরম্যাট।
+    // =====================================================================
+    GRADE_WORDS: { 'প্রথম': 1, 'দ্বিতীয়': 2, 'তৃতীয়': 3, 'চতুর্থ': 4, 'পঞ্চম': 5, 'ষষ্ঠ': 6, 'সপ্তম': 7, 'অষ্টম': 8, 'নবম': 9, 'দশম': 10, 'একাদশ': 11, 'দ্বাদশ': 12,
+      'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12 },
+
+    /** শ্রেণি-লেখা → সংখ্যা (৫ / 5 / পঞ্চম / ৫ম / Five); না পেলে 0 */
+    parseGrade(v) {
+      const s = String(v || '').trim().replace(/\u09AF\u09BC/g, '\u09DF').replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/^["']|["']$/g, '');
+      const n = s.match(/\d{1,2}/);
+      if (n) { const g = parseInt(n[0], 10); return g >= 1 && g <= 12 ? g : 0; }
+      for (const [w, g] of Object.entries(this.GRADE_WORDS)) { if (s.toLowerCase().includes(w)) return g; }
+      return 0;
+    },
+
+    /** ফ্রন্টম্যাটার থেকে তথ্য: { grade, content, subject, sections: {kind: count} } — কিছু না থাকলে null */
+    factsFromFrontmatter(fm) {
+      const s = String(fm || '');
+      const get = (re) => { const m = s.match(re); return m ? m[1].trim().replace(/^["']|["']$/g, '') : ''; };
+      const gradeRaw = get(/^\s*(?:grade|class|শ্রেণি)\s*:\s*(.+)$/im);
+      const content = get(/^\s*content\s*:\s*([A-Za-z_]+)/im).toUpperCase();
+      const subject = get(/^\s*subject\s*:\s*(.+)$/im);
+      const secRaw = get(/^\s*sections\s*:\s*(.+)$/im);
+      let sections = null;
+      if (secRaw) {
+        sections = {};
+        secRaw.replace(/[\[\]"']/g, '').split(/[,;]/).forEach((p) => {
+          const m = p.trim().replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d)).match(/^([a-z_]+)\s*[:=x×]\s*(\d+)/i);
+          if (m) { const k = m[1].toLowerCase(); sections[k] = (sections[k] || 0) + parseInt(m[2], 10); }
+        });
+        if (!Object.keys(sections).length) sections = null;
+      }
+      const grade = this.parseGrade(gradeRaw);
+      if (!grade && !content && !sections) return null;
+      return { grade, content, subject, sections };
+    },
+
+    /** লেখার আসল গঠন: সৃজনশীল-ব্লক (উপ-প্রশ্ন ক–ঘ, পাশে ১–৪ নম্বর) ও বহুনির্বাচনি-ব্লক (৪টি ছোট বিকল্প) গোনা */
+    structureStats(text) {
+      const lines = String(text || '').split(/\r?\n/);
+      const qStart = /^\s*(?:#{1,6}\s*)?(?:প্রশ্ন\s*(?:নং)?[\s\-:ঃ.]*)?\(?[০-৯\d]{1,3}\s*[।.)]/;
+      const blocks = [];
+      let cur = null, creativeCtx = false;   // শেষ অংশ-শিরোনাম সৃজনশীল কিনা
+      const CUE = /সৃজনশীল|creative|উদ্দীপক|দৃশ্যকল্প/i;
+      for (const l of lines) {
+        // শিরোনাম: `##` বা (পাইপলাইন `##` মুছে দিলে) ছোট অংশ-নাম-লাইন
+        const isHead = /^\s*#{1,6}\s/.test(l) || (l.trim().length < 60 && !qStart.test(l) && /^(?:[কখগঘ]\s*[-–—]?\s*(?:বিভাগ|অংশ)\s*[:ঃ\-–—(]?\s*)?(?:সৃজনশীল|বহুনির্বাচন|সংক্ষিপ্ত|অতি\s*সংক্ষিপ্ত|নৈর্ব্যক্তিক|creative|multiple|MCQ|short)/i.test(l.trim()));
+        if (isHead) creativeCtx = CUE.test(l);
+        if (qStart.test(l) || isHead) { cur = []; cur.ctx = creativeCtx; blocks.push(cur); }
+        if (cur) cur.push(l);
+      }
+      let cqBlocks = 0, mcqBlocks = 0;
+      for (const b of blocks) {
+        const subs = [];
+        b.slice(1).forEach((l) => { const m = l.match(/^\s*\(?\s*([কখগঘ])\s*[.)।]\s*(.+)$/); if (m) subs.push({ k: m[1], txt: m[2].trim() }); });
+        const keys = new Set(subs.map((x) => x.k));
+        const marked = subs.filter((x) => x.txt.length >= 10 && /(?:^|\s|\[|\()[১-৪1-4]\s*[\])]?\s*$/.test(x.txt)).length;
+        const body = b.join('\n');
+        const stim = /উদ্দীপক|দৃশ্যকল্প|নিচের\s*(?:চিত্র|অনুচ্ছেদ|তথ্য)|লক্ষ\s*কর/.test(body);
+        if (keys.size >= 3 && (marked >= 2 || (stim && subs.every((x) => x.txt.length >= 10)))) { cqBlocks++; continue; }
+        // সৃজনশীল অংশের ভেতরে (শিরোনাম/উদ্দীপক-সংকেত) — কম উপ-প্রশ্ন হলেও নম্বরসহ উপ-প্রশ্ন থাকলে সৃজনশীল
+        const shortMarked = subs.filter((x) => x.txt.length >= 2 && /\s[১-৪1-4]\s*[\])]?\s*$/.test(' ' + x.txt)).length;
+        if ((b.ctx || stim) && shortMarked >= 1 && subs.every((x) => !/^\S{1,3}$/.test(x.txt))) { cqBlocks++; continue; }
+        const optKeys = new Set();
+        b.slice(1).forEach((l) => { (l.match(/(?:^|\s)\(?([কখগঘ])\s*[.)]\s*\S/g) || []).forEach((o) => optKeys.add(o.replace(/[^কখগঘ]/g, ''))); });
+        if (optKeys.size >= 3 && subs.every((x) => x.txt.length < 70)) mcqBlocks++;
+      }
+      return { blocks: blocks.length, cqBlocks, mcqBlocks };
+    },
+
+    /** তথ্য → লেআউট (নিয়ম): প্রাথমিক/সিলেবাস/অন্য ধরন → সাধারণ; শুধু সৃজনশীল (+সংক্ষিপ্ত) → CQ/গণিত; সৃজনশীল + বহুনির্বাচনি → যৌথ; শুধু বহুনির্বাচনি → MCQ */
+    layoutFromFacts(facts, text, hint) {
+      const T = this.DOC_TYPES;
+      if (!facts) return null;
+      const why = (r) => 'Facts: ' + r;
+      if (facts.content && !/QUESTION/.test(facts.content)) return { type: T.EXAM_GENERAL, confidence: 0.97, reason: why('content=' + facts.content + ' → general') };
+      if (facts.grade >= 1 && facts.grade <= 5) return { type: T.EXAM_GENERAL, confidence: 0.97, reason: why('primary class ' + facts.grade + ' → general') };
+      if (!facts.sections) return null;
+      const sec = facts.sections;
+      const st = this.structureStats(text);
+      let cq = sec.cq || 0, mcq = sec.mcq || 0;
+      const short = (sec.short || 0) + (sec.very_short || 0);
+      if (cq && !st.cqBlocks) cq = 0;      // দাবি আছে, গঠন নেই → বিশ্বাস নয়
+      if (mcq && !st.mcqBlocks) mcq = 0;
+      const others = Object.keys(sec).filter((k) => sec[k] > 0 && !['cq', 'mcq', 'short', 'very_short'].includes(k));
+      const facts2 = 'cq=' + cq + ' mcq=' + mcq + ' short=' + short + (others.length ? ' other=' + others.join('+') : '');
+      if (others.length) return { type: T.EXAM_GENERAL, confidence: 0.95, reason: why(facts2 + ' → general') };
+      const math = /গণিত|math/i.test(facts.subject || '') || /MATH/.test(String(hint || ''));
+      if (cq && mcq) return { type: T.EXAM_COMBINED, confidence: 0.96, reason: why(facts2 + ' → combined') };
+      if (cq) return { type: math ? T.EXAM_MATH : T.EXAM_CQ, confidence: 0.96, reason: why(facts2 + ' → creative') };
+      if (mcq && !short) return { type: T.EXAM_MCQ, confidence: 0.96, reason: why(facts2 + ' → mcq') };
+      return { type: T.EXAM_GENERAL, confidence: 0.9, reason: why(facts2 + ' → general') };
+    },
+
+
     /**
      * Part-15.9: OCR-এর `doc_type` (বা ক্লাসিফায়ার) EXAM_CQ/MATH/GENERAL বললেও লেখায় প্রশ্নের পরে
      * আলাদা বহুনির্বাচনি অংশ (শিরোনাম + নিচে ≥৮টি ক/খ/গ/ঘ বিকল্প-লাইন) থাকলে → EXAM_COMBINED,
@@ -32,7 +128,8 @@
      */
     promoteCombined(type, text) {
       const t = String(type || '').toUpperCase();
-      if (!['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL'].includes(t)) return type;
+      // Part-18.6: সাধারণ (GENERAL) পত্রকে আর যৌথে তোলা হয় না — আসল সৃজনশীল-গঠন থাকলেই কেবল CQ/MATH → যৌথ
+      if (!['EXAM_CQ', 'EXAM_MATH'].includes(t)) return type;
       const s = String(text || '');
       if (/---\s*SECTION_?BREAK:MCQ/i.test(s)) return this.DOC_TYPES.EXAM_COMBINED;
       const lines = s.split(/\r?\n/);
@@ -44,7 +141,7 @@
       });
       if (head < 1 || !lines.slice(0, head).some(isQ)) return type;
       const optLines = lines.slice(head + 1).filter((l) => /^\s*\(?\s*[কখগঘ]\s*[.)।]\s*\S/.test(l)).length;
-      return optLines >= 8 ? this.DOC_TYPES.EXAM_COMBINED : type;
+      return optLines >= 8 && this.structureStats(s).cqBlocks > 0 ? this.DOC_TYPES.EXAM_COMBINED : type;
     },
 
     classify(text) {
@@ -60,7 +157,9 @@
       const hasShortSectionHeading = categoryLines.some((line) => /সংক্ষিপ্ত|অতি\s*সংক্ষিপ্ত|short/i.test(line));
       const hasCreativeSectionHeading = categoryLines.some((line) => /সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|creative|\bCQ\b/i.test(line));
       const hasCreativeExamMarkers = /সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|creative/i.test(t);
-      const hasMixedShortCreativeSections = hasShortSectionHeading && (hasCreativeSectionHeading || hasCreativeExamMarkers);
+      const struct = this.structureStats(t);
+      // Part-18.6: "উদ্দীপক/সৃজনশীল" শব্দ একবার এলেই নয় — অন্তত একটি আসল সৃজনশীল-ব্লক (ক–ঘ, নম্বরসহ) চাই
+      const hasMixedShortCreativeSections = hasShortSectionHeading && (hasCreativeSectionHeading || hasCreativeExamMarkers) && struct.cqBlocks > 0;
       const hasExplicitSectionBreak = /---\s*SECTION_BREAK/i.test(t) || /\[LAYOUT:\s*COMBINED/i.test(t);
 
       // 0. EXPLICIT MASTER SECTOR ID (Highest Priority: Zero-hallucination Frontmatter / Tag)
@@ -82,6 +181,19 @@
             detectedDocType = raw.split('|')[0].trim().toUpperCase();
           }
         }
+      }
+
+      // Part-18.6: Gemini-র তথ্য (শ্রেণি/বিষয়বস্তু/অংশ) থাকলে লেআউট আমাদের নিয়মে — doc_type শুধু ইঙ্গিত
+      // Part-19.1: CV_RESUME যোগ — আগে তালিকায় না থাকায় content: OTHER দেখে সিভি প্রশ্নপত্র (EXAM_GENERAL) হয়ে যেত
+      const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA)$/;
+      if (frontmatterMatch && !NON_EXAM.test(detectedDocType)) {
+        const facts = this.factsFromFrontmatter(frontmatterMatch[1]);
+        const byFacts = facts ? this.layoutFromFacts(facts, t, detectedDocType) : null;
+        if (byFacts) return byFacts;
+      }
+      // তথ্য না থাকলে (পুরোনো/MD লেখা): যৌথ বা সৃজনশীল দাবি — কিন্তু লেখায় একটিও সৃজনশীল-ব্লক নেই → সাধারণ
+      if (/^(EXAM_COMBINED|COMBINED_EXAM)$/.test(detectedDocType) && !hasExplicitSectionBreak && struct.cqBlocks === 0) {
+        return { type: this.DOC_TYPES.EXAM_GENERAL, confidence: 0.9, reason: 'Combined claimed but no creative structure → general' };
       }
 
       if (detectedDocType) {
@@ -115,6 +227,9 @@
         }
         if (detectedDocType === 'GOVT_APP' || detectedDocType === 'APPLICATION') {
           return { type: this.DOC_TYPES.GOVT_APP, confidence: 1.0, reason: 'Sector: GOVT_APP' };
+        }
+        if (detectedDocType === 'CV_RESUME' || detectedDocType === 'CV' || detectedDocType === 'RESUME' || detectedDocType === 'BIODATA') {
+          return { type: this.DOC_TYPES.CV_RESUME, confidence: 1.0, reason: 'Sector: CV_RESUME' };
         }
         if (detectedDocType === 'OFFICIAL_NOTICE' || detectedDocType === 'NOTICE') {
           return { type: this.DOC_TYPES.OFFICIAL_NOTICE, confidence: 1.0, reason: 'Sector: OFFICIAL_NOTICE' };

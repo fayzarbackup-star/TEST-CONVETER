@@ -30,11 +30,31 @@ const T = (name, cond, extra) => {
   else { fail++; console.log('❌ ' + name + (extra !== undefined ? '  → ' + JSON.stringify(extra) : '')); }
 };
 
-const norm = (s) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+// নুকতা-রূপ এক (য়/ড়/ঢ়) — কিছু পার্সার লেখাকে একক-অক্ষর রূপে রাখে; তুলনা যেন রূপের ওপর নির্ভর না করে
+const norm = (s) => String(s == null ? '' : s).replace(/য়/g, 'য়').replace(/ড়/g, 'ড়').replace(/ঢ়/g, 'ঢ়').replace(/\s+/g, ' ').trim();
 
 /** পার্সারের সব ফিল্ড এক জায়গায় (হেডার + সেকশন + প্রশ্ন + সাব + অপশন) */
 function parsedBag(parsed) {
+  // Part-19.2: সনদ-লেআউট — অংশভিত্তিক (মুড়ি/মূল): মাথা, ছক, শিরোনাম, ব্লক, তারিখ/স্বাক্ষর
+  if (Array.isArray(parsed.parts)) {
+    return parsed.parts.map((p) => parsedBag({ blocks: [].concat(p.head.map((x) => ({ text: x.text })), p.tables, [{ text: p.title }], p.blocks, p.footer ? [p.footer] : []) })).join(' \u0001 ');
+  }
   const out = [];
+  // Part-18.9: আবেদনপত্র-লেআউটের মডেল (ব্লক-তালিকা) — একই নীতি: উৎসের প্রতিটি লাইন কোনো ব্লকে টিকে থাকবে
+  for (const b of parsed.blocks || []) {
+    out.push(b.text, b.label, b.left, b.right, b.total);
+    (b.lines || []).forEach((x) => out.push(typeof x === 'string' ? x : x.text));   // Part-19.0: প্যাড-শিরোনামের লাইন {text, role}
+    (b.groups || []).forEach((g) => g.forEach((x) => out.push(x)));                  // Part-19.0: স্বাক্ষর-দল
+    (b.items || []).forEach((x) => out.push(typeof x === 'string' ? x : [x.num, x.text, x.count].join(' ')));
+    (b.rows || []).forEach((r) => out.push(Array.isArray(r) ? r.join(' ') : [r.num, r.label, r.value].concat(r.more || []).join(' ')));
+    out.push(b.date); (Array.isArray(b.sign) ? b.sign : []).forEach((x) => out.push(x));   // Part-19.1: সিভির তারিখ/স্বাক্ষর
+  }
+  // Part-19.1: ইংরেজি সিভি পুরোনো CVEngine-এ (title/personalInfo/education/…)
+  const flat = (v) => (v == null ? [] : typeof v === 'object' ? Object.values(v).flatMap(flat) : [String(v)]);
+  for (const k of ['title', 'name', 'contact', 'personalInfo', 'education', 'experience', 'skills', 'declaration']) {
+    if (!parsed.blocks && !parsed.sections && parsed[k] != null) flat(parsed[k]).forEach((x) => out.push(x));
+  }
+  if (!parsed.blocks && Array.isArray(parsed.education) && parsed.education.length) out.push('শিক্ষাগত যোগ্যতা (Educational Qualifications)');   // শিরোনাম রেন্ডারার নিজে বসায় (cv-engine.js)
   const h = parsed.header || {};
   Object.values(h).forEach((v) => v && out.push(v));
   if (parsed.auditNote) out.push(parsed.auditNote);
@@ -65,6 +85,7 @@ function wordScore(rawLine, bag) {
   if (!l || /^---/.test(l) || /^\|/.test(l)) return null;
   const words = l
     .replace(/\$[^$]*\$/g, ' ')
+    .replace(/\.{3,}|…+/g, ' ')   // ডট-লিডার (সংযুক্তির "…… ১ কপি") সাজসজ্জা, লেখা নয়
     .split(/[\s|,।:ঃ()\[\]]+/)
     .filter((w) => w.length >= 4 && !/^[\u09E6-\u09EF\d]+$/.test(w) && !LABEL_WORDS.test(w));
   if (words.length < 2) return null;

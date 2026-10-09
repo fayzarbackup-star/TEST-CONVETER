@@ -854,7 +854,7 @@
             if (inheritedStyle.align) align = inheritedStyle.align;
             if (inheritedStyle.spaceBeforePt !== null) pStyles.push(`margin-top:${inheritedStyle.spaceBeforePt}pt`);
             if (inheritedStyle.spaceAfterPt !== null) pStyles.push(`margin-bottom:${inheritedStyle.spaceAfterPt}pt`);
-            if (inheritedStyle.lineHeight !== null) pStyles.push(`line-height:${inheritedStyle.lineHeight}`);
+            if (inheritedStyle.lineHeight !== null) pStyles.push(`line-height:${Math.round(inheritedStyle.lineHeight * 100)}%`);
           }
         }
 
@@ -881,8 +881,12 @@
           if (line && (lineRule === 'exact' || lineRule === 'atLeast')) {
             pStyles.push(`line-height:${(parseInt(line, 10)/20).toFixed(1)}pt`);
             pStyles.push(`mso-line-height-rule:${lineRule === 'exact' ? 'exactly' : 'at-least'}`);
-          } else if (line) pStyles.push(`line-height:${(parseInt(line, 10)/240).toFixed(2)}`);
+          } else if (line) pStyles.push(`line-height:${Math.round(parseInt(line, 10) / 240 * 100)}%`);
+          // Part-19.3: এককহীন গুণক (১.৭০) Word-এর HTML-আমদানি মানে না ⇒ .doc-এ ১.০ হতো; Word নিজে % লেখে (১৭০%)
         }
+        // Part-19.3: keepNext → Word-HTML-এর page-break-after:avoid (শিরোনাম পরের লাইন থেকে আলাদা না হয়)
+        const keepNext = pPr.querySelector("keepNext");
+        if (keepNext && !/^(0|false)$/.test(keepNext.getAttribute("w:val") || keepNext.getAttribute("val") || '')) pStyles.push('page-break-after:avoid');
 
         const ind = pPr.querySelector("ind");
         if (ind) {
