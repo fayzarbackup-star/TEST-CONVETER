@@ -4058,7 +4058,9 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
               pageSize: pageSizeVal,
               margin: marginVal,
               preserveSutonny: true,
-              optimizeForQuestionPaper: true
+              optimizeForQuestionPaper: true,
+              // Part-19.3: সাজানো সনদে টেবিলের নিজের ঘর-মার্জিন ও সারি-উচ্চতা (নইলে ৩.৫pt প্যাডিংয়ে গ্রেড-ছক ও লেখা নিচে নামে)
+              honorCellMargins: parsedDocType === 'PROTTOYON' && typeof FayzarCertificateLayout !== 'undefined' && FayzarCertificateLayout.wants(exportText, ocrFrontmatter || undefined)
             });
             docBlob = docResult.blob || docResult.convertedBlob;
           } else if (typeof DocxToDocConverter !== 'undefined' && masterDocxBlob) {

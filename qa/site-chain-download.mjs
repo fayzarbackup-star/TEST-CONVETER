@@ -16,6 +16,7 @@ try {
   const page = await browser.newPage();
   const errs = [];
   page.on('pageerror', (e) => errs.push(e.message.split('\n')[0]));
+  if (process.env.QA_CONSOLE) page.on('console', (m) => { if (/warn|error/.test(m.type())) console.log('[console.' + m.type() + ']', m.text().slice(0, 300)); });
   await page.goto(pathToFileURL(path.resolve('index.html')).href, { waitUntil: 'load', timeout: 120000 });
   await new Promise((r) => setTimeout(r, 1500));
   await page.evaluate(() => {

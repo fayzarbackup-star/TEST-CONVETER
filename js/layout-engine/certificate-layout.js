@@ -48,7 +48,7 @@
   }
 
   const RX = {
-    hr: /^(?:-{3,}|\*{3,}|_{3,}|={3,})$/,
+    hr: /^(?:-{3,}|\*{1,}|_{3,}|={3,})$/,   // Part-19.3: আসল OCR দুই পাতার মাঝে একা "*" দেয়
     serial: /^(?:ক্রমিক|ক্রঃ|ক্র\.)\s*(?:নং|নম্বর|নং-)?/,
     date: /^তারিখ\s*[:ঃ]?/,
     // "তারিখ:………… প্রধান শিক্ষক" — এক লাইনে তারিখ + স্বাক্ষর
@@ -66,12 +66,16 @@
     main: { top: 28, org: 56, addr: 32, meta: 28, headB: true, title: 46, box: true, body: 28, line: 360, bodyB: false, serial: 24, date: 28, sig: 24 },
     stub: { top: 28, org: 44, addr: 30, meta: 26, headB: false, title: 42, box: true, body: 28, line: 480, bodyB: false, serial: 24, date: 28, sig: 28 }
   };
-  const STEPS = [0, 2, 4, 6];   // মূল লেখা ছোট করার ধাপ (অর্ধ-পয়েন্ট); সর্বনিম্ন ১২pt
+  const STEPS = [0, 2, 4, 6, 6, 6];   // মূল লেখা ছোট করার ধাপ (অর্ধ-পয়েন্ট); সর্বনিম্ন ১২pt
+  // Part-19.3: শেষ দুই ধাপে মাথা/শিরোনাম/স্বাক্ষরও ছোট — কালপুরুষে (ইউনিকোড .docx) লম্বা লাইনে এক পাতায় ধরাতে (Word-এ মাপা)
+  const HEAD_K = [1, 1, 1, 1, 0.88, 0.78];
   const MIN_BODY = 24;
   const PAGE = { pageW: 16838, pageH: 11906, top: 720, bottom: 720, left: 720, right: 720 };
   const STUB_W = 5900, GAP_W = 400, CELL_PAD = 180;
   const ROW_SPARE = 600;   // বক্সের সারি পাতার চেয়ে একটু খাটো — নইলে টেবিলের পরের বাধ্যতামূলক অনুচ্ছেদ দ্বিতীয় পাতায় যায় (Word-এ মাপা)
   const SIG_W = 3600;
+  const SINGLE_MARGIN = { top: 576, bottom: 576, left: 576, right: 576 };
+  const PAGE_BREAK = '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="2"/></w:rPr><w:br w:type="page"/></w:r></w:p>';
 
   const FayzarCertificateLayout = {
     RX,
@@ -123,6 +127,8 @@
       // মুড়ি = গদ্য-অনুচ্ছেদ কম যে অংশে (নমুনায় বামে); মূল সনদ ডানে
       const prose = (arr) => arr.reduce((a, x) => a + (/[।]\s*$/.test(x.t) && x.t.length > 60 ? x.t.length : 0), 0);
       let [a, b] = two.map((p) => p.filter((x) => !x.hr));
+      // Part-19.3: দুই অংশেই পূর্ণ গদ্য ⇒ মুড়ি নয়, দুটি আলাদা সনদ (নমুনা Dreamland: দুই পাতা) — প্রতিটি নিজের পাতায়
+      if (prose(a) >= 150 && prose(b) >= 150) return { kind: 'CERT_LAYOUT', version: 1, variant: 'single', parts: [this._parsePart(a, 'single'), this._parsePart(b, 'single')] };
       if (prose(a) > prose(b)) [a, b] = [b, a];
       return { kind: 'CERT_LAYOUT', version: 1, variant: 'stub', parts: [this._parsePart(a, 'stub'), this._parsePart(b, 'main')] };
     },
@@ -131,12 +137,17 @@
     _parsePart(items, role) {
       const LL = getLL();
       const part = { role, head: [], tables: [], title: '', blocks: [], footer: null };
+      // Part-19.3: আসল OCR গ্রেড-ছক (পাতার ডান-উপরে) প্রতিষ্ঠান-নামের আগে দেয় — আগে ছকটুকু আলাদা, তারপর মাথা
+      let lead = 0;
+      while (lead < items.length && RX.tableRow.test(items[lead].t)) lead++;
+      const leadRows = items.slice(0, lead).map((x) => x.t);
+      items = items.slice(lead);
       // মাথা: প্রথম ক্রমিক/শিরোনাম/ছক-লাইনের আগ পর্যন্ত (প্যাড-শিরোনামের নিয়ম LetterLayout-এর)
       let cut = items.findIndex((x) => RX.serial.test(x.t) || RX.tableRow.test(x.t) || (RX.title.test(x.t) && !RX.notTitle.test(x.t) && x.t.length <= 40));
       if (cut < 0) cut = items.length;
       const head = LL ? LL._takeLetterhead(items.slice(0, cut)) : { lines: [], used: 0 };
       part.head = head.lines;
-      let rest = items.slice(head.used).map((x) => x.t);
+      let rest = leadRows.concat(items.slice(head.used).map((x) => x.t));
 
       // ছক (মার্কডাউন টেবিল) — মুড়িতে বক্সের ভেতরে টেবিল নয়, সারি-লাইন
       const lines = [];
@@ -200,16 +211,21 @@
     geometry(model, opts) {
       const o = opts || {};
       const g = Object.assign({}, PAGE);
+      g.variant = model && model.variant === 'stub' ? 'stub' : 'single';
+      if (g.variant === 'single') Object.assign(g, SINGLE_MARGIN);   // Part-19.3: নমুনা Dreamland — চারদিকে ০.৪"
       g.textW = g.pageW - g.left - g.right;
       g.usableH = g.pageH - g.top - g.bottom;
-      g.variant = model && model.variant === 'stub' ? 'stub' : 'single';
       g.widths = g.variant === 'stub' ? [STUB_W, GAP_W, g.textW - STUB_W - GAP_W] : [g.textW];
       const mk = (i) => Object.assign({}, g, { fitStep: i, shrink: STEPS[i] });
       if (Number.isInteger(o.step) && o.step >= 0 && o.step < STEPS.length) return mk(o.step);
       if (o.noFit || !model || !model.parts) return mk(0);
       for (let i = 0; i < STEPS.length; i++) {
         const gi = mk(i);
-        if (model.parts.every((p) => this.estimateHeight(p, gi, o.isBijoy) <= this._capacity(gi))) return gi;
+        if (model.parts.every((p) => this.estimateHeight(p, gi, o.isBijoy) <= this._capacity(gi))) {
+          // Part-19.3: নমুনার মতো স্বাক্ষর পাতার নিচের দিকে — বাড়তি জায়গার অর্ধেক (≤৬০pt) ফুটারের আগে
+          if (gi.variant === 'single') gi.footGap = Math.max(0, Math.min(1200, Math.round(0.5 * Math.min(...model.parts.map((p) => this._capacity(gi) - this.estimateHeight(p, gi, o.isBijoy))))));
+          return gi;
+        }
       }
       return mk(STEPS.length - 1);
     },
@@ -220,6 +236,8 @@
       const d = (g && g.shrink) || 0;
       s.body = Math.max(MIN_BODY, s.body - d);
       s.line = Math.max(276, s.line - d * 12);
+      const k = HEAD_K[(g && g.fitStep) || 0] || 1;
+      if (k !== 1) for (const key of ['top', 'org', 'addr', 'meta', 'title', 'serial', 'date', 'sig']) s[key] = Math.max(20, 2 * Math.round(s[key] * k / 2));
       return s;
     },
 
@@ -233,31 +251,32 @@
       const out = [];
       const mkPara = (text, sz, o) => Object.assign({ runs: text ? [{ t: text, sz, b: !!(o && o.b), u: !!(o && o.u) }] : [], sz, jc: 'left', line: 240, before: 0 }, o || {});
       const para = (text, sz, o) => out.push(mkPara(text, sz, o));
-      // নমুনার মতো প্রথম ছক (গ্রেড-ছক) শিরোনাম-মাথার ডানে: প্রতিষ্ঠানের নাম পুরো প্রস্থে, তার নিচে
-      // [ফাঁকা | ঠিকানা/সন/শিরোনাম (মাঝে) | ছক] — একটি টেবিল, মাঝের দুই ঘর লম্বালম্বি জোড়া (vMerge)
+      // নমুনার মতো প্রথম ছক (গ্রেড-ছক) পাতার ডান-উপরে, প্রতিষ্ঠানের নামের আগে (Part-19.3: Dreamland-এ মাপা) —
+      // [ফাঁকা | ফাঁকা | ছক] সীমানাহীন টেবিল; মাথার লেখা তার নিচে পুরো প্রস্থে
       const AL = getAL();
       const sideT = part.role === 'single' && part.tables.length && AL ? part.tables[0] : null;
-      const side = sideT ? { table: sideT, sz: 24, center: [] } : null;
+      const side = sideT ? { table: sideT, sz: 24, hsz: 26, bold: true, center: [] } : null;
       if (side) {
-        side.widths = AL._tableWidths(sideT.rows, side.sz, Math.round(w * 0.3), sideT.header);
+        side.widths = AL._tableWidths(sideT.rows, side.hsz, Math.round(w * 0.3), sideT.header);
         side.gw = side.widths.reduce((a, c) => a + c, 0);
         side.cw = w - 2 * side.gw;
+        out.push({ side });
       }
       for (const hl of part.head) {
         let sz = S[hl.role] || S.addr;
-        const into = side && hl.role !== 'org' && hl.role !== 'top' && part.head.findIndex((x) => x.role === 'org') < part.head.indexOf(hl);
-        const room = into ? side.cw : w;
-        if (hl.role === 'org' || into) while (sz > 28 && measure(hl.text, sz) > room - 200) sz -= 2;   // এক লাইনে ধরাতে
-        const p = mkPara(hl.text, sz, { jc: 'center', b: hl.role === 'org' || (S.headB && hl.role !== 'top') });
-        if (into) side.center.push(p); else out.push(p);
+        // এক লাইনে ধরাতে; মুড়ি/মূলে নমুনার মতো বড় নাম (≥২০pt) — দরকারে দুই লাইন
+        const floor = part.role === 'single' ? 28 : Math.min(40, sz);
+        if (hl.role === 'org') while (sz > floor && measure(hl.text, sz) > w - 200) sz -= 2;
+        // Part-19.3: নমুনা Dreamland-এর ফাঁক (ঠিকানা→সন ৩৮pt, সন→শিরোনাম ৪৮pt)
+        const before = part.role === 'single' && hl.role === 'meta' ? 160 : 0;
+        out.push(mkPara(hl.text, sz, { jc: 'center', b: hl.role === 'org' || (S.headB && hl.role !== 'top'), before }));
       }
-      if (side) out.push({ side });
       for (const t of part.tables) if (t !== sideT) out.push({ table: t, sz: 24, before: 120 });
       if (part.title) {
         const tw = Math.min(w, measure(part.title, S.title) + 720);
         const pad = S.box ? Math.max(0, Math.round((w - tw) / 2)) : 0;
-        const tp = mkPara(part.title, S.title, { jc: 'center', b: true, before: 160, li: pad, ri: pad, box: S.box });
-        if (side) side.center.push(tp); else { out.push(tp); para('', 16, {}); }
+        out.push(mkPara(part.title, S.title, { jc: 'center', b: true, before: part.role === 'single' ? 360 : 160, li: pad, ri: pad, box: S.box }));
+        para('', 16, {});
       }
       for (const b of part.blocks) {
         switch (b.kind) {
@@ -285,9 +304,19 @@
       }
       if (part.footer) {
         const f = part.footer;
-        para('', S.body, { line: S.line, keep: true });
+        para('', S.body, { line: S.line, keep: true, before: part.role === 'single' ? (g && g.footGap) || 0 : 0 });
         if (part.role === 'stub' && f.sign.length <= 1) {
           out.push({ runs: [{ t: f.date, sz: S.date }, { tab: true }, { t: f.sign[0] || '', sz: S.date }], sz: S.date, jc: 'left', line: 240, before: 0, tabR: w });
+        } else if (part.role === 'single' && f.sign.length) {
+          // Part-19.3 (নমুনা Dreamland): তারিখ বামে, স্বাক্ষর-ব্লক ডানে একই উচ্চতায় — সব বোল্ড; নাম/প্রতিষ্ঠান +২pt,
+          // পদবি +১pt, মোবাইল মূল মাপে। তারিখ স্বাক্ষরের দ্বিতীয় লাইনের পাশে
+          const tabC = w - Math.round(SIG_W / 2);
+          const dateRow = Math.min(1, f.sign.length - 1);
+          f.sign.forEach((s, i) => {
+            const sz = /^(?:মোবাইল|মোবা|ফোন|Mobile|Phone)/i.test(s) ? S.sig : (i === 1 ? S.sig + 2 : S.sig + 4);
+            const runs = (i === dateRow && f.date ? [{ t: f.date, sz: S.date, b: true }] : []).concat([{ tab: true }, { t: s, sz, b: true }]);
+            out.push({ runs, sz, jc: 'left', line: 240, before: 0, tabC, keep: i < f.sign.length - 1 });
+          });
         } else {
           if (f.date) para(f.date, S.date, { keep: f.sign.length > 0 });
           const li = Math.max(0, w - SIG_W);
@@ -301,7 +330,8 @@
 
     estimateHeight(part, g, isBijoy) {
       const ff = isBijoy ? 1.02 : 1.24;
-      const corr = isBijoy ? 1.08 : 1.24;
+      // Part-19.3: Word-এ মাপা — বিজয়ে একক সনদ আসলে ~৬% বেশি উঁচু (১.০৮ ঠিক), মুড়ি/মূলে ১.০৮ বেশি ছিল (মুড়ি অকারণে ছোট); কালপুরুষ ~১২% বেশি
+      const corr = part.role === 'single' ? (isBijoy ? 1.08 : 1.36) : (isBijoy ? 1.0 : 1.24);
       const w = this._innerW(g, part.role);
       const AL = getAL();
       let h = 0;
@@ -343,11 +373,12 @@
         const runs = p.runs.map((r) => (r.tab ? '<w:r><w:tab/></w:r>' : (r.t ? h.runs(r.t, { sz: r.sz, b: r.b, u: r.u }) : ''))).join('');
         return '<w:p><w:pPr>' + (p.keep ? '<w:keepNext/>' : '') + (p.box ? box : '') +
           (p.tabR ? '<w:tabs><w:tab w:val="right" w:pos="' + p.tabR + '"/></w:tabs>' : '') +
+          (p.tabC ? '<w:tabs><w:tab w:val="center" w:pos="' + p.tabC + '"/></w:tabs>' : '') +
           '<w:spacing w:before="' + (p.before || 0) + '" w:after="0" w:line="' + p.line + '" w:lineRule="auto"/>' + ind +
           '<w:jc w:val="' + JC[p.jc] + '"/><w:rPr><w:sz w:val="' + p.sz + '"/><w:szCs w:val="' + p.sz + '"/></w:rPr></w:pPr>' + runs + '</w:p>';
       };
       const partXml = (part) => { const w = this._innerW(g, part.role); return this._keepFooter(this._paras(part, g)).map((p) => P(p, w)).join(''); };
-      if (model.variant !== 'stub') return partXml(model.parts[0]);
+      if (model.variant !== 'stub') return model.parts.map(partXml).join(PAGE_BREAK);   // Part-19.3: একাধিক সনদ ⇒ প্রতিটি নিজের পাতায়
       // মুড়ি | ফাঁক | মূল — সীমানাহীন টেবিল, দুই অংশ ৪.৫pt দাগের বক্সে
       const thick = (k) => '<w:' + k + ' w:val="single" w:sz="36" w:space="0" w:color="000000"/>';
       const nil = (k) => '<w:' + k + ' w:val="nil"/>';
@@ -378,7 +409,7 @@
         x += '<w:tr><w:trPr><w:cantSplit/></w:trPr>' + tc(s.gw, nil, vm, empty) + tc(s.cw, nil, vm, ri === 0 ? (s.center.map((p) => P(p, s.cw)).join('') || empty) : empty);
         s.widths.forEach((w, ci) => {
           const t = String(row[ci] == null ? '' : row[ci]);
-          x += tc(w, one, '', '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>' + (t ? h.runs(t, { sz: s.sz, b: ri === 0 && s.table.header }) : '') + '</w:p>');
+          x += tc(w, one, '', '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/><w:jc w:val="center"/></w:pPr>' + (t ? h.runs(t, ri === 0 && s.table.header ? { sz: s.hsz || s.sz, b: true } : { sz: s.sz, b: !!s.bold }) : '') + '</w:p>');
         });
         x += '</w:tr>';
       });
@@ -416,7 +447,7 @@
       };
       // অনুচ্ছেদের মাথা ও লেখা আলাদা — টেবিল-ঘরে \intbl আর শেষ অনুচ্ছেদ \cell
       const fmt = (p, intbl) => '\\pard\\plain' + (intbl ? '\\intbl' : '') + (p.keep ? '\\keepn' : '') +
-        (p.box ? '\\box\\brdrs\\brdrw15\\brsp80' : '') + (p.tabR ? '\\tqr\\tx' + p.tabR : '') +
+        (p.box ? '\\box\\brdrs\\brdrw15\\brsp80' : '') + (p.tabR ? '\\tqr\\tx' + p.tabR : '') + (p.tabC ? '\\tqc\\tx' + p.tabC : '') +
         '\\sl' + p.line + '\\slmult1\\sb' + (p.before || 0) + '\\sa0' + (p.li ? '\\li' + p.li : '') + (p.ri ? '\\ri' + p.ri : '') + (p.fi ? '\\fi' + p.fi : '') +
         JC[p.jc] + '\\f0\\fs' + p.sz + ' ' + p.runs.map((r) => (r.tab ? '\\tab ' : (r.t ? T(r) : ''))).join('');
       let rtf = '{\\rtf1\\ansi\\deff0\n{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + (h.fontName || 'Kalpurush') + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n{\\colortbl;\\red0\\green0\\blue0;}\n' +
@@ -424,7 +455,10 @@
       if (model.variant !== 'stub') {
         rtf += '\\pgbrdropt32' + ['t', 'l', 'b', 'r'].map((k) => '\\pgbrdr' + k + '\\brdrdb\\brdrw15\\brsp20').join('') + '\n';
         const w = g.textW;
-        for (const p of this._keepFooter(this._paras(model.parts[0], g))) {
+        const all = [];
+        model.parts.forEach((part, pi) => { if (pi) all.push({ pageBreak: true }); all.push(...this._keepFooter(this._paras(part, g))); });
+        for (const p of all) {
+          if (p.pageBreak) { rtf += '\\pard\\plain\\page\n'; continue; }
           if (p.side) {
             const s = p.side;
             const brd = '\\clbrdrt\\brdrs\\brdrw10\\clbrdrl\\brdrs\\brdrw10\\clbrdrb\\brdrs\\brdrw10\\clbrdrr\\brdrs\\brdrw10';
@@ -437,7 +471,8 @@
               let cells = '\\pard\\plain\\intbl \\cell\n' + center;
               s.widths.forEach((cw, ci) => {
                 const t = String(row[ci] == null ? '' : row[ci]);
-                cells += '\\pard\\plain\\intbl\\qc\\f0\\fs' + s.sz + '\\sl240\\slmult1 ' + (t ? (ri === 0 && s.table.header ? '{\\b ' + h.rtf(t) + '}' : h.rtf(t)) : '') + '\\cell\n';
+                const hd = ri === 0 && s.table.header;
+                cells += '\\pard\\plain\\intbl\\qc\\f0\\fs' + (hd ? (s.hsz || s.sz) : s.sz) + '\\sl240\\slmult1 ' + (t ? (hd || s.bold ? '{\\b ' + h.rtf(t) + '}' : h.rtf(t)) : '') + '\\cell\n';
               });
               rtf += '{' + defs + '\n' + cells + '\\row}\n';
             });
@@ -482,7 +517,10 @@
         if (p.table) return AL ? '<div style="margin-top: 0.08in;">' + AL.renderHtml({ blocks: [p.table] }, { font: o.font, geometry: { tableSz: p.sz, textW: g.textW, sz: p.sz, line: 240 }, bodyOnly: true }, { esc }) + '</div>' : '';
         const lh = (1.34 * p.line / 240).toFixed(2);
         const run = (r) => { let s = esc(r.t); if (r.u) s = '<u>' + s + '</u>'; if (r.b) s = '<b>' + s + '</b>'; return '<span style="font-size: ' + (r.sz / 2) + 'pt;">' + s + '</span>'; };
-        const inner = p.tabR
+        const ti = p.runs.findIndex((r) => r.tab);
+        const inner = p.tabC
+          ? '<span style="display: flex;"><span style="flex: 1;">' + p.runs.slice(0, ti).map(run).join('') + '</span><span style="width: ' + inch(SIG_W) + '; text-align: center;">' + p.runs.slice(ti + 1).map(run).join('') + '</span></span>'
+          : p.tabR
           ? '<span style="display: flex; justify-content: space-between;">' + p.runs.filter((r) => !r.tab).map(run).join('') + '</span>'
           : p.runs.map(run).join('');
         return '<div style="font-size: ' + (p.sz / 2) + 'pt; line-height: ' + lh + '; min-height: ' + lh + 'em; text-align: ' + JC[p.jc] + ';' +
@@ -497,7 +535,10 @@
         const box = (w, part) => '<div style="width: ' + inch(w) + '; box-sizing: border-box; border: 4.5pt solid #000; padding: ' + inch(CELL_PAD) + ';">' + partHtml(part) + '</div>';
         body = '<div style="display: flex; gap: ' + inch(GAP_W) + '; align-items: stretch; min-height: ' + inch(g.usableH - ROW_SPARE) + ';">' + box(g.widths[0], model.parts[0]) + box(g.widths[2], model.parts[1]) + '</div>';
       } else {
-        body = '<div style="border: 3px double #000; padding: 0.15in; min-height: ' + inch(g.usableH - ROW_SPARE) + '; box-sizing: border-box;">' + partHtml(model.parts[0]) + '</div>';
+        // Part-19.3: একাধিক সনদ ⇒ প্রতিটি আলাদা পাতা
+        const sheet = (part) => '<div class="paper-sheet size-a4-landscape official-certificate-layout ' + fontClass + '" ' + (o.editable ? 'contenteditable="true" spellcheck="false" ' : '') +
+          'style="padding: ' + pad + '; box-sizing: border-box;"><div style="border: 3px double #000; padding: 0.15in; min-height: ' + inch(g.usableH - ROW_SPARE) + '; box-sizing: border-box;">' + partHtml(part) + '</div></div>';
+        return model.parts.map(sheet).join('');
       }
       return '<div class="paper-sheet size-a4-landscape official-certificate-layout ' + fontClass + '" ' + (o.editable ? 'contenteditable="true" spellcheck="false" ' : '') +
         'style="padding: ' + pad + '; box-sizing: border-box;">' + body + '</div>';

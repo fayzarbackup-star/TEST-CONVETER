@@ -132,6 +132,22 @@
     },
 
     /**
+     * Part-19.3: আবেদন (GOVT_APP) প্যাডে লেখা কি না — উপরে ≥২ লাইনের শিরোনাম, যার প্রতিষ্ঠান-নাম "#" লাইন
+     * (Gemini প্যাডের আবেদনকে GOVT_APP বলে; তখন export/pipeline প্যাড-লেআউটে পাঠায়)। "# আবেদনপত্র" জাতীয় শিরোনাম নয়।
+     */
+    hasLetterhead(rawText) {
+      const items = [];
+      for (const raw of norm(rawText).replace(/^\s*---[\s\S]*?---\s*/, '').split('\n')) {
+        const t = cleanLine(raw);
+        if (t) items.push({ t, h: /^\s*#{1,6}\s/.test(raw) });
+      }
+      const head = this._takeLetterhead(items);
+      if (head.used < 2) return false;
+      const org = items.slice(0, head.used).find((x) => x.h && !RX.top.test(x.t));
+      return !!org && !RX.title.test(org.t) && !/^(?:আবেদন|দরখাস্ত|Application)/i.test(org.t);
+    },
+
+    /**
      * উপরের ≤৮টি ছোট লাইন, প্রথম চিঠি-চিহ্নের আগ পর্যন্ত। প্রতিষ্ঠানের নাম = "#" শিরোনাম-লাইন (Gemini-র নিয়ম),
      * না থাকলে প্রথম "top"-নয় এমন লাইন; নামের আগের লাইনগুলো ছোট (top), পরেরগুলো ঠিকানা/তথ্য।
      */

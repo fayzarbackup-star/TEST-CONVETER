@@ -275,6 +275,11 @@
         const promoted = classifier.promoteCombined(docType, text);
         if (promoted !== docType) { docType = promoted; classification = Object.assign({}, classification, { type: promoted, reason: 'MCQ section detected → EXAM_COMBINED' }); }
       }
+      // Part-19.3: প্যাডে লেখা আবেদন (Gemini বলে GOVT_APP) ⇒ প্যাড-লেআউট। "#" শিরোনাম-চিহ্ন stripOcrArtifacts মুছে ফেলে, তাই কাঁচা লেখায় দেখা
+      if (docType === 'GOVT_APP' && this._getLetterLayout() && this._getLetterLayout().hasLetterhead(String(rawText || ''))) {
+        docType = 'OFFICE_PAD';
+        classification = Object.assign({}, classification, { type: docType, reason: 'GOVT_APP on letterhead → OFFICE_PAD' });
+      }
 
       // Step 2: Parse (with Graceful Fallback)
       // Part-13.1: Studio-এডিট-ব্রিজ — প্রি-পার্সড ও এডিটেড parsedData এলে পুনঃপার্স নয়;
