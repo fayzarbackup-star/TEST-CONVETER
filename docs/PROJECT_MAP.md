@@ -47,6 +47,7 @@
 | CQ বুকলেট/কলাম/প্রোফাইল (EXAM_PRIMARY, EXAM_ONECOL) | ⚙️ `js/layout-engine/cq-booklet-planner.js` | `LAYOUT_PROFILES`, `CqBookletPlanner` |
 | MCQ গ্রিড/ট্যাব/পাতা-ভাগ | ⚙️ `js/layout-engine/mcq-layout-planner.js` | `McqLayoutPlanner`, `balancePageHeader` |
 | ক্রমিক-দূরত্ব (০.২"/০.৩") | `js/layout-engine/layout-units.js` | `FayzarLayoutUnits.questionIndent` |
+| কালপুরুষে প্রশ্নপত্রের লাইন-গুণক (targetFont 'unicode' ⇒ ০.৭২) | `layout-units.js` + ⚙️ `export-dual-engine.js` | `examLineFactor`, `_examLineFactor`, `_fixDocxSpacing` |
 | প্রশ্ন-নম্বর পুনর্বিন্যাস | `js/layout-engine/exam-renumber.js` | `FayzarExamRenumber` |
 | সমীকরণ (EQ-ফিল্ড/OMML) — Word-যাচাই ছাড়া হাত নয় | 🔒 `js/equation-converter.js`, `js/layout-engine/eq-field-rtf.js` | `latexToEqField`, `splitRuns`, `italicVars` |
 
@@ -56,6 +57,7 @@
 | আবেদনপত্র (GOVT_APP) | `js/layout-engine/application-layout.js` | `FayzarApplicationLayout` (`estimateHeight`, `_docxTable`, `_rtfTable`) |
 | প্যাড/অফিস চিঠি, প্রত্যয়নপত্র | `js/layout-engine/letter-layout.js` | `FayzarLetterLayout` |
 | সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র (single + মুড়িসহ stub; `wants` = page_orientation বা মুড়ি) | `js/layout-engine/certificate-layout.js` | `FayzarCertificateLayout` (`wants`, `_split`, `_parsePart`, `_paras`, `_docxSide`, `renderDocx/Rtf/Html`) |
+| ক্যাশমেমো ২-আপ/৩-আপ (CASH_MEMO; `copies` ফ্রন্টম্যাটার; ইউনিকোডে লাইন ×০.৭২) | `js/layout-engine/cash-memo-layout.js` | `FayzarCashMemoLayout` (`parse`, `geometry`, `_fill`, `_hsz`, `renderDocx/Rtf/Html`) |
 | বাংলা সিভি (ফন্ট-ধাপ `STEPS`, সর্বনিম্ন ১২pt) | `js/layout-engine/cv-layout.js` | `parse`, `_takeFooter`, `geometry`, `estimateHeight`, `renderDocx/Rtf/Html` |
 | ইংরেজি সিভি, সনদ, দলিল, রুটিন, বেতন, প্রবেশপত্র (পুরোনো) | `js/engines/*-engine.js` | `CVEngine`, `CertificateEngine`, `StampEngine`, `RoutineEngine`, `SalarySlipEngine`, `AdmitCardEngine` |
 

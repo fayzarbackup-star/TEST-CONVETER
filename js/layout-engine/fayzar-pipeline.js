@@ -136,6 +136,18 @@
       return null;
     },
 
+    /** Part-19.4: ক্যাশমেমো ২-আপ/৩-আপ */
+    _getCashMemoLayout() {
+      if (typeof FayzarCashMemoLayout !== 'undefined') return FayzarCashMemoLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCashMemoLayout) return globalThis.FayzarCashMemoLayout;
+      if (typeof require === 'function') {
+        try { return require('./cash-memo-layout.js'); } catch (e) {
+          try { return require('../layout-engine/cash-memo-layout.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
     _getCvLayout() {
       if (typeof FayzarCvLayout !== 'undefined') return FayzarCvLayout;
       if (typeof globalThis !== 'undefined' && globalThis.FayzarCvLayout) return globalThis.FayzarCvLayout;
@@ -441,6 +453,13 @@
           break;
         }
 
+        case 'CASH_MEMO': {
+          // Part-19.4: ক্যাশমেমো ২-আপ/৩-আপ (দোকানের নমুনা)
+          const CM = this._getCashMemoLayout();
+          if (CM) return CM.parse(text, options);
+          break;
+        }
+
         case 'OFFICE_PAD':
         case 'PROTTOYON': {
           // Part-19.2: ল্যান্ডস্কেপ/মুড়িসহ সনদ আলাদা মডিউলে
@@ -538,6 +557,14 @@
           const cvEngine = this._getCVEngine();
           if (cvEngine && typeof cvEngine.renderToHtml === 'function') {
             inner = cvEngine.renderToHtml(parsedData, options);
+          }
+          break;
+        }
+
+        case 'CASH_MEMO': {
+          const CM = this._getCashMemoLayout();
+          if (CM && parsedData && parsedData.kind === 'CASH_MEMO_LAYOUT') {
+            return CM.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
           }
           break;
         }

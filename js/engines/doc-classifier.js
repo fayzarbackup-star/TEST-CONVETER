@@ -22,6 +22,7 @@
       OFFICIAL_NOTICE: 'OFFICIAL_NOTICE',
       ROUTINE: 'ROUTINE',
       CV_RESUME: 'CV_RESUME',
+      CASH_MEMO: 'CASH_MEMO',
       GENERAL: 'GENERAL'
     },
 
@@ -185,7 +186,7 @@
 
       // Part-18.6: Gemini-র তথ্য (শ্রেণি/বিষয়বস্তু/অংশ) থাকলে লেআউট আমাদের নিয়মে — doc_type শুধু ইঙ্গিত
       // Part-19.1: CV_RESUME যোগ — আগে তালিকায় না থাকায় content: OTHER দেখে সিভি প্রশ্নপত্র (EXAM_GENERAL) হয়ে যেত
-      const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA)$/;
+      const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA|CASH_MEMO|CASHMEMO|MEMO)$/;
       if (frontmatterMatch && !NON_EXAM.test(detectedDocType)) {
         const facts = this.factsFromFrontmatter(frontmatterMatch[1]);
         const byFacts = facts ? this.layoutFromFacts(facts, t, detectedDocType) : null;
@@ -230,6 +231,9 @@
         }
         if (detectedDocType === 'CV_RESUME' || detectedDocType === 'CV' || detectedDocType === 'RESUME' || detectedDocType === 'BIODATA') {
           return { type: this.DOC_TYPES.CV_RESUME, confidence: 1.0, reason: 'Sector: CV_RESUME' };
+        }
+        if (detectedDocType === 'CASH_MEMO' || detectedDocType === 'CASHMEMO' || detectedDocType === 'MEMO') {
+          return { type: this.DOC_TYPES.CASH_MEMO, confidence: 1.0, reason: 'Sector: CASH_MEMO' };   // Part-19.4
         }
         if (detectedDocType === 'OFFICIAL_NOTICE' || detectedDocType === 'NOTICE') {
           return { type: this.DOC_TYPES.OFFICIAL_NOTICE, confidence: 1.0, reason: 'Sector: OFFICIAL_NOTICE' };

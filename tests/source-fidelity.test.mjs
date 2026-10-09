@@ -39,6 +39,13 @@ function parsedBag(parsed) {
   if (Array.isArray(parsed.parts)) {
     return parsed.parts.map((p) => parsedBag({ blocks: [].concat(p.head.map((x) => ({ text: x.text })), p.tables, [{ text: p.title }], p.blocks, p.footer ? [p.footer] : []) })).join(' \u0001 ');
   }
+  // Part-19.4: ক্যাশমেমো — মাথা, শিরোনাম, ঘর, ছক (হেডার + পণ্য), মোট, কথায়, স্বাক্ষর, নিচের লাইন
+  if (parsed.kind === 'CASH_MEMO_LAYOUT') {
+    const seg = (s) => (s || []).map((x) => x.label + ' ' + x.value).join(' ');
+    return norm([].concat(parsed.header.map((x) => x.text), [parsed.title], parsed.fields.map(seg), parsed.notes,
+      [parsed.table.head.join(' ')], parsed.table.items.map((r) => r.join(' ')), [parsed.total && parsed.total.label + ' ' + parsed.total.value],
+      [seg(parsed.inWords)], [parsed.sign && parsed.sign.left + ' ' + parsed.sign.right], parsed.footNotes).filter(Boolean).join(' \u0001 '));
+  }
   const out = [];
   // Part-18.9: আবেদনপত্র-লেআউটের মডেল (ব্লক-তালিকা) — একই নীতি: উৎসের প্রতিটি লাইন কোনো ব্লকে টিকে থাকবে
   for (const b of parsed.blocks || []) {

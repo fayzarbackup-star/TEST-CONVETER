@@ -718,6 +718,9 @@
       if (docType === 'CV_RESUME' && this._getCvLayout() && this._getCvLayout().isBangla(rawText)) {
         return new Blob([this._cvLayoutRtf(rawText, options)], { type: 'application/msword' });
       }
+      if (docType === 'CASH_MEMO' && this._getCashMemoLayout()) {
+        return new Blob([this._cashMemoRtf(rawText, options)], { type: 'application/msword' });   // Part-19.4
+      }
       let cvEngine = this._getCVEngine();
       if (cvEngine && docType === 'CV_RESUME') {
         const parsed = cvEngine.parseCV(rawText);
@@ -907,6 +910,9 @@
       if (docType === 'CV_RESUME' && this._getCvLayout() && this._getCvLayout().isBangla(rawText)) {
         return await this._cvLayoutDocx(rawText, options);   // Part-19.1
       }
+      if (docType === 'CASH_MEMO' && this._getCashMemoLayout()) {
+        return await this._cashMemoDocx(rawText, options);   // Part-19.4
+      }
       let cvEngine = this._getCVEngine();
       if (cvEngine && docType === 'CV_RESUME') {
         const parsed = cvEngine.parseCV(rawText);
@@ -1021,6 +1027,31 @@
       const CL = this._getCvLayout();
       const isBijoy = this.isBijoyFont(options);
       return CL.renderRtf(CL.parse(rawText), { rtf: (t) => this.formatRtfText(t, options), fontName: isBijoy ? 'SutonnyMJ' : 'Kalpurush', isBijoy });
+    },
+
+    /** Part-19.4: ক্যাশমেমো ২-আপ/৩-আপ — js/layout-engine/cash-memo-layout.js */
+    _getCashMemoLayout() {
+      if (typeof FayzarCashMemoLayout !== 'undefined') return FayzarCashMemoLayout;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarCashMemoLayout) return globalThis.FayzarCashMemoLayout;
+      if (typeof require === 'function') { try { return require('../layout-engine/cash-memo-layout.js'); } catch (e) { } }
+      return null;
+    },
+
+    async _cashMemoDocx(rawText, options = {}) {
+      const CM = this._getCashMemoLayout();
+      const isBijoy = this.isBijoyFont(options);
+      const fontName = isBijoy ? 'SutonnyMJ' : (options.font || 'Kalpurush');
+      const model = CM.parse(rawText, options);
+      const geometry = CM.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
+      const body = CM.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
+      if (options.returnInnerXml) return { bodyXml: body, sectPr: CM.docxSectPr(geometry) };
+      return await this._packageDocx(body + CM.docxSectPr(geometry), options.targetFont === 'bijoy' ? 'SutonnyMJ' : fontName);
+    },
+
+    _cashMemoRtf(rawText, options = {}) {
+      const CM = this._getCashMemoLayout();
+      const isBijoy = this.isBijoyFont(options);
+      return CM.renderRtf(CM.parse(rawText, options), { rtf: (t) => this.formatRtfText(t, options), fontName: isBijoy ? 'SutonnyMJ' : 'Kalpurush', isBijoy });
     },
 
     /** Part-19.2: সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র — js/layout-engine/certificate-layout.js */
@@ -1211,11 +1242,22 @@
     },
 
     /** Part-12: DOCX-তে একই নীতি — w:line = ২৪০ × lineFactor; \sb/\sa ক্ল্যাম্প */
+    /** Part-19.4: প্রশ্নপত্র .docx-এর লাইন-গুণক — শেষ ফাইল কালপুরুষ হলে ছোট (FayzarLayoutUnits.examLineFactor) */
+    _examLineFactor(g, options) {
+      const base = (g && g.lineRenderFactor) || 1;
+      if (this.isBijoyFont(options)) return base;
+      const U = (typeof global !== 'undefined' && global.FayzarLayoutUnits) || null;
+      const k = U && typeof U.examLineFactor === 'function' ? U.examLineFactor(options && options.targetFont)
+        : (options && options.targetFont === 'unicode' ? 0.72 : 1);
+      return base * k;
+    },
+
     _fixDocxSpacing(xml, factor) {
       let s = String(xml == null ? '' : xml);
       // DOCX-তেও একই নীতি: সব প্যারাগ্রাফে lineRule="auto" (ফন্ট-আপেক্ষিক) + একই গুণক
       // ⇒ ১২pt/১৬pt/১১pt সবই লাইন-তাল সমান; exact/atLeast বন্ধ (ক্লিপ ও ফোলা দেখা গেছে)।
-      const f = Number.isFinite(parseFloat(factor)) ? Math.min(2, Math.max(0.9, parseFloat(factor))) : 1;
+      // নিচের সীমা ০.৭: কালপুরুষ-গুণক ০.৭২ (Part-19.4); বাকিরা ১ পাঠায়
+      const f = Number.isFinite(parseFloat(factor)) ? Math.min(2, Math.max(0.7, parseFloat(factor))) : 1;
       const line = Math.round(240 * f);
       s = s.replace(/w:line="([0-9]+)" w:lineRule="(auto|atLeast|exact)"/g, (whole, v, rule) =>
         (+v < 120 ? whole : 'w:line="' + line + '" w:lineRule="auto"'));
@@ -1792,7 +1834,7 @@
 
       bodyXml += this._auditSectionDocx(options);
 
-      bodyXml = this._fixDocxSpacing(bodyXml, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১+৫)
+      bodyXml = this._fixDocxSpacing(bodyXml, this._examLineFactor(g, options));   // Part-19.4: কালপুরুষ-গুণক   // Part-12 (ট্রায়াজ ১+৫)
       const sectPr = fullHeader
         ? '<w:sectPr><w:type w:val="continuous"/>' + this._cqSectPrInnerDocx(g) + '</w:sectPr>'
         : this._cqSectPrDocx(g);
@@ -2102,7 +2144,7 @@
           <w:cols w:num="${g.cols}" w:space="${g.colGap}"${g.colSep ? ' w:sep="1"' : ''}/>
         </w:sectPr>`;
 
-      bodyXml = this._fixDocxSpacing(bodyXml, g.lineRenderFactor || 1);   // Part-12 (ট্রায়াজ ১+৫)
+      bodyXml = this._fixDocxSpacing(bodyXml, this._examLineFactor(g, options));   // Part-19.4: কালপুরুষ-গুণক   // Part-12 (ট্রায়াজ ১+৫)
       if (options.returnInnerXml) {
         return { bodyXml, sectPr };
       }

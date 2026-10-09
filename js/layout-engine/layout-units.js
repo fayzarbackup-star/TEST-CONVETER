@@ -149,7 +149,14 @@
       return Number.isFinite(n) && n >= 1 && n <= 9 ? Math.min(b, c) : b;
     },
     /** DOCX-এর "মাল্টিপল" স্পেসিং (= ২৪০ = single) — ফন্ট-সাইজ-আপেক্ষিক, তাই NaN-মুক্ত */
-    docxLineRule: (factor) => Math.round(240 * clamp(finiteOr(factor, 1.5), 0.8, 3))
+    docxLineRule: (factor) => Math.round(240 * clamp(finiteOr(factor, 1.5), 0.8, 3)),
+    /**
+     * Part-19.4: শেষ ফাইলের ফন্ট অনুযায়ী প্রশ্নপত্রের লাইন-গুণক। Word-এ কালপুরুষের single লাইন
+     * ১.৫৭৫em (win 1000+400 + lineGap 175), সুতন্নীএমজে ১.১৬৯em ⇒ ইউনিকোড .docx একই প্ল্যানে দুই পাতা।
+     * ০.৭২ = Word-এ মাপা (৪র্থ শ্রেণির পত্র: বিজয় শেষ-লাইন ৫.৬৪", কালপুরুষ ০.৭২-এ ৫.৫৯"; অক্ষর কাটে না)।
+     * শুধু স্পষ্ট targetFont 'unicode'-এ; বিজয়/অজানা ⇒ ১ (আগের আচরণ)।
+     */
+    examLineFactor: (targetFont) => (String(targetFont || '').toLowerCase() === 'unicode' ? 0.72 : 1)
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = global.FayzarLayoutUnits;

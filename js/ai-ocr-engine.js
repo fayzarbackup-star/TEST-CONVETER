@@ -122,7 +122,7 @@
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
      ---
-     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | CV_RESUME | OFFICIAL_NOTICE | STAMP_DEED>
+     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | CV_RESUME | CASH_MEMO | OFFICIAL_NOTICE | STAMP_DEED>
      columns: <1 or 2>
      source_columns: <1, 2 or 0 — how many text columns the PRINTED/TYPED source page body actually uses; 0 for handwritten drafts or when unsure>
      grade: <class number 1-12 exactly as printed (৫ম / পঞ্চম / Class Five → 5); 0 if not printed>
@@ -150,6 +150,9 @@
      * Government / Job Application (বরাবর, বিষয়, জনাব সংবলিত দরখাস্ত): doc_type: GOVT_APP, columns: 1
      * Stand-alone CV / Resume / Bio-data (জীবন বৃত্তান্ত, বায়োডাটা, "নাম ঃ …" style rows): doc_type: CV_RESUME, columns: 1
        -> A CV attached inside an application letter (বরাবর … বিষয় … followed by the applicant's details) stays GOVT_APP.
+     * Shop Cash Memo / Bill (ক্যাশ মেমো, বিল, চালান — shop name on top, then নাম/তারিখ/ঠিকানা lines, an item table, সর্বমোট, কথায়, ক্রেতা/বিক্রেতার স্বাক্ষর): doc_type: CASH_MEMO, columns: 1
+       -> Fact (Part-19.4): add the frontmatter line copies: <2 or 3 — how many identical memos are printed side by side on the sheet; 0 if only one memo or unsure>.
+       -> Transcribe ONE memo only (never repeat the side-by-side copies), top to bottom: shop header lines, the title line (ক্যাশ মেমো), each blank-field line with its dots (নাম:........ তারিখ:........), the item table as a Markdown table (header row + every printed/written item row, empty cells left empty, no invented empty rows), the total row (সর্বমোট), then the কথায় and signature lines.
      * Official Government / Institutional Notice / Memo: doc_type: OFFICIAL_NOTICE, columns: 1
      * Legal Deed / 300 Tk Non-Judicial Stamp Contract: doc_type: STAMP_DEED, columns: 1
    - HEADER PLACEHOLDER MANDATE (FOR EXAM PAPERS):
@@ -4060,7 +4063,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
               preserveSutonny: true,
               optimizeForQuestionPaper: true,
               // Part-19.3: সাজানো সনদে টেবিলের নিজের ঘর-মার্জিন ও সারি-উচ্চতা (নইলে ৩.৫pt প্যাডিংয়ে গ্রেড-ছক ও লেখা নিচে নামে)
-              honorCellMargins: parsedDocType === 'PROTTOYON' && typeof FayzarCertificateLayout !== 'undefined' && FayzarCertificateLayout.wants(exportText, ocrFrontmatter || undefined)
+              honorCellMargins: (parsedDocType === 'PROTTOYON' && typeof FayzarCertificateLayout !== 'undefined' && FayzarCertificateLayout.wants(exportText, ocrFrontmatter || undefined))
+                || parsedDocType === 'CASH_MEMO'   // Part-19.4: মেমোর ছকের সারি-উচ্চতা (লম্বা ফাঁকা সারি / ভরাট সারি)
             });
             docBlob = docResult.blob || docResult.convertedBlob;
           } else if (typeof DocxToDocConverter !== 'undefined' && masterDocxBlob) {

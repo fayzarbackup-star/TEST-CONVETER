@@ -1,0 +1,279 @@
+# fixture: cash-memo-blank
+# docType: CASH_MEMO
+
+===== CLASSIFIER =====
+{
+  "type": "GENERAL"
+}
+
+===== PARSED =====
+{
+  "copies": 2,
+  "fields": [
+    [
+      {
+        "label": "নাম:",
+        "value": ""
+      },
+      {
+        "label": "তারিখ:",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "label": "ঠিকানা:",
+        "value": ""
+      }
+    ]
+  ],
+  "footNotes": [],
+  "header": [
+    {
+      "role": "bis",
+      "text": "বিসমিল্লাহির রাহমানির রাহিম"
+    },
+    {
+      "role": "shop",
+      "text": "ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট"
+    },
+    {
+      "role": "prop",
+      "text": "প্রো: মোঃ ফয়জার আলী"
+    },
+    {
+      "role": "serv",
+      "text": "এখানে কম্পোজ, ফটোকপি, স্ক্যানিং, মেইল, অনলাইন আবেদন সহ কম্পিউটারের সকল ধরনের কাজ করা হয়।"
+    },
+    {
+      "role": "addr",
+      "text": "ফুলবাড়ী সরকারি কলেজ গেট এর পশ্চিম পার্শ্বে, কলেজ রোড, ফুলবাড়ী, দিনাজপুর।"
+    },
+    {
+      "role": "contact",
+      "text": "মোবাইল: ০১৭১৭-১০১৯১৯, ই-মেইল: fayzar.computer@gmail.com"
+    }
+  ],
+  "inWords": [
+    {
+      "label": "কথায়:",
+      "value": ""
+    }
+  ],
+  "kind": "CASH_MEMO_LAYOUT",
+  "notes": [],
+  "sign": {
+    "left": "ক্রেতার স্বাক্ষর",
+    "right": "বিক্রেতার স্বাক্ষর"
+  },
+  "table": {
+    "blank": true,
+    "head": [
+      "ক্রমিক",
+      "বিবরণ",
+      "পরিমাণ",
+      "দর",
+      "টাকা"
+    ],
+    "items": [],
+    "serialCol": 0
+  },
+  "title": "ক্যাশ মেমো",
+  "total": {
+    "label": "সর্বমোট:",
+    "value": ""
+  }
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-landscape official-cash-memo-layout font-kalpurush" style="padding: 0.30in 0.30in 0.20in 0.30in; font-size: 12pt; box-sizing: border-box;">
+<div style="display: flex; gap: 0.60in;">
+<div style="flex: 1; min-width: 0;">
+<div style="line-height: 1.3; text-align: center; font-size: 12pt;">বিসমিল্লাহির রাহমানির রাহিম</div>
+<div style="line-height: 1.3; text-align: center; font-size: 24pt; font-weight: 700;">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট</div>
+<div style="line-height: 1.3; text-align: center;">
+<span style="background: #000; color: #fff; font-weight: 700; padding: 0 0.5em; border-radius: 0.4em; font-size: 12pt;">প্রো: মোঃ ফয়জার আলী</span>
+</div>
+<div style="line-height: 1.3; text-align: center; font-size: 10pt; font-weight: 700;">এখানে কম্পোজ, ফটোকপি, স্ক্যানিং, মেইল, অনলাইন আবেদন সহ কম্পিউটারের সকল ধরনের কাজ করা হয়।</div>
+<div style="line-height: 1.3; text-align: center; font-size: 13pt; font-weight: 700;">ফুলবাড়ী সরকারি কলেজ গেট এর পশ্চিম পার্শ্বে, কলেজ রোড, ফুলবাড়ী, দিনাজপুর।</div>
+<div style="line-height: 1.3; text-align: center; font-size: 12pt;">মোবাইল: ০১৭১৭-১০১৯১৯, ই-মেইল: fayzar.computer@gmail.com</div>
+<div style="line-height: 1.3; text-align: center; margin: 0.15em 0;">
+<span style="background: #000; color: #fff; font-weight: 700; padding: 0 0.5em; border-radius: 0.4em; font-size: 12pt;">ক্যাশ মেমো</span>
+</div>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 3; white-space: nowrap;">নাম:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+<span style="display: flex; flex: 2; white-space: nowrap;">তারিখ:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 2; white-space: nowrap;">ঠিকানা:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 3pt;">
+<colgroup>
+<col style="width: 9.0%;">
+<col style="width: 53.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+</colgroup>
+<tr>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">ক্রমিক</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">বিবরণ</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">পরিমাণ</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">দর</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">টাকা</td>
+</tr>
+<tr style="height: 3.10in;">
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="4" style="border: 1px solid #000; padding: 0 0.3em; text-align: right; font-weight: 700; border-top: 0;">সর্বমোট:</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: right; font-weight: 700;">&nbsp;</td>
+</tr>
+</table>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 2; white-space: nowrap;">কথায়:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<div style="display: flex; justify-content: space-between; margin-top: 2.6em; padding: 0 0.1in;">
+<span>ক্রেতার স্বাক্ষর</span>
+<span>বিক্রেতার স্বাক্ষর</span>
+</div>
+</div>
+<div style="flex: 1; min-width: 0;">
+<div style="line-height: 1.3; text-align: center; font-size: 12pt;">বিসমিল্লাহির রাহমানির রাহিম</div>
+<div style="line-height: 1.3; text-align: center; font-size: 24pt; font-weight: 700;">ফয়জার কম্পিউটার এন্ড ফটোস্ট্যাট</div>
+<div style="line-height: 1.3; text-align: center;">
+<span style="background: #000; color: #fff; font-weight: 700; padding: 0 0.5em; border-radius: 0.4em; font-size: 12pt;">প্রো: মোঃ ফয়জার আলী</span>
+</div>
+<div style="line-height: 1.3; text-align: center; font-size: 10pt; font-weight: 700;">এখানে কম্পোজ, ফটোকপি, স্ক্যানিং, মেইল, অনলাইন আবেদন সহ কম্পিউটারের সকল ধরনের কাজ করা হয়।</div>
+<div style="line-height: 1.3; text-align: center; font-size: 13pt; font-weight: 700;">ফুলবাড়ী সরকারি কলেজ গেট এর পশ্চিম পার্শ্বে, কলেজ রোড, ফুলবাড়ী, দিনাজপুর।</div>
+<div style="line-height: 1.3; text-align: center; font-size: 12pt;">মোবাইল: ০১৭১৭-১০১৯১৯, ই-মেইল: fayzar.computer@gmail.com</div>
+<div style="line-height: 1.3; text-align: center; margin: 0.15em 0;">
+<span style="background: #000; color: #fff; font-weight: 700; padding: 0 0.5em; border-radius: 0.4em; font-size: 12pt;">ক্যাশ মেমো</span>
+</div>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 3; white-space: nowrap;">নাম:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+<span style="display: flex; flex: 2; white-space: nowrap;">তারিখ:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 2; white-space: nowrap;">ঠিকানা:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 3pt;">
+<colgroup>
+<col style="width: 9.0%;">
+<col style="width: 53.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+<col style="width: 12.5%;">
+</colgroup>
+<tr>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">ক্রমিক</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">বিবরণ</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">পরিমাণ</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">দর</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: center; font-weight: 700;">টাকা</td>
+</tr>
+<tr style="height: 3.10in;">
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; border-top: 0; border-bottom: 0;">&nbsp;</td>
+</tr>
+<tr>
+<td colspan="4" style="border: 1px solid #000; padding: 0 0.3em; text-align: right; font-weight: 700; border-top: 0;">সর্বমোট:</td>
+<td style="border: 1px solid #000; padding: 0 0.3em; text-align: right; font-weight: 700;">&nbsp;</td>
+</tr>
+</table>
+<div style="display: flex; gap: 0.3em; line-height: 1.8;">
+<span style="display: flex; flex: 2; white-space: nowrap;">কথায়:&nbsp;<span style="flex: 1; border-bottom: 1px dotted #000; margin: 0 0.2em 0.35em;">
+</span>
+</span>
+</div>
+<div style="display: flex; justify-content: space-between; margin-top: 2.6em; padding: 0 0.1in;">
+<span>ক্রেতার স্বাক্ষর</span>
+<span>বিক্রেতার স্বাক্ষর</span>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType CASH_MEMO)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;\red255\green255\blue255;}
+\paperw16838\paperh11906\landscape\margl432\margr432\margt432\margb288
+\sectd\cols2\colsx864
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\f0 \u2476?\u2495?\u2488?\u2478?\u2495?\u2482?\u2509?\u2482?\u2494?\u2489?\u2495?\u2480? \u2480?\u2494?\u2489?\u2478?\u2494?\u2472?\u2495?\u2480? \u2480?\u2494?\u2489?\u2495?\u2478?}\par}
+{\pard\plain\qc\f0\fs48\sl173\slmult1\sb0\sa0 {\b {\f0 \u2475?\u2527?\u2460?\u2494?\u2480? \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480? \u2447?\u2472?\u2509?\u2465? \u2475?\u2463?\u2507?\u2488?\u2509?\u2463?\u2509?\u2479?\u2494?\u2463?}}\par}
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\b\fs24\cf2\highlight1   {\f0 \u2474?\u2509?\u2480?\u2507?: \u2478?\u2507?\u2435? \u2475?\u2527?\u2460?\u2494?\u2480? \u2438?\u2482?\u2496?}  }\par}
+{\pard\plain\qc\f0\fs20\sl173\slmult1\sb0\sa0 {\b {\f0 \u2447?\u2454?\u2494?\u2472?\u2503? \u2453?\u2478?\u2509?\u2474?\u2507?\u2460?, \u2475?\u2463?\u2507?\u2453?\u2474?\u2495?, \u2488?\u2509?\u2453?\u2509?\u2479?\u2494?\u2472?\u2495?\u2434?, \u2478?\u2503?\u2439?\u2482?, \u2437?\u2472?\u2482?\u2494?\u2439?\u2472? \u2438?\u2476?\u2503?\u2470?\u2472? \u2488?\u2489? \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480?\u2503?\u2480? \u2488?\u2453?\u2482? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2494?\u2460? \u2453?\u2480?\u2494? \u2489?\u2527?\u2404?}}\par}
+{\pard\plain\qc\f0\fs26\sl173\slmult1\sb0\sa0 {\b {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2453?\u2482?\u2503?\u2460? \u2455?\u2503?\u2463? \u2447?\u2480? \u2474?\u2486?\u2509?\u2458?\u2495?\u2478? \u2474?\u2494?\u2480?\u2509?\u2486?\u2509?\u2476?\u2503?, \u2453?\u2482?\u2503?\u2460? \u2480?\u2507?\u2465?, \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}}\par}
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\f0 \u2478?\u2507?\u2476?\u2494?\u2439?\u2482?: \u2534?\u2535?\u2541?\u2535?\u2541?}{\f1 -}{\f0 \u2535?\u2534?\u2535?\u2543?\u2535?\u2543?, \u2439?}{\f1 -}{\f0 \u2478?\u2503?\u2439?\u2482?: }{\f1 fayzar.computer@gmail.com}\par}
+{\pard\plain\qc\f0\fs24\sl187\slmult1\sb0\sa0 {\b\fs24\cf2\highlight1   {\f0 \u2453?\u2509?\u2479?\u2494?\u2486? \u2478?\u2503?\u2478?\u2507?}  }\par}
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tx4533\tldot\tqr\tx7555 {\f0 \u2472?\u2494?\u2478?: }\tab {\f0  \u2468?\u2494?\u2480?\u2495?\u2454?: }\tab \par}
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tqr\tx7555 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?: }\tab \par}
+{\pard\plain\ql\f0\fs6\sl-60\slmult0\sb0\sa0 \par}
+{\trowd\trgaph72\trleft0\trkeep\trrh-625\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx680\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4723\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5667\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2453?\u2509?\u2480?\u2478?\u2495?\u2453?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2474?\u2480?\u2495?\u2478?\u2494?\u2467?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2470?\u2480?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2463?\u2494?\u2453?\u2494?}}\cell \row}
+{\trowd\trgaph72\trleft0\trkeep\trrh-4457\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx680\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4723\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5667\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \row}
+{\trowd\trgaph72\trleft0\trkeep\trrh-322\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\qr\f0\fs24\sl173\slmult1 {\b {\f0 \u2488?\u2480?\u2509?\u2476?\u2478?\u2507?\u2463?:}}\cell \pard\plain\intbl\qr\f0\fs24\sl173\slmult1 \cell \row}
+\pard\plain
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tqr\tx7555 {\f0 \u2453?\u2469?\u2494?\u2527?: }\tab \par}
+{\pard\plain\ql\f0\fs24\sl173\slmult1\sb0\sa0 \par}
+{\pard\plain\keepn\ql\f0\fs24\sl173\slmult1\sb0\sa0 \par}
+{\pard\plain\ql\f0\fs24\sl173\slmult1\sb0\sa0\tqr\tx7435\li120 {\f0 \u2453?\u2509?\u2480?\u2503?\u2468?\u2494?\u2480? \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\tab {\f0 \u2476?\u2495?\u2453?\u2509?\u2480?\u2503?\u2468?\u2494?\u2480? \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\par}
+{\pard\plain\fs2\sl20\slmult0\column\par}
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\f0 \u2476?\u2495?\u2488?\u2478?\u2495?\u2482?\u2509?\u2482?\u2494?\u2489?\u2495?\u2480? \u2480?\u2494?\u2489?\u2478?\u2494?\u2472?\u2495?\u2480? \u2480?\u2494?\u2489?\u2495?\u2478?}\par}
+{\pard\plain\qc\f0\fs48\sl173\slmult1\sb0\sa0 {\b {\f0 \u2475?\u2527?\u2460?\u2494?\u2480? \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480? \u2447?\u2472?\u2509?\u2465? \u2475?\u2463?\u2507?\u2488?\u2509?\u2463?\u2509?\u2479?\u2494?\u2463?}}\par}
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\b\fs24\cf2\highlight1   {\f0 \u2474?\u2509?\u2480?\u2507?: \u2478?\u2507?\u2435? \u2475?\u2527?\u2460?\u2494?\u2480? \u2438?\u2482?\u2496?}  }\par}
+{\pard\plain\qc\f0\fs20\sl173\slmult1\sb0\sa0 {\b {\f0 \u2447?\u2454?\u2494?\u2472?\u2503? \u2453?\u2478?\u2509?\u2474?\u2507?\u2460?, \u2475?\u2463?\u2507?\u2453?\u2474?\u2495?, \u2488?\u2509?\u2453?\u2509?\u2479?\u2494?\u2472?\u2495?\u2434?, \u2478?\u2503?\u2439?\u2482?, \u2437?\u2472?\u2482?\u2494?\u2439?\u2472? \u2438?\u2476?\u2503?\u2470?\u2472? \u2488?\u2489? \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480?\u2503?\u2480? \u2488?\u2453?\u2482? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2494?\u2460? \u2453?\u2480?\u2494? \u2489?\u2527?\u2404?}}\par}
+{\pard\plain\qc\f0\fs26\sl173\slmult1\sb0\sa0 {\b {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496? \u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2453?\u2482?\u2503?\u2460? \u2455?\u2503?\u2463? \u2447?\u2480? \u2474?\u2486?\u2509?\u2458?\u2495?\u2478? \u2474?\u2494?\u2480?\u2509?\u2486?\u2509?\u2476?\u2503?, \u2453?\u2482?\u2503?\u2460? \u2480?\u2507?\u2465?, \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}}\par}
+{\pard\plain\qc\f0\fs24\sl173\slmult1\sb0\sa0 {\f0 \u2478?\u2507?\u2476?\u2494?\u2439?\u2482?: \u2534?\u2535?\u2541?\u2535?\u2541?}{\f1 -}{\f0 \u2535?\u2534?\u2535?\u2543?\u2535?\u2543?, \u2439?}{\f1 -}{\f0 \u2478?\u2503?\u2439?\u2482?: }{\f1 fayzar.computer@gmail.com}\par}
+{\pard\plain\qc\f0\fs24\sl187\slmult1\sb0\sa0 {\b\fs24\cf2\highlight1   {\f0 \u2453?\u2509?\u2479?\u2494?\u2486? \u2478?\u2503?\u2478?\u2507?}  }\par}
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tx4533\tldot\tqr\tx7555 {\f0 \u2472?\u2494?\u2478?: }\tab {\f0  \u2468?\u2494?\u2480?\u2495?\u2454?: }\tab \par}
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tqr\tx7555 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?: }\tab \par}
+{\pard\plain\ql\f0\fs6\sl-60\slmult0\sb0\sa0 \par}
+{\trowd\trgaph72\trleft0\trkeep\trrh-625\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx680\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4723\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5667\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2453?\u2509?\u2480?\u2478?\u2495?\u2453?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2474?\u2480?\u2495?\u2478?\u2494?\u2467?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2470?\u2480?}}\cell \pard\plain\intbl\qc\f0\fs24\sl173\slmult1 {\b {\f0 \u2463?\u2494?\u2453?\u2494?}}\cell \row}
+{\trowd\trgaph72\trleft0\trkeep\trrh-4457\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx680\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx4723\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx5667\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \pard\plain\intbl\ql\f0\fs24\sl173\slmult1 \cell \row}
+{\trowd\trgaph72\trleft0\trkeep\trrh-322\clvertalc\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6611\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7555
+\pard\plain\intbl\qr\f0\fs24\sl173\slmult1 {\b {\f0 \u2488?\u2480?\u2509?\u2476?\u2478?\u2507?\u2463?:}}\cell \pard\plain\intbl\qr\f0\fs24\sl173\slmult1 \cell \row}
+\pard\plain
+{\pard\plain\ql\f0\fs24\sl259\slmult1\sb0\sa0\tldot\tqr\tx7555 {\f0 \u2453?\u2469?\u2494?\u2527?: }\tab \par}
+{\pard\plain\ql\f0\fs24\sl173\slmult1\sb0\sa0 \par}
+{\pard\plain\keepn\ql\f0\fs24\sl173\slmult1\sb0\sa0 \par}
+{\pard\plain\ql\f0\fs24\sl173\slmult1\sb0\sa0\tqr\tx7435\li120 {\f0 \u2453?\u2509?\u2480?\u2503?\u2468?\u2494?\u2480? \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\tab {\f0 \u2476?\u2495?\u2453?\u2509?\u2480?\u2503?\u2468?\u2494?\u2480? \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\par}
+}

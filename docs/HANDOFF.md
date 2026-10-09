@@ -1,14 +1,15 @@
 # হ্যান্ডঅফ — পরের সেশন এখান থেকে (হালনাগাদ ২০২৬-১০-০৯)
 
-**শেষ কাজ (Part-19.3):** আসল Gemini OCR (localhost:3008) দিয়ে সনদ ও প্যাড-আবেদন যাচাই করে ঠিক করা। Gemini সত্যিই `page_orientation: landscape` দেয় (Dreamland, রাঙামাটি); প্যাড-আবেদনকে বলে GOVT_APP ⇒ আগে প্যাড আঁকা হতো না, এখন fayzar-pipeline-এ `LetterLayout.hasLetterhead` (কাঁচা লেখায়, কারণ stripOcrArtifacts "#" মোছে) ⇒ OFFICE_PAD। certificate-layout: আগে-আসা গ্রেড-ছক, দুই পাতার দুই সনদ (একা "*"), নমুনার মতো ছক ডান-উপরে/মার্জিন ০.৪"/তারিখ-স্বাক্ষর এক উচ্চতায় বোল্ড/ফুটার নিচে, কালপুরুষে মাথা-ছোট-করা ধাপ; ai-ocr-engine-এ সাজানো সনদের .doc-এ `honorCellMargins`। .doc লাইন-দূরত্ব (`line-height:%`) ও keepNext আগেই (docx-to-doc-engine, অনুমতিতে)। পুরো সেট ১৬৫৩ পাস / ০ ব্যর্থ।
+**শেষ কাজ (Part-19.4):** (১) কালপুরুষে প্রশ্নপত্র: Word-এ কালপুরুষের লাইন ১.৫৭৫em, সুতন্নী ১.১৬৯em ⇒ `targetFont: 'unicode'` হলে CQ/MCQ/যৌথ .docx-এ লাইন-গুণক ০.৭২ (`FayzarLayoutUnits.examLineFactor` → `ExportDualEngine._examLineFactor`); ৪র্থ শ্রেণির ইউনিকোড এখন ১ পাতা, বিজয়/.doc অপরিবর্তিত। (২) ক্যাশমেমো ২-আপ/৩-আপ: নতুন `js/layout-engine/cash-memo-layout.js` (CASH_MEMO; classifier, Gemini প্রম্পট `copies`, পাইপলাইন, রপ্তানি, .doc-এ `honorCellMargins`, ৪ HTML)। Word-এ ৯ ফাইল (২ মেমো + ৪র্থ শ্রেণি × ৩ ফরম্যাট) সব ১ পাতা, কপি ঠিক কলামে। পুরো সেট ১৬৬৮ পাস / ০ ব্যর্থ।
 
 **ব্যবহারকারীর বাকি:**
-- Word-এ চোখে দেখা: `Downloads\Fayzar-লেআউট-প্রিভিউ\Part-19.3-সনদ-প্যাড` (আসল OCR থেকে Dreamland ২ পাতা, রাঙামাটি, প্যাড-আবেদন — bijoy/unicode docx + .doc)।
-- প্রশ্ন: রাঙামাটির মূল অংশে নমুনায় প্রতিষ্ঠান-নাম বড় WordArt; আমরা ২০pt বোল্ড লেখা — বড় করতে হবে কি না।
-- পরিষ্কারের প্রশ্ন: temp-test-converter (184MB), supabase/, ui-revamp/, fayzar_light_polished_*.jpg।
+- Word-এ চোখে দেখা: `Downloads\Fayzar-লেআউট-প্রিভিউ\Part-19.4-ক্যাশমেমো-কালপুরুষ` (আর আগের Part-19.3-সনদ-প্যাড)।
+- সিদ্ধান্ত: ৩-আপ পণ্য-তালিকা নমুনায় ১০pt, আমাদের রক্ষণশীল মাপে ৯pt-এ ধরে — ১০pt চাইলে নিরাপত্তা-ফাঁক (SLACK) কমাতে হবে।
+- আসল ক্যাশমেমো ছবি দিয়ে Gemini OCR যাচাই (copies ঠিক আসে কি না, এক কপি লেখে কি না) — নমুনা-PDF আমি পড়িনি।
+- পরিষ্কারের প্রশ্ন (আগের): temp-test-converter, supabase/, ui-revamp/, fayzar_light_polished_*.jpg। গিটহাবে পুশ অনুমতিতে।
 
-**মাপার হাতিয়ার:** Word COM অবস্থান-ডাম্প (অনুচ্ছেদ y/x/মাপ/বোল্ড + টেক্সট-বক্স) নমুনা বনাম আমাদের — scratchpad-এর cdump.ps1-এর মতো; `QA_CONSOLE=1` দিলে site-chain ব্রাউজার-সতর্কতা দেখায়।
+**মাপার হাতিয়ার:** Word COM — পাতা/টেবিল-অবস্থান, সারি-উচ্চতা, EMF→PNG ছবি (scratchpad-এর `cmmeasure.ps1`, `rowh.ps1`, `pagepng.ps1`-এর মতো)।
 
 **এডিট-পয়েন্ট খোঁজা:** `docs/PROJECT_MAP.md` → `docs/CODE_INDEX.md`-এ Grep (`নাম@লাইন`) → শুধু ওই অংশ Read।
 
-**পরের কাজ:** কালপুরুষ ফন্টে প্রশ্নপত্র-প্ল্যানারের মাপ (৪র্থ শ্রেণি ইউনিকোড .docx ২ পাতা — ⚙️ প্ল্যানার, আচরণ-বদলের আগে অনুমতি)। এরপর ক্যাশমেমো (২-আপ/৩-আপ)। রোডম্যাপ: `docs/MASTER_PLAN.md` §৬।
+**পরের কাজ:** `docs/MASTER_PLAN.md` §৬ — নতুন নমুনা এলে পরের ধরন (নোটিশ/রুটিন/প্রবেশপত্র ইত্যাদি); আগে ব্যবহারকারীর Word-যাচাইয়ের ফল দেখে ঠিক করা।
