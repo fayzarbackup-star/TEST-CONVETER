@@ -47,3 +47,7 @@
 - ব্যবহারকারীর স্পষ্ট ও সরাসরি লিখিত নির্দেশ ছাড়া উপরের মূল ইঞ্জিন ফাইলগুলোতে ১ লাইন কোডও পরিবর্তন বা এডিট করা কঠোরভাবে নিষিদ্ধ।
 - লেআউট, মার্জিন, কলাম ও ফরম্যাটিং সংক্রান্ত যাবতীয় কাজ বাধ্যতামূলকভাবে শুধুমাত্র `js/layout-engine/` ফোল্ডারের ভেতর সীমাবদ্ধ রাখতে হবে।
 - Strictly prohibited from editing or modifying the above core engine files under any circumstances without explicit user instruction. All layout work MUST remain strictly within `js/layout-engine/`.
+
+## 11. AI Session Memory
+- **MANDATORY**: At the beginning of any session or task, you MUST read the .ai_memory.md file in the root directory to understand the current context, recent features, and ongoing discussions. Do not ask the user for context that is already documented there.
+

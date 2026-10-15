@@ -34,7 +34,7 @@ function includes(text, fragment, message) {
   check(String(text).includes(fragment), message || `expected output to include ${JSON.stringify(fragment)}`);
 }
 
-const CREATIVE_TYPES = ['EXAM_CQ', 'EXAM_MATH', 'EXAM_GENERAL'];
+const CREATIVE_TYPES = ['EXAM_CQ', 'EXAM_MATH'];
 const HEADER_EXPECTED = {
   institute: 'আপনার প্রতিষ্ঠানের নাম',
   location: 'ঠিকানা লিখুন',
@@ -44,6 +44,11 @@ const HEADER_EXPECTED = {
   time: '২ ঘণ্টা ৩০ মিনিট',
   marks: '৭০'
 };
+
+// ধাপ-১ (EXAM_GENERAL পোর্ট্রেট প্রোফাইল): কাল্পনিক সময়/নম্বর ও "সৃজনশীল অভীক্ষা" নয় — ডট-প্লেসহোল্ডার
+const GENERAL_HEADER_EXPECTED = Object.assign({}, CqBookletPlanner.GENERAL_HEADER_FALLBACK);
+check(GENERAL_HEADER_EXPECTED.examType === '' && GENERAL_HEADER_EXPECTED.time === '................' && GENERAL_HEADER_EXPECTED.marks === '................',
+  'EXAM_GENERAL fallback set has no CQ label and no invented time/marks');
 
 function creativeData(header = {}) {
   return {
@@ -147,6 +152,21 @@ async function main() {
     }
   }
 
+  // EXAM_GENERAL: নিজস্ব ফলব্যাক-সেট (planner + RTF + DOCX), কোনো CQ লেবেল/কাল্পনিক মান নেই
+  {
+    const data = creativeData();
+    const model = CqBookletPlanner.headerPreviewModel(CqBookletPlanner.plan(data, { docType: 'EXAM_GENERAL' }));
+    for (const [field, value] of Object.entries(GENERAL_HEADER_EXPECTED)) {
+      equal(model[field], value, `EXAM_GENERAL: planner preview-model ${field} fallback`);
+    }
+    const rtf = decodeRtfUnicode(ExportDualEngine.generateCqExamRtf(data, { docType: 'EXAM_GENERAL', renumber: false }));
+    const docx = await ExportDualEngine.generateCqExamDocx(data, { docType: 'EXAM_GENERAL', returnInnerXml: true, renumber: false });
+    for (const out of [rtf, docx.bodyXml]) {
+      for (const value of Object.values(GENERAL_HEADER_EXPECTED)) if (value) includes(out, value, `EXAM_GENERAL: Word output includes ${value}`);
+      check(!out.includes('সৃজনশীল অভীক্ষা') && !out.includes('২ ঘণ্টা ৩০ মিনিট') && !out.includes('পূর্ণমান: ৭০'), 'EXAM_GENERAL: no CQ label or invented time/marks');
+    }
+  }
+
   // Portrait/standard preview uses the same creative fallback gate, not only the booklet branch.
   const standardPreview = QuestionEngine._renderToHtmlCore(creativeData(), {
     docType: 'EXAM_MATH', orientation: 'portrait', editable: true
@@ -180,7 +200,7 @@ async function main() {
     for (const docType of ['EXAM_MATH', 'EXAM_GENERAL']) {
       const fallbackPlan = ExportDualEngine._cqPlanFallback(creativeData(), { docType });
       const fallbackModel = modelFromHeaderLines(fallbackPlan.headerLines);
-      for (const [field, value] of Object.entries(HEADER_EXPECTED)) {
+      for (const [field, value] of Object.entries(docType === 'EXAM_GENERAL' ? GENERAL_HEADER_EXPECTED : HEADER_EXPECTED)) {
         equal(fallbackModel[field], value, `${docType}: export fallback plan ${field}`);
       }
     }
@@ -214,11 +234,17 @@ async function main() {
   includes(omml, '৩', 'DOCX OMML preserves Bengali numerator digit');
   includes(omml, '৫', 'DOCX OMML preserves Bengali denominator digit');
 
-  const rtfEquation = ExportDualEngine.formatRtfText('$\\frac{৩}{৫}$', { font: 'bijoy' });
+  // Part-15.1: বিজয় (SutonnyMJ) .doc-এ বাংলা অঙ্ক EQ ফিল্ডে বিজয়-কোডে SutonnyMJ রানে থাকে —
+  // Word-এ তা বাংলা ৩/৫-ই দেখায় (ইউনিকোড কোড-পয়েন্ট SutonnyMJ-এ বক্স হতো); ইউনিকোড মোডে কোড-পয়েন্ট অপরিবর্তিত।
   const rtfThree = `\\u${'৩'.charCodeAt(0)}?`;
   const rtfFive = `\\u${'৫'.charCodeAt(0)}?`;
-  includes(rtfEquation, rtfThree, 'Bijoy RTF equation field retains Bengali numerator code point');
-  includes(rtfEquation, rtfFive, 'Bijoy RTF equation field retains Bengali denominator code point');
+  const rtfEquation = ExportDualEngine.formatRtfText('$\\frac{৩}{৫}$', { font: 'bijoy' });
+  includes(rtfEquation, '{\\f0 3}', 'Bijoy RTF equation field: numerator ৩ as Bijoy code in SutonnyMJ run');
+  includes(rtfEquation, '{\\f0 5}', 'Bijoy RTF equation field: denominator ৫ as Bijoy code in SutonnyMJ run');
+  check(!rtfEquation.includes(rtfThree) && !rtfEquation.includes(rtfFive), 'Bijoy RTF equation field has no raw Unicode Bengali digits');
+  const rtfEquationUni = ExportDualEngine.formatRtfText('$\\frac{৩}{৫}$', { font: 'unicode' });
+  includes(rtfEquationUni, rtfThree, 'Unicode RTF equation field retains Bengali numerator code point');
+  includes(rtfEquationUni, rtfFive, 'Unicode RTF equation field retains Bengali denominator code point');
   const docxEquation = ExportDualEngine.renderDocxRuns('$\\frac{৩}{৫}$', { font: 'bijoy' });
   includes(docxEquation, '৩', 'DOCX export run preserves Bengali numerator digit');
   includes(docxEquation, '৫', 'DOCX export run preserves Bengali denominator digit');
@@ -284,7 +310,10 @@ async function main() {
     const item = plan.items[0];
     equal(item.grid.cols, expectedCols, `${label}: planner chose expected grid`);
 
-    const stopRtf = `\\li${plan.geometry.indent}` + item.grid.stops.map((stop) => `\\tx${stop}`).join('');
+    // Part-15.5: MCQ-তে সব প্রশ্নে ০.৩" — অপশন-স্টপ প্ল্যানের হুবহু
+    const qi = plan.geometry.indent;
+    const dI = 0;
+    const stopRtf = `\\li${qi}` + item.grid.stops.map((stop) => `\\tx${stop + dI}`).join('');
     const rtf = ExportDualEngine.generateMcqExamRtf(data, { returnInnerRtf: true, renumber: false });
     const rtfRows = paragraphsContaining(rtf, stopRtf, '\\par');
     equal(rtfRows.length, item.grid.rows.length, `${label}: RTF emits one option paragraph per planned row`);
@@ -292,7 +321,7 @@ async function main() {
       equal(countMatches(rtfRows[row], /\\tab/g), Math.max(0, item.grid.rows[row].length - 1), `${label}: RTF row ${row + 1} uses tabs matching its stops`);
     }
 
-    const stopXml = item.grid.stops.map((stop) => `<w:tab w:val="left" w:pos="${stop}"/>`).join('');
+    const stopXml = item.grid.stops.map((stop) => `<w:tab w:val="left" w:pos="${stop + dI}"/>`).join('');
     const docx = await ExportDualEngine.generateMcqExamDocx(data, { returnInnerXml: true, renumber: false });
     const docxRows = paragraphsContaining(docx.bodyXml, `<w:tabs>${stopXml}</w:tabs>`, '</w:p>');
     equal(docxRows.length, item.grid.rows.length, `${label}: DOCX emits one option paragraph per planned row`);

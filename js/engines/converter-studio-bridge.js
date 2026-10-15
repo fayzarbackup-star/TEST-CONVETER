@@ -45,6 +45,7 @@
         docType: options.docType || 'AUTO',
         font: options.font || 'kalpurush',
         paperSize: options.paperSize || (options.text.length > 500 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(options.text) ? 'a4-landscape' : 'a4-portrait'),
+        figuresKey: options.figuresKey || null,   // Part-16.2: IndexedDB-তে রাখা সোর্স-চিত্রের চাবি
         source: 'fayzar-converter',
         timestamp: Date.now()
       };
@@ -187,10 +188,10 @@
         'EXAM_MATH': 'গণিত সমীকরণ প্রশ্নপত্র',
         'STAMP_DEED': '৩০০ টাকার স্ট্যাম্প / চুক্তিপত্র',
         'GOVT_APP': 'সরকারি / প্রাতিষ্ঠানিক আবেদন',
-        'PROTTOYON': 'প্রত্যয়নপত্র / সনদপত্র',
+        'PROTTOYON': 'প্রত্যয়নপত্র / সনদপত্র',
         'ADMIT_CARD': 'এডমিট কার্ড (প্রবেশপত্র)',
         'SALARY_SLIP': 'স্যালারি স্লিপ (বেতন রশিদ)',
-        'OFFICE_PAD': 'অফিসিয়াল প্যাড',
+        'OFFICE_PAD': 'অফিসিয়াল প্যাড',
         'ROUTINE': 'ক্লাস রুটিন',
         'GENERAL': 'সাধারণ ডকুমেন্ট'
       };

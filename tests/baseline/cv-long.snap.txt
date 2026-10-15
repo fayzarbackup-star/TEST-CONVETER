@@ -1,0 +1,423 @@
+# fixture: cv-long
+# docType: CV_RESUME
+
+===== CLASSIFIER =====
+{
+  "type": "CV_RESUME"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "title",
+      "text": "জীবন বৃত্তান্ত"
+    },
+    {
+      "kind": "kv",
+      "rows": [
+        {
+          "label": "নাম",
+          "more": [],
+          "num": "০১",
+          "sep": "ঃ",
+          "value": "মোঃ আনোয়ার হোসেন"
+        },
+        {
+          "label": "পিতার নাম",
+          "more": [],
+          "num": "০২",
+          "sep": "ঃ",
+          "value": "মোঃ সিরাজুল হক"
+        },
+        {
+          "label": "মাতার নাম",
+          "more": [],
+          "num": "০৩",
+          "sep": "ঃ",
+          "value": "মোছাঃ আমেনা খাতুন"
+        },
+        {
+          "label": "স্বামী/স্ত্রীর নাম",
+          "more": [],
+          "num": "০৪",
+          "sep": "ঃ",
+          "value": "মোছাঃ নাসরিন সুলতানা"
+        },
+        {
+          "label": "বর্তমান ঠিকানা",
+          "more": [
+            "উপজেলাঃ সদর, জেলাঃ রংপুর"
+          ],
+          "num": "০৫",
+          "sep": "ঃ",
+          "value": "গ্রামঃ উত্তর পাড়া, ডাকঘরঃ চৌরাস্তা বাজার"
+        },
+        {
+          "label": "স্থায়ী ঠিকানা",
+          "more": [
+            "উপজেলাঃ মিঠাপুকুর, জেলাঃ রংপুর"
+          ],
+          "num": "০৬",
+          "sep": "ঃ",
+          "value": "গ্রামঃ দক্ষিণ পাড়া, ডাকঘরঃ হাটখোলা"
+        },
+        {
+          "label": "জন্ম তারিখ",
+          "more": [],
+          "num": "০৭",
+          "sep": "ঃ",
+          "value": "০১/০১/১৯৯৫ ইং"
+        },
+        {
+          "label": "জাতীয় পরিচয়পত্র নম্বর",
+          "more": [],
+          "num": "০৮",
+          "sep": "ঃ",
+          "value": "১২৩ ৪৫৬ ৭৮৯০"
+        },
+        {
+          "label": "ধর্ম",
+          "more": [],
+          "num": "০৯",
+          "sep": "ঃ",
+          "value": "ইসলাম"
+        },
+        {
+          "label": "জাতীয়তা",
+          "more": [],
+          "num": "১০",
+          "sep": "ঃ",
+          "value": "বাংলাদেশী (জন্মসূত্রে)"
+        },
+        {
+          "label": "বৈবাহিক অবস্থা",
+          "more": [],
+          "num": "১১",
+          "sep": "ঃ",
+          "value": "বিবাহিত"
+        },
+        {
+          "label": "রক্তের গ্রুপ",
+          "more": [],
+          "num": "১২",
+          "sep": "ঃ",
+          "value": "বি পজিটিভ"
+        },
+        {
+          "label": "উচ্চতা",
+          "more": [],
+          "num": "১৩",
+          "sep": "ঃ",
+          "value": "৫ ফুট ৬ ইঞ্চি"
+        },
+        {
+          "label": "ওজন",
+          "more": [],
+          "num": "১৪",
+          "sep": "ঃ",
+          "value": "৬৫ কেজি"
+        },
+        {
+          "label": "মোবাইল নম্বর",
+          "more": [],
+          "num": "১৫",
+          "sep": "ঃ",
+          "value": "০১৮০০-০০০০০০"
+        },
+        {
+          "label": "ই-মেইল",
+          "more": [],
+          "num": "১৬",
+          "sep": "ঃ",
+          "value": "example@example.com"
+        },
+        {
+          "label": "কম্পিউটার দক্ষতা",
+          "more": [],
+          "num": "১৭",
+          "sep": "ঃ",
+          "value": "এম.এস ওয়ার্ড, এক্সেল, পাওয়ার পয়েন্ট, ইন্টারনেট ব্রাউজিং ও ই-মেইল আদান-প্রদান"
+        },
+        {
+          "label": "ভাষাগত দক্ষতা",
+          "more": [],
+          "num": "১৮",
+          "sep": "ঃ",
+          "value": "বাংলা ও ইংরেজি (পড়া, লেখা ও বলা)"
+        },
+        {
+          "label": "অভিজ্ঞতা",
+          "more": [],
+          "num": "১৯",
+          "sep": "ঃ",
+          "value": "একটি বেসরকারি প্রতিষ্ঠানে হিসাব সহকারী পদে তিন বছর কাজের অভিজ্ঞতা"
+        },
+        {
+          "label": "শখ",
+          "more": [],
+          "num": "২০",
+          "sep": "ঃ",
+          "value": "বই পড়া ও ভ্রমণ"
+        }
+      ]
+    },
+    {
+      "kind": "heading",
+      "text": "শিক্ষাগত যোগ্যতা ঃ"
+    },
+    {
+      "header": true,
+      "kind": "table",
+      "rows": [
+        [
+          "পরীক্ষার নাম",
+          "বিভাগ",
+          "বোর্ড/বিশ্ববিদ্যালয়",
+          "পাসের সন",
+          "ফলাফল"
+        ],
+        [
+          "এস.এস.সি",
+          "ব্যবসায় শিক্ষা",
+          "রাজশাহী",
+          "২০১০",
+          "৪.৫৬"
+        ],
+        [
+          "এইচ.এস.সি",
+          "ব্যবসায় শিক্ষা",
+          "রাজশাহী",
+          "২০১২",
+          "৪.১০"
+        ],
+        [
+          "বি.কম (পাস)",
+          "হিসাববিজ্ঞান",
+          "জাতীয় বিশ্ববিদ্যালয়",
+          "২০১৬",
+          "দ্বিতীয় শ্রেণি"
+        ],
+        [
+          "এম.কম",
+          "হিসাববিজ্ঞান",
+          "জাতীয় বিশ্ববিদ্যালয়",
+          "২০১৮",
+          "দ্বিতীয় শ্রেণি"
+        ]
+      ]
+    },
+    {
+      "kind": "heading",
+      "text": "রেফারেন্স"
+    },
+    {
+      "kind": "para",
+      "text": "জনাব মোঃ কামরুল ইসলাম, প্রধান শিক্ষক, উত্তর পাড়া উচ্চ বিদ্যালয়, রংপুর। মোবাইলঃ ০১৯০০-০০০০০০।"
+    },
+    {
+      "kind": "heading",
+      "text": "অঙ্গীকার"
+    },
+    {
+      "kind": "para",
+      "text": "আমি এই মর্মে অঙ্গীকার করছি যে, উপরে বর্ণিত সকল তথ্য সত্য ও সঠিক। কোনো তথ্য মিথ্যা প্রমাণিত হলে কর্তৃপক্ষ যে ব্যবস্থা গ্রহণ করবেন তা মেনে নিতে বাধ্য থাকব।"
+    },
+    {
+      "date": "তারিখঃ ................ইং",
+      "kind": "footer",
+      "sign": [
+        "স্বাক্ষর"
+      ]
+    }
+  ],
+  "kind": "CV_LAYOUT",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-cv-layout font-kalpurush" style="padding: 1.00in 0.50in 0.50in 1.00in; font-size: 12pt; box-sizing: border-box;">
+<div style="text-align: center; font-weight: 700; text-decoration: underline; line-height: 1.3; font-size: 32pt; margin-bottom: 0.25em;">জীবন বৃত্তান্ত</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০১। নাম</span>
+<b>ঃ মোঃ আনোয়ার হোসেন</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০২। পিতার নাম</span>ঃ মোঃ সিরাজুল হক</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৩। মাতার নাম</span>ঃ মোছাঃ আমেনা খাতুন</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৪। স্বামী/স্ত্রীর নাম</span>ঃ মোছাঃ নাসরিন সুলতানা</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৫। বর্তমান ঠিকানা</span>ঃ গ্রামঃ উত্তর পাড়া, ডাকঘরঃ চৌরাস্তা বাজার</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in;">উপজেলাঃ সদর, জেলাঃ রংপুর</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৬। স্থায়ী ঠিকানা</span>ঃ গ্রামঃ দক্ষিণ পাড়া, ডাকঘরঃ হাটখোলা</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in;">উপজেলাঃ মিঠাপুকুর, জেলাঃ রংপুর</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৭। জন্ম তারিখ</span>ঃ ০১/০১/১৯৯৫ ইং</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৮। জাতীয় পরিচয়পত্র নম্বর</span>ঃ ১২৩ ৪৫৬ ৭৮৯০</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">০৯। ধর্ম</span>ঃ ইসলাম</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১০। জাতীয়তা</span>ঃ বাংলাদেশী (জন্মসূত্রে)</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১১। বৈবাহিক অবস্থা</span>ঃ বিবাহিত</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১২। রক্তের গ্রুপ</span>ঃ বি পজিটিভ</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৩। উচ্চতা</span>ঃ ৫ ফুট ৬ ইঞ্চি</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৪। ওজন</span>ঃ ৬৫ কেজি</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৫। মোবাইল নম্বর</span>ঃ ০১৮০০-০০০০০০</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৬। ই-মেইল</span>ঃ example@example.com</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৭। কম্পিউটার দক্ষতা</span>ঃ এম.এস ওয়ার্ড, এক্সেল, পাওয়ার পয়েন্ট, ইন্টারনেট ব্রাউজিং ও ই-মেইল আদান-প্রদান</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৮। ভাষাগত দক্ষতা</span>ঃ বাংলা ও ইংরেজি (পড়া, লেখা ও বলা)</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">১৯। অভিজ্ঞতা</span>ঃ একটি বেসরকারি প্রতিষ্ঠানে হিসাব সহকারী পদে তিন বছর কাজের অভিজ্ঞতা</div>
+<div style="min-height: 1.47em; line-height: 1.47;padding-left: 2.46in; text-indent: -2.46in;">
+<span style="display: inline-block; width: 2.29in; text-indent: 0;">২০। শখ</span>ঃ বই পড়া ও ভ্রমণ</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>
+<u>শিক্ষাগত যোগ্যতা ঃ</u>
+</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<table style="border-collapse: collapse; margin: 0 auto; table-layout: fixed; font-size: 12pt;">
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in; font-weight: 700;">পরীক্ষার নাম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.29in; font-weight: 700;">বিভাগ</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.81in; font-weight: 700;">বোর্ড/বিশ্ববিদ্যালয়</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.88in; font-weight: 700;">পাসের সন</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.24in; font-weight: 700;">ফলাফল</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এস.এস.সি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.29in;">ব্যবসায় শিক্ষা</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.81in;">রাজশাহী</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.88in;">২০১০</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.24in;">৪.৫৬</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এইচ.এস.সি</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.29in;">ব্যবসায় শিক্ষা</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.81in;">রাজশাহী</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.88in;">২০১২</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.24in;">৪.১০</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">বি.কম (পাস)</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.29in;">হিসাববিজ্ঞান</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.81in;">জাতীয় বিশ্ববিদ্যালয়</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.88in;">২০১৬</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.24in;">দ্বিতীয় শ্রেণি</td>
+</tr>
+<tr>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.21in;">এম.কম</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.29in;">হিসাববিজ্ঞান</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.81in;">জাতীয় বিশ্ববিদ্যালয়</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 0.88in;">২০১৮</td>
+<td style="border: 1px solid #000; padding: 0 4px; text-align: center; vertical-align: middle; width: 1.24in;">দ্বিতীয় শ্রেণি</td>
+</tr>
+</table>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>
+<u>রেফারেন্স</u>
+</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify;">জনাব মোঃ কামরুল ইসলাম, প্রধান শিক্ষক, উত্তর পাড়া উচ্চ বিদ্যালয়, রংপুর। মোবাইলঃ ০১৯০০-০০০০০০।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">
+<b>
+<u>অঙ্গীকার</u>
+</b>
+</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;text-align: justify;">আমি এই মর্মে অঙ্গীকার করছি যে, উপরে বর্ণিত সকল তথ্য সত্য ও সঠিক। কোনো তথ্য মিথ্যা প্রমাণিত হলে কর্তৃপক্ষ যে ব্যবস্থা গ্রহণ করবেন তা মেনে নিতে বাধ্য থাকব।</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="min-height: 1.47em; line-height: 1.47;">&nbsp;</div>
+<div style="display: flex; align-items: flex-end; line-height: 1.34;">
+<div style="flex: 1;">তারিখঃ ................ইং</div>
+<div style="width: 2in; text-align: center;">
+<div style="border-top: 1px solid #000;">স্বাক্ষর</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType CV_RESUME)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1440\margr720\margt1440\margb720\cols1
+{\pard\plain\f0\fs64\sl240\slmult1\sb0\sa0\qc {\b {\ul {\f0 \u2460?\u2496?\u2476?\u2472? \u2476?\u2499?\u2468?\u2509?\u2468?\u2494?\u2472?\u2509?\u2468?}}}\par}
+{\pard\plain\f0\fs24\sl240\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2535?\u2404? \u2472?\u2494?\u2478?}\tab {\b {\f0 \u2435? \u2478?\u2507?\u2435? \u2438?\u2472?\u2507?\u2527?\u2494?\u2480? \u2489?\u2507?\u2488?\u2503?\u2472?}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2536?\u2404? \u2474?\u2495?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?}\tab {\f0 \u2435? \u2478?\u2507?\u2435? \u2488?\u2495?\u2480?\u2494?\u2460?\u2497?\u2482? \u2489?\u2453?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2537?\u2404? \u2478?\u2494?\u2468?\u2494?\u2480? \u2472?\u2494?\u2478?}\tab {\f0 \u2435? \u2478?\u2507?\u2459?\u2494?\u2435? \u2438?\u2478?\u2503?\u2472?\u2494? \u2454?\u2494?\u2468?\u2497?\u2472?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2538?\u2404? \u2488?\u2509?\u2476?\u2494?\u2478?\u2496?}{\f1 /}{\f0 \u2488?\u2509?\u2468?\u2509?\u2480?\u2496?\u2480? \u2472?\u2494?\u2478?}\tab {\f0 \u2435? \u2478?\u2507?\u2459?\u2494?\u2435? \u2472?\u2494?\u2488?\u2480?\u2495?\u2472? \u2488?\u2497?\u2482?\u2468?\u2494?\u2472?\u2494?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2539?\u2404? \u2476?\u2480?\u2509?\u2468?\u2478?\u2494?\u2472? \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?}\tab {\f0 \u2435? \u2455?\u2509?\u2480?\u2494?\u2478?\u2435? \u2441?\u2468?\u2509?\u2468?\u2480? \u2474?\u2494?\u2524?\u2494?, \u2465?\u2494?\u2453?\u2456?\u2480?\u2435? \u2458?\u2508?\u2480?\u2494?\u2488?\u2509?\u2468?\u2494? \u2476?\u2494?\u2460?\u2494?\u2480?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541 {\f0 \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?\u2435? \u2488?\u2470?\u2480?, \u2460?\u2503?\u2482?\u2494?\u2435? \u2480?\u2434?\u2474?\u2497?\u2480?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2540?\u2404? \u2488?\u2509?\u2469?\u2494?\u2527?\u2496? \u2464?\u2495?\u2453?\u2494?\u2472?\u2494?}\tab {\f0 \u2435? \u2455?\u2509?\u2480?\u2494?\u2478?\u2435? \u2470?\u2453?\u2509?\u2487?\u2495?\u2467? \u2474?\u2494?\u2524?\u2494?, \u2465?\u2494?\u2453?\u2456?\u2480?\u2435? \u2489?\u2494?\u2463?\u2454?\u2507?\u2482?\u2494?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541 {\f0 \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?\u2435? \u2478?\u2495?\u2464?\u2494?\u2474?\u2497?\u2453?\u2497?\u2480?, \u2460?\u2503?\u2482?\u2494?\u2435? \u2480?\u2434?\u2474?\u2497?\u2480?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2541?\u2404? \u2460?\u2472?\u2509?\u2478? \u2468?\u2494?\u2480?\u2495?\u2454?}\tab {\f0 \u2435? \u2534?\u2535?}{\f1 /}{\f0 \u2534?\u2535?}{\f1 /}{\f0 \u2535?\u2543?\u2543?\u2539? \u2439?\u2434?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2542?\u2404? \u2460?\u2494?\u2468?\u2496?\u2527? \u2474?\u2480?\u2495?\u2458?\u2527?\u2474?\u2468?\u2509?\u2480? \u2472?\u2478?\u2509?\u2476?\u2480?}\tab {\f0 \u2435? \u2535?\u2536?\u2537? \u2538?\u2539?\u2540? \u2541?\u2542?\u2543?\u2534?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2534?\u2543?\u2404? \u2471?\u2480?\u2509?\u2478?}\tab {\f0 \u2435? \u2439?\u2488?\u2482?\u2494?\u2478?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2534?\u2404? \u2460?\u2494?\u2468?\u2496?\u2527?\u2468?\u2494?}\tab {\f0 \u2435? \u2476?\u2494?\u2434?\u2482?\u2494?\u2470?\u2503?\u2486?\u2496? (\u2460?\u2472?\u2509?\u2478?\u2488?\u2498?\u2468?\u2509?\u2480?\u2503?)}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2535?\u2404? \u2476?\u2504?\u2476?\u2494?\u2489?\u2495?\u2453? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?}\tab {\f0 \u2435? \u2476?\u2495?\u2476?\u2494?\u2489?\u2495?\u2468?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2536?\u2404? \u2480?\u2453?\u2509?\u2468?\u2503?\u2480? \u2455?\u2509?\u2480?\u2497?\u2474?}\tab {\f0 \u2435? \u2476?\u2495? \u2474?\u2460?\u2495?\u2463?\u2495?\u2477?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2537?\u2404? \u2441?\u2458?\u2509?\u2458?\u2468?\u2494?}\tab {\f0 \u2435? \u2539? \u2475?\u2497?\u2463? \u2540? \u2439?\u2462?\u2509?\u2458?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2538?\u2404? \u2451?\u2460?\u2472?}\tab {\f0 \u2435? \u2540?\u2539? \u2453?\u2503?\u2460?\u2495?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2539?\u2404? \u2478?\u2507?\u2476?\u2494?\u2439?\u2482? \u2472?\u2478?\u2509?\u2476?\u2480?}\tab {\f0 \u2435? \u2534?\u2535?\u2542?\u2534?\u2534?}{\f1 -}{\f0 \u2534?\u2534?\u2534?\u2534?\u2534?\u2534?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2540?\u2404? \u2439?}{\f1 -}{\f0 \u2478?\u2503?\u2439?\u2482?}\tab {\f0 \u2435? }{\f1 example@example.com}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2541?\u2404? \u2453?\u2478?\u2509?\u2474?\u2495?\u2441?\u2463?\u2494?\u2480? \u2470?\u2453?\u2509?\u2487?\u2468?\u2494?}\tab {\f0 \u2435? \u2447?\u2478?.\u2447?\u2488? \u2451?\u2527?\u2494?\u2480?\u2509?\u2465?, \u2447?\u2453?\u2509?\u2488?\u2503?\u2482?, \u2474?\u2494?\u2451?\u2527?\u2494?\u2480? \u2474?\u2527?\u2503?\u2472?\u2509?\u2463?, \u2439?\u2472?\u2509?\u2463?\u2494?\u2480?\u2472?\u2503?\u2463? \u2476?\u2509?\u2480?\u2494?\u2441?\u2460?\u2495?\u2434? \u2451? \u2439?}{\f1 -}{\f0 \u2478?\u2503?\u2439?\u2482? \u2438?\u2470?\u2494?\u2472?}{\f1 -}{\f0 \u2474?\u2509?\u2480?\u2470?\u2494?\u2472?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2542?\u2404? \u2477?\u2494?\u2487?\u2494?\u2455?\u2468? \u2470?\u2453?\u2509?\u2487?\u2468?\u2494?}\tab {\f0 \u2435? \u2476?\u2494?\u2434?\u2482?\u2494? \u2451? \u2439?\u2434?\u2480?\u2503?\u2460?\u2495? (\u2474?\u2524?\u2494?, \u2482?\u2503?\u2454?\u2494? \u2451? \u2476?\u2482?\u2494?)}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2535?\u2543?\u2404? \u2437?\u2477?\u2495?\u2460?\u2509?\u2462?\u2468?\u2494?}\tab {\f0 \u2435? \u2447?\u2453?\u2463?\u2495? \u2476?\u2503?\u2488?\u2480?\u2453?\u2494?\u2480?\u2495? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503? \u2489?\u2495?\u2488?\u2494?\u2476? \u2488?\u2489?\u2453?\u2494?\u2480?\u2496? \u2474?\u2470?\u2503? \u2468?\u2495?\u2472? \u2476?\u2459?\u2480? \u2453?\u2494?\u2460?\u2503?\u2480? \u2437?\u2477?\u2495?\u2460?\u2509?\u2462?\u2468?\u2494?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql\li3541\fi-3541\tx3291 {\f0 \u2536?\u2534?\u2404? \u2486?\u2454?}\tab {\f0 \u2435? \u2476?\u2439? \u2474?\u2524?\u2494? \u2451? \u2477?\u2509?\u2480?\u2478?\u2467?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql {\b {\ul {\f0 \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?\u2455?\u2468? \u2479?\u2507?\u2455?\u2509?\u2479?\u2468?\u2494? \u2435?}}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft244\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1985\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3836\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6447\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7711\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx9503
+\pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\b {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478?}}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\b {\f0 \u2476?\u2495?\u2477?\u2494?\u2455?}}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\b {\f0 \u2476?\u2507?\u2480?\u2509?\u2465?}{\f1 /}{\f0 \u2476?\u2495?\u2486?\u2509?\u2476?\u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\b {\f0 \u2474?\u2494?\u2488?\u2503?\u2480? \u2488?\u2472?}}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\b {\f0 \u2475?\u2482?\u2494?\u2475?\u2482?}}\cell \row}
+{\trowd\trgaph80\trleft244\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1985\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3836\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6447\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7711\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx9503
+\pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2447?\u2488?.\u2447?\u2488?.\u2488?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2476?\u2509?\u2479?\u2476?\u2488?\u2494?\u2527? \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2480?\u2494?\u2460?\u2486?\u2494?\u2489?\u2496?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2536?\u2534?\u2535?\u2534?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2538?.\u2539?\u2540?}\cell \row}
+{\trowd\trgaph80\trleft244\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1985\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3836\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6447\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7711\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx9503
+\pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2447?\u2439?\u2458?.\u2447?\u2488?.\u2488?\u2495?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2476?\u2509?\u2479?\u2476?\u2488?\u2494?\u2527? \u2486?\u2495?\u2453?\u2509?\u2487?\u2494?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2480?\u2494?\u2460?\u2486?\u2494?\u2489?\u2496?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2536?\u2534?\u2535?\u2536?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2538?.\u2535?\u2534?}\cell \row}
+{\trowd\trgaph80\trleft244\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1985\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3836\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6447\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7711\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx9503
+\pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2476?\u2495?.\u2453?\u2478? (\u2474?\u2494?\u2488?)}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2489?\u2495?\u2488?\u2494?\u2476?\u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2460?\u2494?\u2468?\u2496?\u2527? \u2476?\u2495?\u2486?\u2509?\u2476?\u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2536?\u2534?\u2535?\u2540?}\cell \pard\plain\intbl\keepn\qc\f0\fs24\sl240\slmult1 {\f0 \u2470?\u2509?\u2476?\u2495?\u2468?\u2496?\u2527? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?}\cell \row}
+{\trowd\trgaph80\trleft244\trkeep\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx1985\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx3836\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx6447\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx7711\clvertalc\clbrdrt\brdrs\brdrw10\clbrdrl\brdrs\brdrw10\clbrdrb\brdrs\brdrw10\clbrdrr\brdrs\brdrw10\cellx9503
+\pard\plain\intbl\qc\f0\fs24\sl240\slmult1 {\f0 \u2447?\u2478?.\u2453?\u2478?}\cell \pard\plain\intbl\qc\f0\fs24\sl240\slmult1 {\f0 \u2489?\u2495?\u2488?\u2494?\u2476?\u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?}\cell \pard\plain\intbl\qc\f0\fs24\sl240\slmult1 {\f0 \u2460?\u2494?\u2468?\u2496?\u2527? \u2476?\u2495?\u2486?\u2509?\u2476?\u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}\cell \pard\plain\intbl\qc\f0\fs24\sl240\slmult1 {\f0 \u2536?\u2534?\u2535?\u2542?}\cell \pard\plain\intbl\qc\f0\fs24\sl240\slmult1 {\f0 \u2470?\u2509?\u2476?\u2495?\u2468?\u2496?\u2527? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?}\cell \row}
+\pard\plain
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql {\b {\ul {\f0 \u2480?\u2503?\u2475?\u2494?\u2480?\u2503?\u2472?\u2509?\u2488?}}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl240\slmult1\sb0\sa0\qj {\f0 \u2460?\u2472?\u2494?\u2476? \u2478?\u2507?\u2435? \u2453?\u2494?\u2478?\u2480?\u2497?\u2482? \u2439?\u2488?\u2482?\u2494?\u2478?, \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?, \u2441?\u2468?\u2509?\u2468?\u2480? \u2474?\u2494?\u2524?\u2494? \u2441?\u2458?\u2509?\u2458? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?, \u2480?\u2434?\u2474?\u2497?\u2480?\u2404? \u2478?\u2507?\u2476?\u2494?\u2439?\u2482?\u2435? \u2534?\u2535?\u2543?\u2534?\u2534?}{\f1 -}{\f0 \u2534?\u2534?\u2534?\u2534?\u2534?\u2534?\u2404?}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\keepn\ql {\b {\ul {\f0 \u2437?\u2457?\u2509?\u2455?\u2496?\u2453?\u2494?\u2480?}}}\par}
+{\pard\plain\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\keepn\f0\fs24\sl240\slmult1\sb0\sa0\qj {\f0 \u2438?\u2478?\u2495? \u2447?\u2439? \u2478?\u2480?\u2509?\u2478?\u2503? \u2437?\u2457?\u2509?\u2455?\u2496?\u2453?\u2494?\u2480? \u2453?\u2480?\u2459?\u2495? \u2479?\u2503?, \u2441?\u2474?\u2480?\u2503? \u2476?\u2480?\u2509?\u2467?\u2495?\u2468? \u2488?\u2453?\u2482? \u2468?\u2469?\u2509?\u2479? \u2488?\u2468?\u2509?\u2479? \u2451? \u2488?\u2464?\u2495?\u2453?\u2404? \u2453?\u2507?\u2472?\u2507? \u2468?\u2469?\u2509?\u2479? \u2478?\u2495?\u2469?\u2509?\u2479?\u2494? \u2474?\u2509?\u2480?\u2478?\u2494?\u2467?\u2495?\u2468? \u2489?\u2482?\u2503? \u2453?\u2480?\u2509?\u2468?\u2499?\u2474?\u2453?\u2509?\u2487? \u2479?\u2503? \u2476?\u2509?\u2479?\u2476?\u2488?\u2509?\u2469?\u2494? \u2455?\u2509?\u2480?\u2489?\u2467? \u2453?\u2480?\u2476?\u2503?\u2472? \u2468?\u2494? \u2478?\u2503?\u2472?\u2503? \u2472?\u2495?\u2468?\u2503? \u2476?\u2494?\u2471?\u2509?\u2479? \u2469?\u2494?\u2453?\u2476?\u2404?}\par}
+{\pard\plain\keepn\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\pard\plain\keepn\f0\fs24\sl264\slmult1\sb0\sa0\ql \par}
+{\trowd\trgaph80\trleft0\trkeep\clvertalb\cellx6866\cellx9746
+\pard\plain\intbl\ql\f0\fs24\sl240\slmult1 {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?\u2435? ................\u2439?\u2434?}\cell \pard\plain\intbl\qc\brdrt\brdrs\brdrw10\brsp20\f0\fs24\sl240\slmult1 {\f0 \u2488?\u2509?\u2476?\u2494?\u2453?\u2509?\u2487?\u2480?}\cell \row}
+\pard\plain
+}

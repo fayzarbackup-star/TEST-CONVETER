@@ -9,7 +9,7 @@ binding = "FAYZAR_OCR_KEYS"
 id = "2de59ce830064432b4e8938373ebc2bf"
 
 [vars]
-ALLOWED_ORIGINS = "https://fayzar-conveter.pages.dev, https://*.fayzar-conveter.pages.dev, http://localhost:3008, http://127.0.0.1:3008"
+ALLOWED_ORIGINS = "https://fayzar-conveter.pages.dev, https://*.fayzar-conveter.pages.dev, http://localhost:3008, http://127.0.0.1:3008, http://localhost:3009, http://127.0.0.1:3009"
 RATE_PER_MIN = "40"
 
 # part-4: ব্রাউজার ছাড়া সরাসরি কল বন্ধ (স্ক্রিপ্ট-অপব্যবহার রোধ)
@@ -18,3 +18,8 @@ REQUIRE_ORIGIN = "true"
 
 # part-4: প্রতি IP-তে দৈনিক OCR সীমা (শেয়ার্ড NAT-এ ইচ্ছেমতো বাড়ান)
 DAILY_PER_IP = "500"
+
+# Part-16.6: Worker Google-এর মূল অঞ্চলের পাশে চলে (মাপা: DAC/SIN/BOM/US — Google-এর উত্তর US-এ দ্রুততম,
+# অঞ্চল-সীমার ঝুঁকিও নেই)। ব্যবহারকারী ঢাকার Cloudflare-এই যুক্ত হন; ফিরিয়ে নিতে এই অংশ মুছে deploy।
+[placement]
+region = "gcp:us-central1"

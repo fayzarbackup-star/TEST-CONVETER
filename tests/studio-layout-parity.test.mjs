@@ -117,7 +117,7 @@ const MD = '---\ndoc_type: EXAM_CQ\n---\n\n১. নিচের উদ্দী�
 
 // ───────────────────────── ৭) OCR/হোম-পেজের মার্জিন-সিলেক্ট (একই বাগ-পরিবার) ─────────────────────────
 {
-  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const html = fs.readFileSync(path.join(ROOT, 'ocr-classic.html'), 'utf8');  // ২০২৬-১০-০৬: পুরোনো OCR-UI (মার্জিন-লেবেল) এখন ocr-classic.html-এ; নতুন index.html-এ এই বাছাই নেই
   T('index.html: Normal-লেবেল এখন সত্য (০.৫")', /Normal \(চারপাশে ০\.৫"\)/.test(html));
   T('index.html: পুরোনো মিথ্যা লেবেল ("Normal ১.০\\"") গেছে', !/Normal \(চারপাশে ১\.০"\)/.test(html));
   T('index.html: Narrow/Moderate/Wide লেবেল সত্য মানের সাথে (০.৪/০.৭৫/১.০)',

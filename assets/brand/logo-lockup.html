@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Compose — লোগো</title>
+<!-- পূর্ণ লোগো (আইকন + নাম + স্লোগান) — PNG তৈরির উৎস: node scripts/brand-export.mjs -->
+<link rel="stylesheet" href="../../css/google-fonts.css">
+<style>
+  @font-face { font-family: 'Dancing Script'; src: url(../../fonts/DancingScript-Variable.ttf) format('truetype'); font-weight: 400 700; }
+  html, body { margin: 0; background: transparent; }
+  .lockup { display: inline-flex; align-items: center; gap: 18px; padding: 24px 36px 30px 24px; position: relative; }
+  .lockup img { width: 190px; height: 190px; }
+  .txt { position: relative; padding-bottom: 26px; }
+  .name { font-family: 'Dancing Script', cursive; font-weight: 700; font-size: 104px; line-height: 1; color: #1F5E43; letter-spacing: .5px; }
+  .tag { font-family: 'Noto Sans Bengali', sans-serif; font-weight: 600; font-size: 25px; color: #1F5E43; margin-top: 6px; letter-spacing: .3px; }
+  .swoosh { position: absolute; left: -64px; right: -18px; bottom: -6px; height: 40px; }
+</style>
+</head>
+<body>
+  <div class="lockup" id="lockup">
+    <img src="logo-mark.svg" alt="">
+    <div class="txt">
+      <div class="name">AI Compose</div>
+      <div class="tag" id="tag">ছবি ও PDF থেকে Editable Word</div>
+      <svg class="swoosh" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M2 30 C 90 4, 200 40, 398 6" fill="none" stroke="#BFE3CC" stroke-width="6" stroke-linecap="round"/>
+        <path d="M2 31 C 90 8, 200 40, 398 8" fill="none" stroke="#1F5E43" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>

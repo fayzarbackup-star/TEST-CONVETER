@@ -15,7 +15,7 @@
  * ============================================================================
  */
 
-const LEDGER_VERSION = 1;
+const LEDGER_VERSION = 2;   // Part-16.5: v2 = ভুল MODEL_NA রিসেট + lastError
 const SERVER_BACKOFF_MS = [30000, 60000, 120000, 300000];
 const MODEL_UNSUPPORTED_MS = 6 * 60 * 60 * 1000; // ৬ ঘণ্টা
 const DEFAULT_RPM_COOLDOWN_MS = 60000;
@@ -111,12 +111,31 @@ function classifyGeminiError(status, body, opts = {}) {
     };
   }
 
-  if (status === 404 || /is not found|not supported for|no longer available/i.test(message)) {
-    return { class: 'MODEL_NA', reopenAfterMs: MODEL_UNSUPPORTED_MS, scope: 'model', detail: 'model unavailable for this key' };
+  // Part-16.5: অপেক্ষার সীমা পেরোনো = Gemini লম্বা চিন্তা করছিল (নিয়ম ১৮), কি-র দোষ নয় ⇒ শাস্তি নেই
+  if (opts.timeout) {
+    return { class: 'TIMEOUT', reopenAfterMs: 0, scope: 'model', detail: message.slice(0, 200) || 'attempt timeout' };
+  }
+
+  // Part-16.5: "মডেল নেই" শুধু তখনই যখন Google সত্যিই মডেলের কথা বলে (৪০৪ + মডেল-বার্তা)।
+  // আগে যেকোনো ৪০৪ বা "is not found"-যুক্ত বার্তায় ৬ ঘণ্টা বন্ধ হতো — যাচাইয়ে (২০২৬-১০-০৫) ১৯টি কি-ই
+  // সব মডেলে সুস্থ পাওয়া গেছে, অথচ খতিয়ানে ডজনখানেক "MODEL_NA" ⇒ ভুল শ্রেণিবিভাগ।
+  if (status === 404) {
+    const realModelNa = /models\/[^\s'"]+ is not found|is not found for API version|not supported for (generateContent|streamGenerateContent)|no longer available/i.test(message);
+    if (realModelNa) {
+      return { class: 'MODEL_NA', reopenAfterMs: MODEL_UNSUPPORTED_MS, scope: 'model', detail: message.slice(0, 200) };
+    }
+    return { class: 'UNKNOWN', reopenAfterMs: DEFAULT_RPM_COOLDOWN_MS, scope: 'model', detail: ('HTTP 404 ' + message).slice(0, 200) };
   }
 
   if (status === 403 || /API_KEY_INVALID|API key not valid|PERMISSION_DENIED/i.test(message)) {
     return { class: 'INVALID', reopenAfterMs: null, scope: 'key', detail: 'key invalid or forbidden' };
+  }
+
+  // Part-16.5: "User location is not supported" — Cloudflare-এর যে পথ দিয়ে অনুরোধ Google-এ গেছে, তার
+  // অবস্থান Google অসমর্থিত ধরেছে। সাময়িক (আবার চেষ্টায় অন্য পথে যায়; ২০২৬-১০-০৫ প্রোবে একই কি পরের বার
+  // সফল)। আগে এটি ৪০০ ⇒ FATAL_INPUT হয়ে পুরো OCR সঙ্গে সঙ্গে থেমে যেত ("পেলোড/ছবি সমস্যা" ভুল বার্তায়)।
+  if (/user location is not supported/i.test(message)) {
+    return { class: 'LOCATION', reopenAfterMs: 0, scope: 'model', detail: message.slice(0, 200) };
   }
 
   if (status === 400) {
@@ -129,10 +148,10 @@ function classifyGeminiError(status, body, opts = {}) {
 
   if (status === 0 || status >= 500) {
     const idx = Math.min(consecutiveServerFails, SERVER_BACKOFF_MS.length - 1);
-    return { class: 'SERVER', reopenAfterMs: SERVER_BACKOFF_MS[idx], scope: 'model', detail: `HTTP ${status}` };
+    return { class: 'SERVER', reopenAfterMs: SERVER_BACKOFF_MS[idx], scope: 'model', detail: (`HTTP ${status} ` + message).slice(0, 200) };
   }
 
-  return { class: 'UNKNOWN', reopenAfterMs: DEFAULT_RPM_COOLDOWN_MS, scope: 'model', detail: `HTTP ${status}` };
+  return { class: 'UNKNOWN', reopenAfterMs: DEFAULT_RPM_COOLDOWN_MS, scope: 'model', detail: (`HTTP ${status} ` + message).slice(0, 200) };
 }
 
 /** নতুন খতিয়ান-এন্ট্রি */
@@ -206,7 +225,9 @@ function recordFailure(ledger, key, model, verdict, now = Date.now()) {
   e.requests += 1; e.fail += 1; m.fail += 1;
   e.lastUsedAt = now;
   e.byReason[verdict.class] = (e.byReason[verdict.class] || 0) + 1;
-  e.consecutiveServerFails = verdict.class === 'SERVER' ? e.consecutiveServerFails + 1 : 0;
+  if (verdict.class !== 'TIMEOUT') e.consecutiveServerFails = verdict.class === 'SERVER' ? e.consecutiveServerFails + 1 : 0;
+  // Part-16.5: শেষ ত্রুটির আসল বার্তা (মাস্কড কি-এর নিচে) — /status-এ দেখা যায়, নির্ণয়ের জন্য
+  m.lastError = { class: verdict.class, detail: String(verdict.detail || '').slice(0, 200), at: now };
 
   if (verdict.class === 'INVALID') {
     e.state = 'INVALID';
@@ -238,13 +259,44 @@ function scoreKey(entry, now = Date.now()) {
   return 0.40 * successRate + 0.25 * speed + 0.20 * usage + 0.15 * idle;
 }
 
-/** এই মডেলের জন্য ব্যবহারযোগ্য কি-গুলো সেরা ক্রমে */
+/**
+ * এই মডেলের জন্য ব্যবহারযোগ্য কি-গুলো সেরা ক্রমে।
+ * Part-16.5: লোড-ভাগ — সবচেয়ে বেশিক্ষণ বিশ্রামে থাকা কি আগে (LRU)। আগে সফলতা-স্কোর + "শেষ সফল কি"
+ * মিলে প্রায় সব কাজ একটি কি-তে (K03) যেত ⇒ সেটির প্রতি-মিনিট সীমা ভরে "ব্যস্ত/সীমা" ব্যর্থতা।
+ * পরপর ২+ সার্ভার-ব্যর্থ কি পেছনে; সমান হলে সফলতার স্কোর।
+ */
 function rankKeys(ledger, keys, model, now = Date.now()) {
   return keys
     .filter(k => isAvailable(ledger, k, model, now))
-    .map(k => ({ key: k, score: scoreKey(ledger.keys && ledger.keys[maskKey(k)], now) }))
-    .sort((a, b) => b.score - a.score)
+    .map((k, idx) => {
+      const e = ledger.keys && ledger.keys[maskKey(k)];
+      return {
+        key: k, idx,
+        penalty: e && e.consecutiveServerFails >= 2 ? 1 : 0,
+        last: e ? (e.lastUsedAt || 0) : 0,
+        score: scoreKey(e, now)
+      };
+    })
+    .sort((a, b) => (a.penalty - b.penalty) || (a.last - b.last) || (b.score - a.score) || (a.idx - b.idx))
     .map(x => x.key);
+}
+
+/**
+ * Part-16.5: খতিয়ান-সংস্করণ ২-এ উন্নীত — সংস্করণ ১-এর ভুল "MODEL_NA" (৬ ঘণ্টা) বন্ধগুলো খুলে দেওয়া।
+ * একবারই চলে (ledger.version চিহ্ন রাখে)।
+ */
+function migrateLedger(ledger) {
+  if (!ledger || typeof ledger !== 'object') return { version: LEDGER_VERSION, keys: {} };
+  if ((ledger.version || 1) >= LEDGER_VERSION) return ledger;
+  for (const e of Object.values(ledger.keys || {})) {
+    for (const m of Object.values(e.models || {})) {
+      if (m.reason === 'MODEL_NA' || m.reason === 'SERVER') { m.reopenAt = 0; m.reason = null; }
+    }
+    if (e.reopenReason === 'MODEL_NA' || e.reopenReason === 'SERVER') { e.reopenAt = 0; e.reopenReason = null; }
+    e.consecutiveServerFails = 0;
+  }
+  ledger.version = LEDGER_VERSION;
+  return ledger;
 }
 
 /**
@@ -303,7 +355,8 @@ function buildStatus(ledger, keys, now = Date.now()) {
             reopenInSec: mm.reopenAt > now ? Math.ceil((mm.reopenAt - now) / 1000) : 0,
             reason: mm.reason,
             success: mm.success,
-            fail: mm.fail
+            fail: mm.fail,
+            lastError: mm.lastError || null
           };
           return acc;
         }, {})
@@ -326,6 +379,7 @@ const Ledger = {
   recordFailure,
   scoreKey,
   rankKeys,
+  migrateLedger,
   buildAttemptPlan,
   buildStatus
 };
@@ -334,5 +388,5 @@ export default Ledger;
 export {
   LEDGER_VERSION, maskKey, parseRetryDelay, nextMidnightPT, todayPT,
   classifyGeminiError, createEntry, ensureEntry, isAvailable,
-  recordSuccess, recordFailure, scoreKey, rankKeys, buildAttemptPlan, buildStatus
+  recordSuccess, recordFailure, scoreKey, rankKeys, migrateLedger, buildAttemptPlan, buildStatus
 };

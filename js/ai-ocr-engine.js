@@ -122,9 +122,20 @@
 0. MANDATORY DOCUMENT ARCHETYPE FRONTMATTER (LINE 1 MUST START WITH '---'):
    - Output an exact YAML frontmatter header at the very beginning between '---' delimiters:
      ---
-     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | OFFICIAL_NOTICE | STAMP_DEED>
+     doc_type: <EXAM_CQ | EXAM_GENERAL | EXAM_MCQ | EXAM_MATH | EXAM_COMBINED | OFFICE_PAD | PROTTOYON | GOVT_APP | CV_RESUME | CASH_MEMO | OFFICIAL_NOTICE | STAMP_DEED>
      columns: <1 or 2>
+     source_columns: <1, 2 or 0 — how many text columns the PRINTED/TYPED source page body actually uses; 0 for handwritten drafts or when unsure>
+     grade: <class number 1-12 exactly as printed (৫ম / পঞ্চম / Class Five → 5); 0 if not printed>
+     subject: <subject as printed>
+     content: <QUESTION_PAPER | SYLLABUS | OTHER>
+     sections: <every question category in source order as kind:count, e.g. mcq:10, fill_blank:10, short:16, problem:8>
      ---
+   - LAYOUT FACTS (Part-18.6 — these facts, not doc_type, decide the layout downstream; report ONLY what the pages actually show, never guess):
+     * grade: read the printed class (শ্রেণি/Class). Write 0 when no class is printed anywhere.
+     * source_columns (Part-18.9): look at the question body of a PRINTED or TYPED page — 1 if the questions run in one full-width column, 2 if the page is split into two side-by-side columns. Handwritten drafts are always 0 (they are re-typeset). Write 0 when unsure. This fact is separate from "columns" above.
+     * content: SYLLABUS for syllabus / question-pattern / marks-distribution pages (প্রশ্নের ধরণ ও মানবণ্টন, সিলেবাস, পাঠ্যসূচি); QUESTION_PAPER only when the pages ARE the questions; OTHER for anything else.
+     * sections kinds — use exactly these words: cq (সৃজনশীল: a stimulus/উদ্দীপক passage + sub-questions ক,খ,গ,ঘ carrying marks 1,2,3,4), mcq (বহুনির্বাচনি: a question + 4 short options ক/খ/গ/ঘ), short (সংক্ষিপ্ত/অতি সংক্ষিপ্ত one-line questions), fill_blank, matching, true_false, problem (a numbered problem with sub-parts that is NOT a stimulus-based creative question, e.g. primary/বৃত্তি math), essay, translation, table, other.
+     * Count each category's questions as printed (e.g. "১ x ১০ = ১০" → 10). List every category present, in order.
    - SECTOR DETERMINATION RULES (DO NOT RELY ON COLUMNS IN HANDWRITTEN DRAFTS; CLASSIFY BY INTENDED PURPOSE):
      * Creative Questions (CQ 70 marks, Class 6-12 with stimulus & ক,খ,গ,ঘ): doc_type: EXAM_CQ, columns: 2
      * A paper containing BOTH short/general questions and a clearly distinct creative/CQ section is still an exam: use doc_type: EXAM_CQ (or EXAM_MATH for a mathematics paper) and retain every category as a separate section; never flatten it into one generic flow.
@@ -135,7 +146,13 @@
      * Combined Exam (both Creative Questions & 20-30 MCQs): doc_type: EXAM_COMBINED, columns: 2
      * Institutional Office Pad / Letterhead Memo: doc_type: OFFICE_PAD, columns: 1
      * Testimonial / Character Certificate (প্রত্যয়নপত্র ও প্রশংসাপত্র): doc_type: PROTTOYON, columns: 1
+       -> Fact (Part-19.2): if the certificate page is printed sideways (wider than tall, e.g. a decorated school প্রশংসাপত্র/সনদ), add the frontmatter line page_orientation: landscape. If the page also carries a counterfoil (মুড়ি) copy beside the main certificate, transcribe the counterfoil first, then a line containing only ***, then the main certificate.
      * Government / Job Application (বরাবর, বিষয়, জনাব সংবলিত দরখাস্ত): doc_type: GOVT_APP, columns: 1
+     * Stand-alone CV / Resume / Bio-data (জীবন বৃত্তান্ত, বায়োডাটা, "নাম ঃ …" style rows): doc_type: CV_RESUME, columns: 1
+       -> A CV attached inside an application letter (বরাবর … বিষয় … followed by the applicant's details) stays GOVT_APP.
+     * Shop Cash Memo / Bill (ক্যাশ মেমো, বিল, চালান — shop name on top, then নাম/তারিখ/ঠিকানা lines, an item table, সর্বমোট, কথায়, ক্রেতা/বিক্রেতার স্বাক্ষর): doc_type: CASH_MEMO, columns: 1
+       -> Fact (Part-19.4): add the frontmatter line copies: <2 or 3 — how many identical memos are printed side by side on the sheet; 0 if only one memo or unsure>.
+       -> Transcribe ONE memo only (never repeat the side-by-side copies), top to bottom: shop header lines, the title line (ক্যাশ মেমো), each blank-field line with its dots (নাম:........ তারিখ:........), the item table as a Markdown table (header row + every printed/written item row, empty cells left empty, no invented empty rows), the total row (সর্বমোট), then the কথায় and signature lines.
      * Official Government / Institutional Notice / Memo: doc_type: OFFICIAL_NOTICE, columns: 1
      * Legal Deed / 300 Tk Non-Judicial Stamp Contract: doc_type: STAMP_DEED, columns: 1
    - HEADER PLACEHOLDER MANDATE (FOR EXAM PAPERS):
@@ -202,9 +219,15 @@
      * বাংলা শব্দের পাশে ইংরেজি বন্ধনী (যেমন: রূপকল্প (Vision & Mission)) সম্পূর্ণ অক্ষত রাখতে হবে।
      * যুক্ত বা হাইফেনযুক্ত বাংলা শব্দসমূহ (যেমন: শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের, যুগোপযোগী, আর্থ-সামাজিক) এর ভেতরের হাইফেন (-) কোনোভাবেই বাদ বা মুছে ফেলা যাবে না!
 
-9. DIAGRAMS & IMAGES (ছবি বা ডায়াগ্রামের ক্ষেত্রে শুধুমাত্র পেজ নম্বর উল্লেখ, কোনো বর্ণনা নয়):
-   - Whenever there is a diagram, geometric figure, circuit, chart, or image, DO NOT write any description or details of the picture.
-   - Simply write: [ছবি আছে-পৃ:০১] (বা পেজ নম্বর অনুযায়ী [ছবি আছে-পৃ:০২], [ছবি আছে-পৃ:০৩] ইত্যাদি)।
+9. DIAGRAMS & IMAGES (চিত্রের অবস্থান — কোনো বর্ণনা নয়; সিস্টেম মূল পাতা থেকে চিত্রটি কেটে বসাবে):
+   - Whenever there is a diagram, geometric figure, graph, circuit, chart, or picture, DO NOT write any description or details of the picture.
+   - At the exact place where the figure appears in the reading order (usually right after the line/stem it belongs to), write ONE tag on its own line:
+     [[FIG:p=<page>;box=<ymin>,<xmin>,<ymax>,<xmax>]]
+     * <page> = 1-based position of the page/image in the order the pages were given to you (ASCII digits).
+     * box = the tight bounding box of the WHOLE figure on that page, INCLUDING its labels/letters/numbers drawn around it (A, B, O, 5 cm, x, y, axis marks), in normalized 0–1000 coordinates of that page image: ymin,xmin,ymax,xmax (integers, ASCII digits). Do NOT include surrounding question text.
+     * Example: [[FIG:p=2;box=412,96,640,488]]
+   - One tag per separate figure. If two figures sit side by side and belong together (e.g. (i) and (ii)), use ONE box covering both.
+   - Text written inside a figure is part of the figure — do NOT transcribe it separately.
 
 10. CLEAN PROFESSIONAL OUTPUT (NO CHATTER / NO CODE BLOCKS / NO MARKDOWN ASTERISKS):
     - Output ONLY the clean transcribed document text directly.
@@ -379,7 +402,7 @@ SPECIFIC DEFECTS YOU MUST AUDIT AND FIX:
    - STIMULUS & QUESTION FULL FIDELITY: Never summarize or shorten stimulus (উদ্দীপক) or question text.
    - Preserve all legitimate content parentheses e.g. (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল), and retain hyphens in compound words (শিল্প-সংস্কৃতি, আলো-বাতাস, শিক্ষক-শিক্ষিকাদের).
    - Never merge or collapse sub-articles or clause lines (৪.১, ৪.২, ৫.১, ৫.২); ensure each remains on its own separate line.
-   - For diagrams/images, simply write: [ছবি আছে-পৃ:০১].
+   - For diagrams/images, write ONE tag on its own line where the figure appears: [[FIG:p=<page>;box=<ymin>,<xmin>,<ymax>,<xmax>]] (0–1000 normalized box of the whole figure incl. its labels; no description).
    - No markdown bold asterisks (**). No asterisks on roman numerals (*i.* -> i.).
    - No empty blank lines or double Enters between consecutive questions or lines.
    - Never output long chains of dots. Keep dotted lines to at most 3 to 6 dots (......) and preserve the rest of the letter/form.
@@ -906,7 +929,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           size: Math.round(base64.length * 0.75),
           isPdf: false,
           mimeType: 'image/jpeg',
-          base64: base64
+          base64: base64,
+          // Part-16.1: সোর্স-চিত্র কাটার জন্য — মূল PDF-এর কোন পাতা ও তার প্রকৃত মাপ (পয়েন্ট)
+          pdfPage: pageNum,
+          pageWidthPt: unscaled.width,
+          pageHeightPt: unscaled.height
         });
       }
       return pageItems;
@@ -1958,7 +1985,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         // part-7: অপেক্ষার কারণ স্পষ্ট — কোটা শেষ নাকি মডেল ব্যস্ত
         const why = (s.reason === 'RPD' || s.reason === 'RPM') ? 'কোটা শেষ'
           : (s.reason === 'MODEL_NA') ? 'এই কি-তে মডেল নেই'
-          : (s.reason === 'INVALID') ? 'কি অবৈধ' : 'মডেল ব্যস্ত (৫০৩)';
+          : (s.reason === 'INVALID') ? 'কি অবৈধ'
+          : (s.reason === 'TIMEOUT') ? 'উত্তর আসতে অনেক দেরি (৪ মিনিট)'
+          : (s.reason === 'LOCATION') ? 'Google সাময়িকভাবে সংযোগ নেয়নি (অঞ্চল-সীমা)' : 'মডেল ব্যস্ত (৫০৩)';
         return `⚡ ${why} — বিকল্প কি-তে যাচ্ছি…`;
       }
       case 'switch_model':
@@ -1967,6 +1996,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         return `✅ সফল — ${s.model || ''} থেকে আউটপুট আসছে…`;
       case 'waiting':
         return `⏳ ${s.model || ''} — ${s.waitingSec || 0} সেকেন্ড ধরে অপেক্ষা করছি…`;
+      case 'thinking':
+        return `🧠 Gemini পুরো ফাইল পড়ে দুইবার যাচাই করছে — ${s.waitingSec || 0} সেকেন্ড…`;
       case 'fatal':
         return '⚠️ ফাইল/পেলোডে সমস্যা — অন্য কি বা মডেলে চেষ্টা করে লাভ নেই।';
       default:
@@ -2026,15 +2057,26 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         }
       }
 
-      const response = await fetch(SUPABASE_CONFIG.FUNCTIONS_URL, {
+      // G1: raw মোড — বডি সরাসরি Gemini-পেলোড, Worker পার্স করে না (free plan-এ বড় পেলোডে CPU-সীমা)।
+      // Worker-এর withThoughts এখানে: চিন্তা চলমান পাঠানো (৫২৪-রক্ষা) + মাত্রা না থাকলে "low"।
+      const gc = Object.assign({}, payload.generationConfig || {});
+      const tc = Object.assign({}, gc.thinkingConfig || {});
+      if (tc.thinkingLevel == null && tc.thinkingBudget == null) tc.thinkingLevel = 'low';
+      tc.includeThoughts = true;
+      gc.thinkingConfig = tc;
+      const rawPayload = Object.assign({}, payload, { generationConfig: gc });
+      // models[] পাঠানো হলে Worker একই আপলোড দিয়ে কি ও মডেল — দুই স্তরেই ফেইলওভার করে
+      const modelList = (modelPriority && modelPriority.length ? modelPriority : [model]);
+      const proxyUrl = SUPABASE_CONFIG.FUNCTIONS_URL + '/?raw=1&models=' + modelList.map(encodeURIComponent).join(',');
+
+      const response = await fetch(proxyUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${SUPABASE_CONFIG.PROXY_TOKEN}`,
           'apikey': SUPABASE_CONFIG.PROXY_TOKEN
         },
-        // models[] পাঠানো হলে Worker একই আপলোড দিয়ে কি ও মডেল — দুই স্তরেই ফেইলওভার করে
-        body: JSON.stringify({ payload, model, models: (modelPriority && modelPriority.length ? modelPriority : [model]) }),
+        body: JSON.stringify(rawPayload),
         signal: controller.signal
       });
       
@@ -2062,6 +2104,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
       let proxyFailure = null;
       let proxyTruncated = false;      // finishReason: MAX_TOKENS — আউটপুট কেটে গেছে
+      let proxyStopReason = null;      // Part-17.2: RECITATION/SAFETY/OTHER
       const absorb = (data) => {
         if (!data || typeof data !== 'object') return;
         // Worker-এর লাইভ হার্টবিট: সফল হওয়ার আগেই অবস্থা দেখা যায় (আর "জমে থাকা" নয়)
@@ -2074,14 +2117,25 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           if (note) setLoading(true, note, Math.min(96, 48 + (st.attempt || 1) * 4));
           return;
         }
-        if (data.error) throw new Error(`Proxy Error: ${JSON.stringify(data.error)}`);
+        if (data.error) {
+          // G1b: লেখা আসার পরে মাঝপথের ত্রুটি (যেমন Google 503 "high demand") — Worker তখন ফেইলওভার পারে না।
+          // এ পর্যন্ত আসা লেখা ফেলে না দিয়ে [অসম্পূর্ণ: …] চিহ্ন; কলার (হুবহু-মোড) সেখান থেকে চালিয়ে নেয়।
+          if (fullText.trim()) {
+            proxyStopReason = proxyStopReason || ('ERROR ' + (data.error.code || data.error.status || '')).trim();
+            return;
+          }
+          throw new Error(`Proxy Error: ${JSON.stringify(data.error)}`);
+        }
         if (data.keyId) keyId = data.keyId;
         // আউটপুট সীমায় পৌঁছালে সেটি লুকিয়ে না রেখে স্পষ্ট চিহ্ন দেওয়া হয় (নইলে অর্ধেক প্রশ্নপত্র
         // "সফল" ভেবে ডাউনলোড হয়ে যেত) — ক্লায়েন্টের অটো-ডাউনলোড ব্লকার এটি চিনে ফেলে।
         if (data.candidates?.[0]?.finishReason === 'MAX_TOKENS') proxyTruncated = true;
+        // Part-17.2: RECITATION (প্রকাশিত লেখায় কপিরাইট-ছাঁকনি) / SAFETY / OTHER — লেখা মাঝপথে থামে; আগে চুপচাপ "সফল" হতো
+        { const fr = data.candidates?.[0]?.finishReason; if (fr && !/^(STOP|MAX_TOKENS|FINISH_REASON_UNSPECIFIED)$/.test(fr)) proxyStopReason = fr; }
         const parts = data.candidates?.[0]?.content?.parts;
         if (Array.isArray(parts)) {
-          const t = parts.map(pp => pp.text || '').join('');
+          // Part-17.0: Gemini-র চিন্তার সারাংশ (thought) কখনো লেখায় নয় — Worker বাদ দেয়, এখানেও নিরাপত্তা-ছাঁকনি
+          const t = parts.filter(pp => !pp.thought).map(pp => pp.text || '').join('');
           if (t) fullText += t;
         } else if (typeof data.text === 'string' && data.text) {
           fullText += data.text;
@@ -2158,6 +2212,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       if (fullText.trim() && proxyTruncated && !/\[অসম্পূর্ণ:/.test(fullText)) {
         fullText += '\n\n[অসম্পূর্ণ: MAX_TOKENS — আউটপুট সীমায় পৌঁছেছে, শেষ অংশ কাটা পড়তে পারে। ফাইলটি ছোট করে বা মডেল বদলে পুনরায় চেষ্টা করুন।]';
       }
+      if (fullText.trim() && proxyStopReason && !/\[অসম্পূর্ণ:/.test(fullText)) {
+        fullText += '\n\n[অসম্পূর্ণ: ' + proxyStopReason + ' — Gemini লেখা মাঝপথে থামিয়েছে' +
+          (proxyStopReason === 'RECITATION' ? ' (প্রকাশিত লেখা হুবহু লেখায় Google-এর কপিরাইট-ছাঁকনি)' : '') + '; শেষ অংশ আসেনি।]';
+      }
 
       if (!fullText.trim() && proxyFailure) {
         // Worker স্ট্রিমেই চূড়ান্ত ব্যর্থতা জানিয়েছে → নীতিমালা-মডিউল সিদ্ধান্ত নেবে (লোকাল পুলে যাবে না)
@@ -2217,6 +2275,8 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     if (userDirective && !customPrompt) {
       activePrompt += `\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`;
     }
+    // T2: টেমপ্লেট-গ্যালারির ছাঁচ (home-app → FayzarTemplateComposer.promptHint)
+    if (state.templateHint && !customPrompt) activePrompt += '\n\n' + state.templateHint;
 
     // part-7: ৫+ পৃষ্ঠার ডকুমেন্টে পৃষ্ঠা-ভিত্তিক কভারেজ-বাধ্যবাধকতা — সব পৃষ্ঠা একই অনুরোধে, কোনো ভাগ নয়।
     const coverageMandateApplied = !customPrompt && mediaParts.length >= 5;
@@ -2242,6 +2302,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         temperature: 0.2,
         maxOutputTokens: isFallbackFormat ? 8192 : 65536
       };
+      // Part-17.1: চিন্তার মাত্রা (Gemini 3 thinkingLevel: low | medium | high) — মাপার পরীক্ষার জন্য;
+      // সেটিং না থাকলে আগের মতো (মডেলের নিজস্ব স্বয়ংক্রিয় মাত্রা)। নিয়ম ১৮ (প্রম্পট) অপরিবর্তিত।
+      try {
+        const lvl = (typeof localStorage !== 'undefined' && localStorage.getItem('fayzar_thinking_level')) || '';
+        if (!isFallbackFormat && /^(low|medium|high)$/.test(lvl)) genConfig.thinkingConfig = { thinkingLevel: lvl };
+      } catch (e) { /* localStorage নেই */ }
 
       const safetySettings = [
         { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
@@ -2552,7 +2618,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                     }
                     
                     if (candidate?.content?.parts) {
-                      const chunkPart = candidate.content.parts.map(p => p.text || '').join('');
+                      const chunkPart = candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join('');
                       if (chunkPart) {
                         fullStreamedText += chunkPart;
                         if (fullStreamedText.includes('.......')) {
@@ -2612,7 +2678,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
                     const chunkObj = JSON.parse(dataJson);
                     const candidate = chunkObj.candidates?.[0];
                     if (candidate?.content?.parts) {
-                      fullStreamedText += candidate.content.parts.map(p => p.text || '').join('');
+                      fullStreamedText += candidate.content.parts.filter(p => !p.thought).map(p => p.text || '').join('');
                     }
                   } catch (e) {}
                 }
@@ -3334,6 +3400,9 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       l = l.replace(/(\?|।|:|[a-zA-Z\u0980-\u09FF"'”’\$])\s*\[\s*([০-৯0-9\s]+)\s*\]\s*$/g, '$1\t$2');
       l = l.replace(/(\?|।|:|[a-zA-Z\u0980-\u09FF"'”’\$])\s*[\(（]\s*([০-৯0-9\s]+)\s*[\)）]\s*$/g, '$1\t$2');
 
+      // Part-16.1: চিত্র-ট্যাগ [[FIG:p=..;box=..]] হুবহু রাখা (প্রশ্ন-ফরম্যাটার/রেফারেন্স-ক্লিনার যেন না ছোঁয়)
+      if (/^\s*\[\[\s*FIG\s*:/i.test(l)) { cleanedLines.push(l.trim()); continue; }
+
       // 4a. Remove references & source brackets (e.g. [ঢাকা বোর্ড-২০২৩], [ক্যাডেট কলেজ], (দিনাজপুর বোর্ড), [অধ্যায়-৩], মান: ১ ইত্যাদি)
       // Strictly constrained to exam board tags so legitimate content parentheses like (Vision & Mission), (যেমন: ...), (বেঞ্চ/টেবিল) are never stripped
       l = l.replace(/\s*\[\s*(?:[^\]\n]*(?:(?:ঢাকা|রাজশাহী|দিনাজপুর|কুমিল্লা|চট্টগ্রাম|সিলেট|বরিশাল|যশোর|ময়মনসিংহ|মাদ্রাসা|কারিগরি|সকল)?\s*বোর্ড|ক্যাডেট\s*কলেজ|জিলা\s*স্কুল|অধ্যায়\s*[-–—:]\s*[০-৯0-9]+|অনুশীলনী\s*[-–—:]\s*[০-৯0-9]+|পরিপত্র\s*[-–—:]\s*[০-৯0-9]+))[^\]\n]*\]\s*/gi, ' ');
@@ -3805,6 +3874,51 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     return runsXml;
   }
 
+  /**
+   * Part-16.2: সোর্স-চিত্র প্রস্তুতি — ডাউনলোড ও স্টুডিও-হস্তান্তর দুই পথেই একই কাজ।
+   * লেখায় [[FIG:..]] থাকলে মূল পাতা থেকে কেটে রিভিউ স্ক্রিন → { text (QZFIGnQZ মার্কারসহ), figures }।
+   * বাতিল → { cancelled: true }। কাটা ব্যর্থ হলে ট্যাগ মুছে চিত্র ছাড়া লেখা (ট্যাগ কখনো ফাইলে যায় না)।
+   */
+  async function prepareSourceFigures(text, docType) {
+    const FX = (typeof FayzarFigureExtractor !== 'undefined') ? FayzarFigureExtractor : null;
+    if (!FX) return { text, figures: null };
+    if (!FX.hasTags(text)) {
+      if (!FX.hasLooseTags(text)) return { text, figures: null };
+      console.warn('[Fayzar] চিত্র-ট্যাগ পড়া যায়নি:', text.match(/\[\[\s*FIG[^\n]*/gi));
+      showToast('চিত্রের অবস্থান-তথ্য (ট্যাগ) অসম্পূর্ণ — চিত্র ছাড়া ফাইল তৈরি হচ্ছে', 'warning');
+      return { text: FX.stripTags(text), figures: null };
+    }
+    if (state.figureReviewCache && state.figureReviewCache.key === text) {
+      showToast('আগে রিভিউ করা চিত্রগুলো ব্যবহার হচ্ছে', 'info');
+      return { text: state.figureReviewCache.text, figures: state.figureReviewCache.figures };
+    }
+    try {
+      showToast('মূল পাতা থেকে চিত্র কাটা হচ্ছে...', 'info');
+      const queue = (state.filesQueue && state.filesQueue.length)
+        ? state.filesQueue
+        : [{ file: state.selectedFile, base64: state.imageBase64, mimeType: state.imageMimeType }];
+      const ext = await FX.extract(text, queue, { docType });
+      const review = (typeof FayzarFigureReview !== 'undefined')
+        ? await FayzarFigureReview.open(ext.items, { docType })
+        : { figures: Object.fromEntries(ext.items.filter((i) => i.fig).map((i) => [i.id, i.fig])) };
+      if (!review) return { cancelled: true };
+      const figures = review.figures || {};
+      Object.keys(figures).forEach((k) => { figures[k].id = parseInt(k, 10); });
+      if (!Object.keys(figures).length) {
+        // সব চিত্র বাদ দেওয়া হয়েছে → মার্কার মুছে পুরনো প্রমাণিত পথ
+        const plain = ext.text.replace(/[ \t]*QZFIG\d+QZ/g, '');
+        state.figureReviewCache = { key: text, text: plain, figures: null };
+        return { text: plain, figures: null };
+      }
+      state.figureReviewCache = { key: text, text: ext.text, figures };
+      return { text: ext.text, figures };
+    } catch (err) {
+      console.warn('[Fayzar] চিত্র কাটা ব্যর্থ:', err);
+      showToast('চিত্র কাটা যায়নি (' + (err && err.message ? err.message : err) + ') — ফাইল চিত্র ছাড়া তৈরি হচ্ছে', 'warning');
+      return { text: FX.stripTags(text), figures: null };
+    }
+  }
+
   let isDownloadingDocument = false;
   async function downloadWordDocument(format) {
     if (isDownloadingDocument) {
@@ -3830,10 +3944,17 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
 
       let parsedDocType = 'EXAM_CQ';
       let exportText = text;
+      let ocrFrontmatter = null;   // প্রতিষ্ঠান/পরীক্ষা/সময়/পূর্ণমান — হেডারের ফাঁকা ঘর পূরণে (frontmatter-header.js)
       const fmMatch = text.match(/^---\s*\n([\s\S]*?)\n---/);
       if (fmMatch) {
         const typeMatch = fmMatch[1].match(/doc_type:\s*(\w+)/);
         if (typeMatch) parsedDocType = typeMatch[1];
+        // Part-18.6: Gemini-র doc_type শুধু ইঙ্গিত — চূড়ান্ত লেআউট ক্লাসিফায়ারের নিয়মে (তথ্য + লেখার গঠন যাচাই)
+        if (typeof DocClassifier !== 'undefined' && typeof DocClassifier.classify === 'function') {
+          const ct = DocClassifier.classify(text).type;
+          if (ct) parsedDocType = (ct === 'GENERAL' && /^EXAM_/.test(parsedDocType)) ? 'EXAM_GENERAL' : ct;
+        }
+        if (typeof FayzarFrontmatter !== 'undefined') ocrFrontmatter = FayzarFrontmatter.split(text).fields;
         exportText = text.substring(fmMatch[0].length).trim();
       }
 
@@ -3857,8 +3978,41 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       }
       
       const isStudentCopy = document.getElementById('cleanCopyCheckbox')?.checked;
+
+      // Part-16.1: সোর্স-চিত্র — লেখায় [[FIG:p=..;box=..]] থাকলে মূল পাতা থেকে কেটে, রিভিউ স্ক্রিনে
+      // দেখিয়ে, একক রপ্তানি-পথে (FayzarExport) ফাইল। চিত্র না থাকলে নিচের পুরনো প্রমাণিত পথ অপরিবর্তিত।
+      let reviewedFigures = null;
+      {
+        const prep = await prepareSourceFigures(exportText, parsedDocType);
+        if (prep.cancelled) { showToast('ডাউনলোড বাতিল করা হয়েছে', 'warning'); return; }
+        exportText = prep.text;
+        reviewedFigures = prep.figures;
+      }
       
       const processDownload = async (isClean, suffix) => {
+        if (reviewedFigures && typeof FayzarExport !== 'undefined') {
+          const fmt = format === 'doc' ? 'doc' : (format === 'bijoy_docx' ? 'docx-bijoy' : 'docx-unicode');
+          showToast('চিত্রসহ ওয়ার্ড ফাইল প্রস্তুত হচ্ছে...', 'info');
+          const res = await FayzarExport.produce(exportText, {
+            format: fmt,
+            docType: parsedDocType,
+            figures: reviewedFigures,
+            pageSize: pageSizeVal,
+            margin: marginVal,
+            fontSize: fontSizeVal,
+            columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
+            auditNote: isClean ? null : auditNote,
+            suppressAuditNote: !!isClean,
+            __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
+          });
+          const outName = fmt === 'doc' ? `${baseName}${suffix}_Word2003.doc`
+            : (fmt === 'docx-bijoy' ? `${baseName}${suffix}_Bijoy.docx` : `${baseName}${suffix}_Master_Unicode.docx`);
+          triggerDownload(res.blob, outName);
+          showToast(`চিত্রসহ ফাইল ডাউনলোড হয়েছে (${Object.keys(reviewedFigures).length}টি চিত্র)`, 'success');
+          return;
+        }
         showToast(`মাস্টার ওয়ার্ড (.docx) ফাইল প্রস্তুত হচ্ছে...`, 'info');
         
         let masterDocxBlob = null;
@@ -3869,7 +4023,11 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
             margin: marginVal,
             fontSize: fontSizeVal,
             columns: /EXAM_|question_paper/i.test(parsedDocType) ? 2 : 1,
-            auditNote: isClean ? null : auditNote
+            auditNote: isClean ? null : auditNote,
+            suppressAuditNote: !!isClean,
+            __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
           });
         } catch (err) {
           console.warn('Failed to generate master docx in download process:', err);
@@ -3885,7 +4043,34 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
           showToast(`ওয়ার্ড ২০০৩ (.doc) ফাইল প্রস্তুত হচ্ছে...`, 'info');
           let docBlob = null;
 
-          if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
+          // Part-15.8 (ব্যবহারকারীর নির্দেশ): OCR .doc আবার পুরনো, পরীক্ষিত docx→doc পথে (ডিফল্ট) —
+          // RTF পথের EQ-ফিল্ড Word 2003-এ দেখতে ঠিক হলেও ডাবল-ক্লিকে এডিট করলে অক্ষর বদলে যায় (x → ξ)।
+          // RTF পথ কেবল পরীক্ষার জন্য: localStorage `fayzar_doc_engine = rtf`।
+          let useLegacyDoc = true;
+          try { useLegacyDoc = localStorage.getItem('fayzar_doc_engine') !== 'rtf'; } catch (e) {}
+          if (!useLegacyDoc && typeof FayzarPipeline !== 'undefined' && typeof FayzarPipeline.exportDoc === 'function') {
+            try {
+              const rtfRes = await FayzarPipeline.exportDoc(exportText, {
+                docType: parsedDocType,
+                font: 'bijoy',
+                pageSize: pageSizeVal,
+                margin: marginVal,
+                fontSize: fontSizeVal,
+                auditNote: isClean ? null : auditNote,
+                suppressAuditNote: !!isClean,
+                __frontmatter: ocrFrontmatter || undefined,
+            layoutColumns: (state.layoutColumns || 'auto'),   // Part-18.9: ফলাফল-পাতার ১/২ কলাম
+            targetFont: format === 'unicode_docx' ? 'unicode' : 'bijoy'   // Part-18.9: শেষ ফাইলের ফন্ট (এক-পাতা-ফিটের মাপ)
+              });
+              if (rtfRes && rtfRes.content && rtfRes.content.size > 0) docBlob = rtfRes.content;
+            } catch (rtfErr) {
+              console.warn('[OCR .doc] RTF path failed, falling back to legacy docx→doc:', rtfErr);
+            }
+          }
+
+          if (docBlob) {
+            // RTF পথ সফল
+          } else if (masterDocxBlob && typeof DocxHandler !== 'undefined' && typeof DocxToDocConverter !== 'undefined') {
             const bijoyDocxRes = await DocxHandler.convertDocx(masterDocxBlob, {
               direction: 'u2b',
               targetFont: 'SutonnyMJ'
@@ -3897,7 +4082,10 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
               pageSize: pageSizeVal,
               margin: marginVal,
               preserveSutonny: true,
-              optimizeForQuestionPaper: true
+              optimizeForQuestionPaper: true,
+              // Part-19.3: সাজানো সনদে টেবিলের নিজের ঘর-মার্জিন ও সারি-উচ্চতা (নইলে ৩.৫pt প্যাডিংয়ে গ্রেড-ছক ও লেখা নিচে নামে)
+              honorCellMargins: (parsedDocType === 'PROTTOYON' && typeof FayzarCertificateLayout !== 'undefined' && FayzarCertificateLayout.wants(exportText, ocrFrontmatter || undefined))
+                || parsedDocType === 'CASH_MEMO'   // Part-19.4: মেমোর ছকের সারি-উচ্চতা (লম্বা ফাঁকা সারি / ভরাট সারি)
             });
             docBlob = docResult.blob || docResult.convertedBlob;
           } else if (typeof DocxToDocConverter !== 'undefined' && masterDocxBlob) {
@@ -4025,11 +4213,39 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
    * স্টুডিও প্রিভিউ ও এডিটর অপশন
    * মাস্টার ফাইল ও টেক্সটকে সরাসরি মাইক্রোসফট ওয়ার্ড স্টুডিও এডিটরে ট্রান্সফার করে
    */
-  function openStudioPreviewEditor(customText, customName) {
-    const text = customText || (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
+  async function openStudioPreviewEditor(customText, customName) {
+    let text = customText || (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
     if (!text || !text.trim()) {
       showToast('স্টুডিওতে ওপেন করার মতো কোনো টেক্সট নেই', 'warning');
       return;
+    }
+
+    // Part-16.2: সোর্স-চিত্র স্টুডিওতে — স্টুডিও আলাদা ট্যাবে, সেখানে মূল PDF নেই; তাই কাটা-রিভিউ এখানেই,
+    // চিত্রগুলো IndexedDB-তে (FayzarFigureTransfer), পেলোডে শুধু চাবি। ডাউনলোডের সাথে একই রিভিউ-ক্যাশ।
+    let figuresKey = null;
+    {
+      const fm = text.match(/^---\s*\n[\s\S]*?\n---/);
+      const head = fm ? fm[0] : '';
+      const body = fm ? text.substring(fm[0].length).trim() : text;
+      let fmDocType = 'EXAM_CQ';
+      const tm = head.match(/doc_type:\s*(\w+)/);
+      if (tm) fmDocType = tm[1];
+      if (typeof DocClassifier !== 'undefined' && typeof DocClassifier.classify === 'function') {   // Part-18.6
+        const ct = DocClassifier.classify(text).type;
+        if (ct) fmDocType = (ct === 'GENERAL' && /^EXAM_/.test(fmDocType)) ? 'EXAM_GENERAL' : ct;
+      }
+      const prep = await prepareSourceFigures(body, fmDocType);
+      if (prep.cancelled) { showToast('স্টুডিওতে পাঠানো বাতিল করা হয়েছে', 'warning'); return; }
+      text = head ? head + '\n\n' + prep.text : prep.text;
+      if (prep.figures && typeof FayzarFigureTransfer !== 'undefined') {
+        try {
+          figuresKey = await FayzarFigureTransfer.put(prep.figures);
+        } catch (e) {
+          console.warn('[Fayzar] চিত্র-হস্তান্তর ব্যর্থ:', e);
+          showToast('চিত্রগুলো স্টুডিওতে পাঠানো যায়নি — সরাসরি এখান থেকে ডাউনলোড করুন', 'warning');
+          text = text.replace(/[ \t]*QZFIG\d+QZ/g, '');
+        }
+      }
     }
 
     const rawName = customName || state.selectedFile?.name || state.filesQueue?.[0]?.name || 'Document';
@@ -4051,7 +4267,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
       fileName: `${baseName}_Master`,
       docType: docType,
       font: 'kalpurush',
-      paperSize: (text.length > 400 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(text)) ? 'a4-landscape' : 'a4-portrait'
+      paperSize: (text.length > 400 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(text)) ? 'a4-landscape' : 'a4-portrait',
+      figuresKey: figuresKey
     };
 
     if (typeof ConverterStudioBridge !== 'undefined' && typeof ConverterStudioBridge.sendToStudio === 'function') {
@@ -4066,7 +4283,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     }
 
     showToast('ওয়ার্ড স্টুডিও লাইভ প্রিভিউ ও এডিটর চালু হচ্ছে...', 'info');
-    window.open('studio.html?source=converter', '_blank');
+    const studioWin = window.open('studio.html?source=converter', '_blank');
+    if (!studioWin) showToast('ব্রাউজার নতুন ট্যাব আটকে দিল — পপআপ অনুমতি দিন, অথবা উপরের স্টুডিও লিংক খুলুন (লেখা ও চিত্র প্রস্তুত)', 'warning');
   }
 
   async function createDocxBlob(text, isBijoy = false, customOptions = {}) {
@@ -4455,6 +4673,7 @@ ${bodyContentXml}
     extractAuditNote,
     downloadWordDocument,
     generateMasterDocx,
+    prepareSourceFigures,   // T1: ক্লিন-ওয়ার্ড ডাউনলোডেও একই চিত্র-প্রস্তুতি (home-app)
     openStudioPreviewEditor,
     handleFiles,
     fastOptimizeImageFile,

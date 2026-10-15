@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2.5 0.5 60 60" width="64" height="64" role="img" aria-label="AI Compose">
+  <title>AI Compose</title>
+  <defs>
+    <path id="fzVane" d="M8 3 C 26 8, 38 22, 40.5 41 C 33 42.5, 18 34, 11 22 C 7 15, 6 8, 8 3 Z"/>
+    <clipPath id="fzVaneClip"><use href="#fzVane"/></clipPath>
+  </defs>
+  <!-- পালক (ভেন) -->
+  <use href="#fzVane" fill="#BFE3CC"/>
+  <g clip-path="url(#fzVaneClip)">
+    <!-- পালকের খাঁজ (বার্ব) — ভেনের ভেতরেই -->
+    <g fill="none" stroke="#1F5E43" stroke-width="1.1" stroke-linecap="round">
+      <path d="M15 11 Q 24 8.5 34 11"/>
+      <path d="M21 19 Q 29 16 40 18"/>
+      <path d="M28 28 Q 34 25.5 43 28"/>
+      <path d="M33.5 36 Q 38 34.5 44 37"/>
+      <path d="M17 22.5 Q 11 22 6 17"/>
+      <path d="M23.5 30.5 Q 16 31 9 25"/>
+      <path d="M30 37.5 Q 22 39 14 33"/>
+    </g>
+    <!-- এআই: সার্কিট-রেখা -->
+    <g fill="none" stroke="#2E8B5E" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12.5 8 L 16.5 9 L 18.5 11.6"/>
+      <path d="M24.5 21.5 L 28.5 21 L 31 18.8"/>
+      <path d="M19.5 27 L 15.5 25.8 L 13.8 23"/>
+    </g>
+    <g fill="#FFFFFF" stroke="#2E8B5E" stroke-width="0.85">
+      <circle cx="19" cy="12.3" r="1"/>
+      <circle cx="31.6" cy="18.2" r="1"/>
+      <circle cx="13.4" cy="22.3" r="1"/>
+    </g>
+  </g>
+  <!-- পালকের দুটি ফাটল (খাঁজ-কাটা) -->
+  <path d="M33.6 17.2 L 30.2 19.6" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M15.6 30.4 L 19.4 29.3" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+  <use href="#fzVane" fill="none" stroke="#1F5E43" stroke-width="1.6" stroke-linejoin="round"/>
+  <!-- শ্যাফট -->
+  <path d="M9.5 5.5 L 40 43.5" fill="none" stroke="#1F5E43" stroke-width="1.7" stroke-linecap="round"/>
+  <!-- কলার ও নিব -->
+  <path d="M42.6 42.5 L 44.1 45.1 L 38.9 48.1 L 37.4 45.5 Z" fill="#1F5E43"/>
+  <path d="M44.3 45.6 L 47.3 49.4 L 47.9 58.6 L 40.6 53.1 L 38.9 48.6 Z" fill="#1F5E43"/>
+  <path d="M44.4 51.6 L 47.6 58" stroke="#E7F4EC" stroke-width="0.9" stroke-linecap="round"/>
+  <circle cx="44.1" cy="51" r="1.15" fill="#E7F4EC"/>
+</svg>

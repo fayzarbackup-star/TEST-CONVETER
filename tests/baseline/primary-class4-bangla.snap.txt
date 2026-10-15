@@ -1,0 +1,2131 @@
+# fixture: primary-class4-bangla
+# docType: EXAM_GENERAL
+
+===== CLASSIFIER =====
+{
+  "type": "EXAM_GENERAL"
+}
+
+===== PARSED =====
+{
+  "__nestedGeneral": true,
+  "header": {
+    "classAndSubject": "শ্রেণি: চতুর্থ; বিষয়: বাংলা",
+    "exam": "তৃতীয় সেমিস্টার পরীক্ষা-২০২৬",
+    "examType": "",
+    "institute": "আদর্শ মডেল স্কুল",
+    "instructions": "",
+    "location": "ফুলবাড়ী, দিনাজপুর",
+    "marks": "১০০",
+    "time": "৩ ঘণ্টা"
+  },
+  "sections": [
+    {
+      "keepNumbers": true,
+      "questions": [
+        {
+          "num": "১",
+          "options": [],
+          "stimulus": "আঁধার, ফেরিওয়ালা, হোথা, তৃষ্ণার্ত, আঁতকে ওঠা, গন্ডি, অগ্রদূত",
+          "subQuestions": [],
+          "text": "নিচের শব্দগুলোর অর্থ লিখ (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "২",
+          "options": [],
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "অমল কীভাবে দইওয়ালার গ্রাম সম্পর্কে জানে?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "রতন কিসের জন্য আন্দোলন করেছিল?"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "অন্ধপুরে বণিকের পরিবারে কে কে ছিল?"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "লিচু-চোর কী প্রতিজ্ঞা করল?"
+            },
+            {
+              "label": "ঙ",
+              "mark": "",
+              "text": "রোকেয়াকে নারী জাগরণের অগ্রদূত কেন বলা হয়েছে?"
+            }
+          ],
+          "text": "নিচের প্রশ্নগুলোর উত্তর লিখ: ৫×২=১০"
+        },
+        {
+          "num": "৩",
+          "options": [],
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "কথা বলতে বলতে ______ বয়ে গেল।"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "সেবিরা ছিলেন খুব ______।"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "প্রতি বছর এই গ্রামে বড় ______ বসে।"
+            },
+            {
+              "label": "ঘ",
+              "mark": "",
+              "text": "সুমন কাজে ______ হয়ে পড়েছে।"
+            },
+            {
+              "label": "ঙ",
+              "mark": "",
+              "text": "গল্পটি তাকে ______ করে তুলল।"
+            }
+          ],
+          "text": "শূন্যস্থান পূরণ কর: ১×৫=৫"
+        },
+        {
+          "num": "৪",
+          "options": [],
+          "stimulus": "বসিয়া, হইয়াছে, যাইতেছে, কিনিবে, হইবে, থাকিতে, বলিল",
+          "subQuestions": [],
+          "text": "ক্রিয়াপদের চলিত রূপ লিখ (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "৫",
+          "options": [],
+          "stimulus": "তাদের ছিল একটি সোনার থালা। বণিক যখন বেঁচে ছিলেন, সেই থালায় ভাত খেতেন। এখন আর সেই থালা কেউ ব্যবহার করে না। ধীরে ধীরে থালাটায় ময়লা জমতে শুরু করে।",
+          "subQuestions": [],
+          "text": "নিচের অনুচ্ছেদটি পড়ে প্রদত্ত নির্দেশনা অনুযায়ী ৫টি প্রশ্ন তৈরি কর: ১×৫=৫"
+        },
+        {
+          "num": "৬",
+          "options": [],
+          "stimulus": "ন্ত, গ্র, চ্ছ, ন্ম, স্ত, ন্দ, ক্ষ",
+          "subQuestions": [],
+          "text": "যুক্তবর্ণ বিভাজন করে বাক্য তৈরি কর (যেকোনো ৫টি): ৫×২=১০"
+        },
+        {
+          "num": "৭",
+          "options": [],
+          "stimulus": "আজ সকালে রিনার মা বললেন রিনা স্কুলে যেতে দেরি করছো কেন রিনা বলল না মা আমি তো প্রস্তুত",
+          "subQuestions": [],
+          "text": "উপযুক্ত স্থানে বিরাম চিহ্ন বসিয়ে পুনরায় লিখ: ৫"
+        },
+        {
+          "num": "৮",
+          "options": [],
+          "stimulus": "যে বিপদে পড়েছে, চারপাশের অবস্থা, লবণ মেশানো যাতে, যিনি কৃষি কাজ করেন, যা বলা যায় না",
+          "subQuestions": [],
+          "text": "এক কথায় প্রকাশ কর (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "৯",
+          "options": [],
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "বচন কাকে বলে? কত প্রকার ও কী কী?"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "কারক কাকে বলে? কত প্রকার ও কী কী?"
+            },
+            {
+              "label": "গ",
+              "mark": "",
+              "text": "পুরুষ কাকে বলে? কত প্রকার ও কী কী?"
+            }
+          ],
+          "text": "সংজ্ঞা লিখ (যেকোনো ২টি): ২×৫=১০"
+        },
+        {
+          "num": "১০",
+          "options": [],
+          "stimulus": "আশ্রয়, জেগে, এগিয়ে, স্থানীয়, আসবে, চেনা, বিদেশি",
+          "subQuestions": [],
+          "text": "বিপরীত শব্দ লিখ (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "১১",
+          "options": [],
+          "stimulus": "সরল, চঞ্চল, ছাত্র, শাসনকর্তা, মহারাজ, অভিভাবক, জেলে",
+          "subQuestions": [],
+          "text": "লিঙ্গ পরিবর্তন কর (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "১২",
+          "options": [],
+          "stimulus": "মেঘ, শ্রমিক, আমি, বেয়ারা, সৈনিক, ডাক্তার, মানুষ",
+          "subQuestions": [],
+          "text": "বচন লিখ (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "১৩",
+          "options": [],
+          "stimulus": "গভির, কিভাবে, বিজাতিয়, সুস্থ্য, চরে, নকগুলো, উত্তসবের",
+          "subQuestions": [],
+          "text": "বানান শুদ্ধিকরণ কর (যেকোনো ৫টি): ১×৫=৫"
+        },
+        {
+          "num": "১৪",
+          "options": [],
+          "stimulus": "তোমার স্কুল থেকে বনভোজনের আয়োজন করা হয়েছে। বনভোজনের আমন্ত্রণ জানিয়ে তোমার প্রিয় বন্ধুকে একটি চিঠি লেখ।",
+          "subQuestions": [],
+          "text": "চিঠি / দরখাস্ত (যেকোনো ১টি): ১০"
+        },
+        {
+          "num": "১৫",
+          "options": [],
+          "subQuestions": [
+            {
+              "label": "ক",
+              "mark": "",
+              "text": "আমাদের গ্রাম"
+            },
+            {
+              "label": "খ",
+              "mark": "",
+              "text": "একজন বীরশ্রেষ্ঠ"
+            }
+          ],
+          "text": "রচনা লিখ (যেকোনো ১টি): ১০"
+        }
+      ],
+      "title": ""
+    }
+  ]
+}
+
+===== STRUCTURE =====
+{
+  "marks": [
+    "",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅,ঙ:∅",
+    "ক:∅,খ:∅,গ:∅,ঘ:∅,ঙ:∅",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ক:∅,খ:∅,গ:∅",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "ক:∅,খ:∅"
+  ],
+  "numbering": [
+    "১",
+    "২",
+    "৩",
+    "৪",
+    "৫",
+    "৬",
+    "৭",
+    "৮",
+    "৯",
+    "১০",
+    "১১",
+    "১২",
+    "১৩",
+    "১৪",
+    "১৫"
+  ],
+  "questionCount": 15,
+  "questions": [
+    {
+      "hasStimulus": true,
+      "num": "১",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "নিচের শব্দগুলোর অর্থ লিখ (যেকোনো ৫টি): ১"
+    },
+    {
+      "hasStimulus": false,
+      "num": "২",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅",
+        "ঙ:∅"
+      ],
+      "textHead": "নিচের প্রশ্নগুলোর উত্তর লিখ: ৫×২=১০"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৩",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅",
+        "ঘ:∅",
+        "ঙ:∅"
+      ],
+      "textHead": "শূন্যস্থান পূরণ কর: ১×৫=৫"
+    },
+    {
+      "hasStimulus": true,
+      "num": "৪",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "ক্রিয়াপদের চলিত রূপ লিখ (যেকোনো ৫টি): ১"
+    },
+    {
+      "hasStimulus": true,
+      "num": "৫",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "নিচের অনুচ্ছেদটি পড়ে প্রদত্ত নির্দেশনা "
+    },
+    {
+      "hasStimulus": true,
+      "num": "৬",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "যুক্তবর্ণ বিভাজন করে বাক্য তৈরি কর (যেকো"
+    },
+    {
+      "hasStimulus": true,
+      "num": "৭",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "উপযুক্ত স্থানে বিরাম চিহ্ন বসিয়ে পুনরায"
+    },
+    {
+      "hasStimulus": true,
+      "num": "৮",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "এক কথায় প্রকাশ কর (যেকোনো ৫টি): ১×৫=৫"
+    },
+    {
+      "hasStimulus": false,
+      "num": "৯",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅",
+        "গ:∅"
+      ],
+      "textHead": "সংজ্ঞা লিখ (যেকোনো ২টি): ২×৫=১০"
+    },
+    {
+      "hasStimulus": true,
+      "num": "১০",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "বিপরীত শব্দ লিখ (যেকোনো ৫টি): ১×৫=৫"
+    },
+    {
+      "hasStimulus": true,
+      "num": "১১",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "লিঙ্গ পরিবর্তন কর (যেকোনো ৫টি): ১×৫=৫"
+    },
+    {
+      "hasStimulus": true,
+      "num": "১২",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "বচন লিখ (যেকোনো ৫টি): ১×৫=৫"
+    },
+    {
+      "hasStimulus": true,
+      "num": "১৩",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "বানান শুদ্ধিকরণ কর (যেকোনো ৫টি): ১×৫=৫"
+    },
+    {
+      "hasStimulus": true,
+      "num": "১৪",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [],
+      "textHead": "চিঠি / দরখাস্ত (যেকোনো ১টি): ১০"
+    },
+    {
+      "hasStimulus": false,
+      "num": "১৫",
+      "optionCount": 0,
+      "section": 0,
+      "subs": [
+        "ক:∅",
+        "খ:∅"
+      ],
+      "textHead": "রচনা লিখ (যেকোনো ১টি): ১০"
+    }
+  ],
+  "sections": 1
+}
+
+===== HTML =====
+<div class="font-kalpurush dense-zero-gap">
+<div class="sheet-label">
+<i class="fas fa-book text-emerald-600">
+</i> শীট ১ (A4 ল্যান্ডস্কেপ, ২ কলাম) — ১য় কলাম: পৃষ্ঠা ১ · ২য় কলাম: পৃষ্ঠা ২</div>
+<div class="paper-sheet size-a4-landscape margin-standard">
+<div class="grid grid-cols-2 h-full font-kalpurush dense-zero-gap" style="column-gap: 50.4pt;"  style="font-size: 12pt; line-height: 1.35;">
+<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="1" data-col="1">
+<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
+<h1 class="qp-institute font-black" style="margin: 0; line-height: 1.34; font-size: 16pt;">আদর্শ মডেল স্কুল</h1>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.34; font-size: 12pt;">ফুলবাড়ী, দিনাজপুর</div>
+<div class="qp-exam font-bold" style="margin: 0; line-height: 1.34; font-size: 13pt;">তৃতীয় সেমিস্টার পরীক্ষা-২০২৬</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.34; font-size: 12pt;">শ্রেণি: চতুর্থ; বিষয়: বাংলা</div>
+<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
+<div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ৩ ঘণ্টা</div>
+<div style="text-align: center; flex: 1;">
+</div>
+<div style="text-align: right; flex: 1; white-space: nowrap;">পূর্ণমান: ১০০</div>
+</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">১।</span>
+<span class="cq-text">নিচের শব্দগুলোর অর্থ লিখ (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">আঁধার, ফেরিওয়ালা, হোথা, তৃষ্ণার্ত, আঁতকে ওঠা, গন্ডি, অগ্রদূত</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">২।</span>
+<span class="cq-text">নিচের প্রশ্নগুলোর উত্তর লিখ: ৫<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>২=১০</span>
+</div>
+<div class="cq-subs" style="padding-left: 0; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ক.</span>
+<span class="cq-sub-text">অমল কীভাবে দইওয়ালার গ্রাম সম্পর্কে জানে?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">খ.</span>
+<span class="cq-sub-text">রতন কিসের জন্য আন্দোলন করেছিল?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">গ.</span>
+<span class="cq-sub-text">অন্ধপুরে বণিকের পরিবারে কে কে ছিল?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ঘ.</span>
+<span class="cq-sub-text">লিচু-চোর কী প্রতিজ্ঞা করল?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ঙ.</span>
+<span class="cq-sub-text">রোকেয়াকে নারী জাগরণের অগ্রদূত কেন বলা হয়েছে?</span>
+</div>
+</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৩।</span>
+<span class="cq-text">শূন্যস্থান পূরণ কর: ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-subs" style="padding-left: 0; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ক.</span>
+<span class="cq-sub-text">কথা বলতে বলতে ______ বয়ে গেল।</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">খ.</span>
+<span class="cq-sub-text">সেবিরা ছিলেন খুব ______।</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">গ.</span>
+<span class="cq-sub-text">প্রতি বছর এই গ্রামে বড় ______ বসে।</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ঘ.</span>
+<span class="cq-sub-text">সুমন কাজে ______ হয়ে পড়েছে।</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ঙ.</span>
+<span class="cq-sub-text">গল্পটি তাকে ______ করে তুলল।</span>
+</div>
+</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৪।</span>
+<span class="cq-text">ক্রিয়াপদের চলিত রূপ লিখ (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">বসিয়া, হইয়াছে, যাইতেছে, কিনিবে, হইবে, থাকিতে, বলিল</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৫।</span>
+<span class="cq-text">নিচের অনুচ্ছেদটি পড়ে প্রদত্ত নির্দেশনা অনুযায়ী ৫টি প্রশ্ন তৈরি কর: ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">তাদের ছিল একটি সোনার থালা। বণিক যখন বেঁচে ছিলেন, সেই থালায় ভাত খেতেন। এখন আর সেই থালা কেউ ব্যবহার করে না। ধীরে ধীরে থালাটায় ময়লা জমতে শুরু করে।</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৬।</span>
+<span class="cq-text">যুক্তবর্ণ বিভাজন করে বাক্য তৈরি কর (যেকোনো ৫টি): ৫<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>২=১০</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">ন্ত, গ্র, চ্ছ, ন্ম, স্ত, ন্দ, ক্ষ</div>
+</div>
+</div>
+<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="2" data-col="2">
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৭।</span>
+<span class="cq-text">উপযুক্ত স্থানে বিরাম চিহ্ন বসিয়ে পুনরায় লিখ: ৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">আজ সকালে রিনার মা বললেন রিনা স্কুলে যেতে দেরি করছো কেন রিনা বলল না মা আমি তো প্রস্তুত</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৮।</span>
+<span class="cq-text">এক কথায় প্রকাশ কর (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">যে বিপদে পড়েছে, চারপাশের অবস্থা, লবণ মেশানো যাতে, যিনি কৃষি কাজ করেন, যা বলা যায় না</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 14.4pt; text-indent: -14.4pt;">
+<span class="cq-num font-bold" style="margin-right: 14.4pt; font-weight: 700;">৯।</span>
+<span class="cq-text">সংজ্ঞা লিখ (যেকোনো ২টি): ২<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=১০</span>
+</div>
+<div class="cq-subs" style="padding-left: 0; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">ক.</span>
+<span class="cq-sub-text">বচন কাকে বলে? কত প্রকার ও কী কী?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">খ.</span>
+<span class="cq-sub-text">কারক কাকে বলে? কত প্রকার ও কী কী?</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 36pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 14.4pt;">গ.</span>
+<span class="cq-sub-text">পুরুষ কাকে বলে? কত প্রকার ও কী কী?</span>
+</div>
+</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১০।</span>
+<span class="cq-text">বিপরীত শব্দ লিখ (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">আশ্রয়, জেগে, এগিয়ে, স্থানীয়, আসবে, চেনা, বিদেশি</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১১।</span>
+<span class="cq-text">লিঙ্গ পরিবর্তন কর (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">সরল, চঞ্চল, ছাত্র, শাসনকর্তা, মহারাজ, অভিভাবক, জেলে</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১২।</span>
+<span class="cq-text">বচন লিখ (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">মেঘ, শ্রমিক, আমি, বেয়ারা, সৈনিক, ডাক্তার, মানুষ</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১৩।</span>
+<span class="cq-text">বানান শুদ্ধিকরণ কর (যেকোনো ৫টি): ১<span class="eq-rendered" style="font-family:'Times New Roman',serif;">×</span>৫=৫</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">গভির, কিভাবে, বিজাতিয়, সুস্থ্য, চরে, নকগুলো, উত্তসবের</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১৪।</span>
+<span class="cq-text">চিঠি / দরখাস্ত (যেকোনো ১টি): ১০</span>
+</div>
+<div class="cq-stimulus text-justify" style="padding-left: 0; margin: 2px 0 !important; font-size: 12pt; line-height: 1.34;">তোমার স্কুল থেকে বনভোজনের আয়োজন করা হয়েছে। বনভোজনের আমন্ত্রণ জানিয়ে তোমার প্রিয় বন্ধুকে একটি চিঠি লেখ।</div>
+</div>
+<div class="cq-q-item cq-booklet-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.34;">
+<div class="cq-q-row cq-print-row" style="padding-left: 21.6pt; text-indent: -21.6pt;">
+<span class="cq-num font-bold" style="margin-right: 21.6pt; font-weight: 700;">১৫।</span>
+<span class="cq-text">রচনা লিখ (যেকোনো ১টি): ১০</span>
+</div>
+<div class="cq-subs" style="padding-left: 0; margin: 3px 0 0 0 !important;">
+<div class="cq-sub-row cq-print-row" style="padding-left: 43.2pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 21.6pt;">ক.</span>
+<span class="cq-sub-text">আমাদের গ্রাম</span>
+</div>
+<div class="cq-sub-row cq-print-row" style="padding-left: 43.2pt; text-indent: -21.6pt; font-size: 12pt; margin: 2px 0;">
+<span class="cq-sub-lbl font-bold" style="margin-right: 21.6pt;">খ.</span>
+<span class="cq-sub-text">একজন বীরশ্রেষ্ঠ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+<w:p>
+<w:r>
+<w:br w:type="column"/>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="32"/>
+<w:szCs w:val="32"/>
+</w:rPr>
+<w:t xml:space="preserve">আদর্শ মডেল স্কুল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">ফুলবাড়ী, দিনাজপুর</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="26"/>
+<w:szCs w:val="26"/>
+</w:rPr>
+<w:t xml:space="preserve">তৃতীয় সেমিস্টার পরীক্ষা-২০২৬</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:jc w:val="center"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">শ্রেণি: চতুর্থ; বিষয়: বাংলা</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/>
+<w:tabs>
+<w:tab w:val="center" w:pos="3598"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সময়: ৩ ঘণ্টা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:u w:val="single"/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">সৃজনশীল অভীক্ষা</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">পূর্ণমান: ১০০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/>
+<w:pBdr>
+<w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/>
+</w:pBdr>
+</w:pPr>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের শব্দগুলোর অর্থ লিখ (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আঁধার, ফেরিওয়ালা, হোথা, তৃষ্ণার্ত, আঁতকে ওঠা, গন্ডি, অগ্রদূত</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের প্রশ্নগুলোর উত্তর লিখ: ৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. অমল কীভাবে দইওয়ালার গ্রাম সম্পর্কে জানে?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. রতন কিসের জন্য আন্দোলন করেছিল?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. অন্ধপুরে বণিকের পরিবারে কে কে ছিল?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. লিচু</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">-</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">চোর কী প্রতিজ্ঞা করল?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঙ. রোকেয়াকে নারী জাগরণের অগ্রদূত কেন বলা হয়েছে?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">শূন্যস্থান পূরণ কর: ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. কথা বলতে বলতে </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">______</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> বয়ে গেল।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. সেবিরা ছিলেন খুব </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">______</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. প্রতি বছর এই গ্রামে বড় </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">______</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> বসে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঘ. সুমন কাজে </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">______</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> হয়ে পড়েছে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ঙ. গল্পটি তাকে </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">______</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve"> করে তুলল।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৪।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক্রিয়াপদের চলিত রূপ লিখ (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বসিয়া, হইয়াছে, যাইতেছে, কিনিবে, হইবে, থাকিতে, বলিল</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৫।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">নিচের অনুচ্ছেদটি পড়ে প্রদত্ত নির্দেশনা অনুযায়ী ৫টি প্রশ্ন তৈরি কর: ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">তাদের ছিল একটি সোনার থালা। বণিক যখন বেঁচে ছিলেন, সেই থালায় ভাত খেতেন। এখন আর সেই থালা কেউ ব্যবহার করে না। ধীরে ধীরে থালাটায় ময়লা জমতে শুরু করে।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৬।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">যুক্তবর্ণ বিভাজন করে বাক্য তৈরি কর (যেকোনো ৫টি): ৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">২</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ন্ত, গ্র, চ্ছ, ন্ম, স্ত, ন্দ, ক্ষ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৭।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">উপযুক্ত স্থানে বিরাম চিহ্ন বসিয়ে পুনরায় লিখ: ৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আজ সকালে রিনার মা বললেন রিনা স্কুলে যেতে দেরি করছো কেন রিনা বলল না মা আমি তো প্রস্তুত</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৮।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">এক কথায় প্রকাশ কর (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">যে বিপদে পড়েছে, চারপাশের অবস্থা, লবণ মেশানো যাতে, যিনি কৃষি কাজ করেন, যা বলা যায় না</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="288" w:hanging="288"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">৯।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সংজ্ঞা লিখ (যেকোনো ২টি): ২</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. বচন কাকে বলে? কত প্রকার ও কী কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. কারক কাকে বলে? কত প্রকার ও কী কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="720" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="288"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গ. পুরুষ কাকে বলে? কত প্রকার ও কী কী?</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১০।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বিপরীত শব্দ লিখ (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">আশ্রয়, জেগে, এগিয়ে, স্থানীয়, আসবে, চেনা, বিদেশি</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১১।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">লিঙ্গ পরিবর্তন কর (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">সরল, চঞ্চল, ছাত্র, শাসনকর্তা, মহারাজ, অভিভাবক, জেলে</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১২।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বচন লিখ (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">মেঘ, শ্রমিক, আমি, বেয়ারা, সৈনিক, ডাক্তার, মানুষ</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১৩।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">বানান শুদ্ধিকরণ কর (যেকোনো ৫টি): ১</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>
+<w:noProof/>
+</w:rPr>
+<w:t xml:space="preserve">×</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">=</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">৫</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">গভির, কিভাবে, বিজাতিয়, সুস্থ্য, চরে, নকগুলো, উত্তসবের</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১৪।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">চিঠি </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">/ </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">দরখাস্ত </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">(</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">যেকোনো ১টি</w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+</w:rPr>
+<w:t xml:space="preserve">): </w:t>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">তোমার স্কুল থেকে বনভোজনের আয়োজন করা হয়েছে। বনভোজনের আমন্ত্রণ জানিয়ে তোমার প্রিয় বন্ধুকে একটি চিঠি লেখ।</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="432" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="right" w:pos="7195"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:b/>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+</w:rPr>
+<w:t xml:space="preserve">১৫।</w:t>
+</w:r>
+<w:r>
+<w:tab/>
+</w:r>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">রচনা লিখ (যেকোনো ১টি): ১০</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">ক. আমাদের গ্রাম</w:t>
+</w:r>
+</w:p>
+<w:p>
+<w:pPr>
+<w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
+<w:ind w:left="864" w:hanging="432"/>
+<w:tabs>
+<w:tab w:val="left" w:pos="432"/>
+</w:tabs>
+</w:pPr>
+<w:r>
+<w:rPr>
+<w:sz w:val="24"/>
+<w:szCs w:val="24"/>
+<w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
+</w:rPr>
+<w:t xml:space="preserve">খ. একজন বীরশ্রেষ্ঠ</w:t>
+</w:r>
+</w:p>
+<w:sectPr>
+<w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/>
+<w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="720" w:footer="720" w:gutter="0"/>
+<w:cols w:num="2" w:space="1008"/>
+</w:sectPr>
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2470?\u2480?\u2509?\u2486? \u2478?\u2465?\u2503?\u2482? \u2488?\u2509?\u2453?\u2497?\u2482?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2475?\u2497?\u2482?\u2476?\u2494?\u2465?\u2492?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2468?\u2499?\u2468?\u2496?\u2479?\u2492? \u2488?\u2503?\u2478?\u2495?\u2488?\u2509?\u2463?\u2494?\u2480? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?}{\f1 -}{\f0 \u2536?\u2534?\u2536?\u2540?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?: \u2458?\u2468?\u2497?\u2480?\u2509?\u2469?; \u2476?\u2495?\u2487?\u2479?\u2492?: \u2476?\u2494?\u2434?\u2482?\u2494?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2537? \u2456?\u2467?\u2509?\u2463?\u2494?}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2535?\u2534?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2486?\u2476?\u2509?\u2470?\u2455?\u2497?\u2482?\u2507?\u2480? \u2437?\u2480?\u2509?\u2469? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2438?\u2433?\u2471?\u2494?\u2480?, \u2475?\u2503?\u2480?\u2495?\u2451?\u2479?\u2492?\u2494?\u2482?\u2494?, \u2489?\u2507?\u2469?\u2494?, \u2468?\u2499?\u2487?\u2509?\u2467?\u2494?\u2480?\u2509?\u2468?, \u2438?\u2433?\u2468?\u2453?\u2503? \u2451?\u2464?\u2494?, \u2455?\u2472?\u2509?\u2465?\u2495?, \u2437?\u2455?\u2509?\u2480?\u2470?\u2498?\u2468?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2482?\u2495?\u2454?:}\tab {\f0 \u2539?}{\f1 \u215?}{\f0 \u2536?}{\f1 =}{\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2453?. \u2437?\u2478?\u2482? \u2453?\u2496?\u2477?\u2494?\u2476?\u2503? \u2470?\u2439?\u2451?\u2479?\u2492?\u2494?\u2482?\u2494?\u2480? \u2455?\u2509?\u2480?\u2494?\u2478? \u2488?\u2478?\u2509?\u2474?\u2480?\u2509?\u2453?\u2503? \u2460?\u2494?\u2472?\u2503??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2454?. \u2480?\u2468?\u2472? \u2453?\u2495?\u2488?\u2503?\u2480? \u2460?\u2472?\u2509?\u2479? \u2438?\u2472?\u2509?\u2470?\u2507?\u2482?\u2472? \u2453?\u2480?\u2503?\u2459?\u2495?\u2482??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2455?. \u2437?\u2472?\u2509?\u2471?\u2474?\u2497?\u2480?\u2503? \u2476?\u2467?\u2495?\u2453?\u2503?\u2480? \u2474?\u2480?\u2495?\u2476?\u2494?\u2480?\u2503? \u2453?\u2503? \u2453?\u2503? \u2459?\u2495?\u2482??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2456?. \u2482?\u2495?\u2458?\u2497?}{\f1 -}{\f0 \u2458?\u2507?\u2480? \u2453?\u2496? \u2474?\u2509?\u2480?\u2468?\u2495?\u2460?\u2509?\u2462?\u2494? \u2453?\u2480?\u2482??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2457?. \u2480?\u2507?\u2453?\u2503?\u2479?\u2492?\u2494?\u2453?\u2503? \u2472?\u2494?\u2480?\u2496? \u2460?\u2494?\u2455?\u2480?\u2467?\u2503?\u2480? \u2437?\u2455?\u2509?\u2480?\u2470?\u2498?\u2468? \u2453?\u2503?\u2472? \u2476?\u2482?\u2494? \u2489?\u2479?\u2492?\u2503?\u2459?\u2503??}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2537?\u2404?}\tab {\f0 \u2486?\u2498?\u2472?\u2509?\u2479?\u2488?\u2509?\u2469?\u2494?\u2472? \u2474?\u2498?\u2480?\u2467? \u2453?\u2480?:}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2453?. \u2453?\u2469?\u2494? \u2476?\u2482?\u2468?\u2503? \u2476?\u2482?\u2468?\u2503? }{\f1 ______}{\f0  \u2476?\u2479?\u2492?\u2503? \u2455?\u2503?\u2482?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2454?. \u2488?\u2503?\u2476?\u2495?\u2480?\u2494? \u2459?\u2495?\u2482?\u2503?\u2472? \u2454?\u2497?\u2476? }{\f1 ______}{\f0 \u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2455?. \u2474?\u2509?\u2480?\u2468?\u2495? \u2476?\u2459?\u2480? \u2447?\u2439? \u2455?\u2509?\u2480?\u2494?\u2478?\u2503? \u2476?\u2465?\u2492? }{\f1 ______}{\f0  \u2476?\u2488?\u2503?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2456?. \u2488?\u2497?\u2478?\u2472? \u2453?\u2494?\u2460?\u2503? }{\f1 ______}{\f0  \u2489?\u2479?\u2492?\u2503? \u2474?\u2465?\u2492?\u2503?\u2459?\u2503?\u2404?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2457?. \u2455?\u2482?\u2509?\u2474?\u2463?\u2495? \u2468?\u2494?\u2453?\u2503? }{\f1 ______}{\f0  \u2453?\u2480?\u2503? \u2468?\u2497?\u2482?\u2482?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2538?\u2404?}\tab {\f0 \u2453?\u2509?\u2480?\u2495?\u2479?\u2492?\u2494?\u2474?\u2470?\u2503?\u2480? \u2458?\u2482?\u2495?\u2468? \u2480?\u2498?\u2474? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2476?\u2488?\u2495?\u2479?\u2492?\u2494?, \u2489?\u2439?\u2479?\u2492?\u2494?\u2459?\u2503?, \u2479?\u2494?\u2439?\u2468?\u2503?\u2459?\u2503?, \u2453?\u2495?\u2472?\u2495?\u2476?\u2503?, \u2489?\u2439?\u2476?\u2503?, \u2469?\u2494?\u2453?\u2495?\u2468?\u2503?, \u2476?\u2482?\u2495?\u2482?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2539?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2437?\u2472?\u2497?\u2458?\u2509?\u2459?\u2503?\u2470?\u2463?\u2495? \u2474?\u2465?\u2492?\u2503? \u2474?\u2509?\u2480?\u2470?\u2468?\u2509?\u2468? \u2472?\u2495?\u2480?\u2509?\u2470?\u2503?\u2486?\u2472?\u2494? \u2437?\u2472?\u2497?\u2479?\u2494?\u2479?\u2492?\u2496? \u2539?\u2463?\u2495? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472? \u2468?\u2504?\u2480?\u2495? \u2453?\u2480?:}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2468?\u2494?\u2470?\u2503?\u2480? \u2459?\u2495?\u2482? \u2447?\u2453?\u2463?\u2495? \u2488?\u2507?\u2472?\u2494?\u2480? \u2469?\u2494?\u2482?\u2494?\u2404? \u2476?\u2467?\u2495?\u2453? \u2479?\u2454?\u2472? \u2476?\u2503?\u2433?\u2458?\u2503? \u2459?\u2495?\u2482?\u2503?\u2472?, \u2488?\u2503?\u2439? \u2469?\u2494?\u2482?\u2494?\u2479?\u2492? \u2477?\u2494?\u2468? \u2454?\u2503?\u2468?\u2503?\u2472?\u2404? \u2447?\u2454?\u2472? \u2438?\u2480? \u2488?\u2503?\u2439? \u2469?\u2494?\u2482?\u2494? \u2453?\u2503?\u2441? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503? \u2472?\u2494?\u2404? \u2471?\u2496?\u2480?\u2503? \u2471?\u2496?\u2480?\u2503? \u2469?\u2494?\u2482?\u2494?\u2463?\u2494?\u2479?\u2492? \u2478?\u2479?\u2492?\u2482?\u2494? \u2460?\u2478?\u2468?\u2503? \u2486?\u2497?\u2480?\u2497? \u2453?\u2480?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2540?\u2404?}\tab {\f0 \u2479?\u2497?\u2453?\u2509?\u2468?\u2476?\u2480?\u2509?\u2467? \u2476?\u2495?\u2477?\u2494?\u2460?\u2472? \u2453?\u2480?\u2503? \u2476?\u2494?\u2453?\u2509?\u2479? \u2468?\u2504?\u2480?\u2495? \u2453?\u2480? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2539?}{\f1 \u215?}{\f0 \u2536?}{\f1 =}{\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2472?\u2509?\u2468?, \u2455?\u2509?\u2480?, \u2458?\u2509?\u2459?, \u2472?\u2509?\u2478?, \u2488?\u2509?\u2468?, \u2472?\u2509?\u2470?, \u2453?\u2509?\u2487?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2541?\u2404?}\tab {\f0 \u2441?\u2474?\u2479?\u2497?\u2453?\u2509?\u2468? \u2488?\u2509?\u2469?\u2494?\u2472?\u2503? \u2476?\u2495?\u2480?\u2494?\u2478? \u2458?\u2495?\u2489?\u2509?\u2472? \u2476?\u2488?\u2495?\u2479?\u2492?\u2503? \u2474?\u2497?\u2472?\u2480?\u2494?\u2479?\u2492? \u2482?\u2495?\u2454?:}\tab {\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2438?\u2460? \u2488?\u2453?\u2494?\u2482?\u2503? \u2480?\u2495?\u2472?\u2494?\u2480? \u2478?\u2494? \u2476?\u2482?\u2482?\u2503?\u2472? \u2480?\u2495?\u2472?\u2494? \u2488?\u2509?\u2453?\u2497?\u2482?\u2503? \u2479?\u2503?\u2468?\u2503? \u2470?\u2503?\u2480?\u2495? \u2453?\u2480?\u2459?\u2507? \u2453?\u2503?\u2472? \u2480?\u2495?\u2472?\u2494? \u2476?\u2482?\u2482? \u2472?\u2494? \u2478?\u2494? \u2438?\u2478?\u2495? \u2468?\u2507? \u2474?\u2509?\u2480?\u2488?\u2509?\u2468?\u2497?\u2468?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2542?\u2404?}\tab {\f0 \u2447?\u2453? \u2453?\u2469?\u2494?\u2479?\u2492? \u2474?\u2509?\u2480?\u2453?\u2494?\u2486? \u2453?\u2480? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2479?\u2503? \u2476?\u2495?\u2474?\u2470?\u2503? \u2474?\u2465?\u2492?\u2503?\u2459?\u2503?, \u2458?\u2494?\u2480?\u2474?\u2494?\u2486?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?, \u2482?\u2476?\u2467? \u2478?\u2503?\u2486?\u2494?\u2472?\u2507? \u2479?\u2494?\u2468?\u2503?, \u2479?\u2495?\u2472?\u2495? \u2453?\u2499?\u2487?\u2495? \u2453?\u2494?\u2460? \u2453?\u2480?\u2503?\u2472?, \u2479?\u2494? \u2476?\u2482?\u2494? \u2479?\u2494?\u2479?\u2492? \u2472?\u2494?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2543?\u2404?}\tab {\f0 \u2488?\u2434?\u2460?\u2509?\u2462?\u2494? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2536?\u2463?\u2495?):}\tab {\f0 \u2536?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2453?. \u2476?\u2458?\u2472? \u2453?\u2494?\u2453?\u2503? \u2476?\u2482?\u2503?? \u2453?\u2468? \u2474?\u2509?\u2480?\u2453?\u2494?\u2480? \u2451? \u2453?\u2496? \u2453?\u2496??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288 {\f0 \u2454?. \u2453?\u2494?\u2480?\u2453? \u2453?\u2494?\u2453?\u2503? \u2476?\u2482?\u2503?? \u2453?\u2468? \u2474?\u2509?\u2480?\u2453?\u2494?\u2480? \u2451? \u2453?\u2496? \u2453?\u2496??}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288 {\f0 \u2455?. \u2474?\u2497?\u2480?\u2497?\u2487? \u2453?\u2494?\u2453?\u2503? \u2476?\u2482?\u2503?? \u2453?\u2468? \u2474?\u2509?\u2480?\u2453?\u2494?\u2480? \u2451? \u2453?\u2496? \u2453?\u2496??}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2534?\u2404?}\tab {\f0 \u2476?\u2495?\u2474?\u2480?\u2496?\u2468? \u2486?\u2476?\u2509?\u2470? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2438?\u2486?\u2509?\u2480?\u2479?\u2492?, \u2460?\u2503?\u2455?\u2503?, \u2447?\u2455?\u2495?\u2479?\u2492?\u2503?, \u2488?\u2509?\u2469?\u2494?\u2472?\u2496?\u2479?\u2492?, \u2438?\u2488?\u2476?\u2503?, \u2458?\u2503?\u2472?\u2494?, \u2476?\u2495?\u2470?\u2503?\u2486?\u2495?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2535?\u2404?}\tab {\f0 \u2482?\u2495?\u2457?\u2509?\u2455? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2453?\u2480? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2488?\u2480?\u2482?, \u2458?\u2462?\u2509?\u2458?\u2482?, \u2459?\u2494?\u2468?\u2509?\u2480?, \u2486?\u2494?\u2488?\u2472?\u2453?\u2480?\u2509?\u2468?\u2494?, \u2478?\u2489?\u2494?\u2480?\u2494?\u2460?, \u2437?\u2477?\u2495?\u2477?\u2494?\u2476?\u2453?, \u2460?\u2503?\u2482?\u2503?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2536?\u2404?}\tab {\f0 \u2476?\u2458?\u2472? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2478?\u2503?\u2456?, \u2486?\u2509?\u2480?\u2478?\u2495?\u2453?, \u2438?\u2478?\u2495?, \u2476?\u2503?\u2479?\u2492?\u2494?\u2480?\u2494?, \u2488?\u2504?\u2472?\u2495?\u2453?, \u2465?\u2494?\u2453?\u2509?\u2468?\u2494?\u2480?, \u2478?\u2494?\u2472?\u2497?\u2487?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2537?\u2404?}\tab {\f0 \u2476?\u2494?\u2472?\u2494?\u2472? \u2486?\u2497?\u2470?\u2509?\u2471?\u2495?\u2453?\u2480?\u2467? \u2453?\u2480? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2539?\u2463?\u2495?):}\tab {\f0 \u2535?}{\f1 \u215?}{\f0 \u2539?}{\f1 =}{\f0 \u2539?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2455?\u2477?\u2495?\u2480?, \u2453?\u2495?\u2477?\u2494?\u2476?\u2503?, \u2476?\u2495?\u2460?\u2494?\u2468?\u2495?\u2479?\u2492?, \u2488?\u2497?\u2488?\u2509?\u2469?\u2509?\u2479?, \u2458?\u2480?\u2503?, \u2472?\u2453?\u2455?\u2497?\u2482?\u2507?, \u2441?\u2468?\u2509?\u2468?\u2488?\u2476?\u2503?\u2480?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2538?\u2404?}\tab {\f0 \u2458?\u2495?\u2464?\u2495? }{\f1 / }{\f0 \u2470?\u2480?\u2454?\u2494?\u2488?\u2509?\u2468? }{\f1 (}{\f0 \u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2535?\u2463?\u2495?}{\f1 ):}\tab {\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240 {\f0 \u2468?\u2507?\u2478?\u2494?\u2480? \u2488?\u2509?\u2453?\u2497?\u2482? \u2469?\u2503?\u2453?\u2503? \u2476?\u2472?\u2477?\u2507?\u2460?\u2472?\u2503?\u2480? \u2438?\u2479?\u2492?\u2507?\u2460?\u2472? \u2453?\u2480?\u2494? \u2489?\u2479?\u2492?\u2503?\u2459?\u2503?\u2404? \u2476?\u2472?\u2477?\u2507?\u2460?\u2472?\u2503?\u2480? \u2438?\u2478?\u2472?\u2509?\u2468?\u2509?\u2480?\u2467? \u2460?\u2494?\u2472?\u2495?\u2479?\u2492?\u2503? \u2468?\u2507?\u2478?\u2494?\u2480? \u2474?\u2509?\u2480?\u2495?\u2479?\u2492? \u2476?\u2472?\u2509?\u2471?\u2497?\u2453?\u2503? \u2447?\u2453?\u2463?\u2495? \u2458?\u2495?\u2464?\u2495? \u2482?\u2503?\u2454?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2539?\u2404?}\tab {\f0 \u2480?\u2458?\u2472?\u2494? \u2482?\u2495?\u2454? (\u2479?\u2503?\u2453?\u2507?\u2472?\u2507? \u2535?\u2463?\u2495?):}\tab {\f0 \u2535?\u2534?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432 {\f0 \u2453?. \u2438?\u2478?\u2494?\u2470?\u2503?\u2480? \u2455?\u2509?\u2480?\u2494?\u2478?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432 {\f0 \u2454?. \u2447?\u2453?\u2460?\u2472? \u2476?\u2496?\u2480?\u2486?\u2509?\u2480?\u2503?\u2487?\u2509?\u2464?}\par}
+}

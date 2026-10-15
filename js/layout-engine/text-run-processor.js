@@ -40,7 +40,20 @@
     return null;
   }
 
+  /**
+   * ডিগ্রি-সুপারস্ক্রিপ্ট → সাধারণ `°` (U+00B0): `80^\circ`, `80^{\circ}`, `80^{o}`, `80^°`, `^\degree`।
+   * `°` গ্লিফ নিজেই ওপরে ওঠানো — আগে .docx-এ এটি sSup (৮pt) হয়ে দ্বিগুণ ছোট দেখাত।
+   * `x^0`-জাতীয় প্রকৃত ঘাত অপরিবর্তিত (শুধু ° / \circ / \degree / অক্ষর o)।
+   */
+  function normalizeDegrees(latex) {
+    return String(latex == null ? '' : latex)
+      .replace(/\^\s*\{\s*(?:\\circ|\\degree|°|o)\s*\}/g, '°')
+      .replace(/\^\s*(?:\\circ\b|\\degree\b|°)/g, '°')
+      .replace(/\^\s*o(?![A-Za-z])/g, '°');
+  }
+
   const TextRunProcessor = {
+    normalizeDegrees,
     /**
      * Splits mixed text containing LaTeX math, Bengali, and English into structured runs.
      * @param {string} text - Raw input string.
@@ -75,7 +88,7 @@
 
         // Math segment: defensive check for value or text property
         if (seg.type === 'math') {
-          const rawVal = seg.value || seg.text || '';
+          const rawVal = normalizeDegrees(seg.value || seg.text || '');
           let cleanVal = rawVal;
           if (EqConv && typeof EqConv.cleanLatexSymbols === 'function') {
             cleanVal = EqConv.cleanLatexSymbols(rawVal);
@@ -136,9 +149,36 @@
         }
       }
 
-      return runs;
+      // সবসময় (ইউনিকোডেও): সাইটের বিজয় .docx/.doc ইউনিকোড-মাস্টার থেকে রূপান্তরে তৈরি হয় (DocxHandler u2b),
+      // যা বাংলা-ছাড়া রান অক্ষত রাখে — তাই মাস্টারেই চিহ্নগুলো আলাদা রানে থাকা চাই
+      return isolateBijoyUnsafe(runs);
     }
   };
+
+  /**
+   * Part-18.9: বিজয় (SutonnyMJ) ফন্টে কিছু ল্যাটিন চিহ্নের কোডে অন্য বাংলা অক্ষর বসানো —
+   * '_' দেখায় "থ" (শূন্যস্থানের দাগ "থথথথ" হয়ে যেত), '×' দেখায় "ম" ("১×৫=৫" → "১ম৫=৫"), '÷'-ও ভুল।
+   * এগুলো বাংলা-রান থেকে আলাদা করে Times New Roman রানে পাঠানো হয় (রূপান্তর ছাড়াই, যেমন ইংরেজি)।
+   * ইউনিকোডেও একই (চিহ্নগুলো Times New Roman-এ দেখতে একই); সমীকরণ-রান স্পর্শ করা হয় না।
+   */
+  function isolateBijoyUnsafe(runs) {
+    const RE = /[_×÷]+/g;
+    const out = [];
+    for (const r of runs) {
+      if (!r || r.type !== 'bengali' || !/[_×÷]/.test(r.text || '')) { out.push(r); continue; }
+      const s = r.text;
+      let last = 0;
+      let m;
+      RE.lastIndex = 0;
+      while ((m = RE.exec(s))) {
+        if (m.index > last) out.push({ type: 'bengali', text: s.slice(last, m.index), fontHint: null });
+        out.push({ type: 'english', text: m[0], fontHint: 'Times New Roman' });
+        last = m.index + m[0].length;
+      }
+      if (last < s.length) out.push({ type: 'bengali', text: s.slice(last), fontHint: null });
+    }
+    return out;
+  }
 
   if (typeof module !== 'undefined' && module.exports) module.exports = TextRunProcessor;
   if (typeof window !== 'undefined') window.TextRunProcessor = TextRunProcessor;

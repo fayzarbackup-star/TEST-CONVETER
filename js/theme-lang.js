@@ -308,8 +308,8 @@
 
       // converter.html
       converter_page_badge: '১০০% অফলাইন • আল্ট্রা-ফাস্ট বাংলা ও সমীকরণ কনভার্টার',
-      converter_page_title: 'ফয়জার কনভার্টার',
-      converter_page_subtitle: 'ইউনিকোড ⇄ বিজয় বাংলা কনভার্টার ও ল্যাটেক্স ওওসিআর',
+      converter_page_title: 'OCR ও বাংলা কনভার্টার',
+      converter_page_subtitle: 'ছবি ও PDF থেকে Word, আর ইউনিকোড ⇄ বিজয় রূপান্তর',
       converter_btn_uni_to_bijoy: 'ইউনিকোড ➔ বিজয়',
       converter_btn_bijoy_to_uni: 'বিজয় ➔ ইউনিকোড',
       converter_btn_copy: 'কপি করুন',
@@ -650,8 +650,8 @@
 
       // converter.html
       converter_page_badge: '100% Offline • Ultra-Fast Bangla & Equation Converter',
-      converter_page_title: 'Fayzar Converter',
-      converter_page_subtitle: 'Unicode ⇄ Bijoy Bangla Converter & LaTeX OCR',
+      converter_page_title: 'OCR & Bangla Converter',
+      converter_page_subtitle: 'Image & PDF to Word, plus Unicode ⇄ Bijoy conversion',
       converter_btn_uni_to_bijoy: 'Unicode ➔ Bijoy',
       converter_btn_bijoy_to_uni: 'Bijoy ➔ Unicode',
       converter_btn_copy: 'Copy Text',

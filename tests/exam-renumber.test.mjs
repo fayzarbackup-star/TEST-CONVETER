@@ -144,7 +144,7 @@ const CQ_FRAG = '৭২। প্রথম উদ্দীপক পড়ে �
   T('OCR verify-প্রম্পট: preservation অটুট', /QUESTION NUMBER PRESERVATION \(CRITICAL\)/.test(ocr));
   T('OCR-ফাইল: fixed line-height হ্যাক ফিরে আসেনি', !/mso-line-height-rule/.test(ocr));
 
-  for (const page of ['index.html', 'studio.html', 'converter.html']) {
+  for (const page of ['index.html', 'studio.html']) {  // converter.html এখন হোম-পাতা (২০২৬-১০-০৬)
     const h = fs.readFileSync(path.join(ROOT, page), 'utf8');
     T(`${page}: exam-renumber.js পাইপলাইনের আগে লোড হয়`,
       h.indexOf('exam-renumber.js') >= 0 && h.indexOf('exam-renumber.js') < h.indexOf('fayzar-pipeline.js'));

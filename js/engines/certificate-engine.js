@@ -12,6 +12,7 @@
      * Parses raw certificate/testimonial text into structured institutional data.
      */
     parseCertificate(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       if (!rawText) return null;
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
 

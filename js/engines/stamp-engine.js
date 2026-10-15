@@ -10,6 +10,7 @@
     DEFAULT_STAMP_TOP_MARGIN_INCH: 3.5,
 
     parseDeed(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
       const deed = {
         title: 'অঙ্গীকারনামা দলিল',
@@ -33,7 +34,7 @@
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        if (/অঙ্গীকার\s*নামা|চুক্তিপত্র|বায়নানামা|ভাড়া\s*চুক্তি/i.test(line) && line.length < 40) {
+        if (/অঙ্গীকার\s*নামা|চুক্তিপত্র|বায়নানামা|ভাড়া\s*চুক্তি|হলফ\s*নামা|এফিডেভিট/i.test(line) && line.length < 40) {
           deed.title = line;
           continue;
         }
@@ -85,9 +86,8 @@
             deed.schedule.rows.push(line);
           }
         } else if (currentSection === 'witness') {
-          if (line.match(/^[\(০-৯\d\)\.\-\।]/) || /নাম[ঃ:]/i.test(line) || (deed.witnesses.length > 0 && !line.includes('পক্ষ'))) {
-            deed.witnesses.push(line);
-          }
+          // Part-18.0: সাক্ষী-অংশের কোনো লাইন হারাবে না
+          deed.witnesses.push(line);
         } else if (currentSection === 'clauses') {
           deed.clauses.push(line);
         } else {
@@ -95,6 +95,8 @@
           if (!deed.firstParty && line.includes('১ম পক্ষ')) deed.firstParty = line;
           else if (!deed.secondParty && line.includes('২য় পক্ষ')) deed.secondParty = line;
           else if (!deed.preamble) deed.preamble = line;
+          // Part-18.0: "পরম করুণাময়" না থাকলেও (হলফনামা ইত্যাদি) বাকি লাইন হারানো নয় — দফা হিসেবে
+          else deed.clauses.push(line);
         }
       }
 

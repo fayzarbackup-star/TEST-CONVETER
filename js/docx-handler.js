@@ -278,6 +278,9 @@
 
         // 1. In Unicode-to-Bijoy mode (u2b / all_bijoy): If run has NO Bengali text at all, KEEP 100% UNTOUCHED!
         if ((dirMode === 'u2b' || dirMode === 'all_bijoy') && !BanglaConverter.hasBengaliText(originalText)) {
+          // Part-18.0: নিজস্ব ইংরেজি/বিজয় ফন্ট-ছাড়া ইংরেজি রান (ডিফল্ট Kalpurush থেকে পাওয়া) .doc-এ ডিফল্ট SutonnyMJ পেয়ে
+          // "Ideal" ⇒ "ওফবধষ" দেখাত ⇒ স্পষ্ট Times New Roman (লেখা অপরিবর্তিত)
+          if (/[A-Za-z0-9]/.test(originalText) && !isEnglishFont && !isBijoyFont) this._updateRunFontAndProps(r, xmlDoc, 'Times New Roman', false);
           continue;
         }
 
@@ -316,6 +319,9 @@
               newR.appendChild(newT);
               const engFont = runFontName && !/sutonny|bijoy|kalpurush|nikosh|solaiman/i.test(runFontName) ? runFontName : "Times New Roman";
               this._updateRunFontAndProps(newR, xmlDoc, engFont, false);
+              // Part-17.0 (ধাপ ০-এ ধরা): ইংরেজি অংশের রান তৈরি হলেও অনুচ্ছেদে বসানো হতো না, তারপর মূল রান
+              // মুছে যেত ⇒ বিজয়/.doc-এ "/", "%", "-", ইংরেজি শব্দ (ISBN, OA = 4) হারাত।
+              p.insertBefore(newR, r);
             } else {
               // Bengali segment: Convert text and update font
               let converted = seg.text;
@@ -326,10 +332,10 @@
                 runIsU2B = true;
                 targetFont = 'SutonnyMJ';
                 if (BanglaConverter.hasBengaliText(seg.text)) {
-                  converted = BanglaConverter.unicodeToBijoy(seg.text, {
+                  converted = DocxHandler.fixLoneKars(BanglaConverter.unicodeToBijoy(seg.text, {
                     convertNumbers: opts.convertNumbers,
                     numberFormat: opts.numberFormat
-                  });
+                  }));
                 }
               } else if (dirMode === 'b2u' || dirMode === 'all_unicode') {
                 runIsU2B = false;
@@ -342,10 +348,10 @@
                 if (BanglaConverter.hasBengaliText(seg.text)) {
                   runIsU2B = true;
                   targetFont = 'SutonnyMJ';
-                  converted = BanglaConverter.unicodeToBijoy(seg.text, {
+                  converted = DocxHandler.fixLoneKars(BanglaConverter.unicodeToBijoy(seg.text, {
                     convertNumbers: opts.convertNumbers,
                     numberFormat: opts.numberFormat
-                  });
+                  }));
                 } else {
                   runIsU2B = false;
                   targetFont = opts.targetFont || 'Kalpurush';
@@ -402,10 +408,10 @@
           currentTargetFont = 'SutonnyMJ';
 
           if (BanglaConverter.hasBengaliText(originalText)) {
-            convertedText = BanglaConverter.unicodeToBijoy(originalText, {
+            convertedText = DocxHandler.fixLoneKars(BanglaConverter.unicodeToBijoy(originalText, {
               convertNumbers: opts.convertNumbers,
               numberFormat: opts.numberFormat
-            });
+            }));
             shouldConvertText = true;
             shouldUpdateFont = true;
           } else if (BanglaConverter.isBijoyText(originalText, runFontName)) {
@@ -440,10 +446,10 @@
           if (BanglaConverter.hasBengaliText(originalText)) {
             runIsU2B = true;
             currentTargetFont = 'SutonnyMJ';
-            convertedText = BanglaConverter.unicodeToBijoy(originalText, {
+            convertedText = DocxHandler.fixLoneKars(BanglaConverter.unicodeToBijoy(originalText, {
               convertNumbers: opts.convertNumbers,
               numberFormat: opts.numberFormat
-            });
+            }));
             shouldConvertText = true;
             shouldUpdateFont = true;
           } else {
@@ -619,6 +625,16 @@
       if (typeof opts.onProgress === 'function') {
         opts.onProgress(percent, message);
       }
+    }
+
+    /**
+     * Part-17.9: বিজয় রূপান্তরের পরে যে একা পূর্ব-কার (ব্যঞ্জন ছাড়া — "ই ( ি )") ইউনিকোডেই রয়ে যায়, সেগুলো বিজয়-কোডে
+     * (মূল বিজয় ফাইলের মতো: ি→w, ে→‡, ৈ→‰, ো→‡v, ৌ→‡Š)। SutonnyMJ রানে ইউনিকোড অক্ষর এমনিতেই ভুল দেখায় ⇒ শুধু অবশিষ্টাংশ বদলায়।
+     */
+    static fixLoneKars(s) {
+      if (s == null || !/[িেৈোৌ]/.test(s)) return s;
+      return String(s).replace(/ো/g, '‡v').replace(/ৌ/g, '‡Š')
+        .replace(/ি/g, 'w').replace(/ে/g, '‡').replace(/ৈ/g, '‰');
     }
 
     /**

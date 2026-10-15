@@ -129,17 +129,20 @@ console.log('\n— (গ) ২-কলাম ও হ্যাঙ্গিং ইন
 
   const rtf = EX.generateMcqExamRtf(loaded['mcq-pure-28'].parsed, {});
   T('RTF: \\cols2 + \\colsx288 + \\linebetcol', /\\cols2\\colsx288\\linebetcol/.test(rtf), (rtf.match(/\\cols[^\n]*/) || [])[0]);
-  T('RTF: প্রতিটি প্রশ্নেই li432/fi-432 + 432-এ ট্যাব স্টপ',
-    (rtf.match(/\\li432\\fi-432\\tx432/g) || []).length === plan.items.length, [
-      (rtf.match(/\\li432\\fi-432\\tx432/g) || []).length, plan.items.length]);
+  T('RTF: MCQ-তে কোনো স্টেম li288 নয় — সব প্রশ্নে ০.৩" (Part-15.5, বিকল্প-গ্রিড সোজা)',
+    (rtf.match(/\\li288\\fi-288/g) || []).length === 0,
+    (rtf.match(/\\li288\\fi-288/g) || []).length);
+  T('RTF: প্রতিটি প্রশ্নেই li/fi = ২৮৮ বা ৪৩২ + একই অবস্থানে ট্যাব স্টপ',
+    (rtf.match(/\\li(288|432)\\fi-\1\\tx\1/g) || []).length === plan.items.length, [
+      (rtf.match(/\\li(288|432)\\fi-\1\\tx\1/g) || []).length, plan.items.length]);
   const xml = await EX.generateMcqExamDocx(loaded['mcq-pure-28'].parsed, { returnInnerXml: true });
   T('DOCX: ind left=432 hanging=432 প্রতি প্রশ্নেই',
-    (xml.bodyXml.match(/<w:ind w:left="432" w:hanging="432"\/>/g) || []).length === plan.items.length,
+    (xml.bodyXml.match(/<w:ind w:left="(288|432)" w:hanging="\1"\/>/g) || []).length === plan.items.length,
     [(xml.bodyXml.match(/<w:ind w:left="432"[^>]*>/g) || []).length, plan.items.length]);
   T('DOCX: cols num=2, space=288, sep=1', /<w:cols w:num="2" w:space="288" w:sep="1"\/>/.test(xml.sectPr), xml.sectPr.replace(/\s+/g, ' '));
 
   // নম্বরের নিচে লেখা র‍্যাপ হয় না → প্রথম লাইনেও ট্যাব, বাকি লাইন 432-এ
-  const stemSample = rtf.match(/\{\\ql\\b\\fs\d+\\f0[^\n]*?\\li432\\fi-432\\tx432[^\n]*?\n/);
+  const stemSample = rtf.match(/\{\\ql\\b\\fs\d+\\f0[^\n]*?\\li(?:288|432)\\fi-(?:288|432)\\tx(?:288|432)[^\n]*?\n/);
   T('RTF: নম্বর ও লেখার মাঝে সত্যিকারের \\tab (স্পেস নয়)', stemSample && /\\tab /.test(stemSample[0]), stemSample && stemSample[0].slice(0, 140));
   T('DOCX: নম্বরের পর <w:tab/> রান', /<w:t[^>]*>১।<\/w:t><\/w:r><w:r><w:tab\/><\/w:r>/.test(xml.bodyXml.replace(/<w:rPr>[\s\S]*?<\/w:rPr>/g, '')) ||
     (xml.bodyXml.match(/<w:r><w:tab\/><\/w:r>/g) || []).length >= plan.items.length,
@@ -178,7 +181,7 @@ console.log('\n— (ঘ) অপশন গ্রিড, সমান দূরত
   const rtf = EX.generateMcqExamRtf(loaded['mcq-pure-28'].parsed, {});
   const plan = loaded.eachPlan('mcq-pure-28');
   const fourAcross = plan.items.filter((it) => it.grid.cols === 4).length;
-  const rtfFour = (rtf.match(/\\li432\\tx\d+\\tx\d+\\tx\d+/g) || []).length;
+  const rtfFour = (rtf.match(/\\li(?:288|432)\\tx\d+\\tx\d+\\tx\d+/g) || []).length;
   T(`RTF: ৪-অ্যাক্রস সারি প্ল্যানের সঙ্গে মিলছে (${fourAcross} টি)`, fourAcross === rtfFour, [fourAcross, rtfFour]);
   const xml = await EX.generateMcqExamDocx(loaded['mcq-pure-28'].parsed, { returnInnerXml: true });
   T('DOCX: ৪-অ্যাক্রস সারিতে ৩টি ট্যাব-স্টপ বসে', (xml.bodyXml.match(/<w:tabs><w:tab w:val="left" w:pos="\d+"\/><w:tab w:val="left" w:pos="\d+"\/><w:tab w:val="left" w:pos="\d+"\/><\/w:tabs>/g) || []).length === fourAcross,
@@ -234,10 +237,10 @@ console.log('\n— প্রিভিউ/এক্সপোর্ট সমত�
     const inHtml = (html.match(/class="mcq-num"/g) || []).length;
     T(`${id}: প্রিভিউতে সব ${n}টি প্রশ্নই আছে (প্রতি ২-কলাম শেটে)`, inHtml === n, inHtml);
     const rtf = EX.generateMcqExamRtf(loaded[id].parsed, {});
-    const stemsRtf = (rtf.match(/\\li432\\fi-432\\tx432/g) || []).length;
+    const stemsRtf = (rtf.match(/\\li(288|432)\\fi-\1\\tx\1/g) || []).length;
     T(`${id}: .doc-এও ${n}টি স্টেম`, stemsRtf === n, stemsRtf);
     const xml = await EX.generateMcqExamDocx(loaded[id].parsed, { returnInnerXml: true });
-    T(`${id}: .docx-এও ${n}টি স্টেম`, (xml.bodyXml.match(/w:ind w:left="432" w:hanging="432"/g) || []).length === n,
+    T(`${id}: .docx-এও ${n}টি স্টেম`, (xml.bodyXml.match(/w:ind w:left="(288|432)" w:hanging="\1"/g) || []).length === n,
       (xml.bodyXml.match(/w:ind w:left="432"/g) || []).length);
     T(`${id}: অপশন লেবেল (ক–ঘ) প্রিভিউতে সংরক্ষিত`, ['ক', 'খ', 'গ', 'ঘ'].every((l) => html.includes('(' + l + ')')));
     // গ্রিড সিদ্ধান্ত হুবহু একই (preview == download)

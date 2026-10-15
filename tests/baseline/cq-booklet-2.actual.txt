@@ -25,7 +25,7 @@
         {
           "num": "১",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
           "statements": [],
           "stimulus": "",
           "subQuestions": [
@@ -55,7 +55,7 @@
         {
           "num": "২",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
           "statements": [],
           "stimulus": "",
           "subQuestions": [
@@ -155,7 +155,7 @@
 </div>
 </div>
 <div class="qp-columns two-columns">
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
@@ -192,7 +192,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
@@ -351,7 +351,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -383,9 +383,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -412,9 +412,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -440,9 +440,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -468,9 +468,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -496,9 +496,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -531,7 +531,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -550,9 +550,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -579,9 +579,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -607,9 +607,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -635,9 +635,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -663,9 +663,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -695,4 +695,33 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\column}
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2451? \u2476?\u2495?\u2487?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqc\tx3598\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2536? \u2456?\u2467?\u2509?\u2463?\u2494? \u2537?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\b\ul {\f0 \u2488?\u2499?\u2460?\u2472?\u2486?\u2496?\u2482? \u2437?\u2477?\u2496?\u2453?\u2509?\u2487?\u2494?}}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2541?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2482?\u2453?\u2509?\u2487?\u2509?\u2479? \u2453?\u2480?\u2507? \u2447?\u2476?\u2434? \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 (\u2447?\u2454?\u2494?\u2472?\u2503? \u2447?\u2453?\u2463?\u2495? \u2453?\u2507?\u2487?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480? \u2470?\u2503?\u2451?\u2527?\u2494? \u2438?\u2459?\u2503?)}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2453?\u2507?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2477?\u2495?\u2470? \u2453?\u2507?\u2487? \u2451? \u2474?\u2509?\u2480?\u2494?\u2467?\u2496? \u2453?\u2507?\u2487?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2474?\u2494?\u2480?\u2509?\u2469?\u2453?\u2509?\u2479? \u2482?\u2503?\u2454?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2453?\u2507?\u2472? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2507?\u2487?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2480?\u2494?\u2468?\u2497?\u2482? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472? \u2476?\u2439?\u2527?\u2503? \u2474?\u2524?\u2482? \u2479?\u2503?, \u2472?\u2495?\u2441?\u2463?\u2472? \u2438?\u2474?\u2503?\u2482? \u2474?\u2524?\u2494? \u2470?\u2503?\u2454?\u2503? \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2488?\u2498?\u2468?\u2509?\u2480? \u2438?\u2476?\u2495?\u2487?\u2509?\u2453?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2437?\u2477?\u2495?\u2453?\u2480?\u2509?\u2487?\u2460? \u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2482?\u2468?\u2503? \u2453?\u2496? \u2476?\u2507?\u2461?\u2494?\u2527??}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?\u2496?\u2480? \u2488?\u2498?\u2468?\u2509?\u2480?\u2463?\u2495? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+}

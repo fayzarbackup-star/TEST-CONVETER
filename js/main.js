@@ -2686,6 +2686,8 @@ function initUnifiedConverterEngine() {
 
       aiOcrOptionsBox?.classList.remove('hidden');
       officeDocOptionsBox?.classList.add('hidden');
+      // Part-17.6: লেআউট-মোড (আমাদের ফরম্যাট / মূলের মতো হুবহু) — js/faithful-mode-ui.js
+      if (window.FayzarFaithfulUI && aiOcrOptionsBox) window.FayzarFaithfulUI.mountModeCards(aiOcrOptionsBox);
 
       if (scan.totalFiles > 1) {
         aiOcrMultiThumbsContainer?.classList.remove('hidden');
@@ -2892,6 +2894,12 @@ function initUnifiedConverterEngine() {
     }
 
     try {
+      // Part-17.6: হুবহু-লেআউট মোড — আলাদা পথ (js/faithful-mode-ui.js), সাধারণ OCR-পথ অপরিবর্তিত
+      if (window.FayzarFaithfulUI && window.FayzarFaithfulUI.isFaithful()) {
+        await window.FayzarFaithfulUI.runWizard({ fileName: currentScanResult.file && currentScanResult.file.name });
+        if (window.FayzarAiOcrEngine && window.FayzarAiOcrEngine.state) window.FayzarAiOcrEngine.state.isProcessing = false;
+        return;
+      }
       const res = await window.FayzarAiOcrEngine.startUnifiedOcr(
         'none',
         (statusText, pct) => {
@@ -3125,7 +3133,7 @@ function initUnifiedConverterEngine() {
 
       // ── MD File: direct Word download via ExportDualEngine ──
       if (scan.isMdFile || scan.ext === 'md' || scan.ext === 'txt') {
-        const mdText = scan.mdText || '';
+        let mdText = scan.mdText || '';
         if (!mdText.trim()) { alert('MD ফাইলটি খালি।'); return; }
         try {
           // Auto-detect document type from content
@@ -3152,6 +3160,10 @@ function initUnifiedConverterEngine() {
             margin: (document.getElementById('ai-target-page-margin') || {}).value || 'normal'
           };
           let blob;
+          // Part-16.2: .md ফাইলে মূল পাতা নেই ⇒ কাঁচা চিত্র-ট্যাগ লেখা হিসেবে ফাইলে যাবে না
+          if (typeof FayzarFigureExtractor !== 'undefined' && FayzarFigureExtractor.hasLooseTags(mdText)) {
+            mdText = FayzarFigureExtractor.stripTags(mdText);
+          }
           if (typeof ExportDualEngine !== 'undefined') {
             blob = await ExportDualEngine.generateWordDoc(mdText, mdDocType, mdOptions);
           } else {

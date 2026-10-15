@@ -9,12 +9,12 @@
 ===== PARSED =====
 {
   "header": {
-    "classAndSubject": "শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান",
+    "classAndSubject": "শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান",
     "exam": "বার্ষিক পরীক্ষা — ২০২৬",
     "examType": "",
     "institute": "দিনাজপুর জিলা স্কুল",
     "instructions": "",
-    "location": "কোতোয়ালী, দিনাজপুর",
+    "location": "কোতোয়ালী, দিনাজপুর",
     "marks": "৪০",
     "time": "৪০ মিনিট"
   },
@@ -27,45 +27,45 @@
           "options": [
             {
               "label": "ক",
-              "text": "কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়"
+              "text": "কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়"
             },
             {
               "label": "খ",
-              "text": "শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়"
+              "text": "শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়"
             },
             {
               "label": "গ",
-              "text": "উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে"
+              "text": "উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে"
             },
             {
               "label": "ঘ",
-              "text": "গতি বাড়লে বস্তুর ভর কমে যায়"
+              "text": "গতি বাড়লে বস্তুর ভর কমে যায়"
             }
           ],
           "preContext": "",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?"
+          "text": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?"
         },
         {
           "num": "২",
           "options": [
             {
               "label": "ক",
-              "text": "ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে"
+              "text": "ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে"
             },
             {
               "label": "খ",
-              "text": "ঘর্ষণ সবসময় গতির দিকে কাজ করে"
+              "text": "ঘর্ষণ সবসময় গতির দিকে কাজ করে"
             },
             {
               "label": "গ",
-              "text": "মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি"
+              "text": "মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি"
             },
             {
               "label": "ঘ",
-              "text": "ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়"
+              "text": "ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়"
             }
           ],
           "preContext": "",
@@ -79,33 +79,33 @@
           "options": [
             {
               "label": "ক",
-              "text": "সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়"
+              "text": "সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়"
             },
             {
               "label": "খ",
-              "text": "সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়"
+              "text": "সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়"
             },
             {
               "label": "গ",
-              "text": "উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়"
+              "text": "উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়"
             },
             {
               "label": "ঘ",
-              "text": "অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না"
+              "text": "অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না"
             }
           ],
           "preContext": "",
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?"
+          "text": "দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?"
         },
         {
           "num": "৪",
           "options": [
             {
               "label": "ক",
-              "text": "প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ"
+              "text": "প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ"
             },
             {
               "label": "খ",
@@ -113,7 +113,7 @@
             },
             {
               "label": "গ",
-              "text": "উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই"
+              "text": "উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই"
             },
             {
               "label": "ঘ",
@@ -131,19 +131,19 @@
           "options": [
             {
               "label": "ক",
-              "text": "হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ"
+              "text": "হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ"
             },
             {
               "label": "খ",
-              "text": "সফটওয়্যার হলো নির্দেশনার সমষ্টি"
+              "text": "সফটওয়্যার হলো নির্দেশনার সমষ্টি"
             },
             {
               "label": "গ",
-              "text": "উভয়ই"
+              "text": "উভয়ই"
             },
             {
               "label": "ঘ",
-              "text": "কোনোটই নয়"
+              "text": "কোনোটই নয়"
             }
           ],
           "preContext": "",
@@ -161,7 +161,7 @@
             },
             {
               "label": "খ",
-              "text": "মাইক্রোসফট ওয়ার্ড"
+              "text": "মাইক্রোসফট ওয়ার্ড"
             },
             {
               "label": "গ",
@@ -176,7 +176,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "কোনটি স্প্রেডশিট সফটওয়্যার?"
+          "text": "কোনটি স্প্রেডশিট সফটওয়্যার?"
         },
         {
           "num": "৭",
@@ -187,15 +187,15 @@
             },
             {
               "label": "খ",
-              "text": "এটি কেবল স্থায়ী তথ্য রাখে না"
+              "text": "এটি কেবল স্থায়ী তথ্য রাখে না"
             },
             {
               "label": "গ",
-              "text": "বিদ্যুৎ গেলে সব তথ্য মুছে যায়"
+              "text": "বিদ্যুৎ গেলে সব তথ্য মুছে যায়"
             },
             {
               "label": "ঘ",
-              "text": "এটি প্রসেসর নয়"
+              "text": "এটি প্রসেসর নয়"
             }
           ],
           "preContext": "",
@@ -228,7 +228,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?"
+          "text": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?"
         },
         {
           "num": "৯",
@@ -254,7 +254,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?"
+          "text": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?"
         },
         {
           "num": "১০",
@@ -280,7 +280,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
+          "text": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
         },
         {
           "num": "১১",
@@ -291,7 +291,7 @@
             },
             {
               "label": "খ",
-              "text": "পাওয়ারপয়েন্ট"
+              "text": "পাওয়ারপয়েন্ট"
             },
             {
               "label": "গ",
@@ -306,7 +306,7 @@
           "statements": [],
           "stimulus": "",
           "subQuestions": [],
-          "text": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
+          "text": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
         },
         {
           "num": "১২",
@@ -351,7 +351,7 @@
             },
             {
               "label": "ঘ",
-              "text": "পাওয়ার সাপ্লাই"
+              "text": "পাওয়ার সাপ্লাই"
             }
           ],
           "preContext": "",
@@ -434,7 +434,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংর"
+      "textHead": "বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক"
     },
     {
       "hasStimulus": false,
@@ -474,7 +474,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "কোনটি স্প্রেডশিট সফটওয়্যার?"
+      "textHead": "কোনটি স্প্রেডশিট সফটওয়্যার?"
     },
     {
       "hasStimulus": false,
@@ -490,7 +490,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধ"
+      "textHead": "ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধর"
     },
     {
       "hasStimulus": false,
@@ -498,7 +498,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়"
+      "textHead": "কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?"
     },
     {
       "hasStimulus": false,
@@ -506,7 +506,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
+      "textHead": "প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?"
     },
     {
       "hasStimulus": false,
@@ -514,7 +514,7 @@
       "optionCount": 4,
       "section": 0,
       "subs": [],
-      "textHead": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
+      "textHead": "কোনটি ইমেজ এডিটিং সফটওয়্যার?"
     },
     {
       "hasStimulus": false,
@@ -563,9 +563,9 @@
 <div class="question-paper font-kalpurush dense-zero-gap orientation-portrait"  style="line-height: 1.5; font-size: 12pt;">
 <div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">
 <h1 class="qp-institute font-black" style="margin: 0; line-height: 1.2; font-size: 16pt;">দিনাজপুর জিলা স্কুল</h1>
-<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">কোতোয়ালী, দিনাজপুর</div>
+<div class="qp-location font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">কোতোয়ালী, দিনাজপুর</div>
 <div class="qp-exam font-bold" style="margin: 0; line-height: 1.2; font-size: 13pt;">বার্ষিক পরীক্ষা — ২০২৬</div>
-<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</div>
+<div class="qp-class-subject font-semibold" style="margin: 0; line-height: 1.2; font-size: 12pt;">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</div>
 <div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">
 <div style="text-align: left; flex: 1; white-space: nowrap;">সময়: ৪০ মিনিট</div>
 <div style="text-align: center; flex: 1;">
@@ -578,25 +578,25 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১.</span>
-<span class="mcq-text">বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</span>
+<span class="mcq-text">বিজ্ঞানের ভাষায়—কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-1">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
-<span class="mcq-opt-text">কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</span>
+<span class="mcq-opt-text">কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</span>
+<span class="mcq-opt-text">শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</span>
+<span class="mcq-opt-text">উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">গতি বাড়লে বস্তুর ভর কমে যায়</span>
+<span class="mcq-opt-text">গতি বাড়লে বস্তুর ভর কমে যায়</span>
 </div>
 </div>
 </div>
@@ -610,19 +610,19 @@
 <div class="mcq-grid mcq-grid-1">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
-<span class="mcq-opt-text">ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</span>
+<span class="mcq-opt-text">ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">ঘর্ষণ সবসময় গতির দিকে কাজ করে</span>
+<span class="mcq-opt-text">ঘর্ষণ সবসময় গতির দিকে কাজ করে</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</span>
+<span class="mcq-opt-text">মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</span>
+<span class="mcq-opt-text">ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</span>
 </div>
 </div>
 </div>
@@ -630,25 +630,25 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">৩.</span>
-<span class="mcq-text">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</span>
+<span class="mcq-text">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-1">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
-<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</span>
+<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</span>
+<span class="mcq-opt-text">সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</span>
+<span class="mcq-opt-text">উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</span>
+<span class="mcq-opt-text">অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</span>
 </div>
 </div>
 </div>
@@ -662,7 +662,7 @@
 <div class="mcq-grid mcq-grid-1">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
-<span class="mcq-opt-text">প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</span>
+<span class="mcq-opt-text">প্রাকৃতিক গ্যাস, কাচ-মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
@@ -670,7 +670,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</span>
+<span class="mcq-opt-text">উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
@@ -688,19 +688,19 @@
 <div class="mcq-grid mcq-grid-1">
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ক)</span>
-<span class="mcq-opt-text">হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</span>
+<span class="mcq-opt-text">হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">সফটওয়্যার হলো নির্দেশনার সমষ্টি</span>
+<span class="mcq-opt-text">সফটওয়্যার হলো নির্দেশনার সমষ্টি</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">উভয়ই</span>
+<span class="mcq-opt-text">উভয়ই</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">কোনোটই নয়</span>
+<span class="mcq-opt-text">কোনোটই নয়</span>
 </div>
 </div>
 </div>
@@ -708,7 +708,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">৬.</span>
-<span class="mcq-text">কোনটি স্প্রেডশিট সফটওয়্যার?</span>
+<span class="mcq-text">কোনটি স্প্রেডশিট সফটওয়্যার?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-1">
@@ -718,7 +718,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">মাইক্রোসফট ওয়ার্ড</span>
+<span class="mcq-opt-text">মাইক্রোসফট ওয়ার্ড</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
@@ -746,15 +746,15 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">এটি কেবল স্থায়ী তথ্য রাখে না</span>
+<span class="mcq-opt-text">এটি কেবল স্থায়ী তথ্য রাখে না</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
-<span class="mcq-opt-text">বিদ্যুৎ গেলে সব তথ্য মুছে যায়</span>
+<span class="mcq-opt-text">বিদ্যুৎ গেলে সব তথ্য মুছে যায়</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">এটি প্রসেসর নয়</span>
+<span class="mcq-opt-text">এটি প্রসেসর নয়</span>
 </div>
 </div>
 </div>
@@ -762,7 +762,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">৮.</span>
-<span class="mcq-text">ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?</span>
+<span class="mcq-text">ফাইল এক্সটেনশন অনুযায়ী .txt ফাইলটি কী ধরনের?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-1">
@@ -788,7 +788,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">৯.</span>
-<span class="mcq-text">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</span>
+<span class="mcq-text">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-2">
@@ -814,7 +814,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১০.</span>
-<span class="mcq-text">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</span>
+<span class="mcq-text">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-1">
@@ -840,7 +840,7 @@
 <div class="mcq-q-item">
 <div class="mcq-q-row">
 <span class="mcq-num">১১.</span>
-<span class="mcq-text">কোনটি ইমেজ এডিটিং সফটওয়্যার?</span>
+<span class="mcq-text">কোনটি ইমেজ এডিটিং সফটওয়্যার?</span>
 </div>
 <div class="mcq-options-row">
 <div class="mcq-grid mcq-grid-2">
@@ -850,7 +850,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(খ)</span>
-<span class="mcq-opt-text">পাওয়ারপয়েন্ট</span>
+<span class="mcq-opt-text">পাওয়ারপয়েন্ট</span>
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(গ)</span>
@@ -910,7 +910,7 @@
 </div>
 <div class="mcq-opt">
 <span class="mcq-opt-label" style="font-weight: bold; margin-right: 6px; flex-shrink: 0;">(ঘ)</span>
-<span class="mcq-opt-text">পাওয়ার সাপ্লাই</span>
+<span class="mcq-opt-text">পাওয়ার সাপ্লাই</span>
 </div>
 </div>
 </div>
@@ -974,7 +974,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কোতোয়ালী, দিনাজপুর</w:t>
+<w:t xml:space="preserve">কোতোয়ালী, দিনাজপুর</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1021,7 +1021,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</w:t>
+<w:t xml:space="preserve">শ্রেণিঃ নবম  |  বিষয়ঃ পদার্থবিজ্ঞান</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1038,7 +1038,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">সময়: ৪০ মিনিট</w:t>
+<w:t xml:space="preserve">সময়: ৪০ মিনিট</w:t>
 </w:r>
 <w:r>
 <w:tab/>
@@ -1098,7 +1098,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">বিজ্ঞানের ভাষায়</w:t>
+<w:t xml:space="preserve">বিজ্ঞানের ভাষায়</w:t>
 </w:r>
 <w:r>
 <w:rPr>
@@ -1116,7 +1116,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</w:t>
+<w:t xml:space="preserve">কোন বিবৃতিটি শক্তির সংরক্ষণশীলতা নীতিকে সবচেয়ে কাছ থেকে ব্যাখ্যা করে?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1130,7 +1130,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ক) কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</w:t>
+<w:t xml:space="preserve">(ক) কোনো বদ্ধ নিকাশে শক্তি সৃষ্টি বা বিনাশ করা যায় না, কেবল এক রূপ থেকে অন্য রূপে রূপান্তরিত হয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1144,7 +1144,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</w:t>
+<w:t xml:space="preserve">(খ) শক্তি সর্বদা তাপের রূপে পরিণত হয়ে নষ্ট হয়ে যায়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1158,7 +1158,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</w:t>
+<w:t xml:space="preserve">(গ) উচ্চতা বাড়লে বস্তুর শক্তি অপরিবর্তিত থাকে</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1172,7 +1172,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) গতি বাড়লে বস্তুর ভর কমে যায়</w:t>
+<w:t xml:space="preserve">(ঘ) গতি বাড়লে বস্তুর ভর কমে যায়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1216,7 +1216,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ক) ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</w:t>
+<w:t xml:space="preserve">(ক) ঘর্ষণ সর্বদা গতির বিপরীত দিকে ক্রিয়া করে এবং পৃষ্ঠের প্রকৃতির ওপর নির্ভর করে</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1230,7 +1230,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) ঘর্ষণ সবসময় গতির দিকে কাজ করে</w:t>
+<w:t xml:space="preserve">(খ) ঘর্ষণ সবসময় গতির দিকে কাজ করে</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1244,7 +1244,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</w:t>
+<w:t xml:space="preserve">(গ) মসৃণ পৃষ্ঠে ঘর্ষণ সবচেয়ে বেশি</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1258,7 +1258,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</w:t>
+<w:t xml:space="preserve">(ঘ) ঘর্ষণ একটি তড়িৎচুম্বকীয় বল নয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1288,7 +1288,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</w:t>
+<w:t xml:space="preserve">দর্পণের প্রতিবিম্ব সম্পর্কে কোনটি বলা যায়?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1302,7 +1302,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ক) সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</w:t>
+<w:t xml:space="preserve">(ক) সমতল দর্পণে প্রতিবিম্ব অবাস্তব, সোজা ও বস্তুর সমান আকারের হয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1316,7 +1316,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</w:t>
+<w:t xml:space="preserve">(খ) সমতল দর্পণে প্রতিবিম্ব সবসময় বাস্তব হয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1330,7 +1330,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</w:t>
+<w:t xml:space="preserve">(গ) উত্তল দর্পণে প্রতিবিম্ব সবসময় বিপরীত হয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1344,7 +1344,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</w:t>
+<w:t xml:space="preserve">(ঘ) অবতল দর্পণে কখনোই প্রতিবিম্ব গঠিত হয় না</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1428,7 +1428,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</w:t>
+<w:t xml:space="preserve">মণি ও উপকূলীয় অববাহিকা দেশের গুরুত্বপূর্ণ প্রাকৃতিক সম্পদ</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1456,7 +1456,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</w:t>
+<w:t xml:space="preserve">(গ) উপকূলীয় এলাকায় কোনো খনিজ সম্পদ নেই</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1514,7 +1514,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ক) হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</w:t>
+<w:t xml:space="preserve">(ক) হার্ডওয়্যার হলো ছুঁয়ে দেখা যায় এমন অংশ</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1528,7 +1528,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) সফটওয়্যার হলো নির্দেশনার সমষ্টি</w:t>
+<w:t xml:space="preserve">(খ) সফটওয়্যার হলো নির্দেশনার সমষ্টি</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1542,7 +1542,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) উভয়ই</w:t>
+<w:t xml:space="preserve">(গ) উভয়ই</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1556,7 +1556,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) কোনোটই নয়</w:t>
+<w:t xml:space="preserve">(ঘ) কোনোটই নয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1586,7 +1586,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কোনটি স্প্রেডশিট সফটওয়্যার?</w:t>
+<w:t xml:space="preserve">কোনটি স্প্রেডশিট সফটওয়্যার?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1614,7 +1614,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) মাইক্রোসফট ওয়ার্ড</w:t>
+<w:t xml:space="preserve">(খ) মাইক্রোসফট ওয়ার্ড</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1740,7 +1740,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) এটি কেবল স্থায়ী তথ্য রাখে না</w:t>
+<w:t xml:space="preserve">(খ) এটি কেবল স্থায়ী তথ্য রাখে না</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1754,7 +1754,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(গ) বিদ্যুৎ গেলে সব তথ্য মুছে যায়</w:t>
+<w:t xml:space="preserve">(গ) বিদ্যুৎ গেলে সব তথ্য মুছে যায়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1768,7 +1768,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) এটি প্রসেসর নয়</w:t>
+<w:t xml:space="preserve">(ঘ) এটি প্রসেসর নয়</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1798,7 +1798,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">ফাইল এক্সটেনশন অনুযায়ী .</w:t>
+<w:t xml:space="preserve">ফাইল এক্সটেনশন অনুযায়ী .</w:t>
 </w:r>
 <w:r>
 <w:rPr>
@@ -1942,7 +1942,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</w:t>
+<w:t xml:space="preserve">কোন কীবোর্ড শর্টকাটে সব সিলেক্ট করা যায়?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -1950,10 +1950,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2013,10 +2010,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2098,7 +2092,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</w:t>
+<w:t xml:space="preserve">প্রিন্ট করা ফাইলটি কোন বিল্ডিংয়ে থাকে?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2184,7 +2178,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">কোনটি ইমেজ এডিটিং সফটওয়্যার?</w:t>
+<w:t xml:space="preserve">কোনটি ইমেজ এডিটিং সফটওয়্যার?</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2192,10 +2186,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2210,15 +2201,12 @@
 <w:tab/>
 </w:r>
 <w:r>
-<w:tab/>
-</w:r>
-<w:r>
 <w:rPr>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(খ) পাওয়ারপয়েন্ট</w:t>
+<w:t xml:space="preserve">(খ) পাওয়ারপয়েন্ট</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2226,10 +2214,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2287,10 +2272,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2318,10 +2300,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2379,10 +2358,7 @@
 <w:spacing w:before="0" w:after="0" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2410,10 +2386,7 @@
 <w:spacing w:before="0" w:after="20" w:line="240" w:lineRule="auto"/>
 <w:ind w:left="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="1596"/>
 <w:tab w:val="left" w:pos="2760"/>
-<w:tab w:val="left" w:pos="3924"/>
-<w:tab w:val="left" w:pos="5089"/>
 </w:tabs>
 </w:pPr>
 <w:r>
@@ -2428,15 +2401,12 @@
 <w:tab/>
 </w:r>
 <w:r>
-<w:tab/>
-</w:r>
-<w:r>
 <w:rPr>
 <w:sz w:val="24"/>
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">(ঘ) পাওয়ার সাপ্লাই</w:t>
+<w:t xml:space="preserve">(ঘ) পাওয়ার সাপ্লাই</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2757,4 +2727,80 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols1
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480? \u2460?\u2495?\u2482?\u2494? \u2488?\u2509?\u2453?\u2497?\u2482?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2453?\u2507?\u2468?\u2507?\u2527?\u2494?\u2482?\u2496?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2476?\u2494?\u2480?\u2509?\u2487?\u2495?\u2453? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494? }{\f1 \u8212? }{\f0 \u2536?\u2534?\u2536?\u2540?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2435? \u2472?\u2476?\u2478?  |  \u2476?\u2495?\u2487?\u2527?\u2435? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqr\tx10366 {\f0 \u2488?\u2478?\u2527?: \u2538?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?\u2435? \u2538?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa20\brdrb\brdrs\brdrw10\brsp20 \par}
+\sect\sbknone\paperw11906\paperh16838\margl720\margr720\margt720\margb720\cols2\colsx288\linebetcol
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2404?}\tab {\f0 \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?\u2503?\u2480? \u2477?\u2494?\u2487?\u2494?\u2527?}{\f1 \u8212?}{\f0 \u2453?\u2507?\u2472? \u2476?\u2495?\u2476?\u2499?\u2468?\u2495?\u2463?\u2495? \u2486?\u2453?\u2509?\u2468?\u2495?\u2480? \u2488?\u2434?\u2480?\u2453?\u2509?\u2487?\u2467?\u2486?\u2496?\u2482?\u2468?\u2494? \u2472?\u2496?\u2468?\u2495?\u2453?\u2503? \u2488?\u2476?\u2458?\u2503?\u2527?\u2503? \u2453?\u2494?\u2459? \u2469?\u2503?\u2453?\u2503? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2503??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2453?\u2507?\u2472?\u2507? \u2476?\u2470?\u2509?\u2471? \u2472?\u2495?\u2453?\u2494?\u2486?\u2503? \u2486?\u2453?\u2509?\u2468?\u2495? \u2488?\u2499?\u2487?\u2509?\u2463?\u2495? \u2476?\u2494? \u2476?\u2495?\u2472?\u2494?\u2486? \u2453?\u2480?\u2494? \u2479?\u2494?\u2527? \u2472?\u2494?, \u2453?\u2503?\u2476?\u2482? \u2447?\u2453? \u2480?\u2498?\u2474? \u2469?\u2503?\u2453?\u2503? \u2437?\u2472?\u2509?\u2479? \u2480?\u2498?\u2474?\u2503? \u2480?\u2498?\u2474?\u2494?\u2472?\u2509?\u2468?\u2480?\u2495?\u2468? \u2489?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2486?\u2453?\u2509?\u2468?\u2495? \u2488?\u2480?\u2509?\u2476?\u2470?\u2494? \u2468?\u2494?\u2474?\u2503?\u2480? \u2480?\u2498?\u2474?\u2503? \u2474?\u2480?\u2495?\u2467?\u2468? \u2489?\u2527?\u2503? \u2472?\u2487?\u2509?\u2463? \u2489?\u2527?\u2503? \u2479?\u2494?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2441?\u2458?\u2509?\u2458?\u2468?\u2494? \u2476?\u2494?\u2524?\u2482?\u2503? \u2476?\u2488?\u2509?\u2468?\u2497?\u2480? \u2486?\u2453?\u2509?\u2468?\u2495? \u2437?\u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2495?\u2468? \u2469?\u2494?\u2453?\u2503?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2455?\u2468?\u2495? \u2476?\u2494?\u2524?\u2482?\u2503? \u2476?\u2488?\u2509?\u2468?\u2497?\u2480? \u2477?\u2480? \u2453?\u2478?\u2503? \u2479?\u2494?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2536?\u2404?}\tab {\f0 \u2456?\u2480?\u2509?\u2487?\u2467? \u2488?\u2478?\u2509?\u2474?\u2480?\u2509?\u2453?\u2503? \u2472?\u2495?\u2458?\u2503?\u2480? \u2453?\u2507?\u2472? \u2441?\u2453?\u2509?\u2468?\u2495?\u2463?\u2495? \u2488?\u2464?\u2495?\u2453??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2456?\u2480?\u2509?\u2487?\u2467? \u2488?\u2480?\u2509?\u2476?\u2470?\u2494? \u2455?\u2468?\u2495?\u2480? \u2476?\u2495?\u2474?\u2480?\u2496?\u2468? \u2470?\u2495?\u2453?\u2503? \u2453?\u2509?\u2480?\u2495?\u2527?\u2494? \u2453?\u2480?\u2503? \u2447?\u2476?\u2434? \u2474?\u2499?\u2487?\u2509?\u2464?\u2503?\u2480? \u2474?\u2509?\u2480?\u2453?\u2499?\u2468?\u2495?\u2480? \u2451?\u2474?\u2480? \u2472?\u2495?\u2480?\u2509?\u2477?\u2480? \u2453?\u2480?\u2503?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2456?\u2480?\u2509?\u2487?\u2467? \u2488?\u2476?\u2488?\u2478?\u2527? \u2455?\u2468?\u2495?\u2480? \u2470?\u2495?\u2453?\u2503? \u2453?\u2494?\u2460? \u2453?\u2480?\u2503?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2478?\u2488?\u2499?\u2467? \u2474?\u2499?\u2487?\u2509?\u2464?\u2503? \u2456?\u2480?\u2509?\u2487?\u2467? \u2488?\u2476?\u2458?\u2503?\u2527?\u2503? \u2476?\u2503?\u2486?\u2495?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2456?\u2480?\u2509?\u2487?\u2467? \u2447?\u2453?\u2463?\u2495? \u2468?\u2524?\u2495?\u2510?\u2458?\u2497?\u2478?\u2509?\u2476?\u2453?\u2496?\u2527? \u2476?\u2482? \u2472?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2537?\u2404?}\tab {\f0 \u2470?\u2480?\u2509?\u2474?\u2467?\u2503?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2476?\u2495?\u2478?\u2509?\u2476? \u2488?\u2478?\u2509?\u2474?\u2480?\u2509?\u2453?\u2503? \u2453?\u2507?\u2472?\u2463?\u2495? \u2476?\u2482?\u2494? \u2479?\u2494?\u2527??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2488?\u2478?\u2468?\u2482? \u2470?\u2480?\u2509?\u2474?\u2467?\u2503? \u2474?\u2509?\u2480?\u2468?\u2495?\u2476?\u2495?\u2478?\u2509?\u2476? \u2437?\u2476?\u2494?\u2488?\u2509?\u2468?\u2476?, \u2488?\u2507?\u2460?\u2494? \u2451? \u2476?\u2488?\u2509?\u2468?\u2497?\u2480? \u2488?\u2478?\u2494?\u2472? \u2438?\u2453?\u2494?\u2480?\u2503?\u2480? \u2489?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2488?\u2478?\u2468?\u2482? \u2470?\u2480?\u2509?\u2474?\u2467?\u2503? \u2474?\u2509?\u2480?\u2468?\u2495?\u2476?\u2495?\u2478?\u2509?\u2476? \u2488?\u2476?\u2488?\u2478?\u2527? \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2489?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2441?\u2468?\u2509?\u2468?\u2482? \u2470?\u2480?\u2509?\u2474?\u2467?\u2503? \u2474?\u2509?\u2480?\u2468?\u2495?\u2476?\u2495?\u2478?\u2509?\u2476? \u2488?\u2476?\u2488?\u2478?\u2527? \u2476?\u2495?\u2474?\u2480?\u2496?\u2468? \u2489?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2437?\u2476?\u2468?\u2482? \u2470?\u2480?\u2509?\u2474?\u2467?\u2503? \u2453?\u2454?\u2472?\u2507?\u2439? \u2474?\u2509?\u2480?\u2468?\u2495?\u2476?\u2495?\u2478?\u2509?\u2476? \u2455?\u2464?\u2495?\u2468? \u2489?\u2527? \u2472?\u2494?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2538?\u2404?}\tab {\f0 \u2476?\u2494?\u2434?\u2482?\u2494?\u2470?\u2503?\u2486?\u2503?\u2480? \u2474?\u2509?\u2480?\u2494?\u2453?\u2499?\u2468?\u2495?\u2453? \u2488?\u2478?\u2509?\u2474?\u2470? \u2488?\u2478?\u2509?\u2474?\u2480?\u2509?\u2453?\u2503? \u2488?\u2464?\u2495?\u2453? \u2441?\u2453?\u2509?\u2468?\u2495?\u2463?\u2495? \u2453?\u2507?\u2472?\u2463?\u2495??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2474?\u2509?\u2480?\u2494?\u2453?\u2499?\u2468?\u2495?\u2453? \u2455?\u2509?\u2479?\u2494?\u2488?, \u2453?\u2494?\u2458?}{\f1 -}{\f0 \u2478?\u2467?\u2495? \u2451? \u2441?\u2474?\u2453?\u2498?\u2482?\u2496?\u2527? \u2437?\u2476?\u2476?\u2494?\u2489?\u2495?\u2453?\u2494? \u2470?\u2503?\u2486?\u2503?\u2480? \u2455?\u2497?\u2480?\u2497?\u2468?\u2509?\u2476?\u2474?\u2498?\u2480?\u2509?\u2467? \u2474?\u2509?\u2480?\u2494?\u2453?\u2499?\u2468?\u2495?\u2453? \u2488?\u2478?\u2509?\u2474?\u2470?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2476?\u2494?\u2434?\u2482?\u2494?\u2470?\u2503?\u2486?\u2503? \u2453?\u2507?\u2472?\u2507? \u2474?\u2509?\u2480?\u2494?\u2453?\u2499?\u2468?\u2495?\u2453? \u2455?\u2509?\u2479?\u2494?\u2488? \u2472?\u2503?\u2439?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2441?\u2474?\u2453?\u2498?\u2482?\u2496?\u2527? \u2447?\u2482?\u2494?\u2453?\u2494?\u2527? \u2453?\u2507?\u2472?\u2507? \u2454?\u2472?\u2495?\u2460? \u2488?\u2478?\u2509?\u2474?\u2470? \u2472?\u2503?\u2439?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2470?\u2503?\u2486?\u2503?\u2480? \u2488?\u2476? \u2460?\u2509?\u2476?\u2494?\u2482?\u2494?\u2472?\u2495? \u2476?\u2495?\u2470?\u2503?\u2486? \u2469?\u2503?\u2453?\u2503? \u2438?\u2488?\u2503?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2539?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2453?\u2507?\u2472?\u2463?\u2495? \u2488?\u2464?\u2495?\u2453??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2489?\u2494?\u2480?\u2509?\u2465?\u2451?\u2527?\u2509?\u2479?\u2494?\u2480? \u2489?\u2482?\u2507? \u2459?\u2497?\u2433?\u2527?\u2503? \u2470?\u2503?\u2454?\u2494? \u2479?\u2494?\u2527? \u2447?\u2478?\u2472? \u2437?\u2434?\u2486?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2488?\u2475?\u2463?\u2451?\u2527?\u2509?\u2479?\u2494?\u2480? \u2489?\u2482?\u2507? \u2472?\u2495?\u2480?\u2509?\u2470?\u2503?\u2486?\u2472?\u2494?\u2480? \u2488?\u2478?\u2487?\u2509?\u2463?\u2495?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2441?\u2477?\u2527?\u2439?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2453?\u2507?\u2472?\u2507?\u2463?\u2439? \u2472?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2540?\u2404?}\tab {\f0 \u2453?\u2507?\u2472?\u2463?\u2495? \u2488?\u2509?\u2474?\u2509?\u2480?\u2503?\u2465?\u2486?\u2495?\u2463? \u2488?\u2475?\u2463?\u2451?\u2527?\u2509?\u2479?\u2494?\u2480??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2478?\u2494?\u2439?\u2453?\u2509?\u2480?\u2507?\u2488?\u2475?\u2463? \u2447?\u2453?\u2509?\u2488?\u2503?\u2482?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2478?\u2494?\u2439?\u2453?\u2509?\u2480?\u2507?\u2488?\u2475?\u2463? \u2451?\u2527?\u2494?\u2480?\u2509?\u2465?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2437?\u2509?\u2479?\u2494?\u2465?\u2507?\u2476? \u2480?\u2495?\u2465?\u2494?\u2480?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2441?\u2439?\u2472?\u2460?\u2495?\u2474?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2541?\u2404?}\tab {\f0 \u2478?\u2503?\u2478?\u2507?\u2480?\u2495? \u2453?\u2494?\u2480?\u2509?\u2465?\u2503?\u2480? \u2453?\u2509?\u2487?\u2503?\u2468?\u2509?\u2480?\u2503? \u2453?\u2507?\u2472?\u2463?\u2495? \u2488?\u2468?\u2509?\u2479??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2447?\u2463?\u2495? \u2472?\u2472?}{\f1 -}{\f0 \u2477?\u2507?\u2482?\u2494?\u2463?\u2494?\u2439?\u2482? \u2488?\u2509?\u2463?\u2507?\u2480?\u2503?\u2460?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2447?\u2463?\u2495? \u2453?\u2503?\u2476?\u2482? \u2488?\u2509?\u2469?\u2494?\u2527?\u2496? \u2468?\u2469?\u2509?\u2479? \u2480?\u2494?\u2454?\u2503? \u2472?\u2494?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2497?\u2510? \u2455?\u2503?\u2482?\u2503? \u2488?\u2476? \u2468?\u2469?\u2509?\u2479? \u2478?\u2497?\u2459?\u2503? \u2479?\u2494?\u2527?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2447?\u2463?\u2495? \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2480? \u2472?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2542?\u2404?}\tab {\f0 \u2475?\u2494?\u2439?\u2482? \u2447?\u2453?\u2509?\u2488?\u2463?\u2503?\u2472?\u2486?\u2472? \u2437?\u2472?\u2497?\u2479?\u2494?\u2527?\u2496? .}{\f1 txt }{\f0 \u2475?\u2494?\u2439?\u2482?\u2463?\u2495? \u2453?\u2496? \u2471?\u2480?\u2472?\u2503?\u2480??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2486?\u2497?\u2471?\u2497?}{\f1 -text }{\f0 \u2488?\u2494?\u2471?\u2494?\u2480?\u2467? \u2475?\u2494?\u2439?\u2482?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2459?\u2476?\u2495? \u2475?\u2494?\u2439?\u2482?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2477?\u2495?\u2465?\u2495?\u2451? \u2475?\u2494?\u2439?\u2482?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2488?\u2434?\u2455?\u2496?\u2468? \u2475?\u2494?\u2439?\u2482?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2543?\u2404?}\tab {\f0 \u2453?\u2507?\u2472? \u2453?\u2496?\u2476?\u2507?\u2480?\u2509?\u2465? \u2486?\u2480?\u2509?\u2463?\u2453?\u2494?\u2463?\u2503? \u2488?\u2476? \u2488?\u2495?\u2482?\u2503?\u2453?\u2509?\u2463? \u2453?\u2480?\u2494? \u2479?\u2494?\u2527??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f1 Ctrl+A}\tab ({\f0 {\f0 \u2454?}}) {\f1 Ctrl+C}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f1 Ctrl+V}\tab ({\f0 {\f0 \u2456?}}) {\f1 Ctrl+Z}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2534?\u2404?}\tab {\f0 \u2474?\u2509?\u2480?\u2495?\u2472?\u2509?\u2463? \u2453?\u2480?\u2494? \u2475?\u2494?\u2439?\u2482?\u2463?\u2495? \u2453?\u2507?\u2472? \u2476?\u2495?\u2482?\u2509?\u2465?\u2495?\u2434?\u2527?\u2503? \u2469?\u2494?\u2453?\u2503??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2488?\u2503?\u2472?\u2509?\u2463?\u2509?\u2480?\u2494?\u2482? \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2495?\u2434? \u2476?\u2495?\u2482?\u2509?\u2465?\u2495?\u2434?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2474?\u2509?\u2480?\u2495?\u2472?\u2509?\u2463?\u2494?\u2480? \u2476?\u2495?\u2482?\u2509?\u2465?\u2495?\u2434?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2478?\u2503?\u2478?\u2507?\u2480?\u2495? \u2476?\u2495?\u2482?\u2509?\u2465?\u2495?\u2434?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2439?\u2472?\u2474?\u2497?\u2463? \u2476?\u2495?\u2482?\u2509?\u2465?\u2495?\u2434?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2535?\u2404?}\tab {\f0 \u2453?\u2507?\u2472?\u2463?\u2495? \u2439?\u2478?\u2503?\u2460? \u2447?\u2465?\u2495?\u2463?\u2495?\u2434? \u2488?\u2475?\u2463?\u2451?\u2527?\u2509?\u2479?\u2494?\u2480??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2475?\u2463?\u2507?\u2486?\u2474?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2474?\u2494?\u2451?\u2527?\u2494?\u2480?\u2474?\u2527?\u2503?\u2472?\u2509?\u2463?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2437?\u2509?\u2479?\u2494?\u2453?\u2488?\u2503?\u2488?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2472?\u2507?\u2463?\u2474?\u2509?\u2479?\u2494?\u2465?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2453?\u2507?\u2472?\u2463?\u2495? \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2480?\u2503?\u2480? \u2455?\u2468?\u2495?\u2480? \u2447?\u2453?\u2453??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2455?\u2495?\u2455?\u2494?\u2489?\u2494?\u2480?\u2509?\u2463?\u2460?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2455?\u2495?\u2455?\u2494?\u2476?\u2494?\u2439?\u2463?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2455?\u2495?\u2455?\u2494?\u2476?\u2495?\u2463?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2455?\u2495?\u2455?\u2494?\u2478?\u2495?\u2463?\u2494?\u2480?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2537?\u2404?}\tab {\f0 \u2488?\u2495?\u2488?\u2509?\u2463?\u2503?\u2478? \u2439?\u2441?\u2472?\u2495?\u2463?\u2503?\u2480? \u2477?\u2503?\u2468?\u2480?\u2503? \u2453?\u2507?\u2472?\u2463?\u2495? \u2469?\u2494?\u2453?\u2503? \u2472?\u2494??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432\tx2760 ({\f0 {\f0 \u2453?}}) {\f0 \u2478?\u2494?\u2470?\u2494?\u2480?\u2476?\u2507?\u2480?\u2509?\u2465?}\tab ({\f0 {\f0 \u2454?}}) {\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2480?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432\tx2760 ({\f0 {\f0 \u2455?}}) {\f0 \u2478?\u2472?\u2495?\u2463?\u2480?}\tab ({\f0 {\f0 \u2456?}}) {\f0 \u2474?\u2494?\u2451?\u2527?\u2494?\u2480? \u2488?\u2494?\u2474?\u2509?\u2482?\u2494?\u2439?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\li432\fi-432\tx432 {\f0 \u2535?\u2538?\u2404?}\tab {\f0 \u2488?\u2464?\u2495?\u2453? \u2453?\u2509?\u2480?\u2478?\u2463?\u2495? \u2453?\u2507?\u2472?\u2463?\u2495??}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2453?}}) {\f0 \u2439?\u2472?\u2474?\u2497?\u2463? }{\f1 \u8594? }{\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2495?\u2434? }{\f1 \u8594? }{\f0 \u2438?\u2441?\u2463?\u2474?\u2497?\u2463?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2454?}}) {\f0 \u2438?\u2441?\u2463?\u2474?\u2497?\u2463? }{\f1 \u8594? }{\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2495?\u2434? }{\f1 \u8594? }{\f0 \u2439?\u2472?\u2474?\u2497?\u2463?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa0\li432 ({\f0 {\f0 \u2455?}}) {\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2495?\u2434? }{\f1 \u8594? }{\f0 \u2439?\u2472?\u2474?\u2497?\u2463? }{\f1 \u8594? }{\f0 \u2438?\u2441?\u2463?\u2474?\u2497?\u2463?}\par}
+{\ql\fs24\sl240\slmult1\sb0\sa20\li432 ({\f0 {\f0 \u2456?}}) {\f0 \u2439?\u2472?\u2474?\u2497?\u2463? }{\f1 \u8594? }{\f0 \u2438?\u2441?\u2463?\u2474?\u2497?\u2463? }{\f1 \u8594? }{\f0 \u2474?\u2509?\u2480?\u2488?\u2503?\u2488?\u2495?\u2434?}\par}
+}

@@ -1,0 +1,152 @@
+# fixture: prottoyon-school
+# docType: PROTTOYON
+
+===== CLASSIFIER =====
+{
+  "type": "PROTTOYON"
+}
+
+===== PARSED =====
+{
+  "blocks": [
+    {
+      "kind": "letterhead",
+      "lines": [
+        {
+          "role": "top",
+          "text": "প্রধান শিক্ষকের কার্যালয়"
+        },
+        {
+          "role": "org",
+          "text": "হাবিবপুর দ্বি-মুখী উচ্চ বিদ্যালয়"
+        },
+        {
+          "role": "meta",
+          "text": "স্থাপিত: ১৯৬৯খ্রি."
+        },
+        {
+          "role": "addr",
+          "text": "ডাকঘর: মুকুন্দপুর, উপজেলা: বিরামপুর, জেলা: দিনাজপুর।"
+        },
+        {
+          "role": "meta",
+          "text": "INS Code: 7710, EIIN No: 119966, E-mail: school@example.com"
+        }
+      ]
+    },
+    {
+      "kind": "memoDate",
+      "left": "স্মারক নং- হাদ্বিউবি/২০২৪/৬০২",
+      "right": "তারিখ: ১৬-০৩-২০২৪"
+    },
+    {
+      "kind": "title",
+      "text": "প্রত্যয়নপত্র"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, সঞ্জয় কুমার দাস, পিতা: সাধন চন্দ্র দাস, মাতা: ঝর্ণা রানী দাস, গ্রাম: রাজারামপুর (ঘাটপাড়া), ডাকঘর: রাজারামপুর, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর। সে অত্র বিদ্যালয়ে ২০০২ খ্রি. সালের অষ্টম শ্রেণির বার্ষিক পরীক্ষায় অংশগ্রহণ করে সফলতার সাথে উত্তীর্ণ হয়েছে।"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "বিদ্যালয়ের রেজিস্টার অনুযায়ী তার জন্ম তারিখ ২০/১০/১৯৮৮খ্রি.। অত্র প্রতিষ্ঠানে অধ্যয়নরত অবস্থায় সে কোনো প্রকার রাষ্ট্র বা সমাজ বিরোধী কার্যকলাপে লিপ্ত ছিল না। তার চরিত্র ভালো।"
+    },
+    {
+      "kind": "para",
+      "role": "body",
+      "text": "আমি তার জীবনের সর্বাঙ্গীণ উন্নতি কামনা করছি।"
+    },
+    {
+      "groups": [
+        [
+          "মোঃ দেলোয়ার হোসেন",
+          "প্রধান শিক্ষক",
+          "হাবিবপুর দ্বি-মুখী উচ্চ বিদ্যালয়",
+          "বিরামপুর, দিনাজপুর।"
+        ]
+      ],
+      "kind": "signature"
+    }
+  ],
+  "kind": "LETTER_LAYOUT",
+  "variant": "prottoyon",
+  "version": 1
+}
+
+===== STRUCTURE =====
+{
+  "questions": [],
+  "sections": 0
+}
+
+===== HTML =====
+<div class="paper-sheet size-a4-portrait official-letter-layout letter-prottoyon font-kalpurush" style="padding: 0.50in 0.50in 0.50in 0.75in; font-size: 14pt; box-sizing: border-box;">
+<div style="margin-left: -0.25in; text-align: center; line-height: 1.25; padding-bottom: 3px; border-bottom: 2px solid #000;">
+<div style="font-size: 15pt;">প্রধান শিক্ষকের কার্যালয়</div>
+<div style="font-size: 30pt; font-weight: 700;">হাবিবপুর দ্বি-মুখী উচ্চ বিদ্যালয়</div>
+<div style="font-size: 14pt;">স্থাপিত: ১৯৬৯খ্রি.</div>
+<div style="font-size: 16pt;">ডাকঘর: মুকুন্দপুর, উপজেলা: বিরামপুর, জেলা: দিনাজপুর।</div>
+<div style="font-size: 14pt;">INS Code: 7710, EIIN No: 119966, E-mail: school@example.com</div>
+</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;display: flex; justify-content: space-between;">
+<span>স্মারক নং- হাদ্বিউবি/২০২৪/৬০২</span>
+<span>তারিখ: ১৬-০৩-২০২৪</span>
+</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="text-align: center; font-weight: 700; text-decoration: underline; line-height: 1.3; font-size: 25pt;">প্রত্যয়নপত্র</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;text-align: justify;">এই মর্মে প্রত্যয়ন করা যাচ্ছে যে, সঞ্জয় কুমার দাস, পিতা: সাধন চন্দ্র দাস, মাতা: ঝর্ণা রানী দাস, গ্রাম: রাজারামপুর (ঘাটপাড়া), ডাকঘর: রাজারামপুর, উপজেলা: ফুলবাড়ী, জেলা: দিনাজপুর। সে অত্র বিদ্যালয়ে ২০০২ খ্রি. সালের অষ্টম শ্রেণির বার্ষিক পরীক্ষায় অংশগ্রহণ করে সফলতার সাথে উত্তীর্ণ হয়েছে।</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;text-align: justify;">বিদ্যালয়ের রেজিস্টার অনুযায়ী তার জন্ম তারিখ ২০/১০/১৯৮৮খ্রি.। অত্র প্রতিষ্ঠানে অধ্যয়নরত অবস্থায় সে কোনো প্রকার রাষ্ট্র বা সমাজ বিরোধী কার্যকলাপে লিপ্ত ছিল না। তার চরিত্র ভালো।</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;text-align: justify;">আমি তার জীবনের সর্বাঙ্গীণ উন্নতি কামনা করছি।</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="min-height: 1.68em; line-height: 1.68;">&nbsp;</div>
+<div style="margin-left: 3.88in; text-align: center; line-height: 1.34; font-size: 14pt;">
+<div>মোঃ দেলোয়ার হোসেন</div>
+<div>প্রধান শিক্ষক</div>
+<div>হাবিবপুর দ্বি-মুখী উচ্চ বিদ্যালয়</div>
+<div>বিরামপুর, দিনাজপুর।</div>
+</div>
+</div>
+
+===== DOCX_XML =====
+(no inner-xml probe for docType PROTTOYON)
+
+===== RTF =====
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\paperw11906\paperh16838\margl1080\margr720\margt720\margb720\cols1
+{\pard\plain\f0\fs30\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?\u2503?\u2480? \u2453?\u2494?\u2480?\u2509?\u2479?\u2494?\u2482?\u2527?}\par}
+{\pard\plain\f0\fs60\sl240\slmult1\sb0\sa0\qc\li-360 {\b {\f0 \u2489?\u2494?\u2476?\u2495?\u2476?\u2474?\u2497?\u2480? \u2470?\u2509?\u2476?\u2495?}{\f1 -}{\f0 \u2478?\u2497?\u2454?\u2496? \u2441?\u2458?\u2509?\u2458? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2488?\u2509?\u2469?\u2494?\u2474?\u2495?\u2468?: \u2535?\u2543?\u2540?\u2543?\u2454?\u2509?\u2480?\u2495?.}\par}
+{\pard\plain\f0\fs32\sl240\slmult1\sb0\sa0\qc\li-360 {\f0 \u2465?\u2494?\u2453?\u2456?\u2480?: \u2478?\u2497?\u2453?\u2497?\u2472?\u2509?\u2470?\u2474?\u2497?\u2480?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2476?\u2495?\u2480?\u2494?\u2478?\u2474?\u2497?\u2480?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li-360\brdrb\brdrs\brdrw30\brsp80 {\f1 INS Code: 7710, EIIN No: 119966, E-mail: school@example.com}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql\tqr\tx10106 {\f0 \u2488?\u2509?\u2478?\u2494?\u2480?\u2453? \u2472?\u2434?}{\f1 - }{\f0 \u2489?\u2494?\u2470?\u2509?\u2476?\u2495?\u2441?\u2476?\u2495?}{\f1 /}{\f0 \u2536?\u2534?\u2536?\u2538?}{\f1 /}{\f0 \u2540?\u2534?\u2536?}\tab {\f0 \u2468?\u2494?\u2480?\u2495?\u2454?: \u2535?\u2540?}{\f1 -}{\f0 \u2534?\u2537?}{\f1 -}{\f0 \u2536?\u2534?\u2536?\u2538?}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs50\sl240\slmult1\sb0\sa0\qc {\b {\ul {\f0 \u2474?\u2509?\u2480?\u2468?\u2509?\u2479?\u2527?\u2472?\u2474?\u2468?\u2509?\u2480?}}}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\qj {\f0 \u2447?\u2439? \u2478?\u2480?\u2509?\u2478?\u2503? \u2474?\u2509?\u2480?\u2468?\u2509?\u2479?\u2527?\u2472? \u2453?\u2480?\u2494? \u2479?\u2494?\u2458?\u2509?\u2459?\u2503? \u2479?\u2503?, \u2488?\u2462?\u2509?\u2460?\u2527? \u2453?\u2497?\u2478?\u2494?\u2480? \u2470?\u2494?\u2488?, \u2474?\u2495?\u2468?\u2494?: \u2488?\u2494?\u2471?\u2472? \u2458?\u2472?\u2509?\u2470?\u2509?\u2480? \u2470?\u2494?\u2488?, \u2478?\u2494?\u2468?\u2494?: \u2461?\u2480?\u2509?\u2467?\u2494? \u2480?\u2494?\u2472?\u2496? \u2470?\u2494?\u2488?, \u2455?\u2509?\u2480?\u2494?\u2478?: \u2480?\u2494?\u2460?\u2494?\u2480?\u2494?\u2478?\u2474?\u2497?\u2480? (\u2456?\u2494?\u2463?\u2474?\u2494?\u2524?\u2494?), \u2465?\u2494?\u2453?\u2456?\u2480?: \u2480?\u2494?\u2460?\u2494?\u2480?\u2494?\u2478?\u2474?\u2497?\u2480?, \u2441?\u2474?\u2460?\u2503?\u2482?\u2494?: \u2475?\u2497?\u2482?\u2476?\u2494?\u2524?\u2496?, \u2460?\u2503?\u2482?\u2494?: \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404? \u2488?\u2503? \u2437?\u2468?\u2509?\u2480? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?\u2503? \u2536?\u2534?\u2534?\u2536? \u2454?\u2509?\u2480?\u2495?. \u2488?\u2494?\u2482?\u2503?\u2480? \u2437?\u2487?\u2509?\u2463?\u2478? \u2486?\u2509?\u2480?\u2503?\u2467?\u2495?\u2480? \u2476?\u2494?\u2480?\u2509?\u2487?\u2495?\u2453? \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2527? \u2437?\u2434?\u2486?\u2455?\u2509?\u2480?\u2489?\u2467? \u2453?\u2480?\u2503? \u2488?\u2475?\u2482?\u2468?\u2494?\u2480? \u2488?\u2494?\u2469?\u2503? \u2441?\u2468?\u2509?\u2468?\u2496?\u2480?\u2509?\u2467? \u2489?\u2527?\u2503?\u2459?\u2503?\u2404?}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\qj {\f0 \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?\u2503?\u2480? \u2480?\u2503?\u2460?\u2495?\u2488?\u2509?\u2463?\u2494?\u2480? \u2437?\u2472?\u2497?\u2479?\u2494?\u2527?\u2496? \u2468?\u2494?\u2480? \u2460?\u2472?\u2509?\u2478? \u2468?\u2494?\u2480?\u2495?\u2454? \u2536?\u2534?}{\f1 /}{\f0 \u2535?\u2534?}{\f1 /}{\f0 \u2535?\u2543?\u2542?\u2542?\u2454?\u2509?\u2480?\u2495?.\u2404? \u2437?\u2468?\u2509?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503? \u2437?\u2471?\u2509?\u2479?\u2527?\u2472?\u2480?\u2468? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2527? \u2488?\u2503? \u2453?\u2507?\u2472?\u2507? \u2474?\u2509?\u2480?\u2453?\u2494?\u2480? \u2480?\u2494?\u2487?\u2509?\u2463?\u2509?\u2480? \u2476?\u2494? \u2488?\u2478?\u2494?\u2460? \u2476?\u2495?\u2480?\u2507?\u2471?\u2496? \u2453?\u2494?\u2480?\u2509?\u2479?\u2453?\u2482?\u2494?\u2474?\u2503? \u2482?\u2495?\u2474?\u2509?\u2468? \u2459?\u2495?\u2482? \u2472?\u2494?\u2404? \u2468?\u2494?\u2480? \u2458?\u2480?\u2495?\u2468?\u2509?\u2480? \u2477?\u2494?\u2482?\u2507?\u2404?}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\qj {\f0 \u2438?\u2478?\u2495? \u2468?\u2494?\u2480? \u2460?\u2496?\u2476?\u2472?\u2503?\u2480? \u2488?\u2480?\u2509?\u2476?\u2494?\u2457?\u2509?\u2455?\u2496?\u2467? \u2441?\u2472?\u2509?\u2472?\u2468?\u2495? \u2453?\u2494?\u2478?\u2472?\u2494? \u2453?\u2480?\u2459?\u2495?\u2404?}\par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl300\slmult1\sb0\sa0\ql \par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5581 {\f0 \u2478?\u2507?\u2435? \u2470?\u2503?\u2482?\u2507?\u2527?\u2494?\u2480? \u2489?\u2507?\u2488?\u2503?\u2472?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5581 {\f0 \u2474?\u2509?\u2480?\u2471?\u2494?\u2472? \u2486?\u2495?\u2453?\u2509?\u2487?\u2453?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\keepn\qc\li5581 {\f0 \u2489?\u2494?\u2476?\u2495?\u2476?\u2474?\u2497?\u2480? \u2470?\u2509?\u2476?\u2495?}{\f1 -}{\f0 \u2478?\u2497?\u2454?\u2496? \u2441?\u2458?\u2509?\u2458? \u2476?\u2495?\u2470?\u2509?\u2479?\u2494?\u2482?\u2527?}\par}
+{\pard\plain\f0\fs28\sl240\slmult1\sb0\sa0\qc\li5581 {\f0 \u2476?\u2495?\u2480?\u2494?\u2478?\u2474?\u2497?\u2480?, \u2470?\u2495?\u2472?\u2494?\u2460?\u2474?\u2497?\u2480?\u2404?}\par}
+}

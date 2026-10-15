@@ -14,15 +14,16 @@
      * Expected format:
      *   প্রতিষ্ঠানের নাম
      *   পরীক্ষার নাম
-     *   বিষয়: গণিত
+     *   বিষয়: গণিত
      *   শ্রেণি: দশম
      *   তারিখ: ১৫ সেপ্টেম্বর ২০২৫
-     *   সময়: সকাল ১০টা — দুপুর ১টা
+     *   সময়: সকাল ১০টা — দুপুর ১টা
      *   পূর্ণমান: ১০০ | পাসমান: ৩৩
      *   [পরীক্ষার্থীর তালিকা — একটি লাইনে একজন]
      *   রোল: ১০১ | নাম: মোহাম্মদ রাফি | শ্রেণি: ১০ | শাখা: বিজ্ঞান
      */
     parseAdmitData(rawText) {
+      rawText = String(rawText || '').replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD'); // Part-18.0: য়/ড়/ঢ় একক-অক্ষর রূপে (নিয়মগুলো এই রূপে লেখা)
       if (!rawText) return null;
       const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
 
@@ -40,14 +41,19 @@
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
+        // Part-18.0: নির্দেশাবলী (শিরোনামের পরের নম্বরযুক্ত লাইন) ও স্বাক্ষর-লাইন (জেনারেটর নিজে স্বাক্ষর-ঘর দেয়)
+        if (/^নির্দেশ(?:াবলী|াবলি|না|নাবলী)?\s*[ঃ:]?\s*$/.test(line)) { data._inInstr = true; continue; }
+        if (data._inInstr && /^[\d০-৯]{1,2}\s*[.।)]/.test(line)) { (data.instructions || (data.instructions = [])).push(line.replace(/^[\d০-৯]{1,2}\s*[.।)]\s*/, '')); continue; }
+        data._inInstr = false;
+        if (/স্বাক্ষর/.test(line) && !/[ঃ:]/.test(line)) continue;
 
-        if (!data.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(line) && line.length < 80) {
+        if (!data.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(line) && line.length < 80) {
           data.institute = line; continue;
         }
-        if (!data.examName && /পরীক্ষা|মূল্যায়ন|টার্ম|নির্বাচনী|বার্ষিক|অর্ধ-বার্ষিক/i.test(line) && line.length < 60) {
+        if (!data.examName && /পরীক্ষা|মূল্যায়ন|টার্ম|নির্বাচনী|বার্ষিক|অর্ধ-বার্ষিক/i.test(line) && line.length < 60) {
           data.examName = line; continue;
         }
-        const subMatch = line.match(/^বিষয়[ঃ:]\s*(.+)/i);
+        const subMatch = line.match(/^বিষয়[ঃ:]\s*(.+)/i);
         if (subMatch) { data.subject = subMatch[1].trim(); continue; }
 
         const classMatch = line.match(/^শ্রেণ[িী][ঃ:]\s*(.+)/i);
@@ -56,7 +62,7 @@
         const dateMatch = line.match(/^তারিখ[ঃ:]\s*(.+)/i);
         if (dateMatch) { data.date = dateMatch[1].trim(); continue; }
 
-        const timeMatch = line.match(/^সময়[ঃ:]\s*(.+)/i);
+        const timeMatch = line.match(/^সময়[ঃ:]\s*(.+)/i);
         if (timeMatch) { data.time = timeMatch[1].trim(); continue; }
 
         const marksMatch = line.match(/^পূর্ণমান[ঃ:]\s*([\d০-৯]+)/i);
@@ -67,9 +73,9 @@
           continue;
         }
 
-        // Student entries: রোল: ১০১ | নাম: রাফি | শ্রেণি: ১০ | শাখা: বিজ্ঞান
-        const rollMatch = line.match(/রোল[ঃ:]?\s*([\d০-৯]+)/i);
-        if (rollMatch) {
+        // Student entries: রোল: ১০১ | নাম: রাফি | শ্রেণি: ১০ | শাখা: বিজ্ঞান  (Part-18.0: "রোল নং:"-ও)
+        const rollMatch = line.match(/রোল\s*(?:নং|নম্বর)?[ঃ:.]?\s*([\d০-৯]+)/i);
+        if (rollMatch && /\|/.test(line)) {
           const student = { roll: rollMatch[1] };
           const nameMatch = line.match(/নাম[ঃ:]?\s*([^|]+)/i);
           if (nameMatch) student.name = nameMatch[1].trim();
@@ -78,8 +84,22 @@
           const regMatch = line.match(/রেজিষ্ট্রেশন[ঃ:]?\s*([^|]+)/i);
           if (regMatch) student.reg = regMatch[1].trim();
           data.students.push(student);
+          continue;
         }
+        // Part-18.0: একজন পরীক্ষার্থী, আলাদা লাইনে লেবেল (নাম / পিতার নাম / রোল নং / শাখা / রেজি)
+        const one = data._one || (data._one = {});
+        let m1;
+        if ((m1 = line.match(/^(?:পরীক্ষার্থীর|ছাত্র\/ছাত্রীর|শিক্ষার্থীর)?\s*নাম[ঃ:]\s*(.+)/i))) { one.name = m1[1].trim(); continue; }
+        if ((m1 = line.match(/^পিতার\s*নাম[ঃ:]\s*(.+)/i))) { one.father = m1[1].trim(); continue; }
+        if (rollMatch) { one.roll = rollMatch[1]; continue; }
+        if ((m1 = line.match(/^শাখা[ঃ:]\s*(.+)/i))) { one.section = m1[1].trim(); continue; }
+        if ((m1 = line.match(/^(?:রেজি|রেজিস্ট্রেশন|রেজিষ্ট্রেশন)[^ঃ:]*[ঃ:]\s*(.+)/i))) { one.reg = m1[1].trim(); continue; }
+        if ((m1 = line.match(/^(?:পরীক্ষার\s*)?কেন্দ্র[ঃ:]\s*(.+)/i))) { data.center = m1[1].trim(); continue; }
       }
+
+      if (data._one && (data._one.name || data._one.roll)) data.students.push(data._one);
+      delete data._one;
+      delete data._inInstr;
 
       // If no students parsed, create 4 blank placeholders
       if (data.students.length === 0) {
@@ -126,7 +146,7 @@
             <td style="padding: 2px 0;">${this.esc(data.examName) || '—'}</td>
           </tr>
           <tr>
-            <td style="font-weight: bold;">বিষয়:</td>
+            <td style="font-weight: bold;">বিষয়:</td>
             <td>${this.esc(data.subject) || '—'}</td>
           </tr>
           <tr>
@@ -138,7 +158,7 @@
             <td>${this.esc(data.date) || '—'}</td>
           </tr>
           <tr>
-            <td style="font-weight: bold;">সময়:</td>
+            <td style="font-weight: bold;">সময়:</td>
             <td>${this.esc(data.time) || '—'}</td>
           </tr>
           <tr>
@@ -192,7 +212,7 @@
      * Renders all admit cards in a 2×2 grid layout (A4 Portrait).
      */
     renderToHtml(data, options = {}) {
-      if (!data) return '<div class="text-center py-10 text-red-500">প্রবেশপত্রের তথ্য পাওয়া যায়নি।</div>';
+      if (!data) return '<div class="text-center py-10 text-red-500">প্রবেশপত্রের তথ্য পাওয়া যায়নি।</div>';
 
       const students = data.students.length > 0 ? data.students : [
         { roll: '...', name: '...', section: '...' },

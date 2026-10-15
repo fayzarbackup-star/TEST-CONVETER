@@ -169,7 +169,9 @@ const MCQ = [
   const plainRtf = Export.generateLegacyDoc('১। `$y = x - 3$` রেখাটি আঁক।', 'EXAM_CQ', {});
   const PR = typeof plainRtf.text === 'function' ? await plainRtf.text() : String(plainRtf);
   T('Part-9f: সরল সমীকরণে কোনো ম্যাথ-জোন/EQ-ফিল্ড নেই', cnt(PR, /\\mmath\{/g) === 0 && !/fldinst EQ/.test(PR), PR.slice(0, 90));
-  T('Part-9f: সরল সমীকরণের রাশি হুবহু পাঠ্যে আছে', PR.includes('y = x - 3'));
+  // Part-15.5: চলক-অক্ষর `{\i …}`-রানে — রান খুলে ফেললে রাশি হুবহু
+  T('Part-9f: সরল সমীকরণের রাশি হুবহু পাঠ্যে আছে', PR.replace(/\{\\i ([^{}]*)\}/g, '$1').includes('y = x - 3'));
+  T('Part-15.5: সরল সমীকরণে চলক-অক্ষর ইটালিক (y, x), সংখ্যা খাড়া', PR.includes('{\\i y} = {\\i x} - 3'));
 
   // (গ২) Part-9f: docMath:'plain' মোড — জটিল সমীকরণেও ফিল্ড ছাড়া পাঠ্য
   let rtfPlain = Export.generateLegacyDoc('২। `$\\frac{1}{2}$ + `$\\sqrt{3}$`', 'EXAM_CQ', { docMath: 'plain' });
@@ -181,10 +183,13 @@ const MCQ = [
   let rtfSup = Export.generateLegacyDoc('৩। `$x^2 + y_3$` লেখ।', 'EXAM_CQ', {});
   if (rtfSup && rtfSup.text) rtfSup = await rtfSup.text();
   const SUP = String(rtfSup);
-  // Part-13.4: ঘাত/পদ এখন স্পষ্ট ৮pt সাইজসহ (\fs16) — ডিফল্ট-সাইজ পাওয়ার ফিক্স
-  T('Part-9f+13.4: সুপারস্ক্রিপ্ট → {\\super\\fs16 ...}', /\{\\super(?:\\fs\d+)? /.test(SUP), SUP.slice(0, 120));
-  T('Part-9f+13.4: সাবস্ক্রিপ্ট → {\\sub\\fs16 ...}', /\{\\sub(?:\\fs\d+)? /.test(SUP), SUP.slice(0, 120));
-  T('Part-9f: কাঁচা EQ সুইচ (`\\S\\up`/`\\S\\do`) পাঠ্যে নেই', !/[\\]{1,2}S[\\]{1,2}(up|do)/.test(SUP), SUP.slice(0, 120));
+  // Part-15.7 (ব্যবহারকারীর নির্দেশ + পুরনো docx→doc পথের সমতা): ঘাত/পদওয়ালা রাশি = এডিটযোগ্য EQ-ফিল্ড,
+  // সুইচ লিটারাল ব্যাকস্ল্যাশে (`\\S\\up4(`, `\\S\\do4(`), আর্গুমেন্ট ৮pt (Part-13.4-এর উদ্দেশ্য অটুট)
+  const supField = (SUP.match(/\{\\field\{\\\*\\fldinst EQ [\s\S]*?\{\\fldrslt \}\}/) || [''])[0];
+  T('Part-15.7: x^2 + y_3 → EQ-ফিল্ড', supField.length > 0, SUP.slice(0, 160));
+  T('Part-15.7: ঘাত/পদ সুইচ লিটারাল `\\\\S\\\\up` / `\\\\S\\\\do` এবং আর্গুমেন্ট \\fs16',
+    supField.includes('\\\\S\\\\up4(}{\\f1\\fs16 2}') && supField.includes('\\\\S\\\\do4(}{\\f1\\fs16 3}'), supField);
+  T('Part-15.7: একক-ব্যাকস্ল্যাশ (RTF যা ফেলে দেয়) সুইচ নেই', !/[^\\]\\S\\(up|do)/.test(SUP), supField);
 
   // (ঘ) Part-9f: docx-to-doc-engine — `.doc`-এ OMML নয়, 2003-নেটিভ EQ ফিল্ড
   const d2d = fs.readFileSync(path.join(H.ROOT, 'js/docx-to-doc-engine.js'), 'utf8');

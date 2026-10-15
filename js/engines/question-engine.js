@@ -19,7 +19,8 @@
     const raw = String(line == null ? '' : line).trim();
     const title = cleanQuestionSectionTitle(raw);
     if (!title || title.length > 100) return false;
-    return /^(?:(?:[কখগঘঙচছ])\s*[-–—]?\s*)?(?:বিভাগ|অংশ|সেকশন|section|part)(?=$|[\s:ঃ(])/i.test(title) ||
+    // `Part-A`, `Section B`, `Part I` — ইংরেজি সেকশন-চিহ্নও শিরোনাম
+    return /^(?:(?:[কখগঘঙচছ])\s*[-–—]?\s*)?(?:বিভাগ|অংশ|সেকশন|section|part)(?:\s*[-–—]?\s*(?:[A-Za-z]|[IVX]{1,4}|\d{1,2}|[কখগঘঙচ]))?(?=$|[\s:ঃ(])/i.test(title) ||
       /^(?:সৃজনশীল\s*প্রশ্ন|সংক্ষিপ্ত(?:-উত্তর)?\s*প্রশ্ন|অতি\s*সংক্ষিপ্ত(?:\s*প্রশ্ন)?|বহুনির্বাচন[িী](?:\s*প্রশ্ন)?|নৈর্ব্যক্তিক(?:\s*প্রশ্ন)?|creative(?:\s+questions?)?|short[\s-]*(?:answer|questions?)|multiple[\s-]*choice|MCQ)(?=$|[\s:ঃ(])/i.test(title);
   };
 
@@ -74,9 +75,9 @@
      * Normalizes text and parses it into structured exam paper components.
      */
     /**
-     * Part-12 (ট্রায়াজ ২): সাব-প্রশ্নের লাইন-শেষ থেকে প্রকৃত নম্বর তোলা।
-     * `... ৩`, `... ৩ নম্বর`, `... [৩]`, `... (মান: ৩)` — যা টেক্সটে লেখা আছে সেটাই নেওয়া
-     * হয়; না থাকলে খালি। আগে লেবেল থেকে নম্বর *কল্পনা* করা হতো (ক→১, খ→২, গ→৩, ঘ→৪),
+     * Part-12 (ট্রায়াজ ২): সাব-প্রশ্নের লাইন-শেষ থেকে প্রকৃত নম্বর তোলা।
+     * `... ৩`, `... ৩ নম্বর`, `... [৩]`, `... (মান: ৩)` — যা টেক্সটে লেখা আছে সেটাই নেওয়া
+     * হয়; না থাকলে খালি। আগে লেবেল থেকে নম্বর *কল্পনা* করা হতো (ক→১, খ→২, গ→৩, ঘ→৪),
      * ফলে বাক্সে ভুল নম্বর বসত এবং প্রশ্নের শেষ শব্দটি মনে হতো নম্বর।
      */
     _cqMarkTail(text) {
@@ -91,7 +92,7 @@
     /**
      * Part-9j: একটি CQ-লাইন থেকে সাব-প্রশ্ন ভাগ করা।
      * সীমা = লাইন-শুরু, ট্যাব, বা ২+ স্পেস — তাই `গ. সা. গু.` (এক স্পেসে বসা সংক্ষেপ)
-     * ভাঙে না, কিন্তু `ক. লেখা\t২\tখ. লেখা\t৮` ঠিকঠাক তিন টুকরো হয়।
+     * ভাঙে না, কিন্তু `ক. লেখা\t২\tখ. লেখা\t৮` ঠিকঠাক তিন টুকরো হয়।
      */
     _cqSubLineParts(line) {
       const s = String(line);
@@ -111,6 +112,16 @@
 
     parseQuestionPaper(rawText, parseOptions = {}) {
       if (!rawText) rawText = '';
+      // Part-18.7: সাধারণ-ফরম্যাটের স্তরযুক্ত (প্রাথমিক/বৃত্তি) পত্র — (১)-উপপ্রশ্ন ও তার বিকল্প এক স্তরে চ্যাপ্টা না করে
+      let GP = (typeof FayzarGeneralParser !== 'undefined') ? FayzarGeneralParser : (typeof globalThis !== 'undefined' ? globalThis.FayzarGeneralParser : null);
+      // Part-18.9: node-এও (টেস্ট/স্ক্রিপ্ট) ব্রাউজারের মতো একই পথ — না হলে দুই পরিবেশে ফল আলাদা হতো
+      if (!GP && typeof require === 'function') { try { GP = require('../layout-engine/general-paper-parser.js'); } catch (e) { GP = null; } }
+      if (GP && parseOptions.docType === 'EXAM_GENERAL' && !parseOptions.__flat && GP.isNested(rawText)) {
+        const base = this.parseQuestionPaper(rawText, Object.assign({}, parseOptions, { __flat: true }));
+        base.sections = GP.parseSections(rawText);
+        base.__nestedGeneral = true;
+        return base;
+      }
       // 0. Strip vision layout tags
       rawText = rawText.replace(/^\s*\[LAYOUT:[^\]]*\]\s*[\r\n]?/im, '');
 
@@ -141,7 +152,7 @@
       let bodyStartIndex = 0;
 
       // Part-10: MCQ হেডার-উন্নতি শুধু EXAM_MCQ আর্কিটাইপে প্রযোজ্য — EXAM_CQ /
-      // EXAM_MATH / EXAM_GENERAL পাথ স্বেচ্ছায় অছুয়িত (ফ্রোজেন চুক্তি)।
+      // EXAM_MATH / EXAM_GENERAL পাথ স্বেচ্ছায় অছুয়িত (ফ্রোজেন চুক্তি)।
       const isMcqParse = (parseOptions && parseOptions.docType) === 'EXAM_MCQ';
 
       // Extract header lines from top
@@ -149,14 +160,16 @@
         const line = lines[i];
         const cleanLine = line.replace(/^[\*\#\-\s]+/, '').trim();
         // Part-9j: হেডার-স্ক্যান যেন body-লাইন না গেলে — `## প্রশ্ন ১২।` ও `ক)`/`ক.` অপশন-লাইন
-        // এখানে ব্রেক না করায় আগে `ক) ঢাকা ...` লাইনটিকে header.location ভেবে bodyStartIndex
-        // এগিয়ে যেত ⇒ প্রথম প্রশ্ন(গুলো) নিঃশব্দে বাদ পড়ত (MCQ প্রশ্নপত্রে ধরা পড়েছে)।
+        // এখানে ব্রেক না করায় আগে `ক) ঢাকা ...` লাইনটিকে header.location ভেবে bodyStartIndex
+        // এগিয়ে যেত ⇒ প্রথম প্রশ্ন(গুলো) নিঃশব্দে বাদ পড়ত (MCQ প্রশ্নপত্রে ধরা পড়েছে)।
         if (/^(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(cleanLine) ||
             /^(?:[কখগঘ]|[abcdABCD])[\.\:।\-\)\]]/.test(cleanLine) ||
             /^#{1,6}\s*(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(line)) {
           break; // Questions have started, header is complete
         }
-        if (!result.header.institute && /স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine) || (isMcqParse && /\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2(?:\u09df|\u09af\u09bc)/i.test(cleanLine))) {
+        // `বিদ্যালয়` দুই বানান সব পরীক্ষা-ধরনে + ইংরেজি প্রতিষ্ঠান-নাম (School/College/…)
+        if (!result.header.institute && (/স্কুল|কলেজ|মাদরাসা|বিদ্যালয়|একাডেমী|প্রতিষ্ঠান/i.test(cleanLine) || /\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2(?:\u09df|\u09af\u09bc)/i.test(cleanLine) ||
+            /\b(?:school|college|madrasa|madrasah|academy|institute|institution|university)\b/i.test(cleanLine))) {
           result.header.institute = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (!result.header.location && /ফুলবাড়ী|দিনাজপুর|ঢাকা|উপজেলা|জেলা/i.test(cleanLine) && !/শ্রেণি|বিষয়|সময়/.test(cleanLine)) {
@@ -164,15 +177,26 @@
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (isMcqParse && !result.header.location && result.header.institute && i >= 1 &&
                    lines[i - 1].replace(/^[\*\#\-\s]+/, '').trim() === result.header.institute &&
-                   /[,।.]|কিলোমিটার|রোড|গ্রাম|থানা|উপজেলা|জেলা|বিভাগ|পোস্ট|পেট|সড়ক/.test(cleanLine) &&
-                   cleanLine.length <= 70 && !/পরীক্ষা|শ্রেণি|বিষয়|সময়|পূর্ণমান|বিদ্যালয়|স্কুল|কলেজ|মাদরাসা/.test(cleanLine)) {
+                   /[,।.]|কিলোমিটার|রোড|গ্রাম|থানা|উপজেলা|জেলা|বিভাগ|পোস্ট|পেট|সড়ক/.test(cleanLine) &&
+                   cleanLine.length <= 70 && !/পরীক্ষা|শ্রেণি|বিষয়|সময়|পূর্ণমান|বিদ্যালয়|স্কুল|কলেজ|মাদরাসা/.test(cleanLine)) {
           // Part-10 (খ.২): OCR/মার্কডাউনের ক্রম — প্রতিষ্ঠান-লাইনের ঠিক পরের লাইনটাই ঠিকানা।
-          // পুরনো নিয়ম শুধু কয়েকটি জেলার নাম চিনত, তাই 'কোতোয়ালী, রংপুর'-এর মতো ঠিকানা
-          // থাকতেও 'ঠিকানা লিখুন' বসত। নিয়মটি সচেতনভাবে কেবল EXAM_MCQ-তে (CQ/Math অছুয়িত)।
+          // পুরনো নিয়ম শুধু কয়েকটি জেলার নাম চিনত, তাই 'কোতোয়ালী, রংপুর'-এর মতো ঠিকানা
+          // থাকতেও 'ঠিকানা লিখুন' বসত। নিয়মটি সচেতনভাবে কেবল EXAM_MCQ-তে (CQ/Math অছুয়িত)।
           result.header.location = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if (!result.header.exam && /পরীক্ষা|মূল্যায়ন|টার্ম|সেমিস্টার|নির্বাচনী/i.test(cleanLine) && !/বহুনির্বাচন|নৈর্ব্যক্তিক/.test(cleanLine)) {
+        } else if (/^(?:time|duration)\s*[:\-]|\b(?:full|total)\s*marks?\s*[:\-]/i.test(cleanLine) && (!result.header.time || !result.header.marks)) {
+          // ইংরেজি মেট্রিক্স-লাইন: `Time: 2 hours   Full Marks: 50`
+          const tM = cleanLine.match(/\b(?:time|duration)\s*[:\-]\s*(.+?)(?=\s{2,}|\s*[|;]|\s*\b(?:full|total)\s*marks?\b|$)/i);
+          const mM = cleanLine.match(/\b(?:full|total)\s*marks?\s*[:\-]\s*([\d\u09E6-\u09EF.]+)/i);
+          if (tM && !result.header.time) result.header.time = tM[1].trim();
+          if (mM && !result.header.marks) result.header.marks = mM[1].trim();
+          bodyStartIndex = Math.max(bodyStartIndex, i + 1);
+        } else if (/^(?:class|subject|grade)\s*[:\-]/i.test(cleanLine)) {
+          // ইংরেজি `Class: Eight   Subject: English 2nd Paper`
+          result.header.classAndSubject = (result.header.classAndSubject ? result.header.classAndSubject + '  |  ' : '') + cleanLine.replace(/\s{2,}/g, '  |  ');
+          bodyStartIndex = Math.max(bodyStartIndex, i + 1);
+        } else if (!result.header.exam && (/পরীক্ষা|মূল্যায়ন|টার্ম|সেমিস্টার|নির্বাচনী/i.test(cleanLine) || /\b(?:examination|exam|test|assessment)\b/i.test(cleanLine)) && !/বহুনির্বাচন|নৈর্ব্যক্তিক/.test(cleanLine)) {
           result.header.exam = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (/শ্রেণি|বিষয়/i.test(cleanLine)) {
@@ -186,7 +210,7 @@
           result.header.classAndSubject = (result.header.classAndSubject ? result.header.classAndSubject + '  |  ' : '') + cLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if (((cleanLine.startsWith('[') && cleanLine.endsWith(']')) || /^\[?বিশেষ\s*দ্রষ্টব্য/i.test(cleanLine)) &&
-                   // Part-12: `[উদ্দীপক ১]` নির্দেশনা নয় — উদ্দীপক-ব্লকের মার্কার, body-তে থাকবে
+                   // Part-12: `[উদ্দীপক ১]` নির্দেশনা নয় — উদ্দীপক-ব্লকের মার্কার, body-তে থাকবে
                    !/^\[?\s*(?:নিচের\s+)?উদ্দীপক/i.test(cleanLine)) {
           result.header.instructions = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -200,11 +224,11 @@
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
         } else if ((/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)/i.test(cleanLine) || /পূর্ণমান|মান/i.test(cleanLine)) && (!result.header.time || !result.header.marks) &&
                    // Part-12 (অডিট ৩-এর মূল কারণ): 'মান' শব্দের অংশ থাকলেই এই শাখাটি
-                   // উদ্দীপকের অনুচ্ছেদটি হেডার-মান মনে করে খেয়ে ফেলত ⇒ প্রথম উদ্দীপক হারাত
-                   // (নমুনা: 'গ্রামের মানুষ চিন্তিত হয়ে পড়ে।')। এখন কেবল মান/সময় সংখ্যাসহ
-                   // মেটালাইন ধরা হয়; বাকি লাইন body-তে থাকে।
-                   (/সম(?:য়|য)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\dA-Za-z]/.test(cleanLine) || /(?:পূর্ণমান|মান)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\d]/.test(cleanLine)) &&
-                   // Part-12: `বিভাগ: গণিত ... মান: ২০` শিরোনাম-লাইন — হেডার নয়, body-তে রাখা হয়
+                   // উদ্দীপকের অনুচ্ছেদটি হেডার-মান মনে করে খেয়ে ফেলত ⇒ প্রথম উদ্দীপক হারাত
+                   // (নমুনা: 'গ্রামের মানুষ চিন্তিত হয়ে পড়ে।')। এখন কেবল মান/সময় সংখ্যাসহ
+                   // মেটালাইন ধরা হয়; বাকি লাইন body-তে থাকে।
+                   (/সম(?:য়|য)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\dA-Za-z]/.test(cleanLine) || /(?:পূর্ণমান|মান)\s*[\u0983:\-]?\s*[\u09E6-\u09EF\d]/.test(cleanLine)) &&
+                   // Part-12: `বিভাগ: গণিত ... মান: ২০` শিরোনাম-লাইন — হেডার নয়, body-তে রাখা হয়
                    !/^\**\s*(?:বিভাগ|অংশ)\s*[ঃ:\-]/.test(cleanLine)) {
           let cLine = cleanLine;
           const examSubMatch = cLine.match(/(বহুনির্বাচন[িী]\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|নৈর্ব্যক্তিক\s*অভ[িী]ক্ষা(?:[\-\s]*[\u09E6-\u09EF\d]+)?|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2\s*\u0985\u09ad[\u09bf\u09c0]\u0995\u09cd\u09b7\u09be(?:[\-\s]*[\u09E6-\u09EF\d]+)?)/i);
@@ -214,8 +238,8 @@
           }
 
           let tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[\u0983:\-]\s*([^;\n|]+?)(?=(?:পূর্ণমান|সৃজনশীল|বহুনির্বাচন|মান|$))/i);
-          // Part-10 (খ.২ লাইন ৫): "সময়: ৩০ মিনিট  |  পূর্ণমানঃ ৩০" — বিবরেটরসহ একই
-          // লাইনে দুটোই থাকায় strict lookahead সময় বাদ দিত; MCQ-তে শিথিল প্যাটার্ন।
+          // Part-10 (খ.২ লাইন ৫): "সময়: ৩০ মিনিট  |  পূর্ণমানঃ ৩০" — বিবরেটরসহ একই
+          // লাইনে দুটোই থাকায় strict lookahead সময় বাদ দিত; MCQ-তে শিথিল প্যাটার্ন।
           if (!tMatch && isMcqParse) {
             tMatch = cLine.match(/\u09b8\u09ae(?:\u09df|\u09af\u09bc?)[:\u0983-]\s*([^;\n]+?)(?=\s*[:|\u0964]?\s*(?:\u09aa\u09c2\u09b0\u09cd\u09a3\u09ae\u09be\u09a8|\u09b8\u09c3\u099c\u09a8\u09b6\u09c0\u09b2|\u09ac\u09b9\u09c1\u09a8\u09bf\u09b0\u09cd\u09ac\u09be\u099a\u09a8|\u09ae\u09be\u09a8)|$)/i);
           }
@@ -226,9 +250,9 @@
         }
       }
 
-      // Part-9j: ফাইলের শেষে থাকা যাচাই/অডিট-নোট ব্লক আলাদা করা হয় — প্রশ্নের গায়ে জোড়া না লেগে
-      // শেষ পৃষ্ঠায় "যাচাই প্রতিবেদন" শীট হিসেবে HTML/DOCX/RTF তিন পথেই একইভাবে ছাপে
-      // (preview == download; ব্যবহারকারীর নিয়ম: অডিট নোট শেষ পৃষ্ঠায় একা)।
+      // Part-9j: ফাইলের শেষে থাকা যাচাই/অডিট-নোট ব্লক আলাদা করা হয় — প্রশ্নের গায়ে জোড়া না লেগে
+      // শেষ পৃষ্ঠায় "যাচাই প্রতিবেদন" শীট হিসেবে HTML/DOCX/RTF তিন পথেই একইভাবে ছাপে
+      // (preview == download; ব্যবহারকারীর নিয়ম: অডিট নোট শেষ পৃষ্ঠায় একা)।
       const _auditSplit = this._extractTrailingAuditNote(lines.slice(bodyStartIndex));
       if (_auditSplit.note) result.auditNote = _auditSplit.note;
       const bodyLines = _auditSplit.lines;
@@ -242,15 +266,15 @@
         const line = bodyLines[i];
 
         // Part-12 (অডিট ৩): `[উদ্দীপক ১]` / `উদ্দীপক: ১` মার্কার। আগে এই লাইনটি
-        // কোনো শাখায় ধরা পড়ত না ⇒ আগের প্রশ্নের বডিতে যুক্ত হতো, আর পরের প্রশ্নের
-        // উদ্দীপক ভুল জায়গায় বসত (নমুনা: প্রথম উদ্দীপক হারানো, দ্বিতীয়টি Q4-এ আটকানো)।
+        // কোনো শাখায় ধরা পড়ত না ⇒ আগের প্রশ্নের বডিতে যুক্ত হতো, আর পরের প্রশ্নের
+        // উদ্দীপক ভুল জায়গায় বসত (নমুনা: প্রথম উদ্দীপক হারানো, দ্বিতীয়টি Q4-এ আটকানো)।
         {
           const bm2 = line.match(/^\s*[\[(]\s*(?:উদ্দীপক|নিচের উদ্দীপক)\s*[#:\u0983]?\s*([\u09E6-\u09EF\d]*)\s*[\])]\s*(.*)$/);
           const bm3 = line.match(/^\s*(?:উদ্দীপক)\s*[:\u0983]\s*([\u09E6-\u09EF\d]+)\s*$/);
           if (bm2 || bm3) {
             const num = (bm2 ? bm2[1] : bm3[1]) || '';
             const rest = (bm2 && bm2[2] ? String(bm2[2]).trim() : '');
-            // উৎসের `উদ্দীপক ১` লেবেলটি হারায় না (HEAD-এ এটি বন্ধনিসহ ছাপা হতো) —
+            // উৎসের `উদ্দীপক ১` লেবেলটি হারায় না (HEAD-এ এটি বন্ধনিসহ ছাপা হতো) —
             // এখন বন্ধনীবিহীন পরিচ্ছন্ন লেবেল হিসেবে উদ্দীপকের প্রথম লাইনে থাকে।
             const label = num ? 'উদ্দীপক ' + num : '';
             const blk = [label, rest].filter(Boolean).join('\n');
@@ -259,11 +283,11 @@
             stimulusOpen = true;
             continue;
           }
-          if (stimulusOpen) {      // মার্কার স্পষ্টভাবে ব্লক খোলে ⇒ খোলা প্রশ্ন থাকলেও লাইনগুলো উদ্দীপকে যায়
+          if (stimulusOpen) {      // মার্কার স্পষ্টভাবে ব্লক খোলে ⇒ খোলা প্রশ্ন থাকলেও লাইনগুলো উদ্দীপকে যায়
             const t = line.trim();
             const isNextQ = /^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-:\u0983.]*)?[\u09E6-\u09EF\d]+[\u0964.)]/.test(t);
-            // Part-12: সেকশন-বিভাজক/বিভাগ-শিরোনাম উদ্দীপকে জমা হয় না (combined পেপারে
-            // `---SECTION_BREAK:MCQ---` প্রথম উদ্দীপকের সঙ্গে মিশে গিয়েছিল)
+            // Part-12: সেকশন-বিভাজক/বিভাগ-শিরোনাম উদ্দীপকে জমা হয় না (combined পেপারে
+            // `---SECTION_BREAK:MCQ---` প্রথম উদ্দীপকের সঙ্গে মিশে গিয়েছিল)
             const isBoundary = isNextQ || /SECTION[\s_\-]*BREAK/i.test(t) || /^[\-–—=*#\s]+$/.test(t) ||
               isQuestionSectionHeading(t) || /^#{0,6}\s*(?:বিভাগ|অংশ|সেকশন|Section)\b/.test(t) || /(?:বিভাগ|অংশ)[\u0983:\-]/.test(t);
             if (!t) { stimulusOpen = false; continue; }        // ফাঁকা লাইন ব্লক শেষ করে
@@ -291,6 +315,18 @@
             currentSection.questions.push(currentQuestion);
             currentQuestion = null;
           }
+          // Part-16.3: OCR sometimes repeats the same heading before every question
+          // => each question became its own section and numbering restarted at 1.
+          // Same title as the section just above => keep filling that section.
+          {
+            const normT = (t) => String(t || '').replace(/[#*_\s:\u0983\u0964.\-\u2013\u2014]+/g, '');
+            const tail = sectionTitleText.match(/(?:\u09ae\u09be\u09a8|\u09ae\u09be\u09b0\u09cd\u0995)[\u0983:\u09df]\s*([\u09E6-\u09EF\d]+)\s*$/);
+            const newTitle = tail ? sectionTitleText.slice(0, tail.index) : sectionTitleText;
+            if (currentSection.title && currentSection.questions.length > 0 && normT(newTitle) === normT(currentSection.title)) {
+              if (tail && !currentSection.marks) currentSection.marks = tail[1];
+              continue;
+            }
+          }
           if (currentSection.questions.length > 0 || currentSection.title) {
             result.sections.push(currentSection);
           }
@@ -316,13 +352,13 @@
         }
 
         // Question Number Match (১।, ২।, ৩। or 1., 2., 3. or ## ১।)
-        // Part-9j: OCR হেডিং প্রায়ই `## প্রশ্ন ১২। ...` লিখে — আগে `#` আর সংখ্যার মাঝে
-        // `প্রশ্ন` শব্দ থাকলে রেগেক্স ফেল করত ⇒ প্রশ্নটি parse-ই হতো না, নিঃশব্দে হারিয়ে যেত।
+        // Part-9j: OCR হেডিং প্রায়ই `## প্রশ্ন ১২। ...` লিখে — আগে `#` আর সংখ্যার মাঝে
+        // `প্রশ্ন` শব্দ থাকলে রেগেক্স ফেল করত ⇒ প্রশ্নটি parse-ই হতো না, নিঃশব্দে হারিয়ে যেত।
         const qStartMatch = line.match(/^(?:>\s*)?(?:#{1,6}\s*)?(?:প্রশ্ন[\s\-–—:ঃ.]*)?([\u09E6-\u09EF\d]+)[।.)]\s*(.*)$/);
         if (qStartMatch) {
-          // Part-12 (ট্রায়াজ ৩): `১. ক.` `১. খ.` … — একই নম্বরের লেবেল-সারিগুলো আলাদা
-          // প্রশ্ন নয়; খোলা প্রশ্নের সাব-প্রশ্ন হিসেবে জমা হয় (আগে প্রতি লাইনে নতুন প্রশ্ন
-          // তৈরি হয়ে ৪টি চ্যাপ্টা প্রশ্নের তালিকা হতো, উদ্দীপক আলাদা ব্লক থাকায় হারাত)।
+          // Part-12 (ট্রায়াজ ৩): `১. ক.` `১. খ.` … — একই নম্বরের লেবেল-সারিগুলো আলাদা
+          // প্রশ্ন নয়; খোলা প্রশ্নের সাব-প্রশ্ন হিসেবে জমা হয় (আগে প্রতি লাইনে নতুন প্রশ্ন
+          // তৈরি হয়ে ৪টি চ্যাপ্টা প্রশ্নের তালিকা হতো, উদ্দীপক আলাদা ব্লক থাকায় হারাত)।
           if (currentQuestion && String(currentQuestion.num) === String(qStartMatch[1])) {
             const dupLbl = qStartMatch[2].trim().match(/^([\u0995\u0996\u0997\u0998\u0999\u099a])[\.\u0983\u0964\-\u2013\u2014]\s*(.+)$/);
             if (dupLbl) {
@@ -344,17 +380,17 @@
             options: []
           };
           pendingPreContext = '';
-          // Part-12 (ট্রায়াজ ৩): `১. নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও।`
-          // স্টেম নয় — এটি ঐ নম্বরের সাব-প্রশ্নগুলোর সাধারণ উদ্দীপক। আগে এটি স্বাধীন
-          // "প্রশ্ন" হয়ে ৮টি চ্যাপ্টা প্রশ্নের তালিকা বানাত; এখন ২টি গ্রুপ (প্রতিটিতে ৪টি
-          // সাব-প্রশ্ন + নিজস্ব উদ্দীপক) তৈরি হয়।
+          // Part-12 (ট্রায়াজ ৩): `১. নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও।`
+          // স্টেম নয় — এটি ঐ নম্বরের সাব-প্রশ্নগুলোর সাধারণ উদ্দীপক। আগে এটি স্বাধীন
+          // "প্রশ্ন" হয়ে ৮টি চ্যাপ্টা প্রশ্নের তালিকা বানাত; এখন ২টি গ্রুপ (প্রতিটিতে ৪টি
+          // সাব-প্রশ্ন + নিজস্ব উদ্দীপক) তৈরি হয়।
           if (!currentQuestion.stimulus && /^নিচের\s*(?:উদ্দীপক|অনুচ্ছেদ|তথ্য|ছক|চিত্র)/i.test(currentQuestion.text) &&
-              /(?:পড়|উত্তর দাও|লক্ষ্য কর|দেখো)/i.test(currentQuestion.text)) {
+              /(?:পড়|উত্তর দাও|লক্ষ্য কর|দেখো)/i.test(currentQuestion.text)) {
             currentQuestion.stimulus = currentQuestion.text;
             currentQuestion.text = '';
           }
-          // Part-12 (ট্রায়াজ ৩): `১. ক. <বিষয়বস্তু> ৩` — নম্বরের সঙ্গে লেবেল একই লাইনে
-          // এলে সেটিকে স্বতন্ত্র প্রশ্ন না করে ঐ নম্বরের প্রথম সাব-প্রশ্ন করা হয়।
+          // Part-12 (ট্রায়াজ ৩): `১. ক. <বিষয়বস্তু> ৩` — নম্বরের সঙ্গে লেবেল একই লাইনে
+          // এলে সেটিকে স্বতন্ত্র প্রশ্ন না করে ঐ নম্বরের প্রথম সাব-প্রশ্ন করা হয়।
           if (!/MCQ/i.test(String((parseOptions && parseOptions.docType) || ''))) {
             const inlineSub = currentQuestion.text.match(/^([\u0995\u0996\u0997\u0998\u0999\u099a])[\.\u0983:\u0964\-\u2013\u2014]\s*(.+)$/);
             if (inlineSub) {
@@ -363,14 +399,14 @@
               currentQuestion.text = '';
             }
           }
-          // উদ্দীপক একবারই ছাপা হয় (দুই প্রশ্নে ডুপ্লিকেট এড়াতে মার্কার খরচ হলো)
+          // উদ্দীপক একবারই ছাপা হয় (দুই প্রশ্নে ডুপ্লিকেট এড়াতে মার্কার খরচ হলো)
           stimulusOpen = false;
           pendingStimulus = '';
           continue;
         }
 
         // Context continued (if waiting for next question)
-        if (!currentQuestion && pendingPreContext) {
+        if (!currentQuestion && pendingPreContext && !this._metaLine(line)) {
           pendingPreContext += '\n' + line;
           continue;
         }
@@ -388,26 +424,27 @@
           }
         }
 
-        // Part-9c-fix: CQ-তে বন্ধনী-লেবেল (ক) খ) গ) ঘ)) = সাব-প্রশ্ন — MCQ অপশন নয়।
-        // আগে OCR-এর `ক)` `খ)` লাইনগুলো parseMcqOptions-এ ধরা পড়ে `options` হয়ে যেত;
-        // CQ রেন্ডারারে options ছাপা হয় না ⇒ প্রশ্নের ক/খ/গ পুরো হারিয়ে যেত (.doc/.docx দুটোতেই)।
+        // Part-9c-fix: CQ-তে বন্ধনী-লেবেল (ক) খ) গ) ঘ)) = সাব-প্রশ্ন — MCQ অপশন নয়।
+        // আগে OCR-এর `ক)` `খ)` লাইনগুলো parseMcqOptions-এ ধরা পড়ে `options` হয়ে যেত;
+        // CQ রেন্ডারারে options ছাপা হয় না ⇒ প্রশ্নের ক/খ/গ পুরো হারিয়ে যেত (.doc/.docx দুটোতেই)।
         const _isMcqCtx = /MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
         if (!_isMcqCtx && currentQuestion && (!currentQuestion.options || currentQuestion.options.length === 0)) {
-          const brSub = line.match(/^\(?\s*([কখগঘ])\s*\)\s*(.+)$/);
+          // ইংরেজি পত্রের `(a) …`, `(b) …` উপ-প্রশ্নও (বন্ধনী-সহ, ছোট হাতের a–h)
+          const brSub = line.match(/^\(?\s*([কখগঘ])\s*\)\s*(.+)$/) || line.match(/^\(\s*([a-h])\s*\)\s*(.+)$/);
           if (brSub) {
             const bt = this._cqMarkTail(brSub[2]);
             currentQuestion.subQuestions.push({
               label: brSub[1],
               text: bt.text,
-              mark: bt.mark          // Part-12: উৎসে নম্বর না থাকলে খালি — কল্পনা করা হয় না
+              mark: bt.mark          // Part-12: উৎসে নম্বর না থাকলে খালি — কল্পনা করা হয় না
             });
             continue;
           }
         }
 
-        // Part-9j: CQ-তে লাইন-শুরুতে `ক./খ./গ./ঘ.` = সাব-প্রশ্ন — parseMcqOptions-এর আগেই ধরা হয়।
-        // আগে inline সংক্ষেপ (যেমন `গ. সা. গু.` = গরিষ্ঠ সাধারণ গুণনীয়ক) দুই টুকরো হয়ে option-এ
-        // চলে যেত ⇒ CQ রেন্ডারে সেগুলো ছাপা হয় না ⇒ সাব-প্রশ্ন ও মার্ক দুটোই নিঃশব্দে হারাত।
+        // Part-9j: CQ-তে লাইন-শুরুতে `ক./খ./গ./ঘ.` = সাব-প্রশ্ন — parseMcqOptions-এর আগেই ধরা হয়।
+        // আগে inline সংক্ষেপ (যেমন `গ. সা. গু.` = গরিষ্ঠ সাধারণ গুণনীয়ক) দুই টুকরো হয়ে option-এ
+        // চলে যেত ⇒ CQ রেন্ডারে সেগুলো ছাপা হয় না ⇒ সাব-প্রশ্ন ও মার্ক দুটোই নিঃশব্দে হারাত।
         const _cqDocCtx = !/MCQ/i.test(String((parseOptions && parseOptions.docType) || ''));
         if (_cqDocCtx && currentQuestion && (currentQuestion.options || []).length === 0 &&
             (!currentQuestion.statements || currentQuestion.statements.length === 0) &&
@@ -425,6 +462,19 @@
           }
         }
 
+        // Part-18.9: ঘ-এর পরে ঙ./চ./ছ./জ. = পরের উপ-প্রশ্ন (প্রাথমিক পত্রে ক–ঙ সাধারণ)। আগে "ঙ." একা
+        // বহুনির্বাচনি-বিকল্প হয়ে "(ঙ)" ছাপা হতো। শুধু ক্রম মিললে (আগের লেবেল ঠিক আগের অক্ষর) — MCQ-তে নয়।
+        if (_cqDocCtx && currentQuestion && (currentQuestion.options || []).length === 0 &&
+            currentQuestion.subQuestions.length > 0 && /^[ঙচছজ][\.\:।\-]\s*\S/.test(line)) {
+          const NEXT = { 'ঘ': 'ঙ', 'ঙ': 'চ', 'চ': 'ছ', 'ছ': 'জ' };
+          const lastLabel = currentQuestion.subQuestions[currentQuestion.subQuestions.length - 1].label;
+          if (NEXT[lastLabel] === line[0]) {
+            const bt = this._cqMarkTail(line.replace(/^[ঙচছজ][\.\:।\-]\s*/, ''));
+            currentQuestion.subQuestions.push({ label: line[0], text: bt.text, mark: bt.mark });
+            continue;
+          }
+        }
+
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions
@@ -432,7 +482,7 @@
 const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s\t]+[\u09E6-\u09EF\d]$/.test(o.text.trim()) || o.text.trim().length > 50);
         
         // Part-9b: অপশন-সীমা — একই লেবেল (ক/খ/গ/ঘ) আবার শুরু হলে সেটা নতুন প্রশ্নের শুরু,
-        // আগের প্রশ্নে জোড়া লাগানো নয় (১৫-অপশনের ভুল-গ্রুপিং ও তথ্য-হার দুটোই ঠেকায়)।
+        // আগের প্রশ্নে জোড়া লাগানো নয় (১৫-অপশনের ভুল-গ্রুপিং ও তথ্য-হার দুটোই ঠেকায়)।
         if (mcqOpts.length > 0 && currentQuestion && currentQuestion.options.length > 0 &&
             currentQuestion.options.some(o => o.label === mcqOpts[0].label)) {
           currentSection.questions.push(currentQuestion);
@@ -504,8 +554,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           continue;
         }
 
-        // Part-12: পাইপলাইন-নিয়ন্ত্রণ লাইন (`---SECTION_BREAK:MCQ---`, `[LAYOUT: …]`) কনটেন্টে
-        // জোড়া লাগে না — main.js / doc-classifier এগুলো উপরেই আলাদা করে; এখানে এসে গেলে উপেক্ষা।
+        // Part-12: পাইপলাইন-নিয়ন্ত্রণ লাইন (`---SECTION_BREAK:MCQ---`, `[LAYOUT: …]`) কনটেন্টে
+        // জোড়া লাগে না — main.js / doc-classifier এগুলো উপরেই আলাদা করে; এখানে এসে গেলে উপেক্ষা।
         if (/^\s*[-\u2013\u2014=*\s]*SECTION[\s_\-]*BREAK[\s\S]*$/i.test(line) || /^\s*\[LAYOUT:/i.test(line)) continue;
 
         // Append to question text / stimulus (strip leading > if present)
@@ -517,10 +567,22 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             const lastSub = currentQuestion.subQuestions[currentQuestion.subQuestions.length - 1];
             lastSub.text += ' ' + cleanStim;
           } else if ((currentQuestion.options || []).length > 0) {
-            // Part-9j: MCQ-তে অপশনের পরে আসা লাইন আগে নিঃশব্দে বাদ পড়ত (টীকা/নোট/গোটা-লাইন ধারাবাহিকতা) —
-            // এখন প্রশ্নের টেক্সটে যোগ হয়, হারায় না।
+            // Part-9j: MCQ-তে অপশনের পরে আসা লাইন আগে নিঃশব্দে বাদ পড়ত (টীকা/নোট/গোটা-লাইন ধারাবাহিকতা) —
+            // এখন প্রশ্নের টেক্সটে যোগ হয়, হারায় না।
             currentQuestion.text = (currentQuestion.text ? currentQuestion.text + ' ' : '') + cleanStim;
           }
+        } else {
+          // সময়/পূর্ণমান মেটা-লাইন (সেকশন-শিরোনামের পরে, হেডার-স্ক্যানের ৮-লাইনের বাইরে) — প্রশ্নের
+          // উপরে আবার ছাপা নয়: হেডারের ফাঁকা ঘর পূরণ, নইলে সেকশনের মেটা; ভাঙা `পূর্ণ`-টুকরোও বাদ।
+          const meta = this._metaLine(line);
+          if (meta) {
+            if (meta.time) { if (!result.header.time) result.header.time = meta.time; else currentSection.time = meta.time; }
+            if (meta.marks) { if (!result.header.marks) result.header.marks = meta.marks; else currentSection.marks = currentSection.marks || meta.marks; }
+            continue;
+          }
+          // প্রথম প্রশ্নের আগের অচেনা লাইন (হেডার-স্ক্যানে না ধরা পড়া শিরোনাম/নির্দেশনা) আগে
+          // নিঃশব্দে বাদ পড়ত — এখন পরের প্রশ্নের preContext হিসেবে ছাপা হয়, কনটেন্ট হারায় না।
+          pendingPreContext += (pendingPreContext ? '\n' : '') + line.replace(/^>\s?/, '');
         }
       }
 
@@ -532,6 +594,24 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       }
 
       return result;
+    },
+
+    /**
+     * প্রশ্নের বাইরে থাকা সময়/পূর্ণমান মেটা-লাইন চেনা: `সময়: ৩ ঘন্টা`, `পূর্ণমান: ৫০`,
+     * `সময়: ৩ ঘন্টা | পূর্ণমান: ৫০`, `Time: 2 hours  Full Marks: 50`, অথবা ভাঙা টুকরো `পূর্ণ` / `পূর্ণমান`।
+     * @returns {{time:string, marks:string}|null}
+     */
+    _metaLine(line) {
+      const t = String(line || '').replace(/^[>*\-#\s]+/, '').trim();
+      if (!t || t.length > 90) return null;
+      const TIME = '(?:\u09b8\u09ae(?:\u09df|\u09af\u09bc)|time|duration)';
+      const MARKS = '(?:\u09aa\u09c2\u09b0\u09cd\u09a3\\s*\u09ae\u09be\u09a8|\u09ae\u09be\u09a8|(?:full|total)\\s*marks?)';
+      if (new RegExp('^(?:\u09aa\u09c2\u09b0\u09cd\u09a3|\u09aa\u09c2\u09b0\u09cd\u09a3\\s*\u09ae\u09be\u09a8|' + TIME + ')\\s*[:\u0983\\-]?$', 'i').test(t)) return { time: '', marks: '' };
+      if (!new RegExp('^(?:' + TIME + '|' + MARKS + ')\\s*[:\u0983\\-]', 'i').test(t)) return null;
+      const tm = t.match(new RegExp(TIME + '\\s*[:\u0983\\-]\\s*(.+?)(?=\\s*[|;,]|\\s{2,}|\\s*' + MARKS + '\\s*[:\u0983\\-]|$)', 'i'));
+      const mm = t.match(new RegExp(MARKS + '\\s*[:\u0983\\-]\\s*([\u09E6-\u09EF\\d.]+)', 'i'));
+      if (!tm && !mm) return null;
+      return { time: tm ? tm[1].trim() : '', marks: mm ? mm[1].trim() : '' };
     },
 
     /**
@@ -556,8 +636,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     parseMcqOptions(line) {
       // Part-9e: LaTeX/কোড-স্প্যানের ভিতরের অক্ষরকে অপশন-লেবেল ভাবা নিষিদ্ধ।
       // আগে `$3\vec{a} - 2\vec{b}$`-এর ভিতরের `a`/`b`-কে ইংরেজি লেবেল `a.`, `b.` ভেবে ভেঙে
-      // ফেলা হত ⇒ অপশনে ভূত-লেবেল (ক a খ b) আর `\vec` হারিয়ে যেত (ব্যবহারকারীর স্ক্রিনশট #৩)।
-      // এখন: কোড-স্প্যানগুলো (ব্যাকটিক, $..$, $$..$$) মাস্ক করে কেবল বাইরের লেখায় লেবেল খোঁজা হয়।
+      // ফেলা হত ⇒ অপশনে ভূত-লেবেল (ক a খ b) আর `\vec` হারিয়ে যেত (ব্যবহারকারীর স্ক্রিনশট #৩)।
+      // এখন: কোড-স্প্যানগুলো (ব্যাকটিক, $..$, $$..$$) মাস্ক করে কেবল বাইরের লেখায় লেবেল খোঁজা হয়।
       const spans = [];
       const masked = String(line).replace(/`[^`]*`|\$\$[\s\S]*?\$\$|\$[^$]*\$/g, (mm) => {
         spans.push(mm);
@@ -567,7 +647,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const regex = /(?:^|\s*)(?:[\(\[\{（]?([ক-চa-dABCD])[.)\]\}]\s*)(.*?)(?=(?:[\s\t]*[\(\[\{（]?[ক-চa-dABCD][.)\]\}]|$))/g;
       const options = [];
       let m;
-      // মাস্ক-করা অংশ বাদ দিয়ে লেবেল-পজিশন খুঁজি
+      // মাস্ক-করা অংশ বাদ দিয়ে লেবেল-পজিশন খুঁজি
       const labelPositions = [];
       let mm2;
       const labelRe = /(?:^|[\s\t])(?:[\(\[\{（]?([ক-চa-dABCD])[.)\]\}]\s*)/g;
@@ -580,7 +660,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         let text = masked.slice(labelPositions[i].contentStart, end).trim();
         // ট্রেইলিং খোলা ব্র্যাকেট বাদ
         text = text.replace(/[\(\[\{（]+$/, '').trim();
-        // মাস্ক-প্লেসহোল্ডার ফিরিয়ে আনি
+        // মাস্ক-প্লেসহোল্ডার ফিরিয়ে আনি
         text = text.replace(/\u0000(\d+)\u0000/g, (x, idx) => spans[parseInt(idx, 10)] || '');
         text = this.normalizeRomanText(text);
         if (text) options.push({ label: labelPositions[i].label, text });
@@ -614,12 +694,12 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       institute: 'আপনার প্রতিষ্ঠান এর নাম',
       location: 'ঠিকানা লিখুন',
       exam: 'পরীক্ষার নাম লিখুন',
-      classSubject: 'শ্রেণিঃ ................  |  বিষয়ঃ ................',
-      time: 'সময়: ................',
+      classSubject: 'শ্রেণিঃ ................  |  বিষয়ঃ ................',
+      time: 'সময়: ................',
       marks: 'পূর্ণমানঃ ................'
     },
 
-    /** CQ/Math/General creative-path হেডার-ফলব্যাক — planner অনুপলব্ধ হলেও প্রিভিউতে একই ফিল্ড দেখায় */
+    /** CQ/Math/General creative-path হেডার-ফলব্যাক — planner অনুপলব্ধ হলেও প্রিভিউতে একই ফিল্ড দেখায় */
     CQ_HEADER_FALLBACK: {
       institute: 'আপনার প্রতিষ্ঠানের নাম',
       location: 'ঠিকানা লিখুন',
@@ -630,9 +710,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       marks: '৭০'
     },
 
-    applyCqHeaderFallbacks(header) {
+    applyCqHeaderFallbacks(header, docType, lang) {
       const planner = this._getCqPlanner();
-      const FB = (planner && planner.CQ_HEADER_FALLBACK) || this.CQ_HEADER_FALLBACK;
+      // ডাউনলোডের মতোই ডকটাইপ/ভাষা-ভিত্তিক ফলব্যাক-সেট (EXAM_GENERAL / ইংরেজি পত্রে কাল্পনিক মান নেই)
+      const FB = (planner && planner.headerFallback) ? planner.headerFallback(docType || 'EXAM_CQ', lang)
+        : ((planner && planner.CQ_HEADER_FALLBACK) || this.CQ_HEADER_FALLBACK);
       const h = header || {};
       const nonEmpty = (v) => v !== null && v !== undefined && String(v).trim() !== '';
       return {
@@ -657,8 +739,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         exam: h.exam || FB.exam,
         classAndSubject: h.classAndSubject || FB.classSubject,
         examType: h.examType || '',
-        // সময়/পূর্ণমান কাঁচা মান হিসেবেই রাখা হয় — রেন্ডারার নিজে 'সময়: '/'পূর্ণমানঃ '
-        // প্রিফিক্স বসায় (ডাবল-প্রিফিক্স এড়াতে)। প্লেসহোল্ডারে ডট বসে।
+        // সময়/পূর্ণমান কাঁচা মান হিসেবেই রাখা হয় — রেন্ডারার নিজে 'সময়: '/'পূর্ণমানঃ '
+        // প্রিফিক্স বসায় (ডাবল-প্রিফিক্স এড়াতে)। প্লেসহোল্ডারে ডট বসে।
         time: h.time || '................',
         marks: h.marks || '................',
         instructions: h.instructions || '',
@@ -721,7 +803,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           cols: options.columns || 2,
           rightTab: options.rightTab,
           skipFirstColumn: options.skipFirstColumn,
-          cqHeaderFallback: options.cqHeaderFallback === true
+          cqHeaderFallback: options.cqHeaderFallback === true,
+          grade: options.grade,
+          __frontmatter: options.__frontmatter,
+          profileKey: options.profileKey,
+          layoutColumns: options.layoutColumns   // Part-18.9: ১/২ কলাম/স্বয়ংক্রিয়
         });
         return (p && p.geometry && Array.isArray(p.columns)) ? p : null;
       } catch (e) {
@@ -734,7 +820,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       if (!options || options.length === 0) return '';
 
       // Planner-এ প্রশ্ন না-গেলেও একই measured-width grid বেছে নিই; legacy
-      // forceTwoColumns আর ছোট বিকল্পকে অযথা ২-কলামে নামিয়ে দেয় না।
+      // forceTwoColumns আর ছোট বিকল্পকে অযথা ২-কলামে নামিয়ে দেয় না।
       let gridCols = Number(renderOpts.gridCols || (renderOpts.planItem && renderOpts.planItem.grid && renderOpts.planItem.grid.cols) || 0);
       if (!(gridCols >= 1 && gridCols <= 4)) {
         const planner = this._getMcqPlanner();
@@ -792,7 +878,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       return null;
     },
 
-    /** Part-8b: টেক্সট + $...$ ইকুয়েশন → স্ক্রিন-প্রিভিউ HTML (কাঁচা LaTeX আর কখনো নয়) */
+    /** Part-8b: টেক্সট + $...$ ইকুয়েশন → স্ক্রিন-প্রিভিউ HTML (কাঁচা LaTeX আর কখনো নয়) */
     richText(text) {
       const raw = String(text == null ? '' : text);
       const EC = this._getEquationConverter();
@@ -851,26 +937,28 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         // MCQ Question Item
         html += `<div class="mcq-q-item">`;
         html += `<div class="mcq-q-row">`;
+        // Part-15.5: MCQ-তে সব প্রশ্নে ০.৩" (CSS-এর মান) — ১–৯-এর ০.২" কেবল CQ/সাধারণ পথে
+        const mcqPad = '';
         html += `<span class="mcq-num">${this.escape(q.num)}.</span>`;
         html += `<span class="mcq-text">${this.richText(q.text)}</span>`;
         html += `</div>`;
 
         // Stimulus / statements if any (indented 22px)
         if (q.statements && q.statements.length > 0) {
-          html += `<div class="mcq-stimulus-row">`;
+          html += `<div class="mcq-stimulus-row"${mcqPad}>`;
           for (const stmt of q.statements) {
             html += `<div>${this.richText(stmt)}</div>`;
           }
           html += `</div>`;
         } else if (q.stimulus) {
-          html += `<div class="mcq-stimulus-row">`;
+          html += `<div class="mcq-stimulus-row"${mcqPad}>`;
           html += this.richTextBlock(q.stimulus);
           html += `</div>`;
         }
 
         // Options row (indented 22px)
         if (q.options && q.options.length > 0) {
-          html += `<div class="mcq-options-row">`;
+          html += `<div class="mcq-options-row"${mcqPad}>`;
           html += this.renderMcqOptions(q.options, renderOpts);
         // Part-9b: অপশন না পেলে (লম্বা লাইন subQuestions-এ গেলে) সেগুলোও ছাপা হবে — তথ্য হারাবে না
         if ((!q.options || q.options.length === 0) && q.subQuestions && q.subQuestions.length > 0) {
@@ -889,7 +977,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       } else {
         // CQ Question Item — Part-11: প্রিভিউর ইনডেন্ট/মার্ক-অবস্থান একই CqBookletPlanner
         // জ্যামিতি থেকে আসে (432 dxa হ্যাঙ্গিং স্টেম, 864 dxa উপ-প্রশ্ন, নম্বর ডান প্রান্তে),
-        // ফলে স্ক্রিনে যা দেখা যায় তা-ই Word 2003 (.doc) ও .docx-তে ছাপা হয়।
+        // ফলে স্ক্রিনে যা দেখা যায় তা-ই Word 2003 (.doc) ও .docx-তে ছাপা হয়।
         const firstLineText = (q.text || '').trim();
         let displayStimulus = q.stimulus || '';
         let stimFirstLine = '';
@@ -908,7 +996,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         const displayText = firstLineText || stimFirstLine;
         const G = renderOpts && renderOpts.cqGeom;
         const tw = (v) => +(v / 20).toFixed(2);   // twips → pt (প্রিভিউর inline styling)
-        // Part-12 (ট্রায়াজ ১): প্রিভিউর line-height প্ল্যানের lineFactor (১.৫) থেকে আসে —
+        // Part-12 (ট্রায়াজ ১): প্রিভিউর line-height প্ল্যানের lineFactor (১.৫) থেকে আসে —
         // RTF-এর \sl (.fs × ১.৫) ও DOCX-এর w:line (২৪০ × ১.৫) হুবহু এই রেশিওতে লক করা।
         const lh = (G && Number.isFinite(+G.lineRenderCssRatio)) ? String(+G.lineRenderCssRatio) : '1.35';
         const stemCss = G ? `padding-left: ${tw(G.indent)}pt; text-indent: -${tw(G.indent)}pt;` : 'display: flex; align-items: flex-start;';
@@ -919,7 +1007,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
 
         html += `<div class="cq-q-item${G ? ' cq-booklet-item' : ''}" style="margin-bottom: 6px; font-size: 12pt; line-height: ${lh};">`;
         html += `<div class="cq-q-row${G ? ' cq-print-row' : ''}" style="${stemCss}">`;
-        html += `<span class="cq-num font-bold" style="${numCss}">${this.escape(q.num)}।</span>`;
+        const _P = this._getCqPlanner();
+        const numDelim = (_P && _P.numDelimiter) ? _P.numDelimiter(q) : '।';
+        const subLbl = (l) => ((_P && _P.subLabelText) ? _P.subLabelText(l) : l + '.');
+        html += `<span class="cq-num font-bold" style="${numCss}">${this.escape(q.num)}${numDelim}</span>`;
         html += `<span class="cq-text${G ? '' : ' text-justify flex-1'}">${this.richText(displayText)}</span>`;
         html += `</div>`;
 
@@ -941,13 +1032,13 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
               // হ্যাঙ্গিং 432 (43.2−21.6) + ডান-প্রান্তে নম্বর (প্রিন্টের রাইট ট্যাবের সমতুল্য)
               html += `<div class="cq-sub-row cq-print-row" style="padding-left: ${tw(G.subIndent)}pt; text-indent: -${tw(G.subHanging)}pt; font-size: 12pt; margin: 2px 0;">`;
               if (sub.mark) html += `<span class="cq-sub-mark" style="float: right; margin-left: 8pt; font-weight: 600;">${this.escape(sub.mark)}</span>`;
-              html += `<span class="cq-sub-lbl font-bold" style="margin-right: ${tw(G.subIndent - G.subHanging)}pt;">${this.escape(sub.label)}.</span>`;
+              html += `<span class="cq-sub-lbl font-bold" style="margin-right: ${tw(G.subIndent - G.subHanging)}pt;">${this.escape(subLbl(sub.label))}</span>`;
               html += `<span class="cq-sub-text">${this.richText(sub.text)}</span>`;
               html += `</div>`;
               continue;
             }
             html += `<div class="cq-sub-row" style="display: flex; align-items: flex-start; justify-content: space-between; font-size: 12pt; margin: 2px 0;">`;
-            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(sub.label)}.</span><span class="cq-sub-text">${this.richText(sub.text)}</span></div>`;
+            html += `<div class="flex-1 text-justify"><span class="cq-sub-lbl font-bold" style="margin-right: 6px;">${this.escape(subLbl(sub.label))}</span><span class="cq-sub-text">${this.richText(sub.text)}</span></div>`;
             html += `<div class="cq-sub-mark font-bold" style="margin-left: 12px; text-align: right; white-space: nowrap;">${this.escape(sub.mark)}</div>`;
             html += `</div>`;
           }
@@ -966,10 +1057,11 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     renderHeaderBlock(header, renderOpts = {}) {
       // CQ, Math ও General creative-paper preview-তে একই edit-যোগ্য CQ header defaults.
       const useCqFb = !!(renderOpts && (renderOpts.cqFallback || usesCreativeHeaderFallback(renderOpts.docType)));
-      if (useCqFb) header = this.applyCqHeaderFallbacks(header);
+      if (useCqFb) header = this.applyCqHeaderFallbacks(header, renderOpts.docType, renderOpts.lang);
+      const isEnPaper = renderOpts && renderOpts.lang === 'en';
       const useFb = !!(renderOpts && (renderOpts.fallback || renderOpts.docType === 'EXAM_MCQ'));
       if (useFb) header = this.applyMcqHeaderFallbacks(header);
-      const pmLabel = useFb ? 'পূর্ণমানঃ ' : 'পূর্ণমান: ';
+      const pmLabel = isEnPaper ? 'Full Marks: ' : (useFb ? 'পূর্ণমানঃ ' : 'পূর্ণমান: ');
       // Part-12: বুকেলেট প্রিভিউতে হেডারের লাইন-বক্সও প্ল্যান-রেশিওতে (RTF s32+\sl480)
       const hlh = (renderOpts && renderOpts.cqGeom && Number.isFinite(+renderOpts.cqGeom.lineRenderCssRatio)) ? String(+renderOpts.cqGeom.lineRenderCssRatio) : '1.2';
       let html = `<div class="qp-header text-center pb-1 mb-1 border-b border-black" style="margin-top: 0; padding-top: 0;">`;
@@ -987,7 +1079,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       }
 
       html += `<div class="qp-metrics" style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; font-weight: bold; margin: 2px 0 0 0; line-height: 1.2; font-size: 12pt; border-top: 1px solid #94a3b8; padding-top: 2px;">`;
-      html += `<div style="text-align: left; flex: 1; white-space: nowrap;">${header.time ? 'সময়: ' + this.escape(header.time) : ''}</div>`;
+      html += `<div style="text-align: left; flex: 1; white-space: nowrap;">${header.time ? (isEnPaper ? 'Time: ' + this.escape(header.time) : '') || 'সময়: ' + this.escape(header.time) : ''}</div>`;
       if (header.examType) {
         html += `<div style="text-align: center; flex: 1.5; text-decoration: underline; font-weight: bold; font-size: 13pt; letter-spacing: 0.5px;">${this.escape(header.examType)}</div>`;
       } else {
@@ -1004,7 +1096,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     },
 
     /**
-     * Part-9: প্রকাশ্য renderToHtml — মূল রেন্ডারের পরে, প্রয়োজনে শেষে অডিট-নোট পৃষ্ঠা যোগ করে।
+     * Part-9: প্রকাশ্য renderToHtml — মূল রেন্ডারের পরে, প্রয়োজনে শেষে অডিট-নোট পৃষ্ঠা যোগ করে।
      * (preview == download সমতা: Word-এর মতোই আলাদা পৃষ্ঠা, পেজ-ব্রেক সহ।)
      */
     renderToHtml(parsedData, options = {}) {
@@ -1018,7 +1110,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
     /**
      * Part-9j: ফাইলের শেষের যাচাই/অডিট-নোট ব্লক আলাদা করা।
      * শুধু তখনই কাটে যখন ব্লকে বুলেট (`- `) বা স্পষ্ট সিগন্যাল (মূল পৃষ্ঠা/LaTeX/যাচাই/শিখনফল...) আছে,
-     * আর ব্লকের ঠিক আগে কোনো প্রশ্ন-লাইন/শিরোনাম আছে — তাই সাধারণ বডি-টেক্সট ভুলে কাটা পড়ে না।
+     * আর ব্লকের ঠিক আগে কোনো প্রশ্ন-লাইন/শিরোনাম আছে — তাই সাধারণ বডি-টেক্সট ভুলে কাটা পড়ে না।
      */
     _extractTrailingAuditNote(lines) {
       const arr = Array.isArray(lines) ? lines.slice() : [];
@@ -1032,6 +1124,8 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         const raw = String(arr[i]);
         const t = raw.trim();
         if (/^(?:#{1,6}\s*)?(?:প্রশ্ন\s*)?[\u09E6-\u09EF\d]+[।.)]/.test(t) || /^#{1,6}\s+\S/.test(t)) break; // প্রশ্ন/শিরোনাম ⇒ থামো
+        // বিকল্প/উপ-প্রশ্নের লাইন (`ক. ৪  খ. ৬ …`, `(ক) …`) শেষ প্রশ্নের অংশ — নোটে টানা যাবে না
+        if (/^\(?\s*[কখগঘ]\s*[.)।:]/.test(t) || /^\(\s*[a-d]\s*\)/.test(t)) break;
         const isBullet = /^[-–—•*]\s+/.test(t) || /^\[/.test(t) || /\]$/.test(t);
         const isNote = NOTE_RE.test(t);
         if (isBullet || isNote) { seen = true; start = i; continue; }
@@ -1087,9 +1181,17 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const editableAttr = options.editable ? 'contenteditable="true" spellcheck="false"' : '';
       const styleAttr = `style="font-size: ${fontSize}; line-height: ${lineSpacing};"`;
       const renderDocType = options.docType || 'EXAM_CQ';
+      const _cqP = this._getCqPlanner();
+      const paperLang = (_cqP && _cqP.paperLang) ? _cqP.paperLang(parsedData) : 'bn';
       const headerRenderOpts = usesCreativeHeaderFallback(renderDocType)
-        ? { docType: renderDocType, cqFallback: true }
-        : {};
+        ? { docType: renderDocType, cqFallback: true, lang: paperLang }
+        : { lang: paperLang };
+      // ডাউনলোডের প্রোফাইল পোর্ট্রেট হলে (EXAM_GENERAL) প্রিভিউও বুকলেট নয় — preview == download
+      const _prof = (_cqP && _cqP.profile) ? _cqP.profile(renderDocType) : null;
+      // Part-18.9: ২য়–৫ম শ্রেণির সাধারণ পত্র → ল্যান্ডস্কেপ প্রোফাইল; ডাউনলোডের মতো প্রিভিউও কলাম-প্ল্যানে
+      const _layoutKey = (_cqP && _cqP.layoutKey) ? _cqP.layoutKey(renderDocType, parsedData, options) : renderDocType;
+      const usePrimary = _layoutKey === 'EXAM_PRIMARY';
+      const useBooklet = usePrimary || (isLandscape && !(_prof && _prof.landscape === false && usesCreativeHeaderFallback(renderDocType)));
 
       // Flatten all questions with their section titles
       const allItems = [];
@@ -1103,41 +1205,71 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       }
 
       // CASE A: BOOKLET MODE — Part-11: প্ল্যান-চালিত। কলাম-ভাগ, ব্যাক-কভার সংরক্ষণ ও
-      // ইনডেন্ট সব এখানে নতুন করে গণনা করা হয় না — একই CqBookletPlanner-এর
-      // plan.columns ব্যবহার হয় যা Word 2003 (.doc) ও .docx রেন্ডারার কনজিউম করে।
-      const cqPlan = isLandscape ? this._cqLayoutPlan(parsedData, options) : null;
-      if (isLandscape && cqPlan && Array.isArray(cqPlan.columns) && cqPlan.columns.length) {
+      // ইনডেন্ট সব এখানে নতুন করে গণনা করা হয় না — একই CqBookletPlanner-এর
+      // plan.columns ব্যবহার হয় যা Word 2003 (.doc) ও .docx রেন্ডারার কনজিউম করে।
+      // Part-18.9: EXAM_ONECOL প্রিভিউ — ডাউনলোডের মতোই A4 লম্বালম্বি, ১ কলাম; প্ল্যানের প্রতিটি কলাম = একটি পাতা
+      if (_layoutKey === 'EXAM_ONECOL') {
+        const p1 = this._cqLayoutPlan(parsedData, options);
+        if (p1 && Array.isArray(p1.columns) && p1.columns.length) {
+          const P = this._getCqPlanner();
+          const hm = (P && P.headerPreviewModel) ? P.headerPreviewModel(p1) : parsedData.header;
+          const BND = '০১২৩৪৫৬৭৮৯';
+          const bn = (v) => String(v).split('').map((d) => (d >= '0' && d <= '9' ? BND[+d] : d)).join('');
+          let html = `<div class="${fontClass} dense-zero-gap">`;
+          p1.columns.forEach((col, ci) => {
+            const isLast = ci === p1.columns.length - 1;
+            html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ${bn(ci + 1)} (A4 লম্বালম্বি, ১ কলাম)</div>`;
+            html += `<div class="paper-sheet size-a4-portrait ${marginClass}${isLast ? '' : ' mb-8 page-break-indicator'}">`;
+            html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait cq-onecol" ${editableAttr} ${styleAttr}>`;
+            if (col.headerFirst) html += this.renderHeaderBlock(hm, { cqGeom: p1.geometry, lang: paperLang, docType: renderDocType, cqFallback: usesCreativeHeaderFallback(renderDocType) });
+            for (const it of (col.items || [])) {
+              html += it.kind === 'sectionTitle'
+                ? `<div class="font-bold text-center py-0.5 my-1" style="font-size: ${fontSize}; line-height: 1.35;">${this.escape(it.text)}</div>`
+                : this.renderQuestionItem(it.q, { cqGeom: (P && P.itemGeometry) ? P.itemGeometry(p1.geometry, it) : p1.geometry });
+            }
+            html += `</div></div>`;
+          });
+          return html + `</div>`;
+        }
+      }
+
+      const cqPlan = useBooklet ? this._cqLayoutPlan(parsedData, options) : null;
+      if (useBooklet && cqPlan && Array.isArray(cqPlan.columns) && cqPlan.columns.length) {
         const BND = '০১২৩৪৫৬৭৮৯';
         const bn = (v) => String(v).split('').map((d) => (d >= '0' && d <= '9' ? BND[+d] : d)).join('');
         const slots = [];
-        if (cqPlan.skipFirstColumn) slots.push(null);      // সংরক্ষিত ব্যাক কভার (খালি = কনটেন্ট নয়)
+        if (cqPlan.skipFirstColumn) slots.push(null);      // সংরক্ষিত ব্যাক কভার (খালি = কনটেন্ট নয়)
         for (const col of cqPlan.columns) slots.push(col);
         if (slots.length % 2) slots.push(null);
+        // Part-18.9: ব্যাক কভার আছে কি না (বুকলেট); না থাকলে (এক পাতার পত্র) সাধারণ পৃষ্ঠা-লেবেল
+        const coverMode = !!cqPlan.skipFirstColumn || cqPlan.columns.some((c) => c && c.role === 'backcover');
         const gapPt = +(cqPlan.geometry.colGap / 20).toFixed(1);
         const cqPlanner = this._getCqPlanner();
         const headerModel = (cqPlanner && cqPlanner.headerPreviewModel) ? cqPlanner.headerPreviewModel(cqPlan) : parsedData.header;
         const renderBookletItem = (it) => (it.kind === 'sectionTitle'
           ? `<div class="font-bold text-center py-0.5 my-1" style="font-size: ${fontSize}; line-height: 1.35;">${this.escape(it.text)}</div>`
-          : this.renderQuestionItem(it.q, { cqGeom: cqPlan.geometry }));
+          : this.renderQuestionItem(it.q, { cqGeom: (cqPlanner && cqPlanner.itemGeometry) ? cqPlanner.itemGeometry(cqPlan.geometry, it) : cqPlan.geometry }));
 
         let html = `<div class="${fontClass} dense-zero-gap">`;
         for (let si = 0; si < slots.length; si += 2) {
           const sheetNo = si / 2 + 1;
           const isLastSheet = si + 2 >= slots.length;
-          html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ${bn(sheetNo)} (A4 ল্যান্ডস্কেপ, ২ কলাম) — ${bn(2 * sheetNo - 1)}য় কলাম: ${sheetNo === 1 ? 'ব্যাক কভার' : 'পৃষ্ঠা ' + bn(2 * sheetNo - 1)} · ${bn(2 * sheetNo)}য় কলাম: ${sheetNo === 1 ? 'ফ্রন্ট কভার (পৃষ্ঠা ১)' : 'পৃষ্ঠা ' + bn(2 * sheetNo)}</div>`;
+          html += `<div class="sheet-label"><i class="fas fa-book text-emerald-600"></i> শীট ${bn(sheetNo)} (A4 ল্যান্ডস্কেপ, ২ কলাম) — ${bn(2 * sheetNo - 1)}য় কলাম: ${sheetNo === 1 && coverMode ? 'ব্যাক কভার' : 'পৃষ্ঠা ' + bn(2 * sheetNo - 1)} · ${bn(2 * sheetNo)}য় কলাম: ${sheetNo === 1 && coverMode ? 'ফ্রন্ট কভার (পৃষ্ঠা ১)' : 'পৃষ্ঠা ' + bn(2 * sheetNo)}</div>`;
           html += `<div class="paper-sheet size-a4-landscape ${marginClass}${isLastSheet ? '' : ' mb-8 page-break-indicator'}">`;
           html += `<div class="grid grid-cols-2 h-full ${fontClass} dense-zero-gap" style="column-gap: ${gapPt}pt;" ${editableAttr} ${styleAttr}>`;
           for (const col of [slots[si], slots[si + 1]]) {
+            if (!col && !coverMode) { html += `<div class="qp-col-empty"></div>`; continue; }
             if (!col) {
               html += `<div class="qp-col-skip-box" style="min-height: 200px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #94a3b8; font-size: 10pt; padding: 10px;">`;
-              html += `<div style="font-weight: 700; color: #475569; font-size: 11pt; margin-bottom: 4px;">[ ব্যাক কভার — ${bn(2 * sheetNo - 1)}য় কলাম সংরক্ষিত ]</div>`;
-              html += `<div>প্রশ্ন উপচে গেলে স্বয়ংক্রিয়ভাবে এই কলামেই বসবে; না হলে ফাঁকা থাকবে (একতলে ভাঁজ করার নিয়ম)।</div>`;
+              html += `<div style="font-weight: 700; color: #475569; font-size: 11pt; margin-bottom: 4px;">[ ব্যাক কভার — ${bn(2 * sheetNo - 1)}য় কলাম সংরক্ষিত ]</div>`;
+              html += `<div>প্রশ্ন উপচে গেলে স্বয়ংক্রিয়ভাবে এই কলামেই বসবে; না হলে ফাঁকা থাকবে (একতলে ভাঁজ করার নিয়ম)।</div>`;
               html += `</div>`;
               continue;
             }
             html += `<div class="flex flex-col justify-start cq-booklet-col cq-print-col" data-print-page="${col.page}" data-col="${col.colInPage}">`;
             if (col.headerFirst) html += this.renderHeaderBlock(headerModel, {
               cqGeom: cqPlan.geometry,
+              lang: paperLang,
               docType: options.docType || 'EXAM_CQ',
               cqFallback: usesCreativeHeaderFallback(options.docType || 'EXAM_CQ')
             });
@@ -1150,9 +1282,9 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
         return html;
       }
 
-      // CqBookletPlanner অনুপলব্ধ হলে (স্ক্রিপ্ট লোড হয়নি) নিচের CASE B-র
-      // সাধারণ ২-কলাম ফ্লোতে পড়ে যায় — লেখা তবু হারায় না, শুধু বুকলেট
-      // ইম্পোজিশন (পৃষ্ঠা-প্রতি কলাম) বাদ পড়ে।
+      // CqBookletPlanner অনুপলব্ধ হলে (স্ক্রিপ্ট লোড হয়নি) নিচের CASE B-র
+      // সাধারণ ২-কলাম ফ্লোতে পড়ে যায় — লেখা তবু হারায় না, শুধু বুকলেট
+      // ইম্পোজিশন (পৃষ্ঠা-প্রতি কলাম) বাদ পড়ে।
 
       // CASE B: STANDARD 2-COLUMN QUESTION PAPER (MCQ or Single Sheet CQ)
       const isMcq = allItems.some(i => i.type === 'QUESTION' && i.data.options && i.data.options.length > 0);
@@ -1161,7 +1293,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
 
       // Part-10: MCQ মাস্টার লেআউট প্রিভিউ — একই Geometry Plan ব্যবহার করে যা
       // Word 2003 (.doc) ও আধুনিক (.docx) রেন্ডারার ব্যবহার করে। ফলে
-      // "preview == download" অনড় থাকে: ২-কলাম, কলাম লাইন, ০.৩" হ্যাঙ্গিং
+      // "preview == download" অনড় থাকে: ২-কলাম, কলাম লাইন, ০.৩" হ্যাঙ্গিং
       // ইনডেন্ট, সমান দূরত্বের অপশন গ্রিড, ১-পৃষ্ঠা ফিট সংকোচন ও কলাম ব্যালান্স।
       if (isMcq && !isLandscape && !allItems.some((i) => i.type === 'SECTION_TITLE')) {
         const plan = this._mcqLayoutPlan(parsedData, options);
@@ -1189,7 +1321,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             const pg = pages[pi];
             const isLast = pi === pages.length - 1;
             if (pi === 0) {
-              html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি${plan.font.shrunk ? ' (ফন্ট ' + plan.font.pt + 'pt-এ সংকুচিত করে ১ পৃষ্ঠায় ফিট করা হয়েছে)' : ''}</div>`;
+              html += `<div class="sheet-label"><i class="fas fa-file-word text-blue-600"></i> পৃষ্ঠা ১ — হেডার (১-কলাম, সেন্টারড) + ২-কলাম প্রশ্ন বডি${plan.font.shrunk ? ' (ফন্ট ' + plan.font.pt + 'pt-এ সংকুচিত করে ১ পৃষ্ঠায় ফিট করা হয়েছে)' : ''}</div>`;
               html += `<div class="paper-sheet size-a4-portrait ${marginClass}${isLast ? '' : ' mb-4 page-break-indicator'}">${this.renderCropMarks()}`;
               html += `<div class="question-paper ${fontClass} dense-zero-gap orientation-portrait" ${editableAttr} style="${mcqStyle}">`;
               html += this.renderHeaderBlock(parsedData.header, { docType: 'EXAM_MCQ', fallback: true });

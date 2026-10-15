@@ -66,9 +66,11 @@ console.log('\n— (২) OMML সুপার/সাবস্ক্রিপ্�
       === '<m:sSup><m:sup><m:r><w:rPr><w:sz w:val="20"/></w:rPr><m:t>2</m:t></m:r></m:sup></m:sSup>');
   T('নেস্টেড ঘাতেও (a^{b^2}) সাইজ বসে', (EQ.latexToOmml('a^{b^2}').match(/w:sz w:val="16"/g) || []).length >= 2);
   const edeSrc = fs.readFileSync(path.join(ROOT, 'js/engines/export-dual-engine.js'), 'utf8');
-  T('RTF: {\\super\\fs16 …} / {\\sub\\fs16 …} নির্গত হয় (সোর্স-গেট)',
-    /super[\s\S]{0,40}?fs' \+ _hp/.test(edeSrc) && /sub[\s\S]{0,40}?fs' \+ _hp/.test(edeSrc));
-  T('RTF-এ লাইভ: {\\super\\fs16 2}', /\{\\super\\fs16 2\}/.test(EDE.generateCqExamRtf(
+  // Part-15.6: সরল রাশিতে Word-এর স্বাভাবিক \super/\sub (নিজেই ~৬৭% = ৮pt); আগে সঙ্গে \fs16 দেওয়ায় দ্বিগুণ ছোট হতো।
+  // EQ-ফিল্ডের ভেতরের ঘাত (\S\up আর্গুমেন্ট) এখনো স্পষ্ট ৮pt (_hp → scriptSz)।
+  T('RTF: সরল রাশিতে {\\super …}/{\\sub …} (অতিরিক্ত \\fs নয়), EQ-ফিল্ডে scriptSz: _hp (সোর্স-গেট)',
+    edeSrc.includes("'{\\\\super $1}'") && edeSrc.includes("'{\\\\sub $1}'") && /scriptSz: _hp/.test(edeSrc));
+  T('RTF-এ লাইভ: ঘাত EQ-ফিল্ডে, আর্গুমেন্ট ৮pt (Part-15.7)', /\\\\S\\\\up4\(\}\{\\f1\\fs16 2\}/.test(EDE.generateCqExamRtf(
     QE.parseQuestionPaper('১। $(x^2)$ লেখো।\nক. লেখো। ২', { docType: 'EXAM_CQ' }), {})),
     'live');
 }
@@ -148,7 +150,7 @@ console.log('\n— (৫) CQ আউটপুট: ব্রেক ও সাইজ
   T('১৩.৩ রিগ্রেশন: DOCX w:after="240" অটুট', (docx.bodyXml.match(/w:after="240"/g) || []).length === 2);
   T('১৩.২ রিগ্রেশন: নম্বর ১।/২। ধারাবাহিক', rtf.includes('১।') === false || /\\u09e7\\u0964|১।/.test(rtf), 'rtf-escaped');
   T('১৩.৩ রিগ্রেশন: CQ-তে কলাম-বিভাজক নেই (w:sep=1 অনুপস্থিত)', !/<w:cols[^>]*w:sep="1"/.test(docx.bodyXml + (docx.sectPr || '')));
-  T('RTF: ঘাতের সাইজ \\fs16 (ইস্যু-৩)', /super\\fs16/.test(rtf) || /sub\\fs16/.test(rtf), (rtf.match(/(?:super|sub)[^ ]{0,6}/g) || []).slice(0, 4));
+  T('RTF: ঘাত Word-সুপারস্ক্রিপ্টে (ইস্যু-৩, Part-15.6)', /\{\\super /.test(rtf) || /\{\\sub /.test(rtf) || /\\fs16 /.test(rtf), (rtf.match(/(?:super|sub)[^ ]{0,6}/g) || []).slice(0, 4));
 }
 
 // ───────────────────────── ৬) ব্রাউজার-E2E: আসল চেইন ─────────────────────────

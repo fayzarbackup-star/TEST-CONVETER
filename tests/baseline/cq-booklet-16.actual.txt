@@ -25,7 +25,7 @@
         {
           "num": "১",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১ | ১ |",
           "subQuestions": [
@@ -66,7 +66,7 @@
         {
           "num": "২",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ২ | ২ |",
           "subQuestions": [
@@ -107,7 +107,7 @@
         {
           "num": "৩",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৩ | ৩ |",
           "subQuestions": [
@@ -148,7 +148,7 @@
         {
           "num": "৪",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৪ | ৪ |",
           "subQuestions": [
@@ -189,7 +189,7 @@
         {
           "num": "৫",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৫ | ৫ |",
           "subQuestions": [
@@ -230,7 +230,7 @@
         {
           "num": "৬",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৬ | ৬ |",
           "subQuestions": [
@@ -271,7 +271,7 @@
         {
           "num": "৭",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৭ | ৭ |",
           "subQuestions": [
@@ -312,7 +312,7 @@
         {
           "num": "৮",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৮ | ৮ |",
           "subQuestions": [
@@ -353,7 +353,7 @@
         {
           "num": "৯",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ৯ | ৯ |",
           "subQuestions": [
@@ -394,7 +394,7 @@
         {
           "num": "১০",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১০ | ১০ |",
           "subQuestions": [
@@ -435,7 +435,7 @@
         {
           "num": "১১",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১১ | ১১ |",
           "subQuestions": [
@@ -476,7 +476,7 @@
         {
           "num": "১২",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nরাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১২ | ১২ |",
           "subQuestions": [
@@ -517,7 +517,7 @@
         {
           "num": "১৩",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nতাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১৩ | ১৩ |",
           "subQuestions": [
@@ -558,7 +558,7 @@
         {
           "num": "১৪",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nগ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১৪ | ১৪ |",
           "subQuestions": [
@@ -599,7 +599,7 @@
         {
           "num": "১৫",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nশফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১৫ | ১৫ |",
           "subQuestions": [
@@ -640,7 +640,7 @@
         {
           "num": "১৬",
           "options": [],
-          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
+          "preContext": "নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:\nচিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:\n(এখানে একটি কোষের চিত্র দেওয়া আছে)",
           "statements": [],
           "stimulus": "| বিবরণ | মান |\n| --- | --- |\n| উদ্দীপক ১৬ | ১৬ |",
           "subQuestions": [
@@ -993,7 +993,7 @@
 </div>
 </div>
 <div class="qp-columns two-columns">
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১।</span>
@@ -1050,7 +1050,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">২।</span>
@@ -1107,7 +1107,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৩।</span>
@@ -1164,7 +1164,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৪।</span>
@@ -1221,7 +1221,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৫।</span>
@@ -1278,7 +1278,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৬।</span>
@@ -1335,7 +1335,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৭।</span>
@@ -1392,7 +1392,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৮।</span>
@@ -1449,7 +1449,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">৯।</span>
@@ -1506,7 +1506,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১০।</span>
@@ -1563,7 +1563,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১১।</span>
@@ -1620,7 +1620,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>রাতুল বিজ্ঞান বইয়ে পড়ল যে, নিউটন আপেল পড়া দেখে মহাকর্ষ সূত্র আবিষ্কার করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১২।</span>
@@ -1677,7 +1677,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>তাপমাত্রার পরিবর্তনের সাথে সাথে পদার্থের অবস্থার পরিবর্তন ঘটে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১৩।</span>
@@ -1734,7 +1734,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>গ্রামের এক প্রান্তে একটি পুরনো বটগাছ ছিল। সবাই একে পবিত্র মনে করত। একদিন ঝড়ে গাছটির একটি ডাল ভেঙে পড়লে গ্রামের মানুষ চিন্তিত হয়ে পড়ে।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১৪।</span>
@@ -1791,7 +1791,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>শফিকের বাবা একজন আদর্শ কৃষক। তিনি আধুনিক প্রযুক্তি ব্যবহার করে চাষাবাদ করেন।</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১৫।</span>
@@ -1848,7 +1848,7 @@
 </div>
 </div>
 </div>
-<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
+<div class="mcq-precontext font-bold italic" style="font-size: 12pt; line-height: 1.35; margin: 2px 0 1px 0; padding: 0;">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:<br>চিত্রটি লক্ষ্য করো এবং নিচের প্রশ্নগুলোর উত্তর দাও:<br>(এখানে একটি কোষের চিত্র দেওয়া আছে)</div>
 <div class="cq-q-item" style="margin-bottom: 6px; font-size: 12pt; line-height: 1.35;">
 <div class="cq-q-row" style="display: flex; align-items: flex-start;">
 <span class="cq-num font-bold" style="margin-right: 8px; flex-shrink: 0; min-width: 24px;">১৬।</span>
@@ -1920,7 +1920,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2237,7 +2237,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2674,7 +2674,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -2706,9 +2706,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -2843,9 +2843,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -2871,9 +2871,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -2913,9 +2913,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -2941,9 +2941,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -2969,9 +2969,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3004,7 +3004,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -3023,9 +3023,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3160,9 +3160,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3188,9 +3188,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3230,9 +3230,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3258,9 +3258,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3286,9 +3286,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3321,7 +3321,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -3340,9 +3340,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3477,9 +3477,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3505,9 +3505,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3547,9 +3547,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3575,9 +3575,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3603,9 +3603,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3638,7 +3638,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -3657,9 +3657,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3794,9 +3794,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3822,9 +3822,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3864,9 +3864,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3892,9 +3892,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3920,9 +3920,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -3955,7 +3955,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -3974,9 +3974,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4111,9 +4111,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4139,9 +4139,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4181,9 +4181,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4209,9 +4209,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4237,9 +4237,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4272,7 +4272,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -4304,9 +4304,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4441,9 +4441,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4469,9 +4469,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4511,9 +4511,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4539,9 +4539,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4567,9 +4567,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4602,7 +4602,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -4621,9 +4621,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4758,9 +4758,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4786,9 +4786,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4828,9 +4828,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4856,9 +4856,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4884,9 +4884,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -4919,7 +4919,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -4938,9 +4938,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5075,9 +5075,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5103,9 +5103,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5145,9 +5145,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5173,9 +5173,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5201,9 +5201,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5236,7 +5236,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -5255,9 +5255,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="60" w:after="20" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="432" w:hanging="432"/>
+<w:ind w:left="288" w:hanging="288"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5392,9 +5392,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5420,9 +5420,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5462,9 +5462,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5490,9 +5490,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="15" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5518,9 +5518,9 @@
 <w:p>
 <w:pPr>
 <w:spacing w:before="15" w:after="240" w:line="240" w:lineRule="auto"/>
-<w:ind w:left="864" w:hanging="432"/>
+<w:ind w:left="720" w:hanging="432"/>
 <w:tabs>
-<w:tab w:val="left" w:pos="432"/>
+<w:tab w:val="left" w:pos="288"/>
 <w:tab w:val="right" w:pos="7195"/>
 </w:tabs>
 </w:pPr>
@@ -5553,7 +5553,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -5870,7 +5870,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -6200,7 +6200,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -6517,7 +6517,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -6834,7 +6834,7 @@
 <w:szCs w:val="24"/>
 <w:rFonts w:ascii="Kalpurush" w:hAnsi="Kalpurush" w:cs="Kalpurush"/>
 </w:rPr>
-<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
+<w:t xml:space="preserve">নিচের উদ্দীপকটি পড়ে প্রশ্নগুলোর উত্তর দাও:</w:t>
 </w:r>
 </w:p>
 <w:p>
@@ -7148,4 +7148,198 @@
 </w:sectPr>
 
 ===== RTF =====
-[object Blob]
+{\rtf1\ansi\deff0
+{\fonttbl
+{\f0\fnil\fcharset0 Kalpurush;}
+{\f1\fnil\fcharset0 Times New Roman;}
+}
+{\colortbl;\red0\green0\blue0;}
+\landscape\paperw16838\paperh11906\margl720\margr720\margt720\margb720\cols2\colsx1008
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2447?\u2453?\u2460?\u2472? \u2438?\u2470?\u2480?\u2509?\u2486? \u2453?\u2499?\u2487?\u2453?\u2404? \u2468?\u2495?\u2472?\u2495? \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2474?\u2509?\u2480?\u2479?\u2497?\u2453?\u2509?\u2468?\u2495? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2539?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2539?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2539?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2474?\u2503?\u2486?\u2494?\u2527? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2468?\u2495?\u2472?\u2495? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470?\u2503? \u2453?\u2496? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494?\u2480? \u2478?\u2468?\u2507? \u2453?\u2499?\u2487?\u2453?\u2470?\u2503?\u2480? \u2470?\u2503?\u2486?\u2503?\u2480? \u2437?\u2480?\u2509?\u2469?\u2472?\u2496?\u2468?\u2495?\u2468?\u2503? \u2453?\u2496? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2438?\u2459?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2482?\u2453?\u2509?\u2487?\u2509?\u2479? \u2453?\u2480?\u2507? \u2447?\u2476?\u2434? \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 (\u2447?\u2454?\u2494?\u2472?\u2503? \u2447?\u2453?\u2463?\u2495? \u2453?\u2507?\u2487?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480? \u2470?\u2503?\u2451?\u2527?\u2494? \u2438?\u2459?\u2503?)}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2540?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2540?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2540?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2453?\u2507?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2477?\u2495?\u2470? \u2453?\u2507?\u2487? \u2451? \u2474?\u2509?\u2480?\u2494?\u2467?\u2496? \u2453?\u2507?\u2487?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2474?\u2494?\u2480?\u2509?\u2469?\u2453?\u2509?\u2479? \u2482?\u2503?\u2454?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2453?\u2507?\u2472? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2507?\u2487?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\column}
+{\qc\b\fs32\f0\sl240\slmult1\sb0\sa0 {\f0 \u2438?\u2474?\u2472?\u2494?\u2480? \u2474?\u2509?\u2480?\u2468?\u2495?\u2487?\u2509?\u2464?\u2494?\u2472?\u2503?\u2480? \u2472?\u2494?\u2478?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2464?\u2495?\u2453?\u2494?\u2472?\u2494? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\b\fs26\f0\sl240\slmult1\sb0\sa0 {\f0 \u2474?\u2480?\u2496?\u2453?\u2509?\u2487?\u2494?\u2480? \u2472?\u2494?\u2478? \u2482?\u2495?\u2454?\u2497?\u2472?}\par}
+{\qc\fs24\f0\sl240\slmult1\sb0\sa0 {\f0 \u2486?\u2509?\u2480?\u2503?\u2467?\u2495? \u2451? \u2476?\u2495?\u2487?\u2527?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb0\sa0\tqc\tx3598\tqr\tx7195 {\f0 \u2488?\u2478?\u2527?: \u2536? \u2456?\u2467?\u2509?\u2463?\u2494? \u2537?\u2534? \u2478?\u2495?\u2472?\u2495?\u2463?}\tab {\b\ul {\f0 \u2488?\u2499?\u2460?\u2472?\u2486?\u2496?\u2482? \u2437?\u2477?\u2496?\u2453?\u2509?\u2487?\u2494?}}\tab {\f0 \u2474?\u2498?\u2480?\u2509?\u2467?\u2478?\u2494?\u2472?: \u2541?\u2534?}\par}
+{\ql\fs4\f0\sl100\slmult1\sb0\sa40\brdrb\brdrs\brdrw10\brsp20 \par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2482?\u2453?\u2509?\u2487?\u2509?\u2479? \u2453?\u2480?\u2507? \u2447?\u2476?\u2434? \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 (\u2447?\u2454?\u2494?\u2472?\u2503? \u2447?\u2453?\u2463?\u2495? \u2453?\u2507?\u2487?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480? \u2470?\u2503?\u2451?\u2527?\u2494? \u2438?\u2459?\u2503?)}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2535?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2453?\u2507?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2477?\u2495?\u2470? \u2453?\u2507?\u2487? \u2451? \u2474?\u2509?\u2480?\u2494?\u2467?\u2496? \u2453?\u2507?\u2487?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2474?\u2494?\u2480?\u2509?\u2469?\u2453?\u2509?\u2479? \u2482?\u2503?\u2454?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2453?\u2507?\u2472? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2507?\u2487?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2480?\u2494?\u2468?\u2497?\u2482? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472? \u2476?\u2439?\u2527?\u2503? \u2474?\u2524?\u2482? \u2479?\u2503?, \u2472?\u2495?\u2441?\u2463?\u2472? \u2438?\u2474?\u2503?\u2482? \u2474?\u2524?\u2494? \u2470?\u2503?\u2454?\u2503? \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2488?\u2498?\u2468?\u2509?\u2480? \u2438?\u2476?\u2495?\u2487?\u2509?\u2453?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2536?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2536?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2437?\u2477?\u2495?\u2453?\u2480?\u2509?\u2487?\u2460? \u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2482?\u2468?\u2503? \u2453?\u2496? \u2476?\u2507?\u2461?\u2494?\u2527??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?\u2496?\u2480? \u2488?\u2498?\u2468?\u2509?\u2480?\u2463?\u2495? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2468?\u2494?\u2474?\u2478?\u2494?\u2468?\u2509?\u2480?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2488?\u2494?\u2469?\u2503? \u2488?\u2494?\u2469?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2456?\u2463?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2537?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2537?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2537?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2455?\u2482?\u2472?\u2494?\u2457?\u2509?\u2453? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2476?\u2480?\u2475? \u2453?\u2503?\u2472? \u2474?\u2494?\u2472?\u2495?\u2468?\u2503? \u2477?\u2494?\u2488?\u2503??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2438?\u2482?\u2507?\u2453?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2447?\u2453? \u2474?\u2509?\u2480?\u2494?\u2472?\u2509?\u2468?\u2503? \u2447?\u2453?\u2463?\u2495? \u2474?\u2497?\u2480?\u2472?\u2507? \u2476?\u2463?\u2455?\u2494?\u2459? \u2459?\u2495?\u2482?\u2404? \u2488?\u2476?\u2494?\u2439? \u2447?\u2453?\u2503? \u2474?\u2476?\u2495?\u2468?\u2509?\u2480? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468?\u2404? \u2447?\u2453?\u2470?\u2495?\u2472? \u2461?\u2524?\u2503? \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2447?\u2453?\u2463?\u2495? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2478?\u2494?\u2472?\u2497?\u2487? \u2458?\u2495?\u2472?\u2509?\u2468?\u2495?\u2468? \u2489?\u2527?\u2503? \u2474?\u2524?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2538?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2538?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2538?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2476?\u2463?\u2455?\u2494?\u2459?\u2463?\u2495?\u2453?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487? \u2453?\u2496? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487?\u2503?\u2480? \u2458?\u2495?\u2472?\u2509?\u2468?\u2494?\u2480? \u2453?\u2494?\u2480?\u2467? \u2453?\u2496? \u2459?\u2495?\u2482?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2456?\u2463?\u2472?\u2494?\u2463?\u2495? \u2468?\u2507?\u2478?\u2494?\u2480? \u2474?\u2464?\u2495?\u2468? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2453?\u2507?\u2472? \u2470?\u2495?\u2453?\u2463?\u2495?\u2453?\u2503? \u2468?\u2497?\u2482?\u2503? \u2471?\u2480?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2447?\u2453?\u2460?\u2472? \u2438?\u2470?\u2480?\u2509?\u2486? \u2453?\u2499?\u2487?\u2453?\u2404? \u2468?\u2495?\u2472?\u2495? \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2474?\u2509?\u2480?\u2479?\u2497?\u2453?\u2509?\u2468?\u2495? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2539?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2539?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2539?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2474?\u2503?\u2486?\u2494?\u2527? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2468?\u2495?\u2472?\u2495? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470?\u2503? \u2453?\u2496? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494?\u2480? \u2478?\u2468?\u2507? \u2453?\u2499?\u2487?\u2453?\u2470?\u2503?\u2480? \u2470?\u2503?\u2486?\u2503?\u2480? \u2437?\u2480?\u2509?\u2469?\u2472?\u2496?\u2468?\u2495?\u2468?\u2503? \u2453?\u2496? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2438?\u2459?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2482?\u2453?\u2509?\u2487?\u2509?\u2479? \u2453?\u2480?\u2507? \u2447?\u2476?\u2434? \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 (\u2447?\u2454?\u2494?\u2472?\u2503? \u2447?\u2453?\u2463?\u2495? \u2453?\u2507?\u2487?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480? \u2470?\u2503?\u2451?\u2527?\u2494? \u2438?\u2459?\u2503?)}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2540?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2540?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2540?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2453?\u2507?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2477?\u2495?\u2470? \u2453?\u2507?\u2487? \u2451? \u2474?\u2509?\u2480?\u2494?\u2467?\u2496? \u2453?\u2507?\u2487?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2474?\u2494?\u2480?\u2509?\u2469?\u2453?\u2509?\u2479? \u2482?\u2503?\u2454?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2453?\u2507?\u2472? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2507?\u2487?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2480?\u2494?\u2468?\u2497?\u2482? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472? \u2476?\u2439?\u2527?\u2503? \u2474?\u2524?\u2482? \u2479?\u2503?, \u2472?\u2495?\u2441?\u2463?\u2472? \u2438?\u2474?\u2503?\u2482? \u2474?\u2524?\u2494? \u2470?\u2503?\u2454?\u2503? \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2488?\u2498?\u2468?\u2509?\u2480? \u2438?\u2476?\u2495?\u2487?\u2509?\u2453?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2541?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2541?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2541?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2437?\u2477?\u2495?\u2453?\u2480?\u2509?\u2487?\u2460? \u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2482?\u2468?\u2503? \u2453?\u2496? \u2476?\u2507?\u2461?\u2494?\u2527??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?\u2496?\u2480? \u2488?\u2498?\u2468?\u2509?\u2480?\u2463?\u2495? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2468?\u2494?\u2474?\u2478?\u2494?\u2468?\u2509?\u2480?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2488?\u2494?\u2469?\u2503? \u2488?\u2494?\u2469?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2456?\u2463?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2542?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2542?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2542?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2455?\u2482?\u2472?\u2494?\u2457?\u2509?\u2453? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2476?\u2480?\u2475? \u2453?\u2503?\u2472? \u2474?\u2494?\u2472?\u2495?\u2468?\u2503? \u2477?\u2494?\u2488?\u2503??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2438?\u2482?\u2507?\u2453?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2447?\u2453? \u2474?\u2509?\u2480?\u2494?\u2472?\u2509?\u2468?\u2503? \u2447?\u2453?\u2463?\u2495? \u2474?\u2497?\u2480?\u2472?\u2507? \u2476?\u2463?\u2455?\u2494?\u2459? \u2459?\u2495?\u2482?\u2404? \u2488?\u2476?\u2494?\u2439? \u2447?\u2453?\u2503? \u2474?\u2476?\u2495?\u2468?\u2509?\u2480? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468?\u2404? \u2447?\u2453?\u2470?\u2495?\u2472? \u2461?\u2524?\u2503? \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2447?\u2453?\u2463?\u2495? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2478?\u2494?\u2472?\u2497?\u2487? \u2458?\u2495?\u2472?\u2509?\u2468?\u2495?\u2468? \u2489?\u2527?\u2503? \u2474?\u2524?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li288\fi-288\tx288\tqr\tx7195 {\f0 \u2543?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2543?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2543?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2453?. \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2476?\u2463?\u2455?\u2494?\u2459?\u2463?\u2495?\u2453?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487? \u2453?\u2496? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487?\u2503?\u2480? \u2458?\u2495?\u2472?\u2509?\u2468?\u2494?\u2480? \u2453?\u2494?\u2480?\u2467? \u2453?\u2496? \u2459?\u2495?\u2482?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2456?\u2463?\u2472?\u2494?\u2463?\u2495? \u2468?\u2507?\u2478?\u2494?\u2480? \u2474?\u2464?\u2495?\u2468? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2453?\u2507?\u2472? \u2470?\u2495?\u2453?\u2463?\u2495?\u2453?\u2503? \u2468?\u2497?\u2482?\u2503? \u2471?\u2480?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li720\fi-432\tx288\tqr\tx7195 {\f0 \u2456?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2447?\u2453?\u2460?\u2472? \u2438?\u2470?\u2480?\u2509?\u2486? \u2453?\u2499?\u2487?\u2453?\u2404? \u2468?\u2495?\u2472?\u2495? \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2474?\u2509?\u2480?\u2479?\u2497?\u2453?\u2509?\u2468?\u2495? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2534?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2534?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2534?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494? \u2474?\u2503?\u2486?\u2494?\u2527? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2468?\u2495?\u2472?\u2495? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470?\u2503? \u2453?\u2496? \u2476?\u2509?\u2479?\u2476?\u2489?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2486?\u2475?\u2495?\u2453?\u2503?\u2480? \u2476?\u2494?\u2476?\u2494?\u2480? \u2478?\u2468?\u2507? \u2453?\u2499?\u2487?\u2453?\u2470?\u2503?\u2480? \u2470?\u2503?\u2486?\u2503?\u2480? \u2437?\u2480?\u2509?\u2469?\u2472?\u2496?\u2468?\u2495?\u2468?\u2503? \u2453?\u2496? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2438?\u2459?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2438?\u2471?\u2497?\u2472?\u2495?\u2453? \u2458?\u2494?\u2487?\u2494?\u2476?\u2494?\u2470? \u2453?\u2495? \u2488?\u2472?\u2494?\u2468?\u2472? \u2474?\u2470?\u2509?\u2471?\u2468?\u2495?\u2480? \u2458?\u2503?\u2527?\u2503? \u2441?\u2472?\u2509?\u2472?\u2468?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2482?\u2453?\u2509?\u2487?\u2509?\u2479? \u2453?\u2480?\u2507? \u2447?\u2476?\u2434? \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 (\u2447?\u2454?\u2494?\u2472?\u2503? \u2447?\u2453?\u2463?\u2495? \u2453?\u2507?\u2487?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480? \u2470?\u2503?\u2451?\u2527?\u2494? \u2438?\u2459?\u2503?)}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2535?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2535?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2535?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2453?\u2507?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2477?\u2495?\u2470? \u2453?\u2507?\u2487? \u2451? \u2474?\u2509?\u2480?\u2494?\u2467?\u2496? \u2453?\u2507?\u2487?\u2503?\u2480? \u2478?\u2471?\u2509?\u2479?\u2503? \u2474?\u2494?\u2480?\u2509?\u2469?\u2453?\u2509?\u2479? \u2482?\u2503?\u2454?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2458?\u2495?\u2468?\u2509?\u2480?\u2463?\u2495? \u2453?\u2507?\u2472? \u2471?\u2480?\u2472?\u2503?\u2480? \u2453?\u2507?\u2487?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2460?\u2496?\u2476?\u2470?\u2503?\u2489?\u2503? \u2441?\u2453?\u2509?\u2468? \u2453?\u2507?\u2487?\u2503?\u2480? \u2477?\u2498?\u2478?\u2495?\u2453?\u2494? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2480?\u2494?\u2468?\u2497?\u2482? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472? \u2476?\u2439?\u2527?\u2503? \u2474?\u2524?\u2482? \u2479?\u2503?, \u2472?\u2495?\u2441?\u2463?\u2472? \u2438?\u2474?\u2503?\u2482? \u2474?\u2524?\u2494? \u2470?\u2503?\u2454?\u2503? \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2488?\u2498?\u2468?\u2509?\u2480? \u2438?\u2476?\u2495?\u2487?\u2509?\u2453?\u2494?\u2480? \u2453?\u2480?\u2503?\u2472?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2536?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2536?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2536?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2478?\u2489?\u2494?\u2453?\u2480?\u2509?\u2487? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2437?\u2477?\u2495?\u2453?\u2480?\u2509?\u2487?\u2460? \u2468?\u2509?\u2476?\u2480?\u2467? \u2476?\u2482?\u2468?\u2503? \u2453?\u2496? \u2476?\u2507?\u2461?\u2494?\u2527??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2476?\u2495?\u2460?\u2509?\u2462?\u2494?\u2472?\u2496?\u2480? \u2488?\u2498?\u2468?\u2509?\u2480?\u2463?\u2495? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2478?\u2489?\u2494?\u2476?\u2495?\u2486?\u2509?\u2476?\u2503?\u2480? \u2488?\u2476?\u2453?\u2495?\u2459?\u2497?\u2439? \u2453?\u2495? \u2447?\u2439? \u2488?\u2498?\u2468?\u2509?\u2480? \u2478?\u2503?\u2472?\u2503? \u2458?\u2482?\u2503?? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2468?\u2494?\u2474?\u2478?\u2494?\u2468?\u2509?\u2480?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2488?\u2494?\u2469?\u2503? \u2488?\u2494?\u2469?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2456?\u2463?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2537?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2537?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2537?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2455?\u2482?\u2472?\u2494?\u2457?\u2509?\u2453? \u2453?\u2496??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2476?\u2480?\u2475? \u2453?\u2503?\u2472? \u2474?\u2494?\u2472?\u2495?\u2468?\u2503? \u2477?\u2494?\u2488?\u2503??}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2438?\u2482?\u2507?\u2453?\u2503? \u2474?\u2470?\u2494?\u2480?\u2509?\u2469?\u2503?\u2480? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2476?\u2494?\u2488?\u2509?\u2468?\u2476? \u2460?\u2496?\u2476?\u2472?\u2503? \u2447?\u2439? \u2437?\u2476?\u2488?\u2509?\u2469?\u2494?\u2480? \u2474?\u2480?\u2495?\u2476?\u2480?\u2509?\u2468?\u2472?\u2503?\u2480? \u2474?\u2509?\u2480?\u2477?\u2494?\u2476? \u2476?\u2495?\u2486?\u2509?\u2482?\u2503?\u2487?\u2467? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2538?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2474?\u2524?\u2503? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\ql\f0\fs24\sl240\slmult1\sb0\sa15 {\f0 \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2447?\u2453? \u2474?\u2509?\u2480?\u2494?\u2472?\u2509?\u2468?\u2503? \u2447?\u2453?\u2463?\u2495? \u2474?\u2497?\u2480?\u2472?\u2507? \u2476?\u2463?\u2455?\u2494?\u2459? \u2459?\u2495?\u2482?\u2404? \u2488?\u2476?\u2494?\u2439? \u2447?\u2453?\u2503? \u2474?\u2476?\u2495?\u2468?\u2509?\u2480? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468?\u2404? \u2447?\u2453?\u2470?\u2495?\u2472? \u2461?\u2524?\u2503? \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2447?\u2453?\u2463?\u2495? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2478?\u2494?\u2472?\u2497?\u2487? \u2458?\u2495?\u2472?\u2509?\u2468?\u2495?\u2468? \u2489?\u2527?\u2503? \u2474?\u2524?\u2503?\u2404?}\par}
+{\ql\b\fs24\f0\sl240\slmult1\sb30\sa0\li432\fi-432\tx432\tqr\tx7195 {\f0 \u2535?\u2538?\u2404?}\tab {\f0 \u2472?\u2495?\u2458?\u2503?\u2480? \u2474?\u2509?\u2480?\u2486?\u2509?\u2472?\u2455?\u2497?\u2482?\u2507?\u2480? \u2441?\u2468?\u2509?\u2468?\u2480? \u2470?\u2494?\u2451?:}\par}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2476?\u2495?\u2476?\u2480?\u2467?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2478?\u2494?\u2472?}\cell\row}
+{\trowd\trgaph30\trleft0\cellx3597\cellx7194\pard\intbl\qc\fs24\f0 {\f0 \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453? \u2535?\u2538?}\cell\pard\intbl\qc\fs24\f0 {\f0 \u2535?\u2538?}\cell\row}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2453?. \u2455?\u2509?\u2480?\u2494?\u2478?\u2503?\u2480? \u2476?\u2463?\u2455?\u2494?\u2459?\u2463?\u2495?\u2453?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487? \u2453?\u2496? \u2478?\u2472?\u2503? \u2453?\u2480?\u2468??}\tab {\f0 \u2535?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2455?\u2494?\u2459?\u2463?\u2495?\u2480? \u2465?\u2494?\u2482? \u2477?\u2503?\u2457?\u2503? \u2474?\u2524?\u2482?\u2503? \u2478?\u2494?\u2472?\u2497?\u2487?\u2503?\u2480? \u2458?\u2495?\u2472?\u2509?\u2468?\u2494?\u2480? \u2453?\u2494?\u2480?\u2467? \u2453?\u2496? \u2459?\u2495?\u2482?? \u2476?\u2509?\u2479?\u2494?\u2454?\u2509?\u2479?\u2494? \u2453?\u2480?\u2507?\u2404?}\tab {\f0 \u2536?}\par}
+{\qc\b\f0\fs24\sl240\slmult1\sb20\sa20 {\f1 --- }{\f0 \u2437?\u2469?\u2476?\u2494? }{\f1 ---}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2454?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2536?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa15\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2455?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2503?\u2480? \u2456?\u2463?\u2472?\u2494?\u2463?\u2495? \u2468?\u2507?\u2478?\u2494?\u2480? \u2474?\u2464?\u2495?\u2468? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2453?\u2507?\u2472? \u2470?\u2495?\u2453?\u2463?\u2495?\u2453?\u2503? \u2468?\u2497?\u2482?\u2503? \u2471?\u2480?\u2503??}\tab {\f0 \u2537?}\par}
+{\ql\f0\fs24\sl240\slmult1\sb15\sa240\li864\fi-432\tx432\tqr\tx7195 {\f0 \u2456?. \u2441?\u2470?\u2509?\u2470?\u2496?\u2474?\u2453?\u2463?\u2495? \u2453?\u2495? \u2455?\u2482?\u2509?\u2474?\u2503?\u2480? \u2478?\u2498?\u2482?\u2477?\u2494?\u2476?\u2453?\u2503? \u2488?\u2478?\u2509?\u2474?\u2498?\u2480?\u2509?\u2467?\u2480?\u2498?\u2474?\u2503? \u2471?\u2494?\u2480?\u2467? \u2453?\u2480?\u2503?? \u2468?\u2507?\u2478?\u2494?\u2480? \u2478?\u2468?\u2494?\u2478?\u2468? \u2470?\u2494?\u2451?\u2404?}\tab {\f0 \u2538?}\par}
+}

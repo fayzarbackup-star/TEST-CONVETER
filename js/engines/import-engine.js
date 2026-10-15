@@ -41,7 +41,7 @@
           }
           resolve({ text, wasConverted: wasBijoy });
         };
-        reader.onerror = () => reject(new Error('ফাইল পড়া সম্ভব হয়নি।'));
+        reader.onerror = () => reject(new Error('ফাইল পড়া সম্ভব হয়নি।'));
         reader.readAsText(file, 'UTF-8');
       });
     },
@@ -58,14 +58,14 @@
             if (typeof JSZip !== 'undefined') JSZipLib = JSZip;
             else if (global.JSZip) JSZipLib = global.JSZip;
             if (!JSZipLib) {
-              reject(new Error('JSZip লাইব্রেরি পাওয়া যায়নি।'));
+              reject(new Error('JSZip লাইব্রেরি পাওয়া যায়নি।'));
               return;
             }
 
             const zip = await JSZipLib.loadAsync(e.target.result);
             const docXmlFile = zip.file('word/document.xml');
             if (!docXmlFile) {
-              reject(new Error('ডকুমেন্ট ফাইলের ভেতর word/document.xml পাওয়া যায়নি।'));
+              reject(new Error('ডকুমেন্ট ফাইলের ভেতর word/document.xml পাওয়া যায়নি।'));
               return;
             }
 
@@ -73,10 +73,10 @@
             const text = this.extractTextFromDocXml(xmlString);
             resolve({ text, wasConverted: false });
           } catch (err) {
-            reject(new Error('DOCX পার্স করা সম্ভব হয়নি: ' + err.message));
+            reject(new Error('DOCX পার্স করা সম্ভব হয়নি: ' + err.message));
           }
         };
-        reader.onerror = () => reject(new Error('ফাইল পড়া সম্ভব হয়নি।'));
+        reader.onerror = () => reject(new Error('ফাইল পড়া সম্ভব হয়নি।'));
         reader.readAsArrayBuffer(file);
       });
     },
@@ -123,7 +123,7 @@
      * Main entry point. Accepts a File object and returns { text, wasConverted, format }.
      */
     async importFile(file) {
-      if (!file) throw new Error('কোনো ফাইল নির্বাচন করা হয়নি।');
+      if (!file) throw new Error('কোনো ফাইল নির্বাচন করা হয়নি।');
       const name = file.name.toLowerCase();
 
       if (name.endsWith('.txt')) {
