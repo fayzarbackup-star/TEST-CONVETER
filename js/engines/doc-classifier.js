@@ -53,7 +53,7 @@
       let sections = null;
       if (secRaw) {
         sections = {};
-        secRaw.replace(/[\[\]"']/g, '').split(/[,;]/).forEach((p) => {
+        secRaw.replace(/[\x5b\x5d"']/g, '').split(/[,;]/).forEach((p) => {
           const m = p.trim().replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d)).match(/^([a-z_]+)\s*[:=x×]\s*(\d+)/i);
           if (m) { const k = m[1].toLowerCase(); sections[k] = (sections[k] || 0) + parseInt(m[2], 10); }
         });
@@ -64,31 +64,44 @@
       return { grade, content, subject, sections };
     },
 
+    _clsFix() {
+      const g = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : {});
+      if (g && g.__FZ_OFF_CLSFIX) return false;
+      if (typeof process !== 'undefined' && process && process.env && /\bCLSFIX\b/.test(String(process.env.FZ_OFF || ''))) return false;
+      return true;
+    },
+
     /** লেখার আসল গঠন: সৃজনশীল-ব্লক (উপ-প্রশ্ন ক–ঘ, পাশে ১–৪ নম্বর) ও বহুনির্বাচনি-ব্লক (৪টি ছোট বিকল্প) গোনা */
     structureStats(text) {
+      const clsFix = this._clsFix();
       const lines = String(text || '').split(/\r?\n/);
-      const qStart = /^\s*(?:#{1,6}\s*)?(?:প্রশ্ন\s*(?:নং)?[\s\-:ঃ.]*)?\(?[০-৯\d]{1,3}\s*[।.)]/;
+      const qStart = /^\s*(?:#{1,6}\s*)?(?:প্রশ্ন\s*(?:নং)?[\s\-:ঃ.]*)?\(?([০-৯\d]{1,3})\s*[।.)]/;
+      const inlineSub = /^\s*(?:#{1,6}\s*)?(?:প্রশ্ন\s*(?:নং)?[\s\-:ঃ.]*)?\(?([০-৯\d]{1,3})\s*[।.)]\s*\(?\s*([কখগঘ])\s*[.)।]/;
       const blocks = [];
       let cur = null, creativeCtx = false;   // শেষ অংশ-শিরোনাম সৃজনশীল কিনা
       const CUE = /সৃজনশীল|creative|উদ্দীপক|দৃশ্যকল্প/i;
       for (const l of lines) {
         // শিরোনাম: `##` বা (পাইপলাইন `##` মুছে দিলে) ছোট অংশ-নাম-লাইন
         const isHead = /^\s*#{1,6}\s/.test(l) || (l.trim().length < 60 && !qStart.test(l) && /^(?:[কখগঘ]\s*[-–—]?\s*(?:বিভাগ|অংশ)\s*[:ঃ\-–—(]?\s*)?(?:সৃজনশীল|বহুনির্বাচন|সংক্ষিপ্ত|অতি\s*সংক্ষিপ্ত|নৈর্ব্যক্তিক|creative|multiple|MCQ|short)/i.test(l.trim()));
-        if (isHead) creativeCtx = CUE.test(l);
-        if (qStart.test(l) || isHead) { cur = []; cur.ctx = creativeCtx; blocks.push(cur); }
+        if (isHead || (clsFix && CUE.test(l))) creativeCtx = CUE.test(l);
+        const inM = clsFix ? l.match(inlineSub) : null;
+        const qM = l.match(qStart);
+        if ((qM && !(inM && cur && cur.qNum === inM[1])) || isHead) { cur = []; cur.ctx = creativeCtx; cur.qNum = qM ? qM[1] : null; blocks.push(cur); }
         if (cur) cur.push(l);
       }
       let cqBlocks = 0, mcqBlocks = 0;
       for (const b of blocks) {
         const subs = [];
-        b.slice(1).forEach((l) => { const m = l.match(/^\s*\(?\s*([কখগঘ])\s*[.)।]\s*(.+)$/); if (m) subs.push({ k: m[1], txt: m[2].trim() }); });
+        const subRe = clsFix ? /^\s*(?:\(?[০-৯\d]{1,3}\s*[।.)]\s*)?\(?\s*([কখগঘ])\s*[.)।]\s*(.+)$/ : /^\s*\(?\s*([কখগঘ])\s*[.)।]\s*(.+)$/;
+        (clsFix ? b : b.slice(1)).forEach((l) => { const m = l.match(subRe); if (m) subs.push({ k: m[1], txt: m[2].trim() }); });
         const keys = new Set(subs.map((x) => x.k));
-        const marked = subs.filter((x) => x.txt.length >= 10 && /(?:^|\s|\[|\()[১-৪1-4]\s*[\])]?\s*$/.test(x.txt)).length;
+        const marked = subs.filter((x) => x.txt.length >= 10 && /(?:^|\s|\x5b|\()[১-৪1-4]\s*[\x5d)]?\s*$/.test(x.txt)).length;
         const body = b.join('\n');
         const stim = /উদ্দীপক|দৃশ্যকল্প|নিচের\s*(?:চিত্র|অনুচ্ছেদ|তথ্য)|লক্ষ\s*কর/.test(body);
-        if (keys.size >= 3 && (marked >= 2 || (stim && subs.every((x) => x.txt.length >= 10)))) { cqBlocks++; continue; }
+        const minLen = clsFix ? 6 : 10;
+        if (keys.size >= 3 && (marked >= 2 || ((stim || (clsFix && b.ctx)) && subs.every((x) => x.txt.length >= minLen)))) { cqBlocks++; continue; }
         // সৃজনশীল অংশের ভেতরে (শিরোনাম/উদ্দীপক-সংকেত) — কম উপ-প্রশ্ন হলেও নম্বরসহ উপ-প্রশ্ন থাকলে সৃজনশীল
-        const shortMarked = subs.filter((x) => x.txt.length >= 2 && /\s[১-৪1-4]\s*[\])]?\s*$/.test(' ' + x.txt)).length;
+        const shortMarked = subs.filter((x) => x.txt.length >= 2 && /\s[১-৪1-4]\s*[\x5d)]?\s*$/.test(' ' + x.txt)).length;
         if ((b.ctx || stim) && shortMarked >= 1 && subs.every((x) => !/^\S{1,3}$/.test(x.txt))) { cqBlocks++; continue; }
         const optKeys = new Set();
         b.slice(1).forEach((l) => { (l.match(/(?:^|\s)\(?([কখগঘ])\s*[.)]\s*\S/g) || []).forEach((o) => optKeys.add(o.replace(/[^কখগঘ]/g, ''))); });
@@ -102,7 +115,7 @@
       const T = this.DOC_TYPES;
       if (!facts) return null;
       const why = (r) => 'Facts: ' + r;
-      if (facts.content && !/QUESTION/.test(facts.content)) return { type: T.EXAM_GENERAL, confidence: 0.97, reason: why('content=' + facts.content + ' → general') };
+      if (facts.content && !(this._clsFix() ? /QUESTION|^OTHER$/i : /QUESTION/).test(facts.content)) return { type: T.EXAM_GENERAL, confidence: 0.97, reason: why('content=' + facts.content + ' → general') };
       if (facts.grade >= 1 && facts.grade <= 5) return { type: T.EXAM_GENERAL, confidence: 0.97, reason: why('primary class ' + facts.grade + ' → general') };
       if (!facts.sections) return null;
       const sec = facts.sections;
@@ -161,7 +174,7 @@
       const struct = this.structureStats(t);
       // Part-18.6: "উদ্দীপক/সৃজনশীল" শব্দ একবার এলেই নয় — অন্তত একটি আসল সৃজনশীল-ব্লক (ক–ঘ, নম্বরসহ) চাই
       const hasMixedShortCreativeSections = hasShortSectionHeading && (hasCreativeSectionHeading || hasCreativeExamMarkers) && struct.cqBlocks > 0;
-      const hasExplicitSectionBreak = /---\s*SECTION_BREAK/i.test(t) || /\[LAYOUT:\s*COMBINED/i.test(t);
+      const hasExplicitSectionBreak = /---\s*SECTION_BREAK/i.test(t) || /\x5bLAYOUT:\s*COMBINED/i.test(t);
 
       // 0. EXPLICIT MASTER SECTOR ID (Highest Priority: Zero-hallucination Frontmatter / Tag)
       const frontmatterMatch = t.match(/^---\s*[\r\n]([\s\S]*?)[\r\n]---/);
@@ -172,7 +185,7 @@
         if (dtMatch) detectedDocType = dtMatch[1].trim().toUpperCase();
       }
       if (!detectedDocType) {
-        const tagMatch = t.match(/\[(?:LAYOUT|DOC_PROFILE):\s*([^\]]+)\]/i);
+        const tagMatch = t.match(/\x5b(?:LAYOUT|DOC_PROFILE):\s*([^\x5d]+)\x5d/i);
         if (tagMatch) {
           const raw = tagMatch[1];
           const typePart = raw.split('|').find(p => /(?:doc_type|type)\s*[:=]/i.test(p));
@@ -190,7 +203,7 @@
       if (frontmatterMatch && /^\s*layout_lock\s*:\s*true\s*$/im.test(frontmatterMatch[1]) && this.DOC_TYPES[detectedDocType]) {
         return { type: this.DOC_TYPES[detectedDocType], confidence: 1.0, reason: 'Template lock: ' + detectedDocType };
       }
-      const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA|CASH_MEMO|CASHMEMO|MEMO)$/;
+      const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA|CASH_MEMO|CASHMEMO|MEMO|RECEIPT|MONEY_RECEIPT|VOUCHER|ROUTINE|CLASS_ROUTINE|EXAM_ROUTINE|ADMIT_CARD|ADMIT|SALARY_SLIP|PAY_SLIP)$/;
       if (frontmatterMatch && !NON_EXAM.test(detectedDocType)) {
         const facts = this.factsFromFrontmatter(frontmatterMatch[1]);
         const byFacts = facts ? this.layoutFromFacts(facts, t, detectedDocType) : null;
@@ -236,8 +249,17 @@
         if (detectedDocType === 'CV_RESUME' || detectedDocType === 'CV' || detectedDocType === 'RESUME' || detectedDocType === 'BIODATA') {
           return { type: this.DOC_TYPES.CV_RESUME, confidence: 1.0, reason: 'Sector: CV_RESUME' };
         }
-        if (detectedDocType === 'CASH_MEMO' || detectedDocType === 'CASHMEMO' || detectedDocType === 'MEMO') {
+        if (detectedDocType === 'CASH_MEMO' || detectedDocType === 'CASHMEMO' || detectedDocType === 'MEMO' || detectedDocType === 'RECEIPT' || detectedDocType === 'MONEY_RECEIPT' || detectedDocType === 'VOUCHER') {
           return { type: this.DOC_TYPES.CASH_MEMO, confidence: 1.0, reason: 'Sector: CASH_MEMO' };   // Part-19.4
+        }
+        if (detectedDocType === 'ROUTINE' || detectedDocType === 'CLASS_ROUTINE' || detectedDocType === 'EXAM_ROUTINE') {
+          return { type: this.DOC_TYPES.ROUTINE, confidence: 1.0, reason: 'Sector: ROUTINE' };
+        }
+        if (detectedDocType === 'ADMIT_CARD' || detectedDocType === 'ADMIT') {
+          return { type: this.DOC_TYPES.ADMIT_CARD, confidence: 1.0, reason: 'Sector: ADMIT_CARD' };
+        }
+        if (detectedDocType === 'SALARY_SLIP' || detectedDocType === 'PAY_SLIP') {
+          return { type: this.DOC_TYPES.SALARY_SLIP, confidence: 1.0, reason: 'Sector: SALARY_SLIP' };
         }
         if (detectedDocType === 'OFFICIAL_NOTICE' || detectedDocType === 'NOTICE') {
           return { type: this.DOC_TYPES.OFFICIAL_NOTICE, confidence: 1.0, reason: 'Sector: OFFICIAL_NOTICE' };
@@ -262,33 +284,35 @@
       let mcqBlockCount = 0;
       let numberedBlockCount = 0;
       {
-        const parts = t.split(/(?=^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\]])/m);
+        const parts = t.split(/(?=^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\x5d])/m);
         for (const bp of parts) {
-          if (!/^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\]]/.test(bp)) continue;
+          if (!/^[\t ]*[\u09E6-\u09EF0-9]{1,3}[\t ]*[।.):\x5d]/.test(bp)) continue;
           numberedBlockCount++;
           const lines = bp.split('\n').slice(1);
           let optLines = 0;
           let cqish = 0;
           for (const ln of lines) {
-            const m = ln.match(/^[\t ]*([কখগঘঙচছ])\s*[.):।\]]\s*(.+)$/);
+            const m = ln.match(/^[\t ]*([কখগঘঙচছ])\s*[.):।\x5d]\s*(.+)$/);
             if (!m) continue;
             const txt = m[2].trim();
             if (!txt) continue;
             optLines++;
             // CQ সাব-প্রশ্নের স্বাক্ষর — মার্ক-ব্র্যাকেট, অতীতকালী ক্রিয়া-শেষ, অথবা
             // দীর্ঘ নির্দেশনামূলক বাক্য। MCQ বিকল্প সাধারণত সংক্ষিপ্ত নাম/বাঁধা উত্তর।
-            if (/\[[^\]]*\]/.test(ln) ||
+            if (/\x5b[^\x5d]*\x5d/.test(ln) ||
                 /(?:করো|কর|দাও|দিাও|লিখ|নির্ণয়|ব্যাখ্যা|বর্ণনা|প্রমাণ|হিসাব|উত্তর দিন)\s*[।.]?\s*$/.test(txt) ||
                 /উদ্দীপক|সূত্র|মান নির্ণয়|তালিকা|চিত্র|সংক্ষেপে/i.test(txt)) cqish++;
           }
           if (optLines >= 2 && cqish === 0) mcqBlockCount++;
         }
       }
-      const isPureMcqPaper = (mcqBlockCount >= 10 && numberedBlockCount > 0 && mcqBlockCount >= numberedBlockCount * 0.85);
+      const clsFix = this._clsFix();
+      const isPureMcqPaper = (mcqBlockCount >= 10 && numberedBlockCount > 0 && mcqBlockCount >= numberedBlockCount * 0.85) ||
+        (clsFix && mcqBlockCount >= 5 && mcqBlockCount === numberedBlockCount && struct.mcqBlocks >= 5 && struct.cqBlocks === 0);
       // Part-18.0: গণিত — সংখ্যাযুক্ত প্রশ্নের অর্ধেকের বেশিতে সূত্র ($…$ / LaTeX) ⇒ EXAM_MATH (আগে শুধু ফ্রন্টম্যাটার দিয়ে)
       let mathQCount = 0;
-      t.split(/(?=^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\]])/m).forEach((bp) => {
-        if (/^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\]]/.test(bp) && /\$[^$\n]+\$|\\(?:frac|sqrt|int|sum|theta|pi|begin)\b/.test(bp)) mathQCount++;
+      t.split(/(?=^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\x5d])/m).forEach((bp) => {
+        if (/^[\t ]*[০-৯0-9]{1,3}[\t ]*[।.):\x5d]/.test(bp) && /\$[^$\n]+\$|\\(?:frac|sqrt|int|sum|theta|pi|begin)\b/.test(bp)) mathQCount++;
       });
       const isMathPaper = numberedBlockCount >= 3 && mathQCount >= numberedBlockCount * 0.5;
       const isStrictMcq = (mcqCount >= 18) || (totalQCount >= 3 && mcqCount >= totalQCount * 0.85) || isPureMcqPaper;
@@ -300,7 +324,7 @@
 
       // Combined CQ + MCQ Detection (Highest Priority for Exam Papers)
       const hasCqMarkers = /(?:সৃজনশীল|উদ্দীপক|দৃশ্যকল্প|ক\-বিভাগ|খ\-বিভাগ)/i.test(t) ||
-        (/(?:ক\.\s*[^\n]+\s*খ\.\s*[^\n]+\s*গ\.)/.test(t) && /\[[১-৪\d]\]/.test(t));
+        (/(?:ক\.\s*[^\n]+\s*খ\.\s*[^\n]+\s*গ\.)/.test(t) && /\x5b[১-৪\d]\x5d/.test(t));
 
       let combinedScore = 0;
       if (hasExplicitSectionBreak || (hasCqMarkers && isStrictMcq)) {
@@ -320,6 +344,7 @@
       let routineScore = 0;
       let noticeScore = 0;
       let cvScore = 0;
+      let cashMemoScore = 0;
 
       // Stamp patterns (requires deed co-occurrence so questions with "৩০০ টাকা" or "মৌজা" don't trigger stamp)
       let strongStamp = /(?:৩০০|তিনশত)\s*টাকার\s*স্ট্যাম্প|নন.?জুডিশিয়াল.?স্ট্যাম্প|^চুক্তিপত্র/im.test(t);
@@ -364,10 +389,21 @@
       if (/ব্যক্তিগত\s*তথ্য|পেশাগত\s*অভিজ্ঞতা|কর্মঅভিজ্ঞতা|দক্ষতা\s*সমূহ|জাতীয়তা|জাতীয়তা|স্থায়ী\s*ঠিকানা|স্থায়ী\s*ঠিকানা|বর্তমান\s*ঠিকানা|REFERENCE/i.test(t)) cvScore += 5;
       if (/পরীক্ষার\s*নাম.*পাশের\s*সন|বোর্ড\/বিশ্ববিদ্যালয়|বোর্ড\/বিশ্ববিদ্যালয়/i.test(t)) cvScore += 4;
 
+      if (clsFix) {
+        if (/ক্যাশ\s*মেমো|ক্যাশমেমো|\bCASH\s*MEMO\b|টাকা\s*প্রাপ্তির\s*রসিদ|রসিদ\s*নং|মানি\s*রিসিট|\bMONEY\s*RECEIPT\b|খরচের\s*ভাউচার|ভাউচার\s*নং|ডেবিট\s*ভাউচার|\b(?:DEBIT|CREDIT|EXPENSE)?\s*VOUCHER\b/i.test(t)) cashMemoScore += 12;
+        if (
+          /ক্রেতার\s*স্বাক্ষর[\s\S]*বিক্রেতার\s*স্বাক্ষর/i.test(t) ||
+          /প্রদানকারীর\s*স্বাক্ষর[\s\S]*গ্রহীতার\s*স্বাক্ষর|গ্রহীতার\s*স্বাক্ষর[\s\S]*প্রদানকারীর\s*স্বাক্ষর/i.test(t) ||
+          /প্রাপকের\s*স্বাক্ষর[\s\S]*(?:হিসাবরক্ষক|অনুমোদনকারী)|হিসাবরক্ষক[\s\S]*অনুমোদনকারী/i.test(t) ||
+          /(?:টাকা|নগদ)\s*বুঝি(?:য়া|য়া|ে)\s*পাইলাম/i.test(t) ||
+          /\|\s*(?:পরিমাণ\s*\|\s*দর|বিবরণ)\s*\|\s*টাকা\s*\|/.test(t)
+        ) cashMemoScore += 6;
+      }
+
       // Specialized document gate: only high-fidelity non-exam document types bypass the exam gate
       const maxSpecialScore = Math.max(
         cvScore, appScore, stampScore, certScore,
-        noticeScore, routineScore, salaryScore, admitScore
+        noticeScore, routineScore, salaryScore, admitScore, cashMemoScore
       );
 
       // STRICT CQ vs GENERAL vs MCQ SCORING (Eliminated Early-Return: pure unified scoring)
@@ -424,6 +460,7 @@
         { type: this.DOC_TYPES.ROUTINE, score: routineScore },
         { type: this.DOC_TYPES.CV_RESUME, score: cvScore }
       ];
+      if (clsFix) scores.push({ type: this.DOC_TYPES.CASH_MEMO, score: cashMemoScore });
 
       scores.sort((a, b) => b.score - a.score);
 

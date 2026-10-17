@@ -23,6 +23,7 @@ const suites = fs.readdirSync(TDIR)
   .filter((f) => /\.test\.(mjs|js)$/.test(f))
   .sort()
   .map((f) => ({ name: f.replace(/\.test\.(mjs|js)$/, ''), file: path.join('tests', f) }));
+if (!suites.some((s) => s.name === 'classify-score') && fs.existsSync(path.join(TDIR, 'classify-score.test.mjs'))) suites.push({ name: 'classify-score', file: path.join('tests', 'classify-score.test.mjs') });
 if (ONLY) suites.splice(0, suites.length, ...suites.filter((s) => s.name.includes(ONLY)));
 
 const rows = [];
@@ -42,7 +43,7 @@ function tally(out) {
 }
 
 // ১) স্ন্যাপশট রানার (১৫ ফিক্সচার)
-{
+if ((!ONLY || 'run-regression'.includes(ONLY)) && fs.existsSync(path.join(TDIR, 'run-regression.js'))) {
   const r = spawnSync('node', [path.join(TDIR, 'run-regression.js')], { cwd: ROOT, encoding: 'utf8' });
   const out = (r.stdout || '') + (r.stderr || '');
   const t = tally(out);

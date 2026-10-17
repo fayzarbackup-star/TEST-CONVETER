@@ -343,7 +343,8 @@ const box = (W, H, x0, y0, x1, y1) => [y0 / H * 1000, x0 / W * 1000, y1 / H * 10
       { kind: 'table', rows: [['ক', 'খ'], ['গ', 'ঘ']], widthPt: 200, heightPt: 60, fontPt: 10 },
       { kind: 'para', text: 'র আষাঢ়।', lines: ['র আষাঢ়।', 'শ ময়না।'], tabLines: ['র\tআষাঢ়।', 'শ\tময়না।'], tabStops: [80], keepLines: true, fontPt: 10, align: 'j', italic: true, underline: true }] }] },
     { kind: 'grid', gapBeforePt: 0, cells: [{ x0: 60, x1: 300, ruleRight: true, items: [{ kind: 'para', text: 'a', lines: ['a'], fontPt: 10, align: 'l' }] }, { x0: 300, x1: 545, items: [{ kind: 'para', text: 'b', lines: ['b'], fontPt: 10, align: 'l' }] }] }] }] }).xml;
-  check(/<w:trHeight w:val="600" w:hRule="(atLeast|exact)"\/>/.test(x4) && /<w:vAlign w:val="center"\/>/.test(x4), 'টেবিল: সারির উচ্চতা মূলের মতো, লেখা মাঝে');
+  // Pack11 (ডিফল্ট-চালু GRIDFIRST): বর্ডারের rowBA (15 dxa) বাদ দিয়ে 585 atLeast; FZ_OFF-এ পুরোনো 600
+  check(/<w:trHeight w:val="(585|600)" w:hRule="(atLeast|exact)"\/>/.test(x4) && /<w:vAlign w:val="center"\/>/.test(x4), 'টেবিল: সারির উচ্চতা মূলের মতো, লেখা মাঝে');
   check(/<w:tabs><w:tab w:val="left" w:pos="1600"\/><\/w:tabs>/.test(x4) && (x4.match(/<w:tab\/>/g) || []).length === 2, 'ট্যাব-স্টপ ও ট্যাব-অক্ষর');
   check(/<w:i\/>/.test(x4) && /<w:u w:val="single"\/>/.test(x4), 'ইটালিক ও নিচে-দাগ');
   check(!/<w:jc w:val="both"\/>/.test(x4), 'হাতে-ভাঙা লাইনে দুপাশে-সমান নয়');
@@ -363,15 +364,16 @@ const box = (W, H, x0, y0, x1, y1) => [y0 / H * 1000, x0 / W * 1000, y1 / H * 10
     { kind: 'flow', gapBeforePt: 0, y0: 50, cells: [{ items: [{ kind: 'para', text: 'এক', lines: ['এক'], fontPt: 10, align: 'l', rect: { x: 50, y: 50, w: 50, h: 10 } }] }] },
     { kind: 'flow', gapBeforePt: 10, y0: 70, cells: [{ items: [{ kind: 'para', text: '**উচ্চারণ:** আল-হুম্মা', lines: ['**উচ্চারণ:** আল-হুম্মা'], fontPt: 10, align: 'l', rect: { x: 50, y: 70, w: 50, h: 10 } }] }] }] };
   const xt = D.bodyXml({ pages: [pgT] }).xml;
-  // দ্বিতীয় অনুচ্ছেদ (২০২৬-১০-১৩: চলমান অবস্থান থেকে, কালি-সরণ — চিহ্নহীন "উচ্চারণ" ০.৩৩×১০): (৭০ − ৩.৩) − (৫০ + ১১.৫) = ৫.২pt = ১০৪ twip
-  check(/w:before="104"/.test(xt) && /w:line="230" w:lineRule="exact"/.test(xt), 'ফাঁক = ওপর-থেকে-ওপর − আগের উচ্চতা; লাইন ১.১৫×ফন্ট');
+  // দ্বিতীয় অনুচ্ছেদ (২০২৬-১০-১৩: চলমান অবস্থান থেকে, কালি-সরণ — চিহ্নহীন "উচ্চারণ" ০.৩৩×১০): (৭০ − ৩.৩) − (৫০ + ১১.৫) = ৫.২pt = ১০৪ twip; ENTERGAP-এ ৯ হাফ-পয়েন্ট (৪.৫pt) ফাঁকা এন্টার
+  check((/w:before="104"/.test(xt) || /w:sz w:val="9"/.test(xt)) && /w:line="230" w:lineRule="exact"/.test(xt), 'ফাঁক = ওপর-থেকে-ওপর − আগের উচ্চতা; লাইন ১.১৫×ফন্ট');
   check((xt.match(/<w:b\/>/g) || []).length === 1 && !/\*\*/.test(xt), 'অংশ-মোটা: শুধু চিহ্নিত অংশ মোটা, চিহ্ন মুছে');
 
   // B2 (২০২৬-১০-১১): ক্যাশমেমো-ধাঁচ টেবিল — শিরোনাম ও সর্বমোট স্বাভাবিক উচ্চতা, ফাঁকা লেখার-জায়গা বাকি সবটুকু
   const memoT = { kind: 'table', rows: [['ক্রমিক', 'বিবরণ', 'টাকা'], ['', '', ''], ['', 'সর্বমোট:', '']], fontPt: 12, widthPt: 360, heightPt: 320, rect: { x: 50, y: 60, w: 360, h: 320 } };
   const pgM = { widthPt: 595.3, heightPt: 841.9, margins: { top: 50, left: 50, right: 50, bottom: 36 }, bands: [{ kind: 'flow', gapBeforePt: 0, y0: 60, cells: [{ items: [memoT] }] }] };
   const hs = [...D.bodyXml({ pages: [pgM] }).xml.matchAll(/<w:trHeight w:val="(\d+)" w:hRule="(\w+)"/g)].map((m) => [+m[1], m[2]]);
-  check(hs.length === 3 && hs[0][0] < 400 && hs[2][0] < 400 && hs[1][1] === 'exact' && Math.abs(hs[0][0] + hs[1][0] + hs[2][0] - 6400) < 40, 'টেবিল: লেখার সারি স্বাভাবিক, ফাঁকা সারি বাকি উচ্চতা (মোট মূলের সমান)');
+  // Pack11 (ডিফল্ট-চালু GRIDFIRST): ফাঁকা সারি atLeast (এডিটে লেখা কাটে না), প্রতি সারিতে বর্ডারের 15 dxa বাদ; FZ_OFF-এ পুরোনো exact
+  check(hs.length === 3 && hs[0][0] < 400 && hs[2][0] < 400 && /^(exact|atLeast)$/.test(hs[1][1]) && Math.abs(hs[0][0] + hs[1][0] + hs[2][0] - 6400) < 60, 'টেবিল: লেখার সারি স্বাভাবিক, ফাঁকা সারি বাকি উচ্চতা (মোট মূলের সমান)');
   // সমান ভাগে যেখানে ফোলে না (অনেক লেখার সারি + একটি ফাঁক) ⇒ পুরোনো নিয়ম অপরিবর্তিত
   const manyT = Object.assign({}, memoT, { rows: [['ক', 'খ', 'গ'], ['ঘ', 'ঙ', 'চ'], ['', '', ''], ['ছ', 'জ', 'ঝ']], heightPt: 70 });
   const hm = [...D.bodyXml({ pages: [Object.assign({}, pgM, { bands: [{ kind: 'flow', gapBeforePt: 0, y0: 60, cells: [{ items: [manyT] }] }] })] }).xml.matchAll(/<w:trHeight w:val="(\d+)"/g)].map((m) => +m[1]);

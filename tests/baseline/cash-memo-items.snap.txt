@@ -3,7 +3,7 @@
 
 ===== CLASSIFIER =====
 {
-  "type": "OFFICE_PAD"
+  "type": "CASH_MEMO"
 }
 
 ===== PARSED =====

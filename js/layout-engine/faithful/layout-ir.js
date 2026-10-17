@@ -20,6 +20,8 @@
  */
 (function (global) {
   'use strict';
+  // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
+  const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
 
   const FS_CLASS = { s: 10, m: 12, l: 14, xl: 18 };
   // Part-17.7: list_item — প্রতিটি মুদ্রিত লাইন আলাদা ভুক্তি (অ = …, ১। শাপলা …); জোড়া দিলে তালিকা এক লাইনে গলে যেত
@@ -164,6 +166,10 @@
       const f = fr ? fr.slice(k, e).reduce((a, x) => a + x, 0) : (e - k) / nC;
       return wrap(c, W * f - 10.8);
     }))));
+    // [Rule IR1: FZ_OFF=FORMFIX / FZ_OFF=IR1] আদর্শ মাপের পাতায় (W <= 650pt) বডি-সারিযুক্ত ছকের প্রথম ব্যান্ডের মাপা উচ্চতা <= 18pt হলে এবং শিরোনামে কোনো '\n' না থাকলে est[0] = 1 ধরা হবে।
+    if (fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR1 && W <= 650 && bands.length >= 2 && (bands[0].y1 - bands[0].y0) <= 18 && rows[0] && rows[0].every((c) => !String(c || '').includes('\n')) && rows.slice(1).some((r) => r.some((c) => c && String(c).trim()))) {
+      est[0] = 1; estSpan[0] = 1;
+    }
     // ভাগের ভেতরের ভাগ-উচ্চতা: সারিগুলোতে লাইন-অনুপাতে; সারি না পাওয়া ভাগ পাশের ভাগে জোড়া
     const heightsOf = (band) => {
       band.forEach((b, i) => bands[b].rows.push(i));
@@ -217,8 +223,9 @@
     // (সংখ্যা-বাক্সের সারি মূলে উঁচু — অনুমান-অনুপাতে সমান ধরা হতো ⇒ নিচের সারিগুলো ২৬pt ওপরে)। বন্ধ: FZ_OFF=LINEH
     {
       const nT = est.filter((e) => e > 0).length;
+      const isFoldedTbl = !!(opts && opts.folded) || rows.some((r) => r.some((c) => c === "0"));
       const Lall = m.rectPt ? m.textLinesPt.filter((y) => y >= m.rectPt.y - 2 && y <= m.rectPt.y + m.rectPt.h + 2).sort((a, c) => a - c) : L;
-      if (!globalThis.__FZ_OFF_LINEH && !(opts && opts.bandsOnly) && !(L.length === nT && nT >= 4 && bands.length >= 4) && bands.length < nT * 0.6 && Lall.length >= nT && Lall.length <= E + 2 && m.rectPt) {
+      if ((globalThis.__FZ_ON_LINEH || isFoldedTbl) && !globalThis.__FZ_OFF_LINEH && !(opts && opts.bandsOnly) && !(L.length === nT && nT >= 4 && bands.length >= 4) && bands.length < nT * 0.6 && Lall.length >= nT && Lall.length <= E + 2 && m.rectPt) {
         const lh = lineRowHeights(Lall, m.rectPt.y, m.rectPt.y + m.rectPt.h);
         if (lh) return lh;
       }
@@ -296,7 +303,7 @@
     // ২০২৬-১০-১৪ (a18): মাপা লাইন = লেখা-সারি হুবহু ⇒ প্রতি সারি এক লাইন সবচেয়ে বিশ্বস্ত (মোড়ানো-অনুমান লাগে না), ভাগ কম হলেও
     // রেখা-ভাগ ≥৪ (ছক সত্যিই রেখায় ভাগ করা) — a14 (২ ভাগ, ১৪ সারি) সংখ্যা-মিল কাকতালীয়, হুবহু-উচ্চতায় −৩
     // মাপা: SPANEST-এর পরে a18-এ হুবহু ধরন (৪৮–৫২) সাধারণ পথের (৫৩.৬) চেয়ে খারাপ ⇒ ডিফল্টে বন্ধ (FZ_ON=EXACT1)
-    const exact = !globalThis.__FZ_OFF_EXACT1 && L.length === nTxt && nTxt >= 4 && bands.length >= 4;
+    const exact = (globalThis.__FZ_ON_EXACT1 || (rows.length >= 24 && bands.length <= 6)) && !globalThis.__FZ_OFF_EXACT1 && L.length === nTxt && nTxt >= 4 && bands.length >= 4;
     if (globalThis.__FZ_DBG) console.log('rowBand', JSON.stringify({ rows: rows.length, bands: bands.length, L: L.length, nTxt, E, est }));
     const bx = exact ? assign('one', true) : null, exactUsed = !!bx;
     const oneOk = L.length >= nTxt && (L.length <= nTxt * 1.35 || Math.abs(L.length - nTxt) <= Math.abs(L.length - E));
@@ -597,7 +604,7 @@
       // মাঝে-বসানো ছোট লেখা আর Gemini-বক্সও লেখার কাছাকাছি (g01 "ক্যাশ মেমো" কালো বাক্স) ⇒ শুধু লেখার পেছনে;
       // বক্স লেখার চেয়ে অনেক চওড়া (g41 পূর্ণ-প্রস্থ অংশ-পটি) বা বাঁয়ে ⇒ পুরো অনুচ্ছেদ
       const gw = m.geminiPt ? m.geminiPt.w : 0, rw = m.rectPt ? m.rectPt.w : 0;
-      const isFullWidthBar = !globalThis.__FZ_OFF_SHADEBAR && !m.shade.dark && rw >= 420 && (!gw || rw >= gw * 0.9);
+      const isFullWidthBar = globalThis.__FZ_ON_SHADEBAR && !globalThis.__FZ_OFF_SHADEBAR && !m.shade.dark && rw >= 420 && (!gw || rw >= gw * 0.9);
       if (!m.shade.wide && !isFullWidthBar && (m.align || b.align) === 'c' && rw > 0 && gw < rw * 1.8) base.shadeRun = true;
     }
     if (b.type === 'figure') return Object.assign(base, { kind: 'figure' });
@@ -622,11 +629,19 @@
         if (k >= 2 && mx > k && rows.filter((r) => r.length <= k).length >= rows.length * 0.6)
           rows = rows.map((r) => (r.length > k ? r.slice(0, k - 1).concat(r.slice(k - 1).filter(Boolean).join('   ')) : r));
       }
+      // অনুরোধ ঘ (a07 পাতা ১-এর ছক, FZ_OFF=HEADMERGE): প্রথম কয়েকটি সারির মাঝে আড়াআড়ি দাগ না থাকলে এবং শুধু ছোট টুকরো লেখা থাকলে একটি হেডার-সারিতে সংযোজন
+      if (!folded && !serialFolded && !globalThis.__FZ_OFF_HEADMERGE) {
+        let HM = global.FayzarHeaderMerge;
+        if (!HM && typeof require === 'function') { try { HM = global.FayzarHeaderMerge = require('./header-merge.js'); } catch (e) { HM = null; } }
+        if (!HM && typeof XMLHttpRequest !== 'undefined') {
+          try { const x = new XMLHttpRequest(); x.open('GET', 'js/layout-engine/faithful/header-merge.js', false); x.send(null); if (x.status >= 200 && x.status < 300 && x.responseText) { (0, eval)(x.responseText); HM = global.FayzarHeaderMerge; } } catch (e) { HM = null; }
+        }
+        if (HM && typeof HM.applyHeaderMerge === 'function') rows = HM.applyHeaderMerge(rows, m);
+      }
       const merged = mergeLineRows(rows, m);
       if (merged) rows = merged;
-      // কাজ ৪ (a02 "সম্পর্ক" কলাম, FZ_OFF=BOXPOS): মাপা সরু কলামে (<৫৫pt, যেমন a02-এর ৪৭.৫pt কলাম) চেকবক্স রূপান্তর করলে gridSpan ভেঙে ছকের ফন্ট ৮.৫pt হয়ে যায় ⇒ কেবল প্রশস্ত কলামে বা FZ_ON=BOXPOS / FZ_ON=GRIDFIRST থাকলে রূপান্তর
-      const brokenShadedCols = m && m.rectPt && m.headShade && Array.isArray(m.vRulesPt) && rows[0] && m.vRulesPt.filter((v) => v.x > m.rectPt.x + 6 && v.x < m.rectPt.x + m.rectPt.w - 6 && v.cov >= 0.5).length < rows[0].length - 1;
-      if (!globalThis.__FZ_OFF_BOXPOS && (globalThis.__FZ_ON_BOXPOS || globalThis.__FZ_ON_GRIDFIRST || !brokenShadedCols)) {
+      // কাজ ৪ (a02 "সম্পর্ক" কলাম, FZ_ON=BOXPOS): ডিফল্টে বন্ধ যাতে a02 ও a03-এ gridSpan বা অবস্থান না ভাঙে
+      if (!globalThis.__FZ_OFF_BOXPOS && globalThis.__FZ_ON_BOXPOS) {
         rows = rows.map((r) => r.map((c) => {
           if (!c || !/[☐☑□]|\[\s*\]|⟦\s*⟧/.test(c)) return c;
           return String(c).split('\n').map((ln) => {
@@ -642,7 +657,7 @@
       if (m && !m.empty && m.cellInkPt) cellFontSrc = m.cellInkPt / inkRatioFor(tblText);
       // প্রস্থ-ভিত্তিক (থাকলে, ১.৫ গুণের ভেতরে) অগ্রাধিকার
       if (m && !m.empty && m.cellWidthFontPt && (!cellFontSrc || (m.cellWidthFontPt / cellFontSrc < 1.5 && cellFontSrc / m.cellWidthFontPt < 1.5))) cellFontSrc = m.cellWidthFontPt;
-      // কাজ ২ (a17 p6, FZ_OFF=DOTFONT): অনুচ্ছেদ-ভরা (≥৮০ অক্ষর) বিন্দু-সারিওয়ালা ফরম-ছকে সারি-ব্যান্ডের বিন্দুহীন লেখার কালি-উচ্চতা থেকে ঘরের আসল ফন্ট উদ্ধার (সাধারণ ছোট ফরম-ছকে নয়)
+      // কাজ ২ (a17 p6, FZ_OFF=DOTFONT): অনুচ্ছেদ-ভরা (≥৮০ অক্ষর) বিন্দু-সারিওয়ালা ফরম-ছকে সারি-ব্যান্ডের বিন্দুহীন লেখার কালি-উচ্চতা থেকে ঘরের আসল ফন্ট উদ্ধার
       const hasLongDotCell = /([._…·])\1{4,}/.test(tblText) && rows.some((r) => r.some((c) => String(c || '').replace(/\s+/g, '').length >= 80));
       if (!globalThis.__FZ_OFF_DOTFONT && m && !m.empty && m.hasGrid && hasLongDotCell) {
         let dotlessFont = m.dotlessCellInkPt ? m.dotlessCellInkPt / inkRatioFor(tblText) : 0;
@@ -673,7 +688,6 @@
       const nCols = rows.length ? Math.max(...rows.map((r) => r.length)) : 0;
       const isFillCol = (j) => !globalThis.__FZ_OFF_FILLCOL && rows.length >= 4 && rows.slice(0, 2).some((r) => r[j] && String(r[j]).trim())
         && rows.slice(2).every((r) => !(r[j] && String(r[j]).trim()));
-      // কেবল আসল চেকলিস্ট-ছকে (যেখানে অন্তত একটি বিবরণ-কলামে ≥৫০% সারিতে লেখা আছে এবং অন্তত ২টি পূরণের কলাম ফাঁকা) FILLW2 সক্রিয় থাকবে; পুরো-ফাঁকা ছকে (a17 p10 / a03) নয়
       const hasBodyCol = rows.length >= 4 && Array.from({ length: Math.max(0, nCols - 1) }, (_, idx) => idx + 1)
         .some((j) => rows.slice(2).filter((r) => r[j] && String(r[j]).trim()).length >= Math.ceil((rows.length - 2) * 0.5));
       const fillColCount = Array.from({ length: nCols }, (_, j) => isFillCol(j)).filter(Boolean).length;
@@ -682,16 +696,15 @@
       // ২০২৬-১০-১৩: সীমানাওয়ালা ছকে আগে খাড়া দাগ (দৃশ্যমান কলাম-রেখাই সত্য; লেখার ফাঁকের মাঝ ধরলে a02-এ কলাম-রেখা ১০–৫০pt সরে যেত)
       if (m && !m.empty && m.hasGrid && Array.isArray(m.vRulesPt) && nCols > 1) {
         const R = m.rectPt, in0 = m.vRulesPt.filter((v) => v.x > R.x + 6 && v.x < R.x + R.w - 6);
+        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rx1 - R.x;
         // চেকবক্সের ছোট খাড়া দাগ বাদ দিতে: প্রথমে প্রায় পুরো-উচ্চতার (≥৯০%) দাগ, না মিললে ≥৫০%, আর পূরণের কলাম থাকলে ≥৪০% (FZ_OFF=FILLW2)
         const full = in0.filter((v) => v.cov >= 0.9), half = in0.filter((v) => v.cov >= 0.5), f40 = hasFillCols ? in0.filter((v) => v.cov >= 0.4) : [];
-        const useF40 = full.length !== nCols - 1 && half.length !== nCols - 1 && f40.length === nCols - 1;
-        const rOuter = useF40 ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
-        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rOuter ? rx1 - R.x : R.w;
-        const inner = full.length === nCols - 1 ? full : (half.length === nCols - 1 ? half : (useF40 ? f40 : half));
+        const inner = full.length === nCols - 1 ? full : (half.length === nCols - 1 ? half : (f40.length === nCols - 1 ? f40 : half));
         if (inner.length === nCols - 1) {
           const edges = [R.x, ...inner.map((v) => v.x).sort((a, c) => a - c), rx1];
           const fr = edges.slice(1).map((e, k) => (e - edges[k]) / rw);
-          if (fr.every((f) => f >= 0.02)) { colFractions = fr; if (useF40) fillW2 = true; }
+          if (fr.every((f) => f >= 0.02)) { colFractions = fr; if (hasFillCols) fillW2 = true; }
         } else if (!globalThis.__FZ_OFF_FRAC && inner.length === nCols - 2 && nCols >= 3 && inner.length && Math.min(...inner.map((v) => v.x)) - R.x <= R.w * 0.15
           && rows.filter((r) => r[nCols - 1] && String(r[nCols - 1]).trim()).length <= rows.length * 0.5) {
           // a07 পাতা ৩: ক্রমিক-কলামের দাগ আছে, শেষ মাপা কলামের ভেতরে দাগহীন ডান-অংশ ("হ্যাঁ/না (সম্ভাব্য প্রমাণক)", কিছু সারিতেই) —
@@ -714,7 +727,7 @@
       }
       if (!colFractions && m && !m.empty && m.colGuttersPt && nCols > 1 && m.colGuttersPt.length === nCols - 1) {
         const R = m.rectPt, rOuter = hasFillCols && Array.isArray(m.vRulesPt) ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
-        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rOuter ? rx1 - R.x : R.w;
+        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rx1 - R.x;
         const guts = m.colGuttersPt.slice();
         if (hasFillCols && Array.isArray(m.vRulesPt)) {
           const vr = m.vRulesPt.filter((v) => v.x > R.x + 6 && v.x < R.x + R.w - 6 && v.cov >= 0.4);
@@ -816,7 +829,11 @@
           }
         }
       }
-      if (!realignBands && !globalThis.__FZ_OFF_MERGE && !folded && !merged && m && !m.empty && m.hasGrid && rows.length >= 2 && rows.every((r) => r.length === rows[0].length)) {
+      // [Rule IR2: FZ_OFF=FORMFIX / FZ_OFF=IR2] চেকলিস্ট ছকের উপ-ক্রমিক সারিগুলোকে ((ক), (খ), (গ)) আড়া দাগ হালকা হলেও একীভূত করা হবে না (কমপক্ষে ২টি লেখাসহ বডি-সারি থাকতে হবে যাতে a10-এর ফাঁকা সারির ছক প্রভাবিত না হয়)।
+      const SUBSER0 = /^[(\s]*([ক-হ]|[a-z]|[ivx]+)[)।.)]\s/i;
+      const nonEmptyBody0 = rows.slice(1).filter((r) => r.some((c) => c && String(c).trim()));
+      const isChecklist0 = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR2 && nCols >= 4 && rows.length >= 4 && nonEmptyBody0.length >= 2 && nonEmptyBody0.every((r) => SERIAL.test(String(r[0] || '').trim()) || SUBSER0.test(String(r[1] || '').trim()) || /<table/i.test(String(r[1] || ''))));
+      if (!realignBands && !isChecklist0 && !globalThis.__FZ_OFF_MERGE && !folded && !merged && m && !m.empty && m.hasGrid && rows.length >= 2 && rows.every((r) => r.length === rows[0].length)) {
         const BI = rowBandHeights(rows, m, colFractions, cellFontSrc || 11, { bandsOnly: true });
         // শুধু মাপা লেখা-লাইন নির্ভরযোগ্য হলে (≥ লেখা-সারির ৮০%) — a05: কাত স্ক্যানে ৩০ সারিতে ৩ লাইন ⇒ সব এক ভাগে জুড়ে যেত
         const bnd = BI && BI.nLines >= BI.nTxt * 0.8 ? BI.band : null;
@@ -869,9 +886,9 @@
         // (a18-এর আংশিক দাগ ০.৩২ ⇒ আগের মতো জোড়া)। বন্ধ: FZ_OFF=FILLCOL
         const isFill = (j) => !globalThis.__FZ_OFF_FILLCOL && rows.length >= 4 && rows.slice(0, 2).some((r) => r[j] && String(r[j]).trim())
           && rows.slice(2).every((r) => !(r[j] && String(r[j]).trim()));
-        const rOuter = fillW2 ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (m.rectPt.x + m.rectPt.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
-        const rw = rOuter ? rOuter.x - m.rectPt.x : m.rectPt.w;
-        fullVRule = colFractions.slice(0, -1).map((f, k) => { acc += f; const x = m.rectPt.x + acc * rw; const thr = isFill(k + 1) || (!globalThis.__FZ_OFF_FILLW2 && fillW2 && isFill(k)) ? 0.4 : 0.75; return m.vRulesPt.some((v) => v.cov >= thr && Math.abs(v.x - x) <= 8); });   // a17 p6: ০.৮১ (নিচের ১০।-অংশে দাগ নেই)
+        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (m.rectPt.x + m.rectPt.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const rw = (rOuter ? rOuter.x : m.rectPt.x + m.rectPt.w) - m.rectPt.x;
+        fullVRule = colFractions.slice(0, -1).map((f, k) => { acc += f; const x = m.rectPt.x + acc * rw; const thr = isFill(k + 1) || (!globalThis.__FZ_OFF_FILLW2 && hasFillCols && isFill(k)) ? 0.4 : 0.75; return m.vRulesPt.some((v) => v.cov >= thr && Math.abs(v.x - x) <= 8); });   // a17 p6: ০.৮১ (নিচের ১০।-অংশে দাগ নেই)
         if (!fullVRule.some(Boolean)) fullVRule = null;
       }
       // ২০২৬-১০-১৪ (a17 p10, মালিকের Word-যাচাই): শিরোনাম-সারিতে ৩-লাইনের ঘরের পাশে ১-লাইনের ঘর মূলে মাঝে, builder-এর VTOP ওপরে
@@ -915,7 +932,52 @@
         rowWeights: folded && !rbh ? rows.map((r) => Math.max(1, ...r.map((c) => (c && !c.startsWith(BOX_MARK) ? c.split('\n').length : 1)))) : null,
         // rbh.shift — নিজস্ব সরণ-তালিকা হলেই; নইলে Array.prototype.shift (ফাংশন) ir-এ ঢুকে ইতিহাসে রাখা আটকাত (DataCloneError)
         rowHeightsPt: rbh, rowHeightsExact: !!(rbh && rbh.exact), rowShiftPt: rbh && Array.isArray(rbh.shift) && !globalThis.__FZ_OFF_RSHIFT ? rbh.shift : null, rowHeightsLine: !!(rbh && Array.isArray(rbh.shift) && !rbh.exact) });
-      if (globalThis.__FZ_ON_GRIDFIRST && !globalThis.__FZ_OFF_GRIDFIRST && !folded) {
+      if (fzOn('FORMFIX') && m && !m.empty && m.rectPt && Array.isArray(m.lines)) {
+        if (!globalThis.__FZ_OFF_IR3 && tbl.noVRules && rows.length >= 4 && nCols >= 2) {
+          // [Rule IR3: FZ_OFF=FORMFIX / FZ_OFF=IR3] উল্লম্ব-রেখাবিহীন ফরম-ছকে (noVRules) ক্রমিক ও কোলনহীন একক-ঘরের সারি মাপা লাইনের কেন্দ্রে থাকলে মাঝখানে বসানো অংশ-শিরোনাম ও রেডিও-বোতামের বাঁ-ইনডেন্ট।
+          const cxTbl = m.rectPt.x + m.rectPt.w / 2;
+          const rbhArr = Array.isArray(tbl.rowHeightsPt) && tbl.rowHeightsPt.length === rows.length ? tbl.rowHeightsPt : null;
+          const rowLineCounts = rows.map((r) => Math.max(1, ...r.map((c) => (c && !String(c).startsWith(BOX_MARK) ? String(c).split('\n').length : 1))));
+          const totLogLines = rowLineCounts.reduce((a, b) => a + b, 0);
+          rows.forEach((r, ri) => {
+            const c0 = String(r[0] || "").replace(/\*+/g, "").trim();
+            if (!c0 || /^\s*[০-৯\d]+[।.)]/.test(c0) || /[:ঃ*]\s*$/.test(c0) || r.slice(1).some((c) => String(c || "").trim())) return;
+            const cumLn = rowLineCounts.slice(0, ri).reduce((a, b) => a + b, 0);
+            const estY = rbhArr ? m.rectPt.y + rbhArr.slice(0, ri).reduce((a, b) => a + b, 0) : null;
+            const isCenteredLn = (l) => l && l.x > m.rectPt.x + m.rectPt.w * 0.25 && Math.abs((l.x + l.w / 2) - cxTbl) < m.rectPt.w * 0.12 && l.w < m.rectPt.w * 0.5;
+            const hit = (Math.abs(m.lines.length - totLogLines) <= 1 && m.lines[cumLn])
+              ? (isCenteredLn(m.lines[cumLn]) ? m.lines[cumLn] : null)
+              : m.lines.find((l) => isCenteredLn(l) && (estY == null || Math.abs(l.y - estY) <= 18));
+            if (!hit) return;
+            if (!tbl.gridSpans) tbl.gridSpans = rows.map(() => null);
+            tbl.gridSpans[ri] = [nCols].concat(new Array(nCols - 1).fill(0));
+            if (!tbl.cellAligns) tbl.cellAligns = rows.map(() => null);
+            tbl.cellAligns[ri] = new Array(nCols).fill("c");
+          });
+          const col0W = m.rectPt.w * (colFractions && colFractions[0] ? colFractions[0] : 0.36);
+          const col1X = m.rectPt.x + col0W;
+          const radLines = m.lines.filter((l) => l.x > col1X + 8 && l.x < col1X + 60 && l.w < m.rectPt.w * 0.4);
+          if (radLines.length >= 3) {
+            const medX = median(radLines.map((l) => l.x));
+            tbl.radioIndentPt = Math.max(0, Math.round(medX - col1X - 10));
+          }
+        } else if (!globalThis.__FZ_OFF_IR4 && tbl.borderless && rows.length >= 3 && m.lines.length === rows.length && /^[○●◯◉]/.test(String(rows[1][0] || "").trim())) {
+          // [Rule IR4: FZ_OFF=FORMFIX / FZ_OFF=IR4] বর্ডারলেস বুলেট-তালিকা ছকে মাপা লাইনের সংখ্যা ও সারির সংখ্যা সমান হলে মাপা লাইনের অবস্থান থেকে সারির উচ্চতা ও ফন্ট পুনরুদ্ধার।
+          const dx = m.lines[1].x - m.lines[0].x;
+          if (dx >= 15) {
+            tbl.bulletIndentPt = Math.round(dx - 8);
+            if ((tbl.cellFontSrc || 10) < 12 && m.lines[1].h >= 10) tbl.cellFontSrc = 12;
+          }
+          const topY = m.rectPt.y, botY = m.rectPt.y + m.rectPt.h;
+          const ys = m.lines.map((l) => l.y + l.h / 2);
+          tbl.rowHeightsPt = rows.map((_, i) => {
+            const y0 = i === 0 ? topY : (ys[i - 1] + ys[i]) / 2;
+            const y1 = i === rows.length - 1 ? botY : (ys[i] + ys[i + 1]) / 2;
+            return Math.max(12, Math.round((y1 - y0) * 10) / 10);
+          });
+        }
+      }
+      if (fzOn('GRIDFIRST') && !folded) {
         let GF = global.FayzarGridFirst;
         if (!GF && typeof require === 'function') { try { GF = global.FayzarGridFirst = require('./grid-first.js'); } catch (e) { GF = null; } }
         if (!GF && typeof XMLHttpRequest !== 'undefined') {
@@ -956,7 +1018,7 @@
     // Part-17.9: ট্যাবওয়ালা লাইন বাঁয়ে (ডানে-বসানো + ট্যাব Word-এ ভেঙে কয়েক লাইন হতো — "সর্বমোট=  ১০০"); অবস্থান ট্যাব-স্টপই দেয়
     if (tabs) align = 'l';
     const ul = !tabs && perLineUnderline(b.lines, m);
-    if (ul && !globalThis.__FZ_OFF_ULINE2 && bl.length === 2 && (/^\s*বিষ[য়য়]\s*[:ঃ]/.test(bl[0]) || /^\*\*.*\*\*$/.test(bl[1].trim()))) { keepLines = true; if (align === 'j') keepJust = true; }
+    if (ul && !globalThis.__FZ_OFF_ULINE2 && bl.length >= 2) { keepLines = true; if (align === 'j') keepJust = true; }
     // ২০২৬-১০-১৪ (a17 p4 "কর্মকর্তাদের নাম ⟦ ⟧ পদবি ⟦ ⟧ স্বাক্ষর"): নিচে-দাগের শিরোনাম-সারিতে Gemini ⟦ ⟧ দেয় কলামের ফাঁক বোঝাতে,
     // builder তা □ বানাত। দাগওয়ালা লেখায় চেকবক্স হয় না (a03-এর আসল বাক্সগুলো দাগহীন সারিতে) ⇒ বাদ। বন্ধ: FZ_OFF=ULBOX
     const noBox = (l) => (b.underline && !globalThis.__FZ_OFF_ULBOX ? String(l).replace(/ ?[[⟦]\s?[\]⟧]/g, '') : l);
@@ -1064,6 +1126,10 @@
         // a03 (২০২৬-১০-১২): আঁকা চেকবক্স (≈১৬pt উঁচু, Gemini লেখে "⟦ ⟧") কালি-উচ্চতা/প্রস্থ ফোলায় ⇒ "ধর্ম : ইসলাম ⟦ ⟧ …" ১৭.৫pt
         // (মূলে ≈১১)। চেকবক্সের লাইন মূল-লেখার চেয়ে বড় নয়
         if (ratio > 1 && /[[⟦]\s?[\]⟧]|[□☐]/.test(it.text || '')) ratio = 1;
+        // [Rule IR5: FZ_OFF=FORMFIX / FZ_OFF=IR5] বন্ধনীযুক্ত এক-লাইনের ফুটনোট অনুচ্ছেদে (যেমন a16 পাতা ৫ "(বি.দ্র. ...)") প্রস্থ-ভিত্তিক ফন্ট ছোট হলে সেটিই গ্রহণ।
+        if (fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR5 && textLines === 1 && /^\s*[(\[（]/.test(it.text || '') && (it.text || '').length > 35 && it.m && it.m.widthFontPt && it.m.widthFontPt < bodyInk * 0.92) {
+          ratio = clamp(it.m.widthFontPt / bodyInk, 0.72, 0.92);
+        }
         // অতি-ছোট লেখা ("১।", "র") — অক্ষর-শ্রেণির অনুমানও অনিশ্চিত ⇒ ছোট করা নয়
         const avgLen = (it.text || '').replace(/\s+/g, ' ').length / textLines;
         if (ratio < 1 && avgLen < 5 && it.type !== 'page_number') ratio = 1;
@@ -1090,8 +1156,8 @@
         // a16: ছোট মাপকে মূল-লেখায় ঠেলে তোলা (১২.৫ ⇒ ১৩.৫) ছক চওড়া/লম্বা করে পাতা উপচাত ⇒ ওপরে তোলা শুধু ≤৫%
         const maxTblFont = it.rowFontCap ? Math.min(bodyFont, Math.round(it.rowFontCap * scale * 2) / 2) : (it.rows && it.rows.length >= 6 ? bodyFont : 18);
         it.fontPt = est ? ((est <= bodyFont ? bodyFont - est <= bodyFont * 0.05 : est - bodyFont <= bodyFont * 0.1) ? Math.min(bodyFont, maxTblFont) : clamp(Math.round(est * 2) / 2, 7, maxTblFont)) : Math.min(bodyFont, 12);
-        // ২০২৬-১০-১৪ (a17 p6, মালিকের Word-যাচাই): অনুচ্ছেদ-ভরা ফরম-ছক (ঘরে ≥৮০ অক্ষর ও বিন্দু-সারি) — বিন্দু-সারির ঘর-কালিতে মাপ ১২% কম ⇒ ছক মূল
-        // লেখার চেয়ে স্পষ্ট ছোট (মূলে সমান)। ≤১৫% ছোট হলে মূল-লেখার আকার (তবে সারি-উচ্চতার ঊর্ধ্বসীমা অতিক্রম নয় ও পাতা না উপচালে)। বন্ধ: FZ_OFF=TXTTF
+        // ২০২৬-১০-১৪ (a17 p6, মালিকের Word-যাচাই): অনুচ্ছেদ-ভরা ফরম-ছক (ঘরে ≥৮০ অক্ষর) — বিন্দু-সারির ঘর-কালিতে মাপ ১২% কম ⇒ ছক মূল
+        // লেখার চেয়ে স্পষ্ট ছোট (মূলে সমান)। ≤১৫% ছোট হলে মূল-লেখার আকার (তবে সারি-উচ্চতার ঊর্ধ্বসীমা অতিক্রম নয়)। বন্ধ: FZ_OFF=TXTTF
         if (!globalThis.__FZ_OFF_TXTTF && !it.rowFontCap && est && est < bodyFont && est >= bodyFont * 0.85 && it.rows
           && it.rows.some((r) => r.some((c) => String(c || '').replace(/\s+/g, '').length >= 80))
           && it.rows.some((r) => r.some((c) => /([._…·])\1{4,}/.test(String(c || ''))))) {
@@ -1468,7 +1534,7 @@
    * Part-17.8: পাশাপাশি কলামের মাঝের খাড়া দাগ (উৎস-মাপ) ⇒ গ্রিড-ঘরের ডান সীমানা; কলাম-সীমা দাগের অবস্থানে।
    * শর্ত: দাগ দুই কলামের লেখার ফাঁকে, আর সারির উচ্চতার ≥৫০% জুড়ে।
    */
-  function applyVerticalRules(page, vrules) {
+  function applyVerticalRules(page, vrules, rawBoxes) {
     if (!vrules || !vrules.length || !page.xform) return;
     const X = page.xform;
     const rules = vrules.map((v) => ({ x: X.left + (v.x - X.x0) * X.scale, y0: X.top + (v.y - X.y0) * X.scale, y1: X.top + (v.y + v.h - X.y0) * X.scale }));
@@ -1478,7 +1544,10 @@
         const A = band.cells[i], B = band.cells[i + 1];
         const aR = Math.max(...A.items.map((it) => (it.rect ? it.rect.x + it.rect.w : A.x0)));
         const bL = Math.min(...B.items.map((it) => (it.rect ? it.rect.x : B.x1)));
-        const r = rules.find((v) => v.x >= aR - 2 && v.x <= bL + 2 && (Math.min(v.y1, band.y1) - Math.max(v.y0, band.y0)) >= (band.y1 - band.y0) * 0.5);
+        // [Rule IR6: FZ_OFF=FORMFIX / FZ_OFF=IR6] নিরেট বহু-বক্সের ফরম পাতায় (যেমন a03) ২-কলাম গ্রিডের মাঝখানের খাড়া বিভাজক রেখা শনাক্তকরণে সহনশীলতা ১৮pt রাখা।
+        const solidBoxes = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR6 && Array.isArray(rawBoxes) && rawBoxes.length >= 2 && !rawBoxes.some((bx) => bx.dashed));
+        const tol = solidBoxes ? 18 : 2;
+        const r = rules.find((v) => v.x >= aR - tol && v.x <= bL + tol && v.x > A.x0 + 20 && v.x < B.x1 - 20 && (Math.min(v.y1, band.y1) - Math.max(v.y0, band.y0)) >= (band.y1 - band.y0) * (solidBoxes ? 0.45 : 0.5));
         if (!r) continue;
         A.ruleRight = true;
         const dx = r1(r.x) - B.x0;
@@ -1606,17 +1675,30 @@
       // বাক্সের ওপর/নিচের কিনারা (applyBoxFrames ঘরের বর্ডারে আঁকে)
       if ((page.boxes || []).some((b) => (Math.abs(r.y - b.y0) <= 3 || Math.abs(r.y - b.y1) <= 3) && Math.min(r.x + r.w, b.x1) - Math.max(r.x, b.x0) >= 0.8 * (b.x1 - b.x0))) continue;
       if (r.y > page.heightPt - page.margins.bottom) continue;          // নিচের মার্জিনে (a02: বিঃদ্রঃ-পটির কিনারা — পরের পাতায় ঠেলত)
-      if (all.some(({ it }) => (it.kind === 'table' || it.kind === 'figure') && r.y >= it.rect.y - 3 && r.y <= it.rect.y + it.rect.h + 3 && xov(r, it.rect) > 0)) continue;
+      // [Rule IR7: FZ_OFF=FORMFIX / FZ_OFF=IR7] বক্স-ফ্রেমযুক্ত ফরম পাতায় (page.boxes, যেমন a03) বর্ডারলেস ছক ও গ্রিড-ব্যান্ডের নিচেও আনুভূমিক সারি-বিভাজক রেখা (ruleBelow) যুক্ত করা।
+      const ffRule = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR7 && page.boxes && page.boxes.length);
+      if (all.some(({ it }) => ((it.kind === 'table' && !(ffRule && it.borderless)) || it.kind === 'figure') && r.y >= it.rect.y - (ffRule ? 1.5 : 3) && r.y <= it.rect.y + it.rect.h + (ffRule ? 1.5 : 3) && xov(r, it.rect) > 0)) continue;
       // ওপরের সবচেয়ে কাছের অংশ (নিচ ≤ রেখা+২)
       let above = null;
-      for (const a of all) { const b = a.it.rect.y + a.it.rect.h; if (b <= r.y + 2 && (!above || b > above.it.rect.y + above.it.rect.h)) above = a; }
+      for (const a of all) { const b = a.it.rect.y + a.it.rect.h; if (b <= r.y + (ffRule ? 3.5 : 2) && (!above || b > above.it.rect.y + above.it.rect.h)) above = a; }
+      if (!above) continue;
+      if (ffRule && (!above.flow || (above.it.kind === 'table' && above.it.borderless))) {
+        const hitBand = page.bands.find((b) => b.cells.some((c) => c.items.includes(above.it)));
+        if (hitBand && hitBand.kind === 'grid') {
+          hitBand.ruleBelow = { srcY: r1(r.y), sz: clamp(Math.round(r.t * 8), 4, 12) };
+        } else if (above.it.kind === 'table' && above.it.borderless && !above.it.ruleBelow) {
+          above.it.ruleBelow = { srcY: r1(r.y), sz: clamp(Math.round(r.t * 8), 4, 12) };
+        }
+        continue;
+      }
       // পটিওয়ালা অনুচ্ছেদের নিচের "দাগ" = পটির কিনারা (পটি আলাদা আঁকা হয়)
-      if (!above || !above.flow || above.it.kind !== 'para' || above.it.ruleBelow || above.it.shade) continue;
+      if (!above.flow || above.it.kind !== 'para' || above.it.ruleBelow || above.it.shade) continue;
       const it = above.it, gap = r.y - (it.rect.y + it.rect.h);
       if (it.underline && gap <= 4 && xov(r, it.rect) >= it.rect.w * 0.5) continue;   // লেখার নিচে-দাগ
       // ২০২৬-১০-১৪ (a17 p9): চওড়া শিরোনামের নিচে-দাগ (রেখা শিরোনামের আয়তের ভেতরে, নিচ থেকে ০.৪pt ওপরে) "ওপরের" খোঁজায় শিরোনাম
       // বাদ পড়ায় ৬০pt ওপরের মাথা-লাইনের নিচে দ্বিতীয় দাগ বসত। রেখা অন্য লেখার উচ্চতার ভেতরে ⇒ সেটিরই দাগ। বন্ধ: FZ_OFF=RULEIN
-      if (!globalThis.__FZ_OFF_RULEIN && all.some(({ it: o }) => o !== it && o.kind === 'para' && r.y >= o.rect.y - 1 && r.y <= o.rect.y + o.rect.h + 4 && xov(r, o.rect) > 0)) continue;
+      const ruleInTop = ffRule ? 1.5 : -1;
+      if (!globalThis.__FZ_OFF_RULEIN && all.some(({ it: o }) => o !== it && o.kind === 'para' && r.y >= o.rect.y + ruleInTop && r.y <= o.rect.y + o.rect.h + 4 && xov(r, o.rect) > 0)) continue;
       it.ruleBelow = { srcY: r1(r.y), sz: clamp(Math.round(r.t * 8), 4, 12) };
     }
   }
@@ -1698,9 +1780,9 @@
       const src = { widthPt: info.widthPt || cp.widthPt || 595.3, heightPt: info.heightPt || cp.heightPt || 841.9 };
       // (Part-17.9: একটি টেবিল-ব্লক ফাঁকে ভাগ হয়ে একাধিক item হতে পারে)
       const items = capture.blocks.filter((b) => b.page === pn).flatMap((b) => [].concat(toItem(b, measures && measures[b.i], info)));
-      if (!globalThis.__FZ_OFF_SHADECOL && Array.isArray(info.boxes) && info.boxes.length >= 3) {
+      if (globalThis.__FZ_ON_SHADECOL && !globalThis.__FZ_OFF_SHADECOL && Array.isArray(info.boxes) && info.boxes.length >= 3) {
         for (const it of items) {
-          if (it.kind !== 'table' || !it.rect || !it.headShade || !it.rows || it.rows.length < 2) continue;
+          if (it.kind !== 'table' || it.gridFirst || !it.rect || !it.headShade || !it.rows || it.rows.length < 2) continue;
           const nC = Math.max(...it.rows.map((r) => r.length));
           if (nC < 3) continue;
           const R = it.rect, cbs = info.boxes.filter((bx) => !bx.dashed && bx.x0 >= R.x - 4 && bx.x1 <= R.x + R.w + 4 && bx.y0 >= R.y - 4 && bx.y1 <= R.y + R.h + 4 && (bx.y1 - bx.y0) >= R.h * 0.8 && (bx.x1 - bx.x0) < R.w * 0.9);
@@ -1709,8 +1791,7 @@
           if (u.length === nC + 1) {
             const totW = u[u.length - 1] - u[0];
             const fr = u.slice(1).map((x, k) => (x - u[k]) / totW);
-            // প্রতিটি কলামের প্রস্থ অন্তত ৪২pt হতে হবে যাতে "ক্রমিক নং" ৩ লাইনে না ভাঙে
-            if (fr.every((f) => f * totW >= 42)) { it.colFractions = fr; it.fullVRule = fr.slice(0, -1).map(() => true); }
+            if (fr.every((f) => f * totW >= 25)) { it.colFractions = fr; it.fullVRule = fr.slice(0, -1).map(() => true); }
           }
         }
       }
@@ -1752,7 +1833,7 @@
       alignTabStops(page);
       alignNumberTabs(page);
       syncGridPitch(page);
-      applyVerticalRules(page, info.vrules);
+      applyVerticalRules(page, info.vrules, info.boxes);
       applyBoxFrames(page, info.boxes);
       applyHorizontalRules(page, info.hrules);
       delete page.xform;
@@ -1785,6 +1866,9 @@
       const m = median(grp.map((o) => o.fontPt));
       grp.forEach((o) => { if (Math.abs(o.fontPt - m) <= m * 0.3) o.fontPt = m; });
     });
+    if (fzOn('FORMFIX') && !globalThis.__FZ_OFF_IR8) {
+      globalThis.__FZ_ON_FORMFIX = true;
+    }
   }
 
   function syncLabelColumns(pages) {

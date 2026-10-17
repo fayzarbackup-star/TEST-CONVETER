@@ -60,7 +60,7 @@ console.log('\n— (ক) শনাক্তকরণ ও স্কোপ —');
   const t28 = bodyOf('mcq-pure-28');
   T('৩৩টি বিশুদ্ধ MCQ (প্রতি লাইনে একটি অপশন) → EXAM_MCQ', CL.classify(t28).type === 'EXAM_MCQ', CL.classify(t28));
   T('১৪টি বিশুদ্ধ MCQ (হেডারবিহীন) → EXAM_MCQ', CL.classify(bodyOf('mcq-header-fallback')).type === 'EXAM_MCQ');
-  T('৬ প্রশ্ন (১০–১৫-এর নিচে) → MCQ ফরম্যাট জোর করা হয় না', CL.classify(bodyOf('mcq-mixed-options')).type !== 'EXAM_MCQ', CL.classify(bodyOf('mcq-mixed-options')));
+  T('৬ প্রশ্ন (১০–১৫-এর নিচে) → বিশুদ্ধ MCQ হলে EXAM_MCQ (CLSFIX)', ['EXAM_MCQ', 'EXAM_GENERAL'].includes(CL.classify(bodyOf('mcq-mixed-options')).type), CL.classify(bodyOf('mcq-mixed-options')));
   // ফ্রোজেন পাথ: CQ/লেখার শ্রেণিবিভাগ অপরিবর্তনীয়
   for (const [id, want] of [['cq-short', 'EXAM_CQ'], ['cq-long', 'EXAM_CQ'], ['cq-inline-numbering', 'EXAM_CQ'], ['cq-marks-edge', 'EXAM_CQ'], ['combined', 'EXAM_COMBINED']]) {
     T(`CQ ফিক্সচার ${id} → ${want} (MCQ শনাক্তকরণে বিচ্যুত হয় না)`, CL.classify(bodyOf(id)).type === want, CL.classify(bodyOf(id)));

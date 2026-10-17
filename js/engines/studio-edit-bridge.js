@@ -130,12 +130,18 @@
    */
   function textWithoutFigures(el) {
     if (!isEl(el)) return '';
-    if (!el.querySelector || !el.querySelector('.studio-figure-wrapper, .figure-toolbar')) {
+    if (!el.querySelector || (!el.querySelector('.studio-figure-wrapper, .figure-toolbar') && !el.querySelector('.eq-rendered'))) {
       return (el.innerText != null && el.innerText !== '') ? el.innerText : el.textContent;
     }
     try {
       const clone = el.cloneNode(true);
       clone.querySelectorAll('.studio-figure-wrapper, .figure-toolbar').forEach(function (n) { n.remove(); });
+      clone.querySelectorAll('.eq-rendered').forEach(function (n) {
+        const raw = n.getAttribute('data-eq-raw') || n.getAttribute('data-raw') || (n.dataset && (n.dataset.eqRaw || n.dataset.raw));
+        if (raw) {
+          n.textContent = raw.startsWith('$') ? raw : ('$' + raw + '$');
+        }
+      });
       return clone.textContent || '';
     } catch (e) {
       return '';
@@ -177,8 +183,55 @@
     const edits = [];
     if (!isEl(root) || !parsedData) return edits;
 
+    // ── হেডার ফিল্ড সিঙ্ক (.qp-header, .exam-header)
+    const headerEl = root.querySelector('.qp-header, .exam-header, .header-container');
+    if (headerEl && parsedData.header) {
+      const instEl = headerEl.querySelector('.qp-institute, h1, .institute-name');
+      if (instEl) {
+        const cur = oneLine(textWithoutFigures(instEl));
+        if (cur && cur !== cmp(parsedData.header.institute)) {
+          edits.push({ path: 'header.institute', value: cur, kind: 'header' });
+        }
+      }
+      const locEl = headerEl.querySelector('.qp-location, .header-location');
+      if (locEl) {
+        const cur = oneLine(textWithoutFigures(locEl));
+        if (cur && cur !== cmp(parsedData.header.location)) {
+          edits.push({ path: 'header.location', value: cur, kind: 'header' });
+        }
+      }
+      const examEl = headerEl.querySelector('.qp-exam, .header-exam');
+      if (examEl) {
+        const cur = oneLine(textWithoutFigures(examEl));
+        if (cur && cur !== cmp(parsedData.header.exam)) {
+          edits.push({ path: 'header.exam', value: cur, kind: 'header' });
+        }
+      }
+      const csEl = headerEl.querySelector('.qp-class-subject, .header-subject');
+      if (csEl) {
+        const cur = oneLine(textWithoutFigures(csEl));
+        if (cur && cur !== cmp(parsedData.header.classAndSubject)) {
+          edits.push({ path: 'header.classAndSubject', value: cur, kind: 'header' });
+        }
+      }
+    }
+
     const flat = allQuestions(parsedData);
-    if (!flat.length) return edits;
+    if (!flat.length) {
+      // ── অন্যান্য ডকুমেন্ট টাইপ (STAMP_DEED, GOVT_APP, PROTTOYON, CASH_MEMO, ROUTINE, CV, ADMIT_CARD)
+      const sheet = root.querySelector('.paper-sheet, .sheet, .doc-body');
+      if (sheet) {
+        const cur = multiLine(textWithoutFigures(sheet));
+        if (parsedData.body && cmp(cur) !== cmp(parsedData.body)) {
+          edits.push({ path: 'body', value: cur, kind: 'body' });
+        } else if (parsedData.rawText && cmp(cur) !== cmp(parsedData.rawText)) {
+          edits.push({ path: 'rawText', value: cur, kind: 'rawText' });
+        } else if (parsedData.text && cmp(cur) !== cmp(parsedData.text)) {
+          edits.push({ path: 'text', value: cur, kind: 'text' });
+        }
+      }
+      return edits;
+    }
     const byNum = new Map();
     flat.forEach((e) => {
       const k = normNum(e.q && e.q.num);

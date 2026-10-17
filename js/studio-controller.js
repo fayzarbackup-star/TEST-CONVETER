@@ -734,8 +734,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const reader = new FileReader();
       reader.onload = (evt) => {
         const dataUrl = evt.target.result;
-        const imgHtml = `<img src="${dataUrl}" style="max-width: 220px; height: auto; display: inline-block; margin: 4px; border: 1px solid #ccc; vertical-align: middle;" alt="সংযুক্ত ছবি"><p><br></p>`;
-        document.execCommand('insertHTML', false, imgHtml);
+        if (typeof StudioFigurePipeline !== 'undefined') {
+          const nextIdx = Object.keys(studioState.figures || {}).length + 1;
+          const marker = 'QZFIG' + nextIdx + 'QZ';
+          studioState.figures = studioState.figures || {};
+          studioState.figures[nextIdx] = {
+            dataUrl: dataUrl,
+            marker: marker,
+            cssW: 220,
+            cssH: 150
+          };
+          const imgHtml = `<img src="${dataUrl}" data-fig-marker="${marker}" style="max-width: 220px; height: auto; display: inline-block; margin: 4px; border: 1px solid #ccc; vertical-align: middle;" alt="সংযুক্ত ছবি"><p><br></p>`;
+          document.execCommand('insertHTML', false, imgHtml);
+        } else {
+          const imgHtml = `<img src="${dataUrl}" style="max-width: 220px; height: auto; display: inline-block; margin: 4px; border: 1px solid #ccc; vertical-align: middle;" alt="সংযুক্ত ছবি"><p><br></p>`;
+          document.execCommand('insertHTML', false, imgHtml);
+        }
         inputFileImage.value = '';
       };
       reader.readAsDataURL(file);
@@ -853,8 +867,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (qaBtnPrint) qaBtnPrint.addEventListener('click', () => {
     ExportDualEngine.triggerPdfPrint('preview-container', 'Microsoft Word Document - Print');
   });
-  if (qaBtnUndo) qaBtnUndo.addEventListener('click', () => document.execCommand('undo'));
-  if (qaBtnRedo) qaBtnRedo.addEventListener('click', () => document.execCommand('redo'));
 
   // Window Controls
   function toggleFullscreenView() {
@@ -1096,6 +1108,24 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (val === 'FAIR_PERM') {
       inputText.value = GovtTemplates.FAIR_PERMISSION;
       paperSizeSelect.value = 'a4-portrait';
+    } else if (val === 'ADMIT_CARD') {
+      inputText.value = (typeof AcademicTemplates !== 'undefined' && AcademicTemplates.ADMIT_CARD) || '';
+      paperSizeSelect.value = 'a4-portrait';
+    } else if (val === 'SALARY_SLIP') {
+      inputText.value = (typeof AcademicTemplates !== 'undefined' && AcademicTemplates.SALARY_SLIP) || '';
+      paperSizeSelect.value = 'a4-portrait';
+    } else if (val === 'CLASS_ROUTINE') {
+      inputText.value = (typeof AcademicTemplates !== 'undefined' && AcademicTemplates.ROUTINE_TEMPLATE) || '';
+      paperSizeSelect.value = 'a4-landscape';
+    } else if (val === 'NOTICE_BOARD') {
+      inputText.value = (typeof AcademicTemplates !== 'undefined' && AcademicTemplates.NOTICE_BOARD) || '';
+      paperSizeSelect.value = 'a4-portrait';
+    } else if (val === 'DARKHAST') {
+      inputText.value = (typeof GovtTemplates !== 'undefined' && GovtTemplates.DARKHAST) || '';
+      paperSizeSelect.value = 'a4-portrait';
+    } else if (val === 'OFFICE_MEMO') {
+      inputText.value = (typeof GovtTemplates !== 'undefined' && GovtTemplates.OFFICE_MEMO) || '';
+      paperSizeSelect.value = 'a4-portrait';
     }
 
     modeSelect.value = 'AUTO';
@@ -1120,7 +1150,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // আগে এখানে মার্জিন-সিলেক্টের চারটি মান দুইটিতে সংকুচিত হত (প্রিভিউ ≠ ডাউনলোড)।
     const options = Object.assign(layoutOptions(), {
       format: format,
-      font: font
+      font: font,
+      fontSize: studioState.fontSizePt + 'pt',
+      fontSizePt: studioState.fontSizePt,
+      lineSpacing: studioState.lineSpacing
     });
 
     // Part-13.1: প্রিভিউ-পেজে হাতে-করা এডিট এক্সপোর্টে আনুন (Edit Bridge)।
@@ -1440,9 +1473,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Ctrl+Z / Ctrl+Y in Quick Access buttons
-  if (qaBtnUndo) qaBtnUndo.addEventListener('click', () => HistoryManager.undo());
-  if (qaBtnRedo) qaBtnRedo.addEventListener('click', () => HistoryManager.redo());
+  // Ctrl+Z / Ctrl+Y in Quick Access buttons (smart delegation: inline active editing vs document snapshot)
+  if (qaBtnUndo) {
+    qaBtnUndo.addEventListener('click', () => {
+      const active = document.activeElement;
+      if (active && (active.isContentEditable || active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
+        document.execCommand('undo');
+      } else {
+        HistoryManager.undo();
+      }
+    });
+  }
+  if (qaBtnRedo) {
+    qaBtnRedo.addEventListener('click', () => {
+      const active = document.activeElement;
+      if (active && (active.isContentEditable || active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
+        document.execCommand('redo');
+      } else {
+        HistoryManager.redo();
+      }
+    });
+  }
 
   // ── Auto-Save Initialization ───────────────────────────────────────
   // Restore previous session

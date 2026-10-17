@@ -1,0 +1,333 @@
+{
+  "_baseline": {
+    "description": "WORK_PLAN C2/C3 baseline for DocClassifier across 33 OCR markdown fixtures",
+    "total_fixtures": 33,
+    "body_only_matches": 26,
+    "body_only_match_pct": 78.79,
+    "certain_total": 27,
+    "certain_body_matches": 24,
+    "certain_body_match_pct": 88.89,
+    "raw_with_frontmatter_matches": 33,
+    "raw_with_frontmatter_match_pct": 100.0,
+    "frontmatter_without_doctype_matches": 15,
+    "frontmatter_without_doctype_match_pct": 45.45,
+    "by_layout": {
+      "GOVT_APP": { "total": 3, "body_matches": 3, "raw_matches": 3 },
+      "CASH_MEMO": { "total": 4, "body_matches": 0, "raw_matches": 4 },
+      "PROTTOYON": { "total": 4, "body_matches": 4, "raw_matches": 4 },
+      "EXAM_COMBINED": { "total": 1, "body_matches": 1, "raw_matches": 1 },
+      "EXAM_CQ": { "total": 8, "body_matches": 8, "raw_matches": 8 },
+      "CV_RESUME": { "total": 4, "body_matches": 4, "raw_matches": 4 },
+      "EXAM_MATH": { "total": 1, "body_matches": 1, "raw_matches": 1 },
+      "EXAM_MCQ": { "total": 5, "body_matches": 4, "raw_matches": 5 },
+      "OFFICE_PAD": { "total": 2, "body_matches": 0, "raw_matches": 2 },
+      "EXAM_GENERAL": { "total": 1, "body_matches": 1, "raw_matches": 1 }
+    }
+  },
+  "fixtures": {
+    "app-correction.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Formal application to AC (Land) for R.S. khatian name correction with 2-column comparison table and attachment list."
+    },
+    "app-holding.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Formal application to AC (Land) to reactivate suspended holding with land schedule (তফসিল) table."
+    },
+    "app-job.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": true,
+      "alt_doc_type": "CV_RESUME",
+      "baseline_body_match": true,
+      "note": "Hybrid cover-letter job application (বরাবর, পরিচালক ... নিয়োগের জন্য আবেদন) embedding a 12-item numbered bio-data and education table (GOVT_APP=18 vs CV_RESUME=17)."
+    },
+    "cash-memo-blank.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "copies": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": false,
+      "note": "Blank 2-copy retail cash memo (ক্যাশ মেমো, ক্রমিক|বিবরণ|পরিমাণ|দর|টাকা, ক্রেতার/বিক্রেতার স্বাক্ষর). Body heuristic misclassifies as GENERAL because DocClassifier has no cashMemoScore rules."
+    },
+    "cash-memo-items.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "copies": 3,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": false,
+      "note": "Pre-printed 3-copy 24-item order/cash memo (মেসার্স মাসফিয়া ট্রেডার্স, ক্যাশ মেমো). Body heuristic misclassifies as OFFICE_PAD (score 6 via মেসার্স/প্রোঃ) because CASH_MEMO has no heuristic rules."
+    },
+    "cert-landscape.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "School প্রত্যয়ন পত্র in landscape orientation with grading scale table."
+    },
+    "cert-stub.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "landscape",
+      "uncertain": true,
+      "baseline_body_match": true,
+      "note": "Two-part primary school प्रशংসা পত্র / ছাড়পত্র with left counterfoil stub separated by '***' in landscape layout."
+    },
+    "combined.input.md": {
+      "doc_type": "EXAM_COMBINED",
+      "layout": "EXAM_COMBINED",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "SSC Physics combined exam with creative question ([উদ্দীপক ১], ১. ক–ঘ), explicit ---SECTION_BREAK:MCQ---, and MCQ section."
+    },
+    "cq-booklet-10.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 8 Science 10-question CQ booklet with stimulus tables and অথবা alternatives."
+    },
+    "cq-booklet-16.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 8 Science 16-question CQ booklet with stimulus tables and অথবা alternatives."
+    },
+    "cq-booklet-2.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 8 Science 2-question CQ booklet."
+    },
+    "cq-booklet-6.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 8 Science 6-question CQ booklet with অথবা alternatives."
+    },
+    "cq-inline-numbering.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 10 Chemistry CQ exam using inline question+sub-question numbering (১. ক. ... ১)."
+    },
+    "cq-long.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 8 Science 3-question CQ exam with inline numbering (১. ক.) and no trailing mark digits."
+    },
+    "cq-marks-edge.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 9 Physics 3-question CQ exam with inline numbering (১। ক.) and varied mark formats (plain, [১], (৩), omitted)."
+    },
+    "cq-short.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 10 Bangla 1st Paper 2-question CQ exam with inline numbering (১. ক.)."
+    },
+    "cv-basic.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Standard Bangla জীবন বৃত্তান্ত with 8 numbered fields and education table."
+    },
+    "cv-biodata.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Short Bangla বায়োডাটা with personal details and অঙ্গীকার declaration."
+    },
+    "cv-english.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "English Curriculum Vitae with personal profile, education table, and declaration."
+    },
+    "cv-long.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Detailed 20-field Bangla জীবন বৃত্তান্ত with education table, reference, and declaration."
+    },
+    "math-equations.input.md": {
+      "doc_type": "EXAM_MATH",
+      "layout": "EXAM_MATH",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 11 Higher Math 5-question tutorial exam with LaTeX equations ($...$, \\frac, \\int, \\begin{pmatrix})."
+    },
+    "mcq-header-fallback.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "14-question pure MCQ paper without institution/exam header block."
+    },
+    "mcq-long-options.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 9 Physics 14-question MCQ paper with long sentence-length options."
+    },
+    "mcq-mixed-options.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": false,
+      "note": "Class 9 ICT 6-question pure MCQ paper (one option per line). Body heuristic misclassifies as EXAM_GENERAL because isPureMcqPaper requires mcqBlockCount >= 10."
+    },
+    "mcq-pure-28.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 7 Science 33-question pure 2-column MCQ paper."
+    },
+    "mcq-shrink-21.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 6 Science 21-question pure MCQ paper designed to fit on a single page."
+    },
+    "pad-notice.input.md": {
+      "doc_type": "OFFICE_PAD",
+      "layout": "OFFICE_PAD",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": true,
+      "alt_doc_type": "OFFICIAL_NOTICE",
+      "baseline_body_match": false,
+      "note": "Hybrid document: committee letterhead/pad (স্মারক + তারিখ) carrying a show-cause notice (বরাবর + বিষয়: কারণ দর্শানোর নোটিশ + অনুলিপি). Body heuristic returns OFFICIAL_NOTICE because !/বরাবর/.test(t) blocks padScore."
+    },
+    "pad-school-app.input.md": {
+      "doc_type": "OFFICE_PAD",
+      "layout": "OFFICE_PAD",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": true,
+      "alt_doc_type": "GOVT_APP",
+      "baseline_body_match": false,
+      "note": "Hybrid document: government primary school letterhead/pad (সূত্র + তারিখ) carrying an official application to the UNO (বরাবর + বিষয় + সবিনয়ে অনুরোধ). Body heuristic returns GOVT_APP because !/বরাবর/.test(t) blocks padScore."
+    },
+    "primary-class4-bangla.input.md": {
+      "doc_type": "EXAM_GENERAL",
+      "layout": "EXAM_GENERAL",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Class 4 Bangla 3rd semester 15-question general exam (word meaning, Q&A, fill-in-blanks, grammar, letter, essay)."
+    },
+    "prottoyon-school.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "High school headmaster's প্রত্যয়নপত্র with স্মারক নং and character attestation."
+    },
+    "prottoyon-up.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": false,
+      "baseline_body_match": true,
+      "note": "Union Parishad Chairman's নাম সংশোধনী প্রত্যয়নপত্র with স্মারক নং."
+    },
+    "receipt.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": true,
+      "alt_doc_type": "GENERAL",
+      "baseline_body_match": false,
+      "note": "School fee money receipt (টাকা প্রাপ্তির রসিদ, ৮ম শ্রেণির ভর্তি ফি বাবদ). Mapped to CASH_MEMO in absence of a dedicated RECEIPT type. Body heuristic misclassifies as EXAM_GENERAL because '৮ম শ্রেণির' matches /শ্রেণি/."
+    },
+    "voucher.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "uncertain": true,
+      "alt_doc_type": "GENERAL",
+      "baseline_body_match": false,
+      "note": "School expense voucher (খরচের ভাউচার, ভাউচার নং: ৪৫). Mapped to CASH_MEMO in absence of a dedicated VOUCHER type. Body heuristic misclassifies as GENERAL due to missing voucher/cash-memo rules."
+    }
+  }
+}

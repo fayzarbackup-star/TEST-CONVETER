@@ -3,7 +3,7 @@
 
 ===== CLASSIFIER =====
 {
-  "type": "GENERAL"
+  "type": "CASH_MEMO"
 }
 
 ===== PARSED =====

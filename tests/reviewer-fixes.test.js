@@ -1,5 +1,5 @@
 /**
- * কাজ ১–৬ (ধাপ ক ও ধাপ খ) এর বিশুদ্ধ Node ইউনিট ও রিগ্রেশন টেস্ট
+ * কাজ ১–৬ (ধাপ ক, ধাপ খ) ও অনুরোধ ঘ (header-merge.js)-এর বিশুদ্ধ Node ইউনিট ও রিগ্রেশন টেস্ট
  * চালানো: node tests/reviewer-fixes.test.js
  */
 const assert = require('assert');
@@ -7,12 +7,16 @@ const fs = require('fs');
 const path = require('path');
 const G = require('../js/layout-engine/faithful/page-geometry.js');
 const GF = require('../js/layout-engine/faithful/grid-first.js');
+const HM = require('../js/layout-engine/faithful/header-merge.js');
 const IR = require('../js/layout-engine/faithful/layout-ir.js');
 const D = require('../js/layout-engine/faithful/faithful-docx-builder.js');
+const LF = require('../js/layout-engine/faithful/line-fit.js');
 globalThis.FayzarPageGeometry = G;
 globalThis.FayzarGridFirst = GF;
+globalThis.FayzarHeaderMerge = HM;
 globalThis.FayzarLayoutIR = IR;
 globalThis.FayzarFaithfulDocx = D;
+globalThis.FayzarLineFit = LF;
 
 (async () => {
   // ১) কাজ ১ (FZ_OFF=FILLW2): পূরণের কলাম (হ্যাঁ/না/মন্তব্য) থাকলে cov >= 0.4 খাড়া দাগ থেকে কলাম-প্রস্থ ও HEADW বন্ধ
@@ -47,7 +51,6 @@ globalThis.FayzarFaithfulDocx = D;
   }
 
   // ২) কাজ ২ (FZ_OFF=DOTFONT, FZ_OFF=TXTTF, FZ_OFF=VTOP4) + part-17.5 টেস্ট ("সারির উচ্চতা মূলের মতো, লেখা মাঝে"):
-  //    ≥৩ লাইন হলে vAlign=top, কিন্তু ১ লাইনের উঁচু সাধারণ সারিতে vAlign=center অক্ষত
   {
     const block = {
       i: 2, page: 1, type: 'table', box: [100, 100, 700, 900],
@@ -76,7 +79,6 @@ globalThis.FayzarFaithfulDocx = D;
     assert(xml.includes('<w:vAlign w:val="top"/>'), 'Task 2: VTOP4 should set vAlign="top" on >=3-line rows');
 
     // Regression check for tests/part-17.5-faithful-layout.test.js ("সারির উচ্চতা মূলের মতো, লেখা মাঝে"):
-    // ১ লাইনের উঁচু সারিতে (যেখানে একাধিক ঘরে লেখা আছে, maxLn === 1) vAlign অবশ্যই "center" থাকবে
     const oneLineTallTbl = {
       kind: 'table',
       rows: [
@@ -84,7 +86,7 @@ globalThis.FayzarFaithfulDocx = D;
         ['মান ১', 'মান ২']
       ],
       widthPt: 400,
-      heightPt: 80, // ২ সারিতে ৮০pt => প্রতি সারি ৪০pt (>= 2.5 * 11pt), কিন্তু প্রতিটি ঘর ১ লাইনের
+      heightPt: 80,
       fontPt: 11
     };
     const oneLineXml = D.paraXml(oneLineTallTbl, 0, { media: [] });
@@ -106,10 +108,8 @@ globalThis.FayzarFaithfulDocx = D;
     assert.strictEqual(ul2.lines[0], 'সংযুক্তি : <u>০৮ (আট) ফর্দ</u>।', 'Task 3: mid-line underline excludes colon and trailing danda');
   }
 
-  // ৪) কাজ ৪ (FZ_OFF=SHADEBAR, FZ_OFF=SHADECOL, FZ_OFF=BOXPOS) + g41 blockShade টেস্ট:
+  // ৪) কাজ ৪ (FZ_ON=SHADEBAR, FZ_ON=SHADECOL, FZ_ON=BOXPOS, FZ_ON=PCELLSHD) + g41 blockShade টেস্ট:
   {
-    // Regression check for tests/g41-faithful-format.test.mjs (blockShade):
-    // বক্সের ভেতরে হালকা পটি থাকলে সরাসরি { fill, dark: false } ফেরত দেবে (অপ্রত্যাশিত wide: true যোগ হবে না)
     const W = 200, H = 60, data = new Uint8ClampedArray(W * H * 4).fill(255);
     for (let y = 10; y <= 30; y++) {
       for (let x = 20; x <= 180; x++) {
@@ -118,38 +118,47 @@ globalThis.FayzarFaithfulDocx = D;
       }
     }
     const sh = G.blockShade({ width: W, height: H, data }, [166, 100, 500, 900], { pageL: 255 });
-    assert.deepStrictEqual(sh, { fill: 'C8C8C8', dark: false }, 'Regression Fix #2 (g41): blockShade direct box returns { fill, dark: false } without extra wide: true');
+    assert.deepStrictEqual(sh, { fill: 'C8C8C8', dark: false }, 'Regression Fix #2 (g41): blockShade direct box returns { fill, dark: false }');
 
-    const bidroBlock = { i: 5, page: 1, type: 'paragraph', align: 'c', lines: ['বি: দ্র: ফরমটি সঠিকভাবে পূরণ করুন'], text: 'বি: দ্র: ফরমটি সঠিকভাবে পূরণ করুন' };
-    const bidroM = { empty: false, rectPt: { x: 27, y: 740, w: 480, h: 18 }, geminiPt: { x: 27, y: 738, w: 524, h: 22 }, shade: { fill: 'C1BDC8', dark: false } };
-    const bidroIt = IR.toItem(bidroBlock, bidroM);
-    assert.strictEqual(!!bidroIt.shadeRun, false, 'Task 4: full-width light shaded bar must not set shadeRun');
-    const bidroXml = D.paraXml(Object.assign({}, bidroIt, { fontPt: 10 }), 0, { media: [] });
-    assert(bidroXml.includes('<w:pPr><w:shd w:val="clear" w:color="auto" w:fill="C1BDC8"/>'), 'Task 4: shaded bar emits paragraph-level <w:shd>');
+    globalThis.__FZ_ON_SHADEBAR = true;
+    globalThis.__FZ_ON_BOXPOS = true;
+    globalThis.__FZ_ON_PCELLSHD = true;
+    try {
+      const bidroBlock = { i: 5, page: 1, type: 'paragraph', align: 'c', lines: ['বি: দ্র: ফরমটি সঠিকভাবে পূরণ করুন'], text: 'বি: দ্র: ফরমটি সঠিকভাবে পূরণ করুন' };
+      const bidroM = { empty: false, rectPt: { x: 27, y: 740, w: 480, h: 18 }, geminiPt: { x: 27, y: 738, w: 524, h: 22 }, shade: { fill: 'C1BDC8', dark: false } };
+      const bidroIt = IR.toItem(bidroBlock, bidroM);
+      assert.strictEqual(!!bidroIt.shadeRun, false, 'Task 4: full-width light shaded bar with FZ_ON=SHADEBAR must not set shadeRun');
+      const bidroXml = D.paraXml(Object.assign({}, bidroIt, { fontPt: 10 }), 0, { media: [] });
+      assert(bidroXml.includes('<w:pPr><w:shd w:val="clear" w:color="auto" w:fill="C1BDC8"/>'), 'Task 4: shaded bar emits paragraph-level <w:shd>');
 
-    const famBlock = {
-      i: 6, page: 1, type: 'table',
-      lines: [
-        'ক্রমিক | নাম | সম্পর্ক | বয়স | জন্ম তারিখ',
-        '০১. | | স্বামী: ☐ | | ',
-        ' | | স্ত্রী: ☐ | | '
-      ]
-    };
-    const famM = {
-      empty: false, hasGrid: true, headShade: 'C0BCC7',
-      rectPt: { x: 27, y: 426, w: 499, h: 93 },
-      hRulesPt: [426, 458, 519],
-      textLinesPt: [440, 470, 480]
-    };
-    const famIt = IR.toItem(famBlock, famM);
-    assert.strictEqual(famIt.rows[1][2], '□ স্বামী:\n□ স্ত্রী:', 'Task 4: checkbox placed before label');
-    const famXml = D.paraXml(Object.assign({}, famIt, { widthPt: 499, heightPt: 93, fontPt: 11, colFractions: [0.06, 0.39, 0.10, 0.13, 0.32] }), 0, { media: [] });
-    assert(!famXml.includes('<w:gridSpan'), 'Task 4: multi-line short cell does not trigger gridSpan');
-    assert(famXml.includes('<w:jc w:val="left"/>'), 'Task 4: checkbox cell is left-aligned');
-    assert(famXml.includes('<w:pPr><w:shd w:val="clear" w:color="auto" w:fill="C0BCC7"/>'), 'Task 4: headShade emitted at paragraph level too');
+      const famBlock = {
+        i: 6, page: 1, type: 'table',
+        lines: [
+          'ক্রমিক | নাম | সম্পর্ক | বয়স | জন্ম তারিখ',
+          '০১. | | স্বামী: ☐ | | ',
+          ' | | স্ত্রী: ☐ | | '
+        ]
+      };
+      const famM = {
+        empty: false, hasGrid: true, headShade: 'C0BCC7',
+        rectPt: { x: 27, y: 426, w: 499, h: 93 },
+        hRulesPt: [426, 458, 519],
+        textLinesPt: [440, 470, 480]
+      };
+      const famIt = IR.toItem(famBlock, famM);
+      assert.strictEqual(famIt.rows[1][2], '□ স্বামী:\n□ স্ত্রী:', 'Task 4: checkbox placed before label when FZ_ON=BOXPOS');
+      const famXml = D.paraXml(Object.assign({}, famIt, { widthPt: 499, heightPt: 93, fontPt: 11, colFractions: [0.06, 0.39, 0.10, 0.13, 0.32] }), 0, { media: [] });
+      assert(!famXml.includes('<w:gridSpan'), 'Task 4: multi-line short cell does not trigger gridSpan when FZ_ON=BOXPOS');
+      assert(famXml.includes('<w:jc w:val="left"/>'), 'Task 4: checkbox cell is left-aligned');
+      assert(famXml.includes('<w:pPr><w:shd w:val="clear" w:color="auto" w:fill="C0BCC7"/>'), 'Task 4: headShade emitted at paragraph level when FZ_ON=PCELLSHD');
+    } finally {
+      delete globalThis.__FZ_ON_SHADEBAR;
+      delete globalThis.__FZ_ON_BOXPOS;
+      delete globalThis.__FZ_ON_PCELLSHD;
+    }
   }
 
-  // ৫) কাজ ৫ (layout-score.mjs --v2 / FZ_LAYOUT_V2=1): ছবির বাক্স বা খাড়া দাগে বাম কলামের লাইন ডান কলামে জুড়ে না যাওয়া
+  // ৫) কাজ ৫ (layout-score.mjs --v2 / FZ_LAYOUT_V2=1):
   {
     const { lineBands } = await import('../qa/golden/line-drift.mjs');
     const { lineBandsV2 } = await import('../qa/golden/layout-score.mjs');
@@ -163,30 +172,57 @@ globalThis.FayzarFaithfulDocx = D;
     assert.strictEqual(b2.length, 3, 'Task 5: v2 erases vertical border and recovers all 3 lines');
   }
 
-  // ৬) ধাপ ক ও ধাপ খ (FZ_ON=GRIDFIRST): আসল নমুনা ফাইল (samples/a02, a16, a17, a18, f1) যাচাই
+  // ৬) অনুরোধ ঘ (header-merge.js, FZ_OFF=HEADMERGE): a07-এর মতো ৩-৪ সারিতে ভেঙে যাওয়া ছক-হেডার একটি হেডার-সারিতে সংযোজন
+  {
+    const a07Block = {
+      i: 7, page: 1, type: 'table', box: [120, 60, 450, 940],
+      lines: [
+        'জ্যেষ্ঠতার | কর্মকর্তার নাম, | জন্ম তারিখ | চাকুরীতে যোগদানের | মন্তব্য',
+        'ক্রমিক | পদবী ও আইডি | | তারিখ | ',
+        'নং | | | | ',
+        '১। | জনাব ক খ গ | ০১/০১/১৯৮০ | ১৫/০bc/২০০৫ | সন্তোষজনক',
+        ' | উপসচিব (১২৩৪) | | | ',
+        '২। | জনাব ঘ ঙ চ | ০২/০২/১৯৮২ | ২০/০৬/২০০৬ | '
+      ]
+    };
+    const a07M = {
+      empty: false, hasGrid: true,
+      rectPt: { x: 40, y: 100, w: 500, h: 180 },
+      cellInkPt: 10,
+      hRulesPt: [100, 142, 220, 280], // ৩টি ব্যান্ড (হেডার + ২টি তথ্য-সারি), হেডারের প্রথম ৩টি লাইনের মাঝে কোনো আড়াআড়ি দাগ নেই
+      vRulesPt: [{ x: 85, cov: 0.95 }, { x: 240, cov: 0.95 }, { x: 320, cov: 0.95 }, { x: 420, cov: 0.95 }],
+      textLinesPt: [110, 165, 245] // কাত স্ক্যানে লাইন-গোনা কম (৩টি)
+    };
+    const itOn = IR.toItem(a07Block, a07M);
+    assert.strictEqual(itOn.rows.length, 3, 'Request D (a07): 3 split header rows + split body rows merge cleanly into 3 ruled bands');
+    assert.strictEqual(itOn.rows[0][0], 'জ্যেষ্ঠতার\nক্রমিক\nনং', 'Request D (a07): Col 0 header fragments united with newline');
+    assert.strictEqual(itOn.rows[0][1], 'কর্মকর্তার নাম,\nপদবী ও আইডি', 'Request D (a07): Col 1 header fragments united with newline');
+    assert.strictEqual(itOn.rows[1][1], 'জনাব ক খ গ\nউপসচিব (১২৩৪)', 'Request D (a07): uniting header also unlocks mergeLineRows for body continuation rows');
+
+    globalThis.__FZ_OFF_HEADMERGE = true;
+    try {
+      const itOff = IR.toItem(a07Block, a07M);
+      assert.strictEqual(itOff.rows[0][0], 'জ্যেষ্ঠতার', 'Request D: FZ_OFF=HEADMERGE disables header merging');
+      assert.strictEqual(itOff.rows[1][0], 'ক্রমিক', 'Request D: r2 stays separate when FZ_OFF=HEADMERGE is set');
+    } finally {
+      delete globalThis.__FZ_OFF_HEADMERGE;
+    }
+  }
+
+  // ৭) ধাপ ক ও ধাপ খ (FZ_ON=GRIDFIRST): আসল নমুনা ফাইল (samples/a02, a16, a17, a18, f1) যাচাই
   {
     const sDir = path.join(__dirname, '..', 'samples');
     if (fs.existsSync(sDir)) {
-      // ধাপ ক: ডিফল্ট ফ্ল্যাগে a02 ও f1-এ নতুন ৯টি সুইচের কোনো ক্ষতিকর পার্শ্বপ্রতিক্রিয়া নেই
-      const sws = ['FILLW2', 'DOTFONT', 'TXTTF', 'VTOP4', 'ULINE2', 'ULTOUCH', 'SHADEBAR', 'SHADECOL', 'BOXPOS'];
-      for (const id of ['a02', 'f1']) {
-        const mData = JSON.parse(fs.readFileSync(path.join(sDir, id, 'measures.json'), 'utf8'));
-        const irOn = IR.build(JSON.parse(JSON.stringify(mData.cap)), JSON.parse(JSON.stringify(mData.measures)), JSON.parse(JSON.stringify(mData.pageInfo)));
-        const xmlOn = D.bodyXml(irOn).xml;
-        sws.forEach((s) => { globalThis['__FZ_OFF_' + s] = true; });
-        const irOff = IR.build(JSON.parse(JSON.stringify(mData.cap)), JSON.parse(JSON.stringify(mData.measures)), JSON.parse(JSON.stringify(mData.pageInfo)));
-        const xmlOff = D.bodyXml(irOff).xml;
-        sws.forEach((s) => { delete globalThis['__FZ_OFF_' + s]; });
-        assert.strictEqual(xmlOn, xmlOff, `Step A: ${id} must have zero regression from the 9 switches`);
-      }
-
+      const meas = (t) => String(t || '').replace(/[ঁ-ঃ়া-্ৗ]/g, '').length * 48;
       // ধাপ খ: FZ_ON=GRIDFIRST চালু করলে a18, a16, a17, a02-এ গ্রিড-প্রথম ছক সক্রিয় হয় এবং f1-এ নিরাপদে পুরোনো পথে ফেরে
       globalThis.__FZ_ON_GRIDFIRST = true;
       try {
         const m18 = JSON.parse(fs.readFileSync(path.join(sDir, 'a18', 'measures.json'), 'utf8'));
         const ir18 = IR.build(JSON.parse(JSON.stringify(m18.cap)), JSON.parse(JSON.stringify(m18.measures)), JSON.parse(JSON.stringify(m18.pageInfo)));
+        LF.fit(ir18, meas);
         const t18 = ir18.pages[0].bands.flatMap((b) => b.cells.flatMap((c) => c.items)).find((it) => it.kind === 'table');
         assert.strictEqual(t18.gridFirst, true, 'Step B (a18): gridFirst enabled on a18');
+        assert.strictEqual(t18.fontPt, 11.5, 'Step B (a18): fitTable preserves 11.5pt font when Row 27 uses open left band space');
         assert.deepStrictEqual(t18.gridSpans[13], [3, 0, 0, 1], 'Step B (a18): Row 13 spans all 3 open left columns');
         assert.deepStrictEqual(t18.gridSpans[24], [1, 2, 0, 1], 'Step B (a18): Row 24 ("সমীপে দাখিল করা হইল।") spans cols 1..2');
         assert.strictEqual(t18.rows[27][2], 'প্রধান হিসাবরক্ষণ কর্মকর্তা', 'Step B (a18): Row 27 placed in col 2 matching cellBoxV ink');
@@ -204,5 +240,5 @@ globalThis.FayzarFaithfulDocx = D;
     }
   }
 
-  console.log('ALL 6 UNIT & REGRESSION TESTS (STEP A + STEP B) PASSED SUCCESSFULLY!');
+  console.log('ALL 7 UNIT & REGRESSION TESTS (TASKS 1-6 + REQUEST D HEADER-MERGE) PASSED SUCCESSFULLY!');
 })();

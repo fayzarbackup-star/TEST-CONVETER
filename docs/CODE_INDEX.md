@@ -1,6 +1,6 @@
 # CODE_INDEX — স্বয়ংক্রিয় কোড-সূচি (হাতে বদলাবে না)
 
-> তৈরি: `node tools/gen-map.mjs` · 2026-10-15
+> তৈরি: `node tools/gen-map.mjs` · 2026-10-16
 > পুরোটা পড়বে না। Grep করো (যেমন ফাংশন/গ্লোবাল নাম), তারপর `ফাইল` + `@লাইন` ধরে শুধু ওই অংশ Read।
 > ফরম্যাট: `ফাইল` (লাইন) [গ্লোবাল] — বর্ণনা ⏎ ফাংশন@লাইন, …
 
@@ -42,8 +42,8 @@
 - `js/engines/cv-engine.js` (192) [CVEngine] — Fayzar Publishing Studio - Curriculum Vitae & Bio-data Engine
   parseCV@14, renderToHtml@119, esc@182
 
-- `js/engines/doc-classifier.js` (504) [DocClassifier] — Fayzar Publishing Studio - Document Classifier & Parser
-  DOC_TYPES@10, GRADE_WORDS@33, parseGrade@37, factsFromFrontmatter@46, get@48, structureStats@68, layoutFromFacts@101, why@104, promoteCombined@130, isQ@137, classify@148, NON_EXAM@193, extractMetadata@449
+- `js/engines/doc-classifier.js` (540) [DocClassifier] — Fayzar Publishing Studio - Document Classifier & Parser
+  DOC_TYPES@10, GRADE_WORDS@33, parseGrade@37, factsFromFrontmatter@46, get@48, _clsFix@67, structureStats@75, layoutFromFacts@114, why@117, promoteCombined@143, isQ@150, classify@161, NON_EXAM@206, extractMetadata@486
 
 - `js/engines/export-dual-engine.js` (3611) [ExportDualEngine] — Fayzar Publishing Studio - Multi-Format Export Engine v4.0
   stripOcrArtifacts@16, usesCreativeHeaderFallback@37, visualOptionTextForFallback@39, fallbackOptionWidth@63, isBijoyFont@89, toBijoy@98, escapeRtf@126, escapeUnicodeRtf@146, _getTextRunProcessor@164, _getMcqPlanner@185, _mcqPlan@207, _mcqPlanFallback@232, widthOf@266, formatRtfText@319, xmlEscape@406, formatDocxText@420, renderDocxRuns@431, generateWordDoc@506, _resolveParsed@552, _getFrontmatter@563, _applyExamRenumber@570, _splitCombined@594, isQ@599, strip@600, isMcqHead@601, isInstLine@603, metaNear@605, generateLegacyDoc@621, _withAuditNote@749, _auditNoteLines@759, _auditSectionDocx@765, _auditSectionRtf@778, generateCombinedExamDocx@798, generateModernDocx@832, _getQuestionEngine@939, _getCertificateEngine@948, _getStampEngine@957, _getApplicationLayout@967, _applicationLayoutDocx@975, _applicationLayoutRtf@989, _getLetterLayout@997, _letterLayoutDocx@1004, _getCvLayout@1019, _cvLayoutDocx@1026, _cvLayoutRtf@1038, _getEnCvLayout@1045, _enCvDocx@1052, _enCvRtf@1061, _getCashMemoLayout@1067, _cashMemoDocx@1074, _cashMemoRtf@1085, _getReceiptLayout@1092, _receiptDocx@1099, _receiptRtf@1110, _getCertificateLayout@1117, _certificateLayoutDocx@1124, _certificateLayoutRtf@1135, _letterLayoutRtf@1141, _getApplicationEngine@1148, _getAdmitCardEngine@1157, _getSalarySlipEngine@1166, _getRoutineEngine@1175, _getCVEngine@1184, _getJSZip@1193, _getCqPlanner@1211, _ensureCqHeaderPlacement@1232, _cqPlan@1246, _fixRtfSpacing@1285, _examLineFactor@1305, _fixDocxSpacing@1314, _collapseRunGaps@1333, txtOf@1336, _cqPlanFallback@1351, field@1376, push@1383, _cqSplitStimulus@1414, _scriptHalfPt@1433, _bumpLastSpacingRtf@1444, _bumpLastSpacingDocx@1454, _cqPageSetupRtf@1464, _cqFormat@1475, subLabel@1481, splitStem@1482, _numIndent@1487, _cqItemCtx@1495, _cqFullWidthHeaderPlan@1502, _cqSectPrInnerDocx@1507, _cqSectPrDocx@1513, _cqSectionBreakDocx@1517, _cqHeaderRtf@1522, _cqHeaderDocx@1553, pPr@1558, rPr@1559, run@1567, _cqQuestionRtf@1591, esc@1595, generateCqExamRtf@1674, generateCombinedExamRtf@1727, _cqQuestionDocx@1758, tabsXml@1764, closeTable@1788, generateCqExamDocx@1862, renderMcqTextRtf@1910, generateMcqExamRtf@1923, renderRtfItem@1972, byIdx@2038, generateMcqExamDocx@2063, renderDocxItem@2118, generateCertificateRtf@2220, generateCertificateDocx@2279, generateStampDeedRtf@2339, generateStampDeedDocx@2408, generateGovtAppRtf@2477, generateGovtAppDocx@2548, generateAdmitCardRtf@2622, generateAdmitCardDocx@2673, generateSalarySlipRtf@2733, generateSalarySlipDocx@2808, cell@2839, row@2842, has@2843, _getRtfBuilder@2881, generateRoutineRtf_v2@2890, generateRoutineRtf@2958, _getSchemaValidator@3023, validate@3034, _getThemeConfig@3043, _getDocxBuilder@3052, generateRoutineDocx_v2@3061, generateRoutineDocx@3159, generateCVRtf@3222, generateCVDocx@3299, generateGenericRtf@3386, generateGenericDocx@3418, _packageDocx@3455, triggerPdfPrint@3533
@@ -69,8 +69,8 @@
 - `js/engines/stamp-engine.js` (211) [StampEngine] — Fayzar Publishing Studio - Stamp Deed & Agreement Engine
   parseDeed@12, renderToHtml@106, escape@202
 
-- `js/engines/studio-edit-bridge.js` (350) [StudioEditBridge] — ═══════════════════════════════════════════════════════════════════════════
-  bnToEn@36, normNum@41, cmp@46, oneLine@51, multiLine@56, firstLine@63, getByPath@69, setByPath@79, clone@91, applyEdits@100, allQuestions@112, isEl@124, textWithoutFigures@131, stripFigMarkers@146, preserveFigMarkers@151, fieldValue@161, nodeText@165, collectFromDom@176, mathFieldsEdited@317
+- `js/engines/studio-edit-bridge.js` (403) [StudioEditBridge] — ═══════════════════════════════════════════════════════════════════════════
+  bnToEn@36, normNum@41, cmp@46, oneLine@51, multiLine@56, firstLine@63, getByPath@69, setByPath@79, clone@91, applyEdits@100, allQuestions@112, isEl@124, textWithoutFigures@131, stripFigMarkers@152, preserveFigMarkers@157, fieldValue@167, nodeText@171, collectFromDom@182, mathFieldsEdited@370
 
 - `js/engines/studio-figure-pipeline.js` (490) [StudioFigurePipeline] — ═══════════════════════════════════════════════════════════════════════════
   markerFor@38, markerRegex@40, escapeRegex@42, normDigits@45, tolerantMarkerRegex@57, balanceBraces@69, stripAllMarkers@84, countMarkers@94, hasMarkers@100, extractMarkers@103, stripMarkers@113, preserveMarkers@126, pruneMarkers@136, dataUrlToBytes@142, bytesToHex@150, _getJSZip@156, _utf8ToB64@168, _loadImage@175, onload@178, onerror@179, _svgDataUrl@184, rasterizeElement@211, tinyPngDataUrl@249, buildRtfPict@255, injectIntoRtfSync@271, injectIntoRtf@310, buildDocxDrawingXml@320, _jcFor@342, injectMarkerIntoDocumentXml@352, injectIntoDocx@368, collectStore@445, countFigures@451, totalBytes@453
@@ -141,8 +141,8 @@
 - `js/layout-engine/faithful/faithful-capture.js` (289) [FayzarFaithfulCapture] — Fayzar — হুবহু-লেআউট ক্যাপচার-চালক (FayzarFaithfulCapture)
   pick@14, mediaFromQueue@17, activeKey@39, run@53, progress@64, VERIFY_TYPES@107, repairKey@108, sameChars@109, lineMismatches@111, applyRepairs@124, verifyLines@134, cellChars@188, tableRows@189, ruleBands@190, modalCells@199, mostlyUniform@200, tableMismatches@202, applyTableRepairs@214, verifyTables@224
 
-- `js/layout-engine/faithful/faithful-docx-builder.js` (1008) [FayzarFaithfulDocx] — Fayzar — হুবহু-লেআউট মাস্টার .docx নির্মাতা (FayzarFaithfulDocx)
-  clamp@18, emu@19, esc@20, pick@21, MARK@27, runsFor@28, runsPlain@48, colored@62, lineH@77, wrapLines@90, rowSpans@95, blank@97, wraps@98, tableRowHeights@109, cwp@148, colWPt@179, natural@180, rest@207, textH@215, ruleSpace@221, ruleExtra@222, itemH@224, inkOff@257, raSpace@266, raExtra@267, lead@268, planPage@270, nextTop@278, pPr@392, paraXml@430, LTAB@472, DOTS@504, plainLen@507, est@508, segsOf@509, tabsSafe@510, COLON@518, tailEnd@519, hasLead@523, leadStop@527, usedTabs@533, lineRuns@534, stripGhostDots@568, fix@571, same@578, spacer@585, tableXml@589, cellBody@607, cellP@626, isEmpty@643, trPrFor@649, bandBorders@680, ruleBorder@708, spW@720, lnOf@721, boxRowXml@746, subTable@758, strip@761, subTableXml@773, gridXml@788, boxTableXml@808, shiftInto@817, shiftBand@835, anchorXml@853, emitSeq@863, sectPr@913, side@920, bodyXml@931, sizeEmptyParas@979, build@989
+- `js/layout-engine/faithful/faithful-docx-builder.js` (1263) [FayzarFaithfulDocx] — Fayzar — হুবহু-লেআউট মাস্টার .docx নির্মাতা (FayzarFaithfulDocx)
+  fzOn@15, clamp@20, emu@21, esc@22, pick@23, MARK@29, runsFor@30, runsPlain@50, colored@64, lineH@79, wrapLines@92, rowSpans@97, blank@99, wraps@101, tableRowHeights@112, cwp@146, colWPt@179, natural@180, rest@207, textH@215, ruleSpace@221, ruleExtra@222, itemH@224, inkOff@257, raSpace@266, raExtra@267, lead@268, planPage@270, nextTop@278, enterGapXml@397, pPr@412, paraXml@460, LTAB@502, bLen@544, DOTS@607, plainLen@610, est@611, segsOf@612, tabsSafe@613, COLON@621, tailEnd@622, hasLead@626, leadStop@630, usedTabs@636, lineRuns@637, markParaRpr@642, stripGhostDots@726, fix@729, same@736, spacer@743, tableXml@749, cellBody@767, pSz@791, cellP@812, isEmpty@853, rowBA@862, trPrFor@865, bandBorders@898, ruleBorder@929, spW@941, lnOf@942, boxRowXml@978, subTable@990, strip@993, subTableXml@1005, gridXml@1025, boxTableXml@1051, shiftInto@1060, shiftBand@1078, anchorXml@1096, emitSeq@1106, sectPr@1156, side@1163, bodyXml@1174, sizeEmptyParas@1234, build@1244
 
 - `js/layout-engine/faithful/faithful-pipeline.js` (373) [FayzarFaithful] — Fayzar — হুবহু-লেআউট পূর্ণ পথ (FayzarFaithful)
   pick@14, pdfLib@17, pdfDoc@19, loadImage@28, measureImage@31, rotateImageData@59, splitFromNeighbor@74, ink@79, textMeasurer@102, widthFontOf@127, tableWidthFontOf@151, capture@169, layout@176, progress@179, measureAll@221, produce@363
@@ -150,20 +150,23 @@
 - `js/layout-engine/faithful/faithful-prompt.js` (97) [FayzarFaithfulPrompt] — Fayzar — হুবহু-লেআউট মোডের Gemini প্রম্পট (FayzarFaithfulPrompt)
   BLOCK_TYPES@16, build@19, continuation@82
 
-- `js/layout-engine/faithful/grid-first.js` (326) [FayzarGridFirst] — Fayzar — গ্রিড-প্রথম ছক ইঞ্জিন (FayzarGridFirst)
-  SERIAL@16, SUBSER@17, FILL_RE@19, median@21, baseLen@28, estLines@33, trimFillToWidth@42, extractGrid@58, isFillCol@76, refinePartialGridRows@182, openGroupEnd@198, applyGridFirst@288
+- `js/layout-engine/faithful/grid-first.js` (507) [FayzarGridFirst] — Fayzar — গ্রিড-প্রথম ছক ইঞ্জিন (FayzarGridFirst)
+  fzOn@22, SERIAL@24, FILL_RE@26, baseLen@29, trimFillToWidth@34, extractGrid@50, isFillCol@72, refineHeaderSplitTable@165, refinePartialGridRows@207, openGroupEnd@223, effSpan@323, computeSerialColumnVMerges@373, applyGridFirst@402
 
-- `js/layout-engine/faithful/layout-ir.js` (1893) [FayzarGridFirst, FayzarLayoutIR] — Fayzar — হুবহু-লেআউট নকশা (FayzarLayoutIR)
-  FS_CLASS@24, KEEP_TYPES@26, inkRatioFor@34, PAPER@49, median@50, clamp@52, tabify@59, splitTableAtGaps@110, empty@114, rowBandHeights@135, wrap@156, heightsOf@168, bandOf@198, lineRowHeights@226, assign@275, exactHeights@333, isScribble@375, mergeLineRows@387, SERIAL@435, foldSerialRows@436, isSer@438, LABEL@446, foldBoxRows@470, isBox@473, isOpt@474, attachBoxLabels@500, isBoxTbl@501, dropEmptyMeasuredCol@526, join@533, perLineUnderline@545, plain@551, len@569, isP@570, toItem@590, isFillCol@674, vis@743, SUBSER@853, isFill@870, noBox@962, normalizePage@974, estOf@982, map@1044, dropSigDates@1145, DATE@1148, onFig@1149, bandsOf@1186, snapIndents@1246, flush@1254, snapFonts@1278, alignNumberTabs@1359, alignTabStops@1380, nTab@1381, oneTab@1383, fillTabs@1385, kvOf@1396, attach@1398, contOf@1408, feed@1417, applyVerticalRules@1471, applyBoxFrames@1498, inside@1504, touches@1505, own@1506, rectOf@1507, fits@1519, hasPara@1520, pageSized@1525, applyHorizontalRules@1572, xov@1581, nestFiguresInTables@1628, STD_MARGINS@1646, snapMargin@1648, unifyMargins@1664, build@1690, syncTableFonts@1776, syncLabelColumns@1790, syncFillLabels@1813, FILLX@1814, isFL@1815, syncGridPitch@1843, decideBold@1860, script@1864, norm@1869
+- `js/layout-engine/faithful/header-merge.js` (169) [FayzarHeaderMerge] — Fayzar — ছকের ভাঙা হেডার-সারি সংযোজন মডিউল (FayzarHeaderMerge)
+  SERIAL@18, SUBSER@19, FILL_RE@21, CHECKBOX_RE@22, baseLen@25, isColNumberRow@33, isHeaderFragmentRow@40, detectHeaderSpan@68, applyHeaderMerge@147
+
+- `js/layout-engine/faithful/layout-ir.js` (1977) [FayzarHeaderMerge, FayzarGridFirst, FayzarLayoutIR] — Fayzar — হুবহু-লেআউট নকশা (FayzarLayoutIR)
+  fzOn@24, FS_CLASS@26, KEEP_TYPES@28, inkRatioFor@36, PAPER@51, median@52, clamp@54, tabify@61, splitTableAtGaps@112, empty@116, rowBandHeights@137, wrap@158, heightsOf@174, bandOf@204, lineRowHeights@233, assign@282, exactHeights@340, isScribble@382, mergeLineRows@394, SERIAL@442, foldSerialRows@443, isSer@445, LABEL@453, foldBoxRows@477, isBox@480, isOpt@481, attachBoxLabels@507, isBoxTbl@508, dropEmptyMeasuredCol@533, join@540, perLineUnderline@552, plain@558, len@576, isP@577, toItem@597, isFillCol@689, vis@756, SUBSER0@833, SUBSER@870, isFill@887, noBox@1024, normalizePage@1036, estOf@1044, map@1106, dropSigDates@1211, DATE@1214, onFig@1215, bandsOf@1252, snapIndents@1312, flush@1320, snapFonts@1344, alignNumberTabs@1425, alignTabStops@1446, nTab@1447, oneTab@1449, fillTabs@1451, kvOf@1462, attach@1464, contOf@1474, feed@1483, applyVerticalRules@1537, applyBoxFrames@1567, inside@1573, touches@1574, own@1575, rectOf@1576, fits@1588, hasPara@1589, pageSized@1594, applyHorizontalRules@1641, xov@1650, nestFiguresInTables@1710, STD_MARGINS@1728, snapMargin@1730, unifyMargins@1746, build@1772, syncTableFonts@1857, syncLabelColumns@1874, syncFillLabels@1897, FILLX@1898, isFL@1899, syncGridPitch@1927, decideBold@1944, script@1948, norm@1953
 
 - `js/layout-engine/faithful/layout-tags.js` (176) [FayzarLayoutTags] — Fayzar — হুবহু-লেআউট ট্যাগ-পার্সার (FayzarLayoutTags)
   TYPES@15, SYNONYM@17, AUDIT_RE@24, bn2en@28, clamp@29, parseTagBody@32, expandFill@72, parse@81, pageMarkerAt@100, cleanText@105, byPage@128, needsContinuation@135, lastBlockInfo@142, mergeContinuation@153, norm@160
 
-- `js/layout-engine/faithful/line-fit.js` (234) [FayzarLineFit] — Fayzar — হুবহু-লেআউট লাইন-আঁটানো (FayzarLineFit) — WORK_PLAN B5
-  FILL@14, FILL_G@15, lineWidthPt@17, sideIndent@25, fitTabFills@36, fitMid@41, fitTable@95, colW@99, fitItem@141, fit@202
+- `js/layout-engine/faithful/line-fit.js` (252) [FayzarLineFit] — Fayzar — হুবহু-লেআউট লাইন-আঁটানো (FayzarLineFit) — WORK_PLAN B5
+  FILL@14, FILL_G@15, lineWidthPt@17, sideIndent@25, fitTabFills@36, fitMid@41, fitTable@95, colW@99, fitItem@147, fit@208
 
-- `js/layout-engine/faithful/page-geometry.js` (1178) [FayzarPageGeometry] — Fayzar — পাতা-মাপার ইঞ্জিন (FayzarPageGeometry)
-  clamp@20, median@21, inkMask@23, otsuThreshold@34, components@44, linesOf@75, split@90, RATIO@126, estimateFontPt@127, blockMetrics@138, isVRule@145, ulOf@398, score@492, fitBoxDrift@538, vDashComps@582, flush@606, snapBoxesToLines@617, clipY1@623, tooFewLines@641, shiftFrom@648, absOff@662, unclaimed@692, fillOrphans@718, solve@738, ovLim@761, xOv@763, ovY@796, fitExtentDrift@813, hits@825, applyDrift@834, verticalRules@837, horizontalRules@849, boxFrames@884, sideFree@898, rowCover@917, r1g@946, lum@950, hex2@951, pageBackground@953, blockShade@963, med@973, edgeTint@985, wideBar@1004, mid@1026, darkBandMask@1035, hLinePositions@1075, hLineSpan@1092, brokenHLinePositions@1109, countHLines@1129, isFrameComp@1146, detectFrame@1152, pageMargins@1165
+- `js/layout-engine/faithful/page-geometry.js` (1195) [FayzarPageGeometry] — Fayzar — পাতা-মাপার ইঞ্জিন (FayzarPageGeometry)
+  fzOn@19, clamp@22, median@23, inkMask@25, otsuThreshold@36, components@46, linesOf@77, split@92, RATIO@128, estimateFontPt@129, blockMetrics@140, isVRule@147, ulOf@414, score@508, fitBoxDrift@554, vDashComps@598, flush@622, snapBoxesToLines@633, clipY1@639, tooFewLines@657, shiftFrom@664, absOff@678, unclaimed@708, fillOrphans@734, solve@754, ovLim@777, xOv@779, ovY@812, fitExtentDrift@829, hits@841, applyDrift@851, verticalRules@854, horizontalRules@866, boxFrames@901, sideFree@915, rowCover@934, r1g@963, lum@967, hex2@968, pageBackground@970, blockShade@980, med@990, edgeTint@1002, wideBar@1021, mid@1043, darkBandMask@1052, hLinePositions@1092, hLineSpan@1109, brokenHLinePositions@1126, countHLines@1146, isFrameComp@1163, detectFrame@1169, pageMargins@1182
 
 - `js/layout-engine/faithful/row-ink.js` (126) [FayzarRowInk] — Fayzar — ছকের সারি ⇒ রেখা-ভাগ, কালি-মাপে (FayzarRowInk) — ২০২৬-১০-১৩
   bandLines@19, assign@32, groupCost@40, realign@73, txt@75, key@76, filled@78, comp@79
@@ -236,17 +239,17 @@
 - `js/session-store.js` (97) [FayzarSession] — ফয়জার এআই কম্পোজ — কাজের সেশন-ক্যাশ ও কনভার্ট-ইতিহাস (রিফ্রেশে কাজ না হারাতে, আগের আউটপুট আবার পেতে)।
   open@12, onupgradeneeded@16, onsuccess@21, onerror@22, oncomplete@30, onabort@32, save@38, load@46, historyAdd@57, historyList@68, all@70, historyUpdate@75, historyPrune@86
 
-- `js/studio-controller.js` (2091) — Fayzar Publishing Studio - Microsoft Word Office Suite Controller
-  snapshot@175, undo@198, redo@204, _restore@210, updateStatusBar@232, save@244, restore@277, startTimer@302, markDirty@308, updateIndicator@313, applyTheme@351, layoutOptions@393, withoutFigTags@414, updatePreview@419, showToast@492, updateWordDocTitle@508, applyEditModeState@521, updateRulerMargin@559, setZoom@613, getDocTypeBanglaLabel@623, insertTableIntoDoc@707, onload@735, toggleFullscreenView@860, fitPage@1042, fitWidth@1051, downloadDocument@1106, generateBlankOmr@1255, handleImportFile@1271, loadMdFile@1301, onerror@1313, openHelpModal@1368, closeHelpModal@1369, debounce@1455, loadTransferredDocument@1475, onmessage@1544, rememberTextareaCaret@1562, saveCurrentSelection@1570, resolveInsertTarget@1591, insertTextIntoTextarea@1615, insertAtTarget@1628, insertContentAtCaret@1666, figurePipeline@1680, cleanFieldText@1685, fieldSourceIndex@1695, buildFigureElement@1710, applyFiguresToPreview@1736, removeMarkerFromSource@1760, insertFigureFromElement@1772, MATH_SYMBOLS@1818, renderMathCategory@1908, openMathModal@1927, openDiagramModal@1964, attachFigureControls@2027, closeStudioModals@2073
+- `js/studio-controller.js` (2142) — Fayzar Publishing Studio - Microsoft Word Office Suite Controller
+  snapshot@175, undo@198, redo@204, _restore@210, updateStatusBar@232, save@244, restore@277, startTimer@302, markDirty@308, updateIndicator@313, applyTheme@351, layoutOptions@393, withoutFigTags@414, updatePreview@419, showToast@492, updateWordDocTitle@508, applyEditModeState@521, updateRulerMargin@559, setZoom@613, getDocTypeBanglaLabel@623, insertTableIntoDoc@707, onload@735, toggleFullscreenView@872, fitPage@1054, fitWidth@1063, downloadDocument@1136, generateBlankOmr@1288, handleImportFile@1304, loadMdFile@1334, onerror@1346, openHelpModal@1401, closeHelpModal@1402, debounce@1506, loadTransferredDocument@1526, onmessage@1595, rememberTextareaCaret@1613, saveCurrentSelection@1621, resolveInsertTarget@1642, insertTextIntoTextarea@1666, insertAtTarget@1679, insertContentAtCaret@1717, figurePipeline@1731, cleanFieldText@1736, fieldSourceIndex@1746, buildFigureElement@1761, applyFiguresToPreview@1787, removeMarkerFromSource@1811, insertFigureFromElement@1823, MATH_SYMBOLS@1869, renderMathCategory@1959, openMathModal@1978, openDiagramModal@2015, attachFigureControls@2078, closeStudioModals@2124
 
 - `js/template-store.js` (191) [FayzarTemplateStore] — ফয়জার এআই কম্পোজ — "আমার টেমপ্লেট" ভান্ডার (T3a, docs/T3_PLAN.md §৩)।
   LIMITS@11, err@15, cleanName@16, newId@18, pageCount@19, validate@22, summary@33, memoryBackend@36, clone@38, idbBackend@48, open@49, onupgradeneeded@53, onsuccess@54, onerror@55, oncomplete@63, onabort@65, create@78, askPersist@81, list@90, save@98, rename@123, exportFile@136, exportBlob@147, importFile@156, lazy@182
 
-- `js/templates/academic-templates.js` (205) [AcademicTemplates] — Fayzar Publishing Studio - Academic Examination Templates
-  CQ_EXAM_TEMPLATE@10, MCQ_EXAM_TEMPLATE@77, ROUTINE_TEMPLATE@179, PROTTOYON_TEMPLATE@186
+- `js/templates/academic-templates.js` (266) [AcademicTemplates] — Fayzar Publishing Studio - Academic Examination Templates
+  CQ_EXAM_TEMPLATE@10, MCQ_EXAM_TEMPLATE@77, ROUTINE_TEMPLATE@179, PROTTOYON_TEMPLATE@186, ADMIT_CARD@201, SALARY_SLIP@224, NOTICE_BOARD@247
 
-- `js/templates/govt-templates.js` (88) [GovtTemplates] — Fayzar Publishing Studio - Government & UDC Application Templates
-  LAND_RECTIFICATION@10, POLICE_GD_LOST@41, FAIR_PERMISSION@64
+- `js/templates/govt-templates.js` (132) [GovtTemplates] — Fayzar Publishing Studio - Government & UDC Application Templates
+  LAND_RECTIFICATION@10, POLICE_GD_LOST@41, FAIR_PERMISSION@64, DARKHAST@84, OFFICE_MEMO@104
 
 - `js/templates/legal-templates.js` (59) [LegalTemplates] — Fayzar Publishing Studio - Legal & 300 Taka Stamp Deed Templates
   STAMP_MONEY_BOND@10, TENANCY_AGREEMENT@39
@@ -272,6 +275,12 @@
   hero@4, edit@16, cut@23
 
 ## tools/
+
+- `tools/agent_manager.mjs` (195) — tools/agent_manager.mjs
+  getArg@23, checkStatus@28, createBundle@56, sendTask@95, reloadTabs@134, readTab@147, main@167
+
+- `tools/autonomous_monitor.mjs` (147) — tools/autonomous_monitor.mjs
+  log@21, fetchJson@27, checkRateLimit@36, inspectTab@57, cycle@112, main@134
 
 - `tools/cv-tabs.ps1` (29) — paragraphs after table on page 1
   foreach@7
@@ -304,6 +313,12 @@
 - `qa/debug-block.mjs` (30) — QA/নির্ণয়: একটি পাতার নির্দিষ্ট ব্লক-বক্সে মাপার ইঞ্জিন কী দেখে — কাত-কোণ, খণ্ড, লাইন, অংশ।
 
 - `qa/e2e-md-to-doc.mjs` (66) — Part-9j টুল: MD → (FayzarPipeline/question-engine) → docx → .doc চেইন, শুধু ব্রাউজার-এ।
+
+- `qa/edit-score.mjs` (809) — QA (ধাপ ১): এডিট-স্কোর — তৈরি .docx ফাইলের প্রতিটি ফাঁকা ঘর আর বিন্দু/ড্যাশ/লিডার-লাইনে একটি নমুনা নাম
+  ramp@27, textWidthPt@31, xmlUnesc@47, xmlEsc@49, paraTextOf@53, paraFontPt@66, editParagraphXml@75, editDocumentXml@122, splitBlocks@190, splitRows@223, splitCells@257, simulateOoxmlLayout@281, parseSect@287, pageLimit@308, measurePara@314, processSequence@403, processTable@442, computeEditScoreFromStates@577, measureEditScore@684, opt@748
+
+- `qa/edit-score.ps1` (158) — QA (ধাপ ১): Word (COM) দিয়ে এডিট-স্কোর মাপা।
+  Measure-DocState@18, foreach@25, Apply-EditsInWord@80
 
 - `qa/faithful-capture-live.mjs` (81) — QA: হুবহু-লেআউট ক্যাপচার (ধাপ ১) আসল ফাইলে — চলমান অ্যাপ-সার্ভারে (localhost:3008 → Worker)।
 
@@ -377,7 +392,7 @@
 - `qa/golden/line-drift.mjs` (59) — v1 lineBands & alignBands (প্রস্থজুড়ে অনুভূমিক কালি-ছায়া; কেবল আনুভূমিক রেখা বাদ)
   lineBands@2, alignBands@33
 
-- `qa/golden/measure-doc.ps1` (18) — WORK_PLAN A4: আমাদের আউটপুট (.docx/.doc) → সোনালির মতো একই মাপ (truth.raw.json-এর গঠন) + PDF।
+- `qa/golden/measure-doc.ps1` (23) — WORK_PLAN A4: আমাদের আউটপুট (.docx/.doc) → সোনালির মতো একই মাপ (truth.raw.json-এর গঠন) + PDF।
 
 - `qa/golden/measure-lib.ps1` (79) — সোনালি-মাপের যৌথ লাইব্রেরি (dot-source করে ব্যবহার): খোলা Word ডকুমেন্ট → মাপ (অনুচ্ছেদ/রান/টেবিল/আকৃতি/পাতা)।
   StartOf@4, EndOf@5, Clean@6, FontOf@9, Measure-WordDoc@14, foreach@21, Write-Json@76
@@ -564,9 +579,9 @@
 - `fayzar-ocr-proxy/ledger.js` (393) — Fayzar OCR Proxy — KeyLedger (pure logic, no I/O)
   maskKey@24, parseRetryDelay@33, nextMidnightPT@45, todayPT@68, classifyGeminiError@78, createEntry@158, ensureEntry@173, ensureModel@190, isAvailable@196, recordSuccess@207, recordFailure@222, scoreKey@251, rankKeys@268, migrateLedger@288, buildAttemptPlan@306, buildStatus@326
 
-## tests/ (62)
+## tests/ (63)
 
-`audit-page.test.mjs` · `b5-line-fit.test.js` · `b6-gemini-blocks.test.js` · `cq-layout.test.mjs` · `cq-marks-integrity.test.mjs` · `cq-parse-coverage.test.mjs` · `engine-model-order.test.mjs` · `eq-code-italic.test.mjs` · `eq-hardening.test.mjs` · `equation-render.test.mjs` · `exam-renumber.test.mjs` · `faithful-row-realign.test.js` · `forms-faithful.test.mjs` · `g41-faithful-format.test.mjs` · `golden-compare.test.mjs` · `key-ledger.test.js` · `mcq-layout.test.mjs` · `page-marker-strip.test.mjs` · `part-14.2-regression.test.js` · `part-14.3-mixed-sections-and-header.test.js` · `part-15.0-layout-profile-fixes.test.js` · `part-15.1-eq-field-bijoy.test.js` · `part-15.2-ocr-doc-path.test.js` · `part-15.3-degree-and-indent.test.js` · `part-16.0-export-and-mhtml.test.js` · `part-16.1-figure-extractor.test.js` · `part-16.2-figure-handoff.test.js` · `part-17.0-bijoy-mixed-run.test.js` · `part-17.2-faithful-capture.test.js` · `part-17.3-doc-converter.test.mjs` · `part-17.5-faithful-layout.test.js` · `part-18.6-layout-facts.test.js` · `part-18.9-application-layout.test.mjs` · `part-18.9-one-column.test.mjs` · `part-18.9-primary-and-parity.test.mjs` · `part-19.0-letter-layout.test.mjs` · `part-19.1-cv-layout.test.mjs` · `part-19.2-certificate-layout.test.mjs` · `part-19.3-real-ocr-fixes.test.mjs` · `part-19.4-cash-memo.test.mjs` · `part-19.4-kalpurush-exam.test.mjs` · `part12-hardening.test.mjs` · `part13-3-layout-fixes.test.mjs` · `part13-4-fixes.test.mjs` · `part14-0-studio-figure.test.mjs` · `part14-1-fixes.test.mjs` · `proxy-failure-policy.test.js` · `proxy-worker.test.mjs` · `reviewer-fixes.test.js` · `run-all.mjs` · `run-regression.js` · `source-fidelity.test.mjs` · `studio-edit-bridge.test.mjs` · `studio-edit-e2e.test.mjs` · `studio-layout-parity.test.mjs` · `t1-clean-composer.test.js` · `t2-template-composer.test.mjs` · `t3a-template-store.test.mjs` · `t3b-sample-template.test.mjs` · `t3c-sample-map.test.mjs` · `word2003-doc-artifact.test.mjs` · `word2003-font-metric.test.mjs`
+`audit-page.test.mjs` · `b5-line-fit.test.js` · `b6-gemini-blocks.test.js` · `classify-score.test.mjs` · `cq-layout.test.mjs` · `cq-marks-integrity.test.mjs` · `cq-parse-coverage.test.mjs` · `engine-model-order.test.mjs` · `eq-code-italic.test.mjs` · `eq-hardening.test.mjs` · `equation-render.test.mjs` · `exam-renumber.test.mjs` · `faithful-row-realign.test.js` · `forms-faithful.test.mjs` · `g41-faithful-format.test.mjs` · `golden-compare.test.mjs` · `key-ledger.test.js` · `mcq-layout.test.mjs` · `page-marker-strip.test.mjs` · `part-14.2-regression.test.js` · `part-14.3-mixed-sections-and-header.test.js` · `part-15.0-layout-profile-fixes.test.js` · `part-15.1-eq-field-bijoy.test.js` · `part-15.2-ocr-doc-path.test.js` · `part-15.3-degree-and-indent.test.js` · `part-16.0-export-and-mhtml.test.js` · `part-16.1-figure-extractor.test.js` · `part-16.2-figure-handoff.test.js` · `part-17.0-bijoy-mixed-run.test.js` · `part-17.2-faithful-capture.test.js` · `part-17.3-doc-converter.test.mjs` · `part-17.5-faithful-layout.test.js` · `part-18.6-layout-facts.test.js` · `part-18.9-application-layout.test.mjs` · `part-18.9-one-column.test.mjs` · `part-18.9-primary-and-parity.test.mjs` · `part-19.0-letter-layout.test.mjs` · `part-19.1-cv-layout.test.mjs` · `part-19.2-certificate-layout.test.mjs` · `part-19.3-real-ocr-fixes.test.mjs` · `part-19.4-cash-memo.test.mjs` · `part-19.4-kalpurush-exam.test.mjs` · `part12-hardening.test.mjs` · `part13-3-layout-fixes.test.mjs` · `part13-4-fixes.test.mjs` · `part14-0-studio-figure.test.mjs` · `part14-1-fixes.test.mjs` · `proxy-failure-policy.test.js` · `proxy-worker.test.mjs` · `reviewer-fixes.test.js` · `run-all.mjs` · `run-regression.js` · `source-fidelity.test.mjs` · `studio-edit-bridge.test.mjs` · `studio-edit-e2e.test.mjs` · `studio-layout-parity.test.mjs` · `t1-clean-composer.test.js` · `t2-template-composer.test.mjs` · `t3a-template-store.test.mjs` · `t3b-sample-template.test.mjs` · `t3c-sample-map.test.mjs` · `word2003-doc-artifact.test.mjs` · `word2003-font-metric.test.mjs`
 
 ## HTML পাতা (মূল ফোল্ডার)
 - `converter.html` — ফয়জার এআই কম্পোজ · 0 স্ক্রিপ্ট

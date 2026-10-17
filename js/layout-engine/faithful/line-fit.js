@@ -113,8 +113,14 @@
         if (fillOnly && (!globalThis.__FZ_ON_TALLFILL || !FILL.test(t))) continue;
         let w = colW(k);
         const fv = it.fullVRule && it.fullVRule.length === nCols - 1 ? it.fullVRule : null;   // builder rowSpans-এর মতো
-        for (let j = k + 1; j < nCols && !(r[j] && String(r[j]).trim()) && !(fv && fv[j - 1]); j++) w += colW(j);
-        const avail = (w - 2 * 5.4) * SAFE;
+        const vrb = it.vRuleBands && it.vRuleBands[ri] ? it.vRuleBands[ri] : null;
+        for (let j = k + 1; j < nCols && !(r[j] && String(r[j]).trim()) && !(vrb ? vrb[j - 1] : (fv && fv[j - 1])); j++) w += colW(j);
+        // গ্রিড-প্রথম ছকে (যেমন a18 সারি ২৭: কলাম ২-এ লেখা, বাঁয়ে কলাম ১ ফাঁকা এবং মাঝের খাড়া দাগ অনুপস্থিত) বাঁয়ের খোলা প্রস্থও প্রাপ্য
+        if (vrb) {
+          for (let j = k - 1; j >= 0 && !(r[j] && String(r[j]).trim()) && vrb[j] === false; j--) w += colW(j);
+        }
+        const padPt = it.gridFirst && w < 70 ? (w < 25 ? 0 : 1.4) : 5.4;
+        const avail = (w - 2 * padPt) * SAFE;
         if (!(avail > 20)) continue;
         const lines = t.split('\n').map((ln) => {
           const lw = lineWidthPt(ln, it, measure);
@@ -208,22 +214,34 @@
         if (it && it.kind === 'table' ? fitTable(it, measure) : fitItem(it, cellW, measure)) n++;
       }
     }
-    // Re-sync multi-page identical checklist/form tables after fitTable so all pages share uniform font
-    const allT = [];
-    for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
-      for (const it of cell.items || []) if (it && it.kind === 'table' && it.fontPt && it.colFractions) allT.push(it);
-    }
-    const used = new Set();
-    for (const t of allT) {
-      if (used.has(t)) continue;
-      const h0 = (t.rows && t.rows[0] || []).join('|');
-      const grp = allT.filter((o) => !used.has(o) && o.colFractions.length === t.colFractions.length &&
-        (o.colFractions.every((f, k) => Math.abs(f - t.colFractions[k]) <= 0.12) || (h0.length >= 10 && ((o.rows && o.rows[0] || []).join('|') === h0))));
-      grp.forEach((o) => used.add(o));
-      if (grp.length < 3) continue;
-      const fs = grp.map((o) => o.fontPt).sort((a, b) => a - b);
-      const target = fs[Math.floor(fs.length * 0.3)];
-      grp.forEach((o) => { if (Math.abs(o.fontPt - target) <= target * 0.3) o.fontPt = target; });
+    // বহু-পাতার চেকলিস্ট ছকে (≥৪ কলাম, যেমন a16) fitTable-এর পর ফন্টের সমতা রক্ষা; ২-কলামের ছোট ছকে (a03) নয় (FZ_OFF=TSYNC30)
+    if (!globalThis.__FZ_OFF_TSYNC30) {
+      const allT = [];
+      for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
+        for (const it of cell.items || []) if (it && it.kind === 'table' && it.fontPt && it.colFractions && it.colFractions.length >= 4) allT.push(it);
+      }
+      const used = new Set();
+      for (const t of allT) {
+        if (used.has(t)) continue;
+        const h0 = (t.rows && t.rows[0] || []).join('|');
+        const grp = allT.filter((o) => !used.has(o) && o.colFractions.length === t.colFractions.length &&
+          (o.colFractions.every((f, k) => Math.abs(f - t.colFractions[k]) <= 0.12) || (h0.length >= 10 && ((o.rows && o.rows[0] || []).join('|') === h0))));
+        grp.forEach((o) => used.add(o));
+        if (grp.length < 3) continue;
+        const fs = grp.map((o) => o.fontPt).sort((a, b) => a - b);
+        const target = fs[Math.floor(fs.length * 0.3)];
+        grp.forEach((o) => { if (Math.abs(o.fontPt - target) <= target * 0.3) o.fontPt = target; });
+      }
+      if (globalThis.__FZ_ON_FORMFIX && !globalThis.__FZ_OFF_FORMFIX) {
+        const noVT = [];
+        for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
+          for (const it of cell.items || []) if (it && it.kind === "table" && it.noVRules && it.rows && it.rows.length >= 10) noVT.push(it);
+        }
+        if (noVT.length >= 2) {
+          const maxF = Math.max(...noVT.map((t) => t.fontPt || 10));
+          noVT.forEach((t) => { if (t.fontPt < maxF) t.fontPt = maxF; });
+        }
+      }
     }
     return n;
   }

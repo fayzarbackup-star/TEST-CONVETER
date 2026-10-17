@@ -6,12 +6,17 @@ $ErrorActionPreference = 'Stop'
 $word = New-Object -ComObject Word.Application
 $word.Visible = $false; $word.DisplayAlerts = 0
 try {
-  $doc = $word.Documents.Open((Resolve-Path $In).Path, $false, $true)
+  $inPath = (Resolve-Path $In).Path
+  $doc = $word.Documents.Open($inPath, $false, $true)
   try {
     # ২০২৬-১০-১২: আগে PDF, পরে মাপ — Measure-WordDoc Word-এর পাতা-বিন্যাস বদলায় (a15: সরাসরি PDF ১ পাতা, মাপের পরে ২ পাতা)
-    if ($OutPdf) { $doc.SaveAs2([ref]$OutPdf, [ref]17) }
+    if ($OutPdf) {
+      $pdfPath = [System.IO.Path]::GetFullPath($OutPdf)
+      $doc.SaveAs2([ref]$pdfPath, [ref]17)
+    }
     $m = Measure-WordDoc $doc
-    Write-Json $m $OutJson
+    $jsonPath = [System.IO.Path]::GetFullPath($OutJson)
+    Write-Json $m $jsonPath
     Write-Output ("pages={0} paras={1} tables={2} shapes={3}" -f $m.pages, $m.paragraphs.Count, $m.tables.Count, $m.shapes.Count)
   } finally { $doc.Close(0) }
 } finally { $word.Quit(); [void][Runtime.InteropServices.Marshal]::ReleaseComObject($word) }

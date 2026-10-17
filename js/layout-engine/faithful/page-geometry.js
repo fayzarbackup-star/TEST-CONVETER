@@ -15,6 +15,8 @@
  */
 (function (global) {
   'use strict';
+  // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
+  const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
   const SPECK_OFF = !!global.__FZ_OFF_SPECK;   // নির্ণয়-সুইচ (ছিটে-বাদ বন্ধ করতে)
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -302,7 +304,21 @@
         // ২০২৬-১০-১৫ (a02 পরিবার-ছক): ধূসর শিরোনাম-সারি হালকা মাস্কে (২২৫) পুরো প্রস্থ জুড়ে টানা কালো পটি হয়ে খাড়া দাগ গিলে ফেলে ⇒
         // চওড়া পটি (>৪pt) দেখা দিলে মূল মাস্কে (১৬০) খাড়া দাগ মাপা। বন্ধ: FZ_OFF=SHADECOL
         let finalRules = rules;
-        if (!global.__FZ_OFF_SHADECOL && (global.__FZ_ON_SHADECOL || global.__FZ_ON_GRIDFIRST) && gm !== m && rules.length <= 2 && rules.some((r) => r.x1 - r.x0 > (tx1 - tx0) * 0.5)) {
+        // [Rule PG1: FZ_OFF=GRIDFIRST / FZ_OFF=PG1] আদর্শ রেজোলিউশনের পাতায় (W <= 1300) হালকা মাস্কে (gm) ছকের বাইরের হালকা খাড়া বর্ডার উদ্ধার (a16 চেকলিস্ট ছক; বড় স্ক্যান পাতা a10 অক্ষুণ্ণ)।
+        if (fzOn('GRIDFIRST') && !global.__FZ_OFF_PG1 && W <= 1300 && gm !== m && rules.length >= 4) {
+          const sx0 = Math.max(0, Math.floor(Math.max(tx0 - 10 * ppt, bx0 - 4 * ppt))), sx1 = Math.min(W, Math.ceil(Math.min(tx1 + 10 * ppt, bx1 + 4 * ppt)));
+          const xsW = [];
+          for (let x = sx0; x < sx1; x++) {
+            let run = 0, long = 0;
+            for (let y = ty0; y < ty1; y++) { if (gm.mask[y * W + x]) run++; else { if (run >= minRun) long += run; run = 0; } }
+            if (run >= minRun) long += run;
+            if (long >= th * 0.12) xsW.push({ x, long });
+          }
+          const rW = [];
+          xsW.forEach((p) => { const r = rW[rW.length - 1]; if (r && p.x - r.x1 <= Math.max(2, ppt * 1.5)) { r.x1 = p.x; if (p.long > r.long) { r.long = p.long; r.xm = p.x; } } else rW.push({ x0: p.x, x1: p.x, xm: p.x, long: p.long }); });
+          if (rW.length >= rules.length) finalRules = rW;
+        }
+        if (!global.__FZ_OFF_SHADECOL && global.__FZ_ON_SHADECOL && gm !== m && rules.length <= 2 && rules.some((r) => r.x1 - r.x0 > (tx1 - tx0) * 0.5)) {
           const xsM = [];
           for (let x = Math.max(0, tx0 - 2); x < Math.min(W, tx1 + 2); x++) {
             let run = 0, long = 0;
@@ -828,7 +844,8 @@
       return s + txt.filter((c) => { const cx = (c.x0 + c.x1) / 2, cy = (c.y0 + c.y1) / 2; return cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1; }).length;
     }, 0);
     const f = { a, b, extent: true }, h0 = hits(null), h1 = hits(f);
-    return h1 >= h0 * 1.2 + 3 ? f : null;
+    // [Rule PG2: FZ_OFF=FORMFIX / FZ_OFF=PG2] অল্প ব্লকের পাতায় (<=5, যেমন a18) রেন্ডারার ভেদে বিস্তার-সরণ (fitExtentDrift) সহনশীলতা ১.১৮।
+    return h1 >= h0 * (fzOn('FORMFIX') && !global.__FZ_OFF_PG2 && blocks.length <= 5 ? 1.18 : 1.2) + 3 ? f : null;
   }
 
   const applyDrift = (box, f) => (f && box ? [f.a * box[0] + f.b, box[1], f.a * box[2] + f.b, box[3]].map((v, i) => (i % 2 === 0 ? clamp(v, 0, 1000) : v)) : box);
