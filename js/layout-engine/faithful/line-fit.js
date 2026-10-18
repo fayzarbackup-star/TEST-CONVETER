@@ -14,11 +14,43 @@
   const FILL = /([._\-…·─])\1{5,}/;
   const FILL_G = /([._\-…·─])\1{5,}/g;
 
-  function lineWidthPt(t, it, measure) {
+  // B7: হুবহু-মোডে ইউনিকোড ফন্ট বাছাই ও প্রস্থ-অনুপাত (সুইচ __FZ_ON_FONTPICK)
+  const FONT_WIDTH_RATIOS = {
+    Kalpurush: 1.00,
+    SutonnyOMJ: 0.94,
+    Nikosh: 0.96,
+    SolaimanLipi: 0.95
+  };
+  let _activeFitFont = null;
+  function isFontPickOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_FONTPICK)) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_FONTPICK)) return true;
+    if (global && Boolean(global.__FZ_ON_FONTPICK)) return true;
+    if (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_FONTPICK === '1' || process.env.__FZ_ON_FONTPICK === 'true')) return true;
+    return false;
+  }
+  function getFontWidthRatio(fontName) {
+    if (!fontName) return 1.00;
+    const f = String(fontName).trim();
+    return Object.prototype.hasOwnProperty.call(FONT_WIDTH_RATIOS, f) ? FONT_WIDTH_RATIOS[f] : 1.00;
+  }
+  function resolveFitFont(it, measure, fontOpt) {
+    if (typeof fontOpt === 'string' && fontOpt) return fontOpt;
+    if (fontOpt && typeof fontOpt === 'object' && (fontOpt.font || fontOpt.unicodeFont)) return fontOpt.font || fontOpt.unicodeFont;
+    if (it && (it.font || it.unicodeFont || it.fontFamily)) return it.font || it.unicodeFont || it.fontFamily;
+    if (_activeFitFont) return _activeFitFont;
+    if (measure && measure.font) return measure.font;
+    if (typeof globalThis !== 'undefined' && globalThis.__FZ_UNICODE_FONT) return globalThis.__FZ_UNICODE_FONT;
+    if (global && global.__FZ_UNICODE_FONT) return global.__FZ_UNICODE_FONT;
+    return 'SutonnyOMJ';
+  }
+
+  function lineWidthPt(t, it, measure, fontOpt) {
     // চিহ্ন (**মোটা**, *বাঁকা*, ^{উপরে}) মাপে ধরা নয়
     const s = String(t).replace(/\*\*/g, '').replace(/\*([^*\s][^*]*?)\*/g, '$1').replace(/\^\{([^}]*)\}/g, '$1').trim();
     if (!s) return 0;
-    return measure(s, !!it.bold) * it.fontPt / 100 * (it.bold ? BOLD : 1);
+    const ratio = isFontPickOn() ? getFontWidthRatio(resolveFitFont(it, measure, fontOpt)) : 1;
+    return measure(s, !!it.bold) * it.fontPt / 100 * (it.bold ? BOLD : 1) * ratio;
   }
 
   /** builder-এর pPr-এর মতো একই নিয়মে অনুচ্ছেদের মোট পাশ-ইনডেন্ট (pt) */
@@ -205,9 +237,20 @@
   }
 
   /** পুরো নকশা; ফেরত: বদলানো অংশের সংখ্যা */
-  function fit(ir, measure) {
+  function fit(ir, measure, opts) {
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
+    const prevFont = _activeFitFont;
+    if (isFontPickOn()) {
+      _activeFitFont = (typeof opts === 'string' && opts) || (opts && (opts.font || opts.unicodeFont)) || ir.font || ir.unicodeFont || _activeFitFont;
+      // ফন্ট বদলে পুনরায় fit চালালে আগের fontFrom থেকে নতুন অনুপাতে হিসাব করা
+      if (opts && (typeof opts === 'string' || opts.font || opts.unicodeFont || opts.resetFont)) {
+        for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
+          for (const it of cell.items || []) if (it && it.fit && it.fit.fontFrom) { it.fontPt = it.fit.fontFrom; delete it.fit; }
+        }
+      }
+    }
     let n = 0;
+    try {
     for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
       const cellW = (cell.x1 || 0) - (cell.x0 || 0);
       for (const it of cell.items || []) {
@@ -244,9 +287,12 @@
       }
     }
     return n;
+    } finally {
+      _activeFitFont = prevFont;
+    }
   }
 
-  const FayzarLineFit = { fit, fitItem, fitTable, sideIndent };
+  const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

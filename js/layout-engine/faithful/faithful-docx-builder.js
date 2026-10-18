@@ -227,6 +227,25 @@
 
   const FONT = 'SutonnyOMJ';
   const UNI_SENTINEL = 'FzUnicodeFace';
+  // B7: হুবহু-মোডে ইউনিকোড ফন্ট বাছাই (সুইচ __FZ_ON_FONTPICK)
+  const UNICODE_FONTS = ['SutonnyOMJ', 'Kalpurush', 'Nikosh', 'SolaimanLipi'];
+  let _activeDocxFont = null;
+  const fontPickOn = () => !!(
+    (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_FONTPICK) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_FONTPICK) ||
+    (global && global.__FZ_ON_FONTPICK) ||
+    (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_FONTPICK === '1' || process.env.__FZ_ON_FONTPICK === 'true'))
+  );
+  function resolveDocxFont(src) {
+    if (!fontPickOn()) return FONT;
+    const cand = (typeof src === 'string' && src) ||
+      (src && (src.font || src.unicodeFont || src.fontFamily)) ||
+      _activeDocxFont ||
+      (typeof globalThis !== 'undefined' && globalThis.__FZ_UNICODE_FONT) ||
+      (global && global.__FZ_UNICODE_FONT) ||
+      FONT;
+    return UNICODE_FONTS.indexOf(cand) !== -1 ? cand : FONT;
+  }
   const tw = (pt) => Math.max(0, Math.round((pt || 0) * 20));
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const emu = (pt) => Math.round((pt || 0) * 12700);
@@ -302,10 +321,11 @@
       if (runShd || sup) x = x.replace(/(<w:lang[^>]*\/>)?<\/w:rPr>/g, (m0, lang) => `${runShd}${sup}${lang || ''}</w:rPr>`);
       return x;
     };
+    const outFont = resolveDocxFont(item);
     if (E && typeof E.renderDocxRuns === 'function') {
-      return colored(E.renderDocxRuns(text, { font: UNI_SENTINEL, keepLoneRo: true }, style).split(`"${UNI_SENTINEL}"`).join(`"${FONT}"`));
+      return colored(E.renderDocxRuns(text, { font: UNI_SENTINEL, keepLoneRo: true }, style).split(`"${UNI_SENTINEL}"`).join(`"${outFont}"`));
     }
-    return colored(`<w:r><w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/>${style.b ? '<w:b/>' : ''}${style.i ? '<w:i/>' : ''}${style.u ? '<w:u w:val="single"/>' : ''}<w:sz w:val="${style.sz}"/><w:szCs w:val="${style.sz}"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`);
+    return colored(`<w:r><w:rPr><w:rFonts w:ascii="${outFont}" w:hAnsi="${outFont}" w:cs="${outFont}"/>${style.b ? '<w:b/>' : ''}${style.i ? '<w:i/>' : ''}${style.u ? '<w:u w:val="single"/>' : ''}<w:sz w:val="${style.sz}"/><w:szCs w:val="${style.sz}"/></w:rPr><w:t xml:space="preserve">${esc(text)}</w:t></w:r>`);
   }
 
   // Part-17.9: লাইন-উচ্চতা — মাপা লাইন-দূরত্ব (ফন্টের ২ গুণের কম হলে), নইলে Word-এর single (≈১.১৫×ফন্ট, ক্যালিব্রেটেড); কম নয় (কাটা পড়া ঠেকাতে)
@@ -1787,7 +1807,10 @@
   }
 
   /** নকশা → document.xml-এর body এবং মিডিয়া */
-  function bodyXml(ir) {
+  function bodyXml(ir, opts) {
+    const prevFont = _activeDocxFont;
+    if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
+    try {
     if (fzOn('FORMFIX') && !globalThis.__FZ_OFF_TSYNC30 && ir && Array.isArray(ir.pages)) {
       const noVT = [];
       for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
@@ -1838,6 +1861,9 @@
     const last = ir.pages[ir.pages.length - 1] || { widthPt: 595.3, heightPt: 841.9, margins: { top: 54, right: 54, bottom: 54, left: 54 } };
     xml += sectPr(last, true);
     return { xml, media: ctx.media };
+    } finally {
+      _activeDocxFont = prevFont;
+    }
   }
 
   const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"';
@@ -1861,19 +1887,20 @@
     const o = opts || {};
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
-    const { xml: xml0, media } = bodyXml(ir);
+    const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
+    const { xml: xml0, media } = bodyXml(ir, fontPickOn() ? { font: docFont } : undefined);
     const xml = sizeEmptyParas(xml0);
     const zip = new JSZip();
     zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
     zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
     zip.file('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>${media.map((m) => `<Relationship Id="${m.rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${m.name}"/>`).join('')}</Relationships>`);
-    zip.file('word/styles.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/><w:noProof/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:bidi="bn-BD"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`);
+    zip.file('word/styles.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${docFont}" w:hAnsi="${docFont}" w:cs="${docFont}"/><w:noProof/><w:sz w:val="24"/><w:szCs w:val="24"/><w:lang w:val="en-US" w:bidi="bn-BD"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`);
     zip.file('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${xml}</w:body></w:document>`);
     for (const m of media) zip.file('word/media/' + m.name, m.data, { base64: true });
     return zip.generateAsync({ type: o.type || (typeof Blob !== 'undefined' ? 'blob' : 'uint8array'), mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
   }
 
-  const FayzarFaithfulDocx = { FONT, bodyXml, build, runsFor, pPr, paraXml, planPage };
+  const FayzarFaithfulDocx = { FONT, UNICODE_FONTS, resolveDocxFont, bodyXml, build, runsFor, pPr, paraXml, planPage };
   Object.defineProperties(FayzarFaithfulDocx, {
     itemH: { value: itemH, enumerable: false },
     textH: { value: textH, enumerable: false },

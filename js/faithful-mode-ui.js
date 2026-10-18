@@ -15,6 +15,141 @@
   try { const v = localStorage.getItem(KEY); if (v === 'faithful' || v === 'template') mode = v; } catch (e) { /* নেই */ }
   let last = null;   // { cap, ir, baseName }
   let rangeChoice = 'all', customRangeText = '';   // G3: পাতা-পরিসর ("all" | "1-3" | "custom")
+  const UNICODE_FONTS = ['SutonnyOMJ', 'Kalpurush', 'Nikosh', 'SolaimanLipi'];
+  let selectedFont = null;   // B7: হুবহু-মোডে ইউনিকোড ফন্ট বাছাই
+
+  // B7: সুইচ __FZ_ON_FONTPICK যাচাই
+  function isFontPickOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_FONTPICK)) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_FONTPICK)) return true;
+    if (global && Boolean(global.__FZ_ON_FONTPICK)) return true;
+    if (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_FONTPICK === '1' || process.env.__FZ_ON_FONTPICK === 'true')) return true;
+    return false;
+  }
+
+  // B7: ব্রাউজারে নির্দিষ্ট ফন্ট আছে কি না যাচাই (document.fonts.check ও ক্যানভাস-মাপে fallback)
+  function isFontAvailable(fontName, env) {
+    const f = String(fontName || '').trim();
+    if (!f) return false;
+    if (typeof env === 'function') return Boolean(env(f));
+    if (Array.isArray(env)) return env.indexOf(f) !== -1;
+    if (env instanceof Set) return env.has(f);
+    if (env && typeof env === 'object' && !env.fonts && !env.createElement && !env.document) {
+      if (Object.prototype.hasOwnProperty.call(env, f)) return Boolean(env[f]);
+      return false;
+    }
+    const doc = (env && (env.document || (env.fonts || env.createElement ? env : null))) ||
+      (typeof document !== 'undefined' ? document : null);
+    if (!doc) return false;
+
+    // ১) document.fonts.check যাচাই
+    if (doc.fonts && typeof doc.fonts.check === 'function') {
+      try {
+        if (doc.fonts.check(`16px "${f}"`, 'বাংলা')) return true;
+      } catch (e) { /* ক্যানভাস ফলব্যাকে যাবে */ }
+    }
+
+    // ২) ক্যানভাস-মাপে fallback (monospace ও sans-serif বেসলাইনের সাথে প্রস্থ তুলনা)
+    if (typeof doc.createElement === 'function') {
+      try {
+        const c = doc.createElement('canvas');
+        const ctx = c && typeof c.getContext === 'function' ? c.getContext('2d') : null;
+        if (ctx && typeof ctx.measureText === 'function') {
+          const sample = 'বাংলা প্রশ্নপত্র ০১২৩৪৫৬৭৮৯ ABCDEFG';
+          ctx.font = '72px monospace';
+          const wMono = ctx.measureText(sample).width;
+          ctx.font = '72px sans-serif';
+          const wSans = ctx.measureText(sample).width;
+          ctx.font = `72px "${f}", monospace`;
+          const wTestMono = ctx.measureText(sample).width;
+          ctx.font = `72px "${f}", sans-serif`;
+          const wTestSans = ctx.measureText(sample).width;
+          if (Math.abs(wTestMono - wMono) > 0.05 || Math.abs(wTestSans - wSans) > 0.05) return true;
+        }
+      } catch (e) { /* নীরব */ }
+    }
+    return false;
+  }
+
+  function detectAvailableFonts(env) {
+    const out = {};
+    UNICODE_FONTS.forEach((f) => { out[f] = isFontAvailable(f, env); });
+    return out;
+  }
+
+  // B7: ডিফল্ট SutonnyOMJ, না থাকলে Kalpurush
+  function pickDefaultFont(env) {
+    if (!isFontPickOn()) return 'SutonnyOMJ';
+    if (isFontAvailable('SutonnyOMJ', env)) return 'SutonnyOMJ';
+    if (isFontAvailable('Kalpurush', env)) return 'Kalpurush';
+    if (env != null) {
+      if (isFontAvailable('Nikosh', env)) return 'Nikosh';
+      if (isFontAvailable('SolaimanLipi', env)) return 'SolaimanLipi';
+      return 'Kalpurush';
+    }
+    return 'Kalpurush';
+  }
+
+  function getSelectedFont(env) {
+    if (!isFontPickOn()) return 'SutonnyOMJ';
+    if (selectedFont && UNICODE_FONTS.indexOf(selectedFont) !== -1) return selectedFont;
+    selectedFont = pickDefaultFont(env);
+    if (typeof globalThis !== 'undefined') globalThis.__FZ_UNICODE_FONT = selectedFont;
+    return selectedFont;
+  }
+
+  function setSelectedFont(fontName, opts) {
+    const o = opts || {};
+    const f = UNICODE_FONTS.indexOf(fontName) !== -1 ? fontName : pickDefaultFont(o.env);
+    selectedFont = f;
+    if (isFontPickOn()) {
+      if (typeof globalThis !== 'undefined') globalThis.__FZ_UNICODE_FONT = f;
+      if (global) global.__FZ_UNICODE_FONT = f;
+      const targetIr = o.ir || (last && last.ir);
+      if (targetIr && typeof targetIr === 'object') {
+        targetIr.font = f;
+        const LF = (typeof globalThis !== 'undefined' && globalThis.FayzarLineFit) || (global && global.FayzarLineFit);
+        const meas = o.measure || (targetIr._measurer) || ((s) => String(s || '').length * 48);
+        if (LF && typeof LF.fit === 'function') {
+          LF.fit(targetIr, meas, { font: f, resetFont: true });
+        }
+      }
+      syncFontPickerUI();
+    }
+    return f;
+  }
+
+  function syncFontPickerUI() {
+    if (!isFontPickOn() || typeof document === 'undefined') return;
+    const anchor = $('wizardResultCard') || $('wsResult');
+    if (!anchor) return;
+    let box = $('fzFontPickBox');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'fzFontPickBox';
+      box.className = 'fz-fontpick-box';
+      box.style.cssText = 'margin:8px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;';
+      const avail = detectAvailableFonts();
+      const cur = getSelectedFont();
+      box.innerHTML =
+        `<label for="fzUnicodeFontSelect" style="font-weight:600;font-size:13px;">ইউনিকোড ফন্ট:</label>` +
+        `<select id="fzUnicodeFontSelect" class="field" style="width:auto;min-width:160px;">` +
+          UNICODE_FONTS.map((f) => `<option value="${f}"${f === cur ? ' selected' : ''}>${f}${avail[f] ? '' : ' (ডিফল্ট/ফলব্যাক)'}</option>`).join('') +
+        `</select>`;
+      const dlBtn = $('wizardDlUnicodeDocxBtn') || $('wizardDlDocBtn');
+      if (dlBtn && dlBtn.parentNode) dlBtn.parentNode.insertBefore(box, dlBtn);
+      else anchor.appendChild(box);
+      const sel = $('fzUnicodeFontSelect');
+      if (sel) {
+        sel.addEventListener('change', () => {
+          const chosen = setSelectedFont(sel.value);
+          toast(`ইউনিকোড ফন্ট: ${chosen}`, 'info');
+        });
+      }
+    }
+    const sel = $('fzUnicodeFontSelect');
+    if (sel && sel.value !== getSelectedFont()) sel.value = getSelectedFont();
+  }
 
   // G3: সুইচ __FZ_ON_PAGERANGE যাচাই
   function isPageRangeOn() {
@@ -229,7 +364,13 @@
     const X = global.FayzarFaithful;
     try {
       toast('হুবহু-লেআউট ফাইল প্রস্তুত হচ্ছে…', 'info');
-      const res = await X.produce(last.ir, fmt, { pageSize: 'a4', margin: 'normal' });
+      const prodOpts = { pageSize: 'a4', margin: 'normal' };
+      if (isFontPickOn()) {
+        const f = getSelectedFont();
+        prodOpts.font = f;
+        if (last.ir && typeof last.ir === 'object') last.ir.font = f;
+      }
+      const res = await X.produce(last.ir, fmt, prodOpts);
       const ext = fmt === 'doc' ? '_হুবহু_Word2003.doc' : (fmt === 'docx-bijoy' ? '_হুবহু_Bijoy.docx' : '_হুবহু_Unicode.docx');
       const a = document.createElement('a');
       a.href = URL.createObjectURL(res.blob); a.download = last.baseName + ext;
@@ -262,7 +403,11 @@
     const cap = await X.capture(queue, { onProgress: (m, p) => setProgress(m, Math.min(60, p)) });
     if (selectedPages && cap && typeof cap === 'object') cap.selectedPages = selectedPages;
     const ir = await X.layout(cap, queue, { onProgress: (m, p) => setProgress(m, p) });
+    if (isFontPickOn() && ir && typeof ir === 'object') {
+      ir.font = getSelectedFont();
+    }
     last = { cap, ir, baseName };
+    if (isFontPickOn()) syncFontPickerUI();
     setProgress('হুবহু-লেআউট প্রস্তুত', 100);
 
     // ফলাফল-কার্ড
@@ -284,6 +429,7 @@
   const FayzarFaithfulUI = {
     isFaithful, setMode, mountModeCards, runWizard, download,
     isPageRangeOn, parsePageRange, getRangeSpec, setRangeSpec, selectQueuePages, syncPageRangeUI,
+    UNICODE_FONTS, isFontPickOn, isFontAvailable, detectAvailableFonts, pickDefaultFont, getSelectedFont, setSelectedFont, syncFontPickerUI,
     get last() { return last; }
   };
   global.FayzarFaithfulUI = FayzarFaithfulUI;
