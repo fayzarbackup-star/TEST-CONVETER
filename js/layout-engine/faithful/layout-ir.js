@@ -31,6 +31,17 @@
   // WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সুইচ (__FZ_ON_FAITHFUL_STUDIO)
   const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
     || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+  // A01_WRAP_v1: মূলে এক-লাইনের বাক্য Word-এ ভেঙে দুই লাইন হওয়া রোধের সুইচ (__FZ_ON_WRAPFIT / FZ_ON=WRAPFIT)
+  const wrapFitOn = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_WRAPFIT) && !!(
+    (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_WRAPFIT) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_WRAPFIT) ||
+    (global && global.__FZ_ON_WRAPFIT) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_WRAPFIT === '1' ||
+      process.env.__FZ_ON_WRAPFIT === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WRAPFIT'))
+    ))
+  );
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -1825,7 +1836,8 @@
       const isMatchColBand = formKitOn() && cols.length === 2 && cols.every((col) => col.items.every((it) => it.type === 'match_col' || (it.kind === 'para' && (it.lines || []).length >= 2 && (it.lines || []).every((l) => String(l).trim().length <= 20))));
       const cells = cols.map((c, i) => {
         let cx0 = i === 0 ? left : r1((cols[i - 1].x1 + c.x0) / 2);
-        let cx1 = i === cols.length - 1 ? Math.max(right, c.x1) : r1((c.x1 + cols[i + 1].x0) / 2);
+        // WRAPFIT: পাতার ডান মার্জিনের সামান্য বাইরের স্ক্যান-আয়ত (যেমন 540.48pt বনাম 540pt) ডান মার্জিনেই সীমিত রাখা
+        let cx1 = i === cols.length - 1 ? (wrapFitOn() && c.x1 > right && c.x1 <= right + 6 ? right : Math.max(right, c.x1)) : r1((c.x1 + cols[i + 1].x0) / 2);
         if (formKitOn() && cols.length >= 2) {
           if (i > 0 && isShortSideLabel(c)) {
             cx0 = r1(Math.min(cx0, cols[i - 1].x1 + 6));
@@ -1842,6 +1854,9 @@
         let yPrev = band.y0;
         const items = c.items.map((it, k) => {
           const out = Object.assign({}, it);
+          if (wrapFitOn() && out.kind === 'para' && (out.lines || []).length === 1 && out.rect && out.rect.x + out.rect.w > right && out.rect.x + out.rect.w <= right + 6) {
+            out.rect = Object.assign({}, out.rect, { w: r1(Math.max(20, right - out.rect.x)) });
+          }
           out.indentPt = r1(Math.max(0, it.rect.x - cx0));
           // Part-17.7: মাঝে/ডানে বসানো লেখায় বাম-ইনডেন্ট নয় — কেন্দ্রের সরণ / ডান-কিনারার দূরত্ব (নইলে দুবার সরে ডানে চলে যেত)
           if (it.kind === 'para' && it.align === 'c') {

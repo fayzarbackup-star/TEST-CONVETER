@@ -29,6 +29,28 @@
     if (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_FONTPICK === '1' || process.env.__FZ_ON_FONTPICK === 'true')) return true;
     return false;
   }
+  // A01_WRAP_v1: মূলে এক-লাইনের বাক্য Word-এ ভেঙে দুই লাইন হওয়া রোধের সুইচ (__FZ_ON_WRAPFIT / FZ_ON=WRAPFIT)
+  const SPACING_KAR_RE = /[\u0982\u0983\u09be-\u09c0\u09c7\u09c8\u09cb\u09cc\u09d7]/g;
+  const TAIL_AFTER_FILL_RE = /([._\-…·─])\1{5,}\s*\S/;
+  function isWrapFitOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_WRAPFIT)) return false;
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_WRAPFIT)) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_WRAPFIT)) return true;
+    if (global && Boolean(global.__FZ_ON_WRAPFIT)) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_WRAPFIT === '1' || process.env.__FZ_ON_WRAPFIT === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WRAPFIT')) return true;
+    }
+    return false;
+  }
+  function defaultWrapMeasure(s) {
+    const str = String(s || '');
+    const fills = (str.match(FILL_G) || []).join('');
+    const noFill = str.replace(FILL_G, '');
+    const bLen = noFill.replace(/[ঁ-ঃ়া-্ৗ]/g, '').length;
+    const karLen = (noFill.match(SPACING_KAR_RE) || []).length;
+    return bLen * 38 + karLen * 14 + fills.length * 33.3;
+  }
   function getFontWidthRatio(fontName) {
     if (!fontName) return 1.00;
     const f = String(fontName).trim();
@@ -177,6 +199,8 @@
 
   /** একটি অংশ আঁটানো; বদল হলে { needPt, availPt, fontFrom } ফেরত, নইলে null */
   function fitItem(it, cellW, measure) {
+    const wfOn = isWrapFitOn();
+    if (wfOn && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (it && it.kind === 'para' && it.tabLines && it.fontPt && cellW > 0) return fitTabFills(it, cellW, measure);
     if (!it || it.kind !== 'para' || it.tabLines || !it.fontPt || !(cellW > 0)) return null;
     const L = it.lines || [];
@@ -185,20 +209,27 @@
     if (L.every((l) => /^([─━═=_\-.…·])\1{5,}$/.test(String(l).replace(/\s+/g, '')))) return null;   // রেখা-লাইন: builder-এর leader-ট্যাব
     const full = cellW * SAFE;
     const availPt = full - sideIndent(it);
-    const fontFrom = it.fontPt;
+    const fontFrom = (wfOn && it.fit && it.fit.fontFrom) ? it.fit.fontFrom : it.fontPt;
     // ০) পূরণ-সারি ("নাম: ........") — Gemini-র গোনা সংখ্যা অনুমান, ফাঁকা জায়গা ⇒ আগে সেটিই ছোট (লেখা/ফন্ট নয়)
     let fillsCut = 0;
     L.forEach((t, i) => {
       const w = lineWidthPt(t, it, measure);
-      if (w <= availPt || !FILL.test(t)) return;
-      const fixed = lineWidthPt(t.replace(FILL_G, ''), it, measure);
+      // WRAPFIT: পূরণ-রেখার পরে লেখা থাকলে (যেমন a01 "বৎসর যাবৎ চিনি। বিগত--- তারিখে...পরিবারের") Word-এ স্বরচিহ্ন ও লিডার-ট্যাবের
+      // বাড়তি প্রস্থে শেষ শব্দ পরের লাইনে চলে যায় ⇒ পূরণ-রেখা আগেভাগেই নিরাপদ সীমায় (availPt-এর ৯৩% বা স্বরচিহ্ন-ছাড়সহ) ছোট করা
+      const hasTail = wfOn && TAIL_AFTER_FILL_RE.test(t);
+      const fixed = FILL.test(t) ? lineWidthPt(t.replace(FILL_G, ''), it, measure) : 0;
+      const targetAvail = hasTail ? Math.min(availPt * 0.93, availPt - fixed * 0.06 - 10) : availPt;
+      if (w <= targetAvail || !FILL.test(t)) return;
       const fillW = w - fixed;
       if (!(fillW > 0)) return;
-      const k = Math.max(0, (availPt - fixed) / fillW);
-      L[i] = t.replace(FILL_G, (run) => run[0].repeat(Math.max(3, Math.floor(run.length * k))));
-      fillsCut++;
+      const k = Math.max(0, (targetAvail - fixed) / fillW);
+      const nextLine = t.replace(FILL_G, (run) => run[0].repeat(Math.max(3, Math.floor(run.length * k))));
+      if (nextLine !== t || !wfOn) {
+        L[i] = nextLine;
+        fillsCut++;
+      }
     });
-    const need = Math.max(...L.map((t) => lineWidthPt(t, it, measure)));
+    let need = Math.max(...L.map((t) => lineWidthPt(t, it, measure)));
     if (!(need > 0)) return null;
     // a17 (২০২৬-১০-১৩): এক-লাইনের শিরোনাম মাপা মূল-প্রস্থের চেয়ে অনেক সরু (৫৪২ ⇒ ৪১১pt) — কালি-অনুমানে ফন্ট ছোট।
     // আমাদের ফন্টে মাপা প্রস্থ মূলের ৯০%-এর কম ⇒ ফন্ট বাড়িয়ে মূল-প্রস্থে (সর্বোচ্চ +৩০%, ঘরের প্রাপ্য প্রস্থ পর্যন্ত)
@@ -210,6 +241,31 @@
       if (f > it.fontPt) {
         it.fontPt = f;
         it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, grow: true };
+        return it.fit;
+      }
+    }
+    // WRAPFIT: মূলে এক-লাইনের বাক্য (যেখানে পূরণ-রেখা কমানোর পরেও বা পূরণ-রেখাহীন বাক্যে প্রস্থ সীমার >৯৫% এবং স্বরচিহ্ন/wPt ঝুঁকি আছে)
+    // Word-এ উপচে পড়া রোধে: ১) ইনডেন্ট কমানো, ২) হালকা অক্ষর-সংকোচন (-0.15pt), ৩) তবুও >৯৬% হলে ফন্ট ০.৫pt কমানো
+    if (wfOn && L.length === 1 && !/^(title|heading|header)$/.test(it.type || '')) {
+      const karCnt = (String(L[0] || '').match(SPACING_KAR_RE) || []).length;
+      const wPtSmaller = !!(it.diag && it.diag.wPt && it.diag.wPt < it.fontPt - 0.15);
+      const wordRiskNeed = need + (!FILL.test(L[0]) ? karCnt * it.fontPt * 0.08 : 0);
+      if (need <= full && (wordRiskNeed > availPt || (need > availPt * 0.95 && (wPtSmaller || karCnt >= 10)))) {
+        const roomW = Math.max(0, full * 0.95 - need);
+        if (it.align === 'c' && it.centerShiftPt != null) it.centerShiftPt = Math.sign(it.centerShiftPt) * Math.min(Math.abs(it.centerShiftPt), roomW / 2);
+        else if (it.align === 'r' && it.rightIndentPt != null) it.rightIndentPt = Math.min(it.rightIndentPt, roomW);
+        else {
+          const fi = Math.abs(it.firstIndentPt || 0);
+          if (fi > roomW) it.firstIndentPt = 0;
+          it.indentPt = Math.max(0, Math.min(it.indentPt || 0, roomW - Math.abs(it.firstIndentPt || 0)));
+        }
+        if (!it.charSpacingPt) it.charSpacingPt = -0.15;
+        if (need > (full - sideIndent(it)) * 0.96 || wordRiskNeed > full) {
+          if (!it.lineSpacingPt) it.lineSpacingPt = Math.round(fontFrom * 1.15 * 10) / 10;
+          it.fontPt = Math.max(1, it.fontPt - 0.5);
+          need = Math.max(...L.map((t) => lineWidthPt(t, it, measure)));
+        }
+        it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, fillsCut: fillsCut || ((it.fit && it.fit.fillsCut) || 0) };
         return it.fit;
       }
     }
@@ -238,6 +294,8 @@
 
   /** পুরো নকশা; ফেরত: বদলানো অংশের সংখ্যা */
   function fit(ir, measure, opts) {
+    const wfOn = isWrapFitOn();
+    if (wfOn && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -252,7 +310,13 @@
     let n = 0;
     try {
     for (const page of ir.pages) for (const band of page.bands || []) for (const cell of band.cells || []) {
-      const cellW = (cell.x1 || 0) - (cell.x0 || 0);
+      let cellW = (cell.x1 || 0) - (cell.x0 || 0);
+      // WRAPFIT: পাতার ডান/বাম মার্জিনের ভেতরের প্রকৃত মুদ্রণযোগ্য প্রস্থে cellW সীমিত রাখা (যেমন a01-এ 540.5pt -> 540pt = 468pt)
+      if (wfOn && page.widthPt > 0 && page.margins) {
+        const pLeft = page.margins.left || 0, pRight = page.widthPt - (page.margins.right || 0);
+        const cx0 = Math.max(cell.x0 || 0, pLeft), cx1 = pRight > cx0 ? Math.min(cell.x1 || 0, pRight) : (cell.x1 || 0);
+        cellW = Math.max(0, Math.min(cellW, cx1 - cx0));
+      }
       for (const it of cell.items || []) {
         if (it && it.kind === 'table' ? fitTable(it, measure) : fitItem(it, cellW, measure)) n++;
       }
@@ -292,7 +356,7 @@
     }
   }
 
-  const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn };
+  const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

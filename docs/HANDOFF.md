@@ -1,13 +1,10 @@
-# হ্যান্ডঅফ — ২০২৬-১০-১৮ (রাত ১১:৫০)
-- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md "ট্যাব-নিয়ম"। কোড Gemini লেখে; Claude বান্ডেল/যাচাই/বসানো/push। F1–F3/H-এর অনুমতি আছে।
-- শুরু: `node gemini-bridge-extension/bridge_server.mjs` (bg; EADDRINUSE = আগেই চালু) → `node tools/gemini-tabs-state.mjs` → `node tools/gemini-round.mjs list` → `watch --every 240 --stop-on-file` (bg)।
-- **নতুন চ্যাটে পাঠানোর নিয়ম (১০-১৮ শিক্ষা):** `/navigate-tab?tabIndex=N&url=…/u/N/app` → ~১০ সে. অপেক্ষা → `/switch-mode?tabId=<id>&mode=Argon` (id: `/tabs`) → `send --acct N --file … --force`। পাতা পুরো লোডের আগে পাঠালে Task-চিপ বাছাই হয় না ⇒ Chat/Flash-এ জিপ পড়তে পারে না। চলমান কাজের ট্যাবে কখনো navigate নয়।
-- **চলছে (২৩:৪০-এ পাঠানো, ব্যবহারকারী নিশ্চিত করেছেন ৪টিই চলছে):** u/1 A1_F3_REBASE_v10 (শুধু builder+layout-ir ফেরত; বাকি ৬ ফাইল v8 থেকে: `…\f50c5ff8-…\scratchpad\in\A1_F3_REBASE_v8`), u/2 D_E2E_v10, u/3 T_ROWCHECK_FLAKY_v10, u/0 Q_ASIS_SCORE_v10। বান্ডেল/স্টেজ: scratch/bundles/stage_f3r10, stage_de2e, stage_rowflaky, stage_asis।
-- রিসেট: u/5 ২৩:৫১, u/4 ২৩:৫৯, u/6 ০১:৪৯, u/7 ০২:১৫ (সাপ্তাহিক রিসেট ২৫ অক্টো.)।
-- **পরের সারি:** F3 বসলে → A1_F1_PAGEFIT_FIX_v6 (prompts + stage_f1) → F2_WIRE FIX (stage_f2w8; ভাঙে `studio-layout-parity`) — দুটোই studio-controller, একটার পর একটা, ফাঁকা অ্যাকাউন্টে। তারপর B3/B4 স্কোর মেপে ডিফল্ট-চালু (নমুনা লাগবে)।
-- বসানো-ধাপ: inbox → scratchpad → cmp → বান্ডেলের ফাইলগুলোতেই সুইচ-গণনা মেলাও → ব্যাকআপ scratch/backups/ → বসাও (জিপের README প্রজেক্ট README-তে নয়) → টেস্ট → run-all → `node scratch/github_sync.js --push`।
-- শেষ push 75ad34f (B টেবিল-গ্রিড)। run-all ২৩৬৯/১ (row-check §৮ সময়-গেট লোডে; u/3 ঠিক করছে)।
-- **হুবহু স্কোর:** `node serve.js` (bg) + `$env:ASIS_DIR="$env:USERPROFILE\Downloads"` → `node qa/golden/asis-score.mjs --ids f1`। f1 ৮০.৭ (আগে ৬৯.০); ২১টির পুরোনো গড় ৭৭.১। মূল PDF শুধু f1-এর আছে।
-- **নমুনা ফেরত (১০-১৯):** ১২টি পুরোনো (a01,a02,a03,a06,a07,a08,a09,a12,a13,a14,a16,a18) + ৪টি নতুন (21ba3c4c, c12a64e7, c942165f, e526d650) + f1 → ব্যাকআপ `scratch\samples\asis\` (push-বাদ)। স্কোর: `$env:ASIS_DIR=(Resolve-Path scratch\samples\asis).Path` + `node serve.js` (bg)। ১০-১৯ মাপ: a02 ৬১.৪→৮৪.০, a14 ৭০.৯→৭৩.৬, a13 ৯৩.২→৯২.৯; a16 "Word-PDF ব্যর্থ" (খোঁজ বাকি — measure-doc.ps1 আবার চালাও)। এখনো নেই: f2,a04,a05,a10,a11,a15,a17/a19।
-- (পুরোনো) নমুনা হারিয়েছে: "AS it IS" স্থায়ীভাবে মোছা (অন্য পিসিতেও নেই)। ব্যবহারকারী নতুন নমুনা আনবেন → রাখা হবে প্রজেক্টের `samples/asis/` (push-বাদ) + আলাদা ব্যাকআপ; নতুন manifest + `--capture` (Gemini খরচ) দিয়ে নতুন ভিত্তিরেখা। পুরোনো ২১টির ক্যাপচার/স্কোর qa/golden-data/asis-এ শুধু ইতিহাস।
+# হ্যান্ডঅফ — ২০২৬-১০-১৯ (রাত ~২টা) — ব্যবহারকারী: আজ বন্ধ, কাল সকালে শুরু; পিসি হ্যাং ⇒ একসাথে ২টির বেশি ট্যাব নয়
+- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md। bridge পোর্ট 18765 (`/tabs`, `/navigate-tab`, `/click-send?tabId=`)। send এখন Task-চিপ নিজে যাচাই করে (না হলে পাঠায় না); তবু ✗ এলে `/click-send?tabId=<id>` + rounds.json-এ হাতে যোগ।
+- **চলছে/বাকি জিপ:** u/2 A01_WRAP_v1 (a01 লাইন-ভাঙা, সুইচ WRAPFIT), u/3 A14_BOXSPLIT_v1 (মাঝপথে থেমে থাকতে পারে — জিপ না এলে নতুন চ্যাটে আবার পাঠাও), u/0 Q_ASIS_SCORE_v11, u/1 A07_TABLECOL_v1 (ট্যাব বন্ধ — চ্যাট খুলে জিপ আছে কি না দেখো)। বান্ডেল scratch/bundles/*_bundle.zip।
+- **বসানো বাকি:** inbox\A1_F1_PAGEFIT_FIX_v6.zip (যাচাই হয়েছে: docx-to-doc-engine-এ পরিবর্তন শুধু studioFit-এ; বসাও → f1-pagefit + run-all → push)।
+- আজ push: 9e0f1cd (F3+ASIS v10), 1806145 (rowcheck), f795853 (D_E2E, নুক্তা-টেস্ট ঠিক), 22da90f (F2 wire)। run-all 2403/0।
+- **নমুনা:** scratch\samples\asis (১৭টি); `$env:ASIS_DIR=(Resolve-Path scratch\samples\asis).Path`। manifest-এ n1–n4 যোগ; ক্যাপচার ব্যর্থ (OCR-প্রক্সি "সাময়িক ব্যস্ত") ⇒ `--ids n1,n2 --capture` আবার।
+- **স্কোর আগে→এখন:** scratch\asis-before-2026-10-19.json + HANDOFF-এর আগের রিপোর্ট। a01/a03/a18-এর ফোল্ডারে এখন FONTPICK-চালু আউটপুট ⇒ কাল আগে `--ids a01,a03,a18` (সুইচ ছাড়া) আবার।
+- **সুইচ-সুইপ (scratch\switch-sweep.ps1, ফল switch-sweep.txt):** OTSU ±০, FORMKIT ±০, FONTPICK খারাপ (a01 −১০, a03 −৭) ⇒ বন্ধ থাকবে। PGBORDER, TABLEGRID, ROWCHECK বাকি: `-Switches PGBORDER,TABLEGRID,ROWCHECK`।
+- asis-score চালানোর আগে লুকানো WINWORD থাকলে বন্ধ করো (EBUSY দেয়)।
 - বাকি সিদ্ধান্ত (ব্যবহারকারী): ক্যাশমেমো ৯/১০pt; পুরোনো ফোল্ডার মোছা; OCR-প্রক্সি deploy; সুইচ ডিফল্ট-চালু।

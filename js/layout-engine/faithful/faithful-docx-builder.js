@@ -29,6 +29,17 @@
   // WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সুইচ (__FZ_ON_FAITHFUL_STUDIO)
   const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
     || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+  // A01_WRAP_v1: মূলে এক-লাইনের বাক্য Word-এ ভেঙে দুই লাইন হওয়া রোধের সুইচ (__FZ_ON_WRAPFIT / FZ_ON=WRAPFIT)
+  const wrapFitOn = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_WRAPFIT) && !!(
+    (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_WRAPFIT) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_WRAPFIT) ||
+    (global && global.__FZ_ON_WRAPFIT) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_WRAPFIT === '1' ||
+      process.env.__FZ_ON_WRAPFIT === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WRAPFIT'))
+    ))
+  );
 
   /**
    * WORK_PLAN F3: স্টুডিওতে লেখা সম্পাদনার আগে প্রতিটি IR আইটেমের মূল লেখা/লাইন কাঠামোর স্ন্যাপশট সংরক্ষণ,
@@ -727,8 +738,10 @@
     const runShd = item.shadeRun && /^[0-9A-F]{6}$/i.test(rShadeVal || '') ? `<w:shd w:val="clear" w:color="auto" w:fill="${rShadeVal}"/>` : '';
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
     const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
+    const cSp = wrapFitOn() && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
     const colored = (xml) => {
       let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
+      if (cSp) x = x.replace(/<w:sz /g, `${cSp}<w:sz `);
       // স্কিমা-ক্রম: … shd, vertAlign, …, lang
       if (runShd || sup) x = x.replace(/(<w:lang[^>]*\/>)?<\/w:rPr>/g, (m0, lang) => `${runShd}${sup}${lang || ''}</w:rPr>`);
       return x;
@@ -1458,21 +1471,34 @@
         const tailTxt = flat.slice(lastIdx);
         if (tailTxt) segs.push({ kind: "text", val: tailTxt });
         const nFillSegs = segs.filter((x) => x.kind === "fill").length;
-        if (nFillSegs >= 2 || (tailTxt && tailTxt.trim().length > 0)) {
-        const totalW = item.rect.w - 1;
-        const textW = segs.filter((x) => x.kind === "text").reduce((a, x) => a + bLen(x.val) * fsz0 * 0.48, 0);
+        const hasTailTxt = !!(tailTxt && tailTxt.trim().length > 0);
+        if (nFillSegs >= 2 || hasTailTxt) {
+        // WRAPFIT: পূরণ-স্থানের পরে লেখা থাকলে (যেমন a01 পাতা ১ "বৎসর যাবৎ চিনি। বিগত--- তারিখে...পরিবারের" ও পাতা ২ "জীবিত স্ত্রী/...কোন")
+        // প্রস্থ-অনুমানে বাংলা স্বরচিহ্ন (া,ি,ী,ে,ৈ,ো,ৌ,ং,ঃ) ধরা, ডান মার্জিনের নিরাপত্তা-ছাড় (৮pt) রাখা এবং সংকুচিত পূরণ-দৈর্ঘ্য মানা
+        const wfTail = wrapFitOn() && hasTailTxt;
+        const karLen = (s) => (String(s || "").replace(/\*\*|<[^>]+>/g, "").match(/[\u0982\u0983\u09be-\u09c0\u09c7\u09c8\u09cb\u09cc\u09d7]/g) || []).length;
+        const segW = (s) => wfTail ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48;
+        const availLineW = (wfTail && ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
+        const totalW = wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - 8) : item.rect.w - 1;
+        const textW = segs.filter((x) => x.kind === "text").reduce((a, x) => a + segW(x.val), 0);
         const totalFillChars = segs.filter((x) => x.kind === "fill").reduce((a, x) => a + x.val.length, 0) || 1;
-        const remW = Math.max(40, totalW - textW);
+        const minRemW = wfTail ? 20 : 40;
+        const minFillW = wfTail ? 18 : 36;
+        const remW = Math.max(minRemW, totalW - textW);
+        const runItem = (wfTail && !item.charSpacingPt && textW + minRemW > totalW)
+          ? Object.assign({}, item, { charSpacingPt: -0.15 })
+          : item;
         let curX = item.indentPt || 0;
         const tabXmls = [];
         const bodyParts = [];
         for (let si = 0; si < segs.length; si++) {
           const sg = segs[si];
           if (sg.kind === "text") {
-            curX += bLen(sg.val) * fsz0 * 0.48;
-            bodyParts.push(runsFor(sg.val, item));
+            curX += segW(sg.val);
+            bodyParts.push(runsFor(sg.val, runItem));
           } else {
-            const fw = Math.max(36, remW * (sg.val.length / totalFillChars));
+            const propW = remW * (sg.val.length / totalFillChars);
+            const fw = Math.max(minFillW, (wfTail && item.fit && item.fit.fillsCut) ? Math.min(propW, sg.val.length * fsz0 * 0.36) : propW);
             curX += fw;
             const isLast = si === segs.length - 1 || (si === segs.length - 2 && !segs[si + 1].val.trim());
             const stopPos = isLast ? (item.indentPt || 0) + totalW : curX;

@@ -580,3 +580,16 @@
   ডাউনলোড: bridge এক্সটেনশন আবার বসানো; Antigravity এজেন্ট Drive-viewer div সিলেক্টর ঠিক করায় `agent_manager.mjs fetch --tab N` কাজ করে (A3 হ্যাশ মিলেছে)।
   সন্ধ্যা: v3 বান্ডেল তিনটি (A1 টেস্ট/প্রান্তিক, A2 run-all+REGISTRY সুইচ, A3 টেস্ট/বাকি থ্রেশহোল্ড) তৈরি, পাঠানো হয়নি; পরের বার নতুন অ্যাকাউন্ট বাধ্যতামূলক।
 
+
+## 2026-10-19 — Offline form-fill plan
+- Owner chose: 'অফলাইন ফরম ফিলাপ' as a separate service (own page form-fill.html + js/form-fill/), engines only called, not changed.
+- Step 1 = current faithful OCR prompt unchanged; step 2 = new prompt built from the form's slot labels, returns only JSON values.
+- Plan: docs/FORM_FILL_PLAN.md (FF0-FF4), after running F tasks; WORK_PLAN has phase FF.
+- Future web-autofill extension (separate repo, after this project): docs/future/AUTOFILL_EXTENSION.md.
+
+## 2026-10-19 (রাত) — নমুনা ফেরত, স্কোর, Gemini-লুপ
+- বসানো+push: F3_REBASE_v10, ASIS_SCORE_v10, ROWCHECK_FLAKY_v10, D_E2E_v10 (টেস্টের নুক্তা/৬০০-অক্ষর ভুল ঠিক), F2_WIRE_FIX_v9। run-all 2403/0।
+- bridge-বাগ: Task-চিপের অবস্থা থাকে `gem-segmented-button-selected`-এ (ভেতরের button-এ নয়) ⇒ আগে রিট্রাইয়ে Chat-এ ফিরত। এখন চিপ না পেলে/Task না হলে পাঠায় না; Send-পুনঃচেষ্টা ৫ ও ১৫ সে.।
+- পুরোনো ১২ নমুনা মাপা (গড় ~৮৩); a01 নামল (লাইন-ভাঙা, Gemini-তে), a14 বাক্স দুই-কলাম, a07 বাড়তি কলাম — Gemini-তে।
+- সুইচ: FONTPICK ক্ষতিকর (a01 −১০), OTSU/FORMKIT নিরপেক্ষ। n1–n4 ক্যাপচার প্রক্সি-ব্যস্ততায় ব্যর্থ।
+- ব্যবহারকারী: পিসি হ্যাং ⇒ একসাথে ২ ট্যাব; আজ বন্ধ।
