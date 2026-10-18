@@ -1,0 +1,654 @@
+{
+  "_baseline": {
+    "description": "WORK_PLAN C1 + C3 layout pipeline score baseline across 33 OCR markdown fixtures",
+    "total_fixtures": 33,
+    "average_score": 100,
+    "min_score": 100,
+    "doc_type_matches": 33,
+    "sub_layout_matches": 33,
+    "parse_ok_count": 33,
+    "html_content_matches": 33,
+    "by_layout": {
+      "GOVT_APP": {
+        "total": 3,
+        "average_score": 100
+      },
+      "CASH_MEMO": {
+        "total": 4,
+        "average_score": 100
+      },
+      "PROTTOYON": {
+        "total": 4,
+        "average_score": 100
+      },
+      "EXAM_COMBINED": {
+        "total": 1,
+        "average_score": 100
+      },
+      "EXAM_CQ": {
+        "total": 8,
+        "average_score": 100
+      },
+      "CV_RESUME": {
+        "total": 4,
+        "average_score": 100
+      },
+      "EXAM_MATH": {
+        "total": 1,
+        "average_score": 100
+      },
+      "EXAM_MCQ": {
+        "total": 5,
+        "average_score": 100
+      },
+      "OFFICE_PAD": {
+        "total": 2,
+        "average_score": 100
+      },
+      "EXAM_GENERAL": {
+        "total": 1,
+        "average_score": 100
+      }
+    }
+  },
+  "average_score": 100,
+  "total_fixtures": 33,
+  "fixtures": {
+    "app-correction.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 3
+      }
+    },
+    "app-holding.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 2
+      }
+    },
+    "app-job.input.md": {
+      "doc_type": "GOVT_APP",
+      "layout": "GOVT_APP",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 4
+      }
+    },
+    "cash-memo-blank.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "copies": 2,
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 2
+      }
+    },
+    "cash-memo-items.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "copies": 3,
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 24
+      }
+    },
+    "cert-landscape.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 5
+      }
+    },
+    "cert-stub.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 30
+      }
+    },
+    "combined.input.md": {
+      "doc_type": "EXAM_COMBINED",
+      "layout": "EXAM_COMBINED",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 3
+      }
+    },
+    "cq-booklet-10.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 10
+      }
+    },
+    "cq-booklet-16.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 16
+      }
+    },
+    "cq-booklet-2.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 2
+      }
+    },
+    "cq-booklet-6.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 6
+      }
+    },
+    "cq-inline-numbering.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 2
+      }
+    },
+    "cq-long.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 3
+      }
+    },
+    "cq-marks-edge.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 3
+      }
+    },
+    "cq-short.input.md": {
+      "doc_type": "EXAM_CQ",
+      "layout": "EXAM_CQ",
+      "columns": 2,
+      "page_orientation": "landscape",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 2
+      }
+    },
+    "cv-basic.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 3
+      }
+    },
+    "cv-biodata.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 14
+      }
+    },
+    "cv-english.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 3
+      }
+    },
+    "cv-long.input.md": {
+      "doc_type": "CV_RESUME",
+      "layout": "CV_RESUME",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 5
+      }
+    },
+    "math-equations.input.md": {
+      "doc_type": "EXAM_MATH",
+      "layout": "EXAM_MATH",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 5
+      }
+    },
+    "mcq-header-fallback.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 14
+      }
+    },
+    "mcq-long-options.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 14
+      }
+    },
+    "mcq-mixed-options.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 6
+      }
+    },
+    "mcq-pure-28.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 33
+      }
+    },
+    "mcq-shrink-21.input.md": {
+      "doc_type": "EXAM_MCQ",
+      "layout": "EXAM_MCQ",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 21
+      }
+    },
+    "pad-notice.input.md": {
+      "doc_type": "OFFICE_PAD",
+      "layout": "OFFICE_PAD",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 19
+      }
+    },
+    "pad-school-app.input.md": {
+      "doc_type": "OFFICE_PAD",
+      "layout": "OFFICE_PAD",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 5
+      }
+    },
+    "primary-class4-bangla.input.md": {
+      "doc_type": "EXAM_GENERAL",
+      "layout": "EXAM_GENERAL",
+      "columns": 2,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "questions",
+        "count": 15
+      }
+    },
+    "prottoyon-school.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 14
+      }
+    },
+    "prottoyon-up.input.md": {
+      "doc_type": "PROTTOYON",
+      "layout": "PROTTOYON",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 13
+      }
+    },
+    "receipt.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "rows",
+        "count": 9
+      }
+    },
+    "voucher.input.md": {
+      "doc_type": "CASH_MEMO",
+      "layout": "CASH_MEMO",
+      "columns": 1,
+      "page_orientation": "portrait",
+      "score": 100,
+      "metrics": {
+        "doc_type_match": true,
+        "sub_layout_match": true,
+        "parse_ok": true,
+        "html_title_ok": true,
+        "html_units_ok": true
+      },
+      "expected_units": {
+        "kind": "table_rows",
+        "count": 4
+      }
+    }
+  }
+}

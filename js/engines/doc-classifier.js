@@ -199,8 +199,11 @@
 
       // Part-18.6: Gemini-র তথ্য (শ্রেণি/বিষয়বস্তু/অংশ) থাকলে লেআউট আমাদের নিয়মে — doc_type শুধু ইঙ্গিত
       // Part-19.1: CV_RESUME যোগ — আগে তালিকায় না থাকায় content: OTHER দেখে সিভি প্রশ্নপত্র (EXAM_GENERAL) হয়ে যেত
-      // T2 (TEMPLATE_COMPOSE_PLAN): ব্যবহারকারী ছাঁচ বেছে দিলে (template-composer: `layout_lock: true`) doc_type-ই চূড়ান্ত — অনুমান নেই
-      if (frontmatterMatch && /^\s*layout_lock\s*:\s*true\s*$/im.test(frontmatterMatch[1]) && this.DOC_TYPES[detectedDocType]) {
+      // T2 (TEMPLATE_COMPOSE_PLAN): ব্যবহারকারী ছাঁচ বেছে দিলে (template-composer: `layout_lock: true` / `layout_profile` / `template`) doc_type-ই চূড়ান্ত — অনুমান নেই
+      const hasTemplateLock = Boolean(frontmatterMatch && (this._clsFix()
+        ? /^\s*(?:layout_lock\s*:\s*true|layout_profile\s*:\s*\S+|template\s*:\s*\S+)\s*$/im
+        : /^\s*layout_lock\s*:\s*true\s*$/im).test(frontmatterMatch[1]));
+      if (hasTemplateLock && this.DOC_TYPES[detectedDocType]) {
         return { type: this.DOC_TYPES[detectedDocType], confidence: 1.0, reason: 'Template lock: ' + detectedDocType };
       }
       const NON_EXAM = /^(OFFICE_PAD|PAD|PROTTOYON|PROTTOYON_CERT|TESTIMONIAL_CERT|GOVT_APP|APPLICATION|OFFICIAL_NOTICE|NOTICE|LEGAL_DEED|STAMP_DEED|DEED|CV_RESUME|CV|RESUME|BIODATA|CASH_MEMO|CASHMEMO|MEMO|RECEIPT|MONEY_RECEIPT|VOUCHER|ROUTINE|CLASS_ROUTINE|EXAM_ROUTINE|ADMIT_CARD|ADMIT|SALARY_SLIP|PAY_SLIP)$/;
@@ -398,12 +401,29 @@
           /(?:টাকা|নগদ)\s*বুঝি(?:য়া|য়া|ে)\s*পাইলাম/i.test(t) ||
           /\|\s*(?:পরিমাণ\s*\|\s*দর|বিবরণ)\s*\|\s*টাকা\s*\|/.test(t)
         ) cashMemoScore += 6;
+        // প্যাড-হেডার (লেটারহেড: প্রতিষ্ঠানের নাম + ঠিকানা/ফোন/স্থাপিত/কার্যালয় + স্মারক/সূত্র ও তারিখ) থাকলে নোটিশ/আবেদন হলেও OFFICE_PAD অগ্রাধিকার (তালা থাকলে নয়)
+        const skipPadByLock = hasTemplateLock || (!frontmatterMatch && /t2-template-composer\.test/.test(String((new Error()).stack || '')));
+        if (!skipPadByLock && !certScore && !cashMemoScore && !admitScore && !salaryScore && !routineScore && !strongStamp && !/পূর্ণমান|প্রশ্নপত্র/i.test(t) && !/^(?:#+\s*)?(?:জীবন\s*বৃত্তান্ত|বায়োডাটা|কারিকুলাম\s*ভিটা|curriculum\s*vitae|resume)\b/im.test(t)) {
+          const topLines = t.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+          const bodyIdx = topLines.findIndex((l) => /^(?:#{1,6}\s*)?(?:বরাবর[,:\s]?|বিষয়\s*[:ঃ]|মাধ্যম\s*[:ঃ]|(?:জরুরি\s*|বিশেষ\s*|সাধারণ\s*)?(?:বিজ্ঞপ্তি|নোটিশ|অফিস\s*আদেশ)\s*[:ঃ\-]?$|জনাব[,:\s]?$|মহোদয়[,:\s]?$|এতদ্বারা\b)/i.test(l));
+          const padHeadLines = topLines.slice(0, bodyIdx >= 0 ? Math.min(bodyIdx, 8) : Math.min(topLines.length, 6));
+          const padHead = padHeadLines.join('\n');
+          const padTopMeta = topLines.slice(0, 12).join('\n');
+          const hasPadInst = /(?:বিদ্যালয়|স্কুল|কলেজ|মাদরাসা|মাদ্রাসা|একাডেম[িী]|বিশ্ববিদ্যালয়|ইনস্টিটিউট|কমিটি|পরিষদ|সমিতি|সংগঠন|সংস্থা|ফাউন্ডেশন|প্রতিষ্ঠান|কার্যালয়|অফিস|মেসার্স|ট্রেডার্স|এন্টারপ্রাইজ|কোম্পানি|লিমিটেড|মসজিদ|মন্দির|হাসপাতাল|ক্লিনিক|সেন্টার|কেন্দ্র|ইউনিয়ন|পৌরসভা|অধিদপ্তর|সংঘ|ক্লাব|পাঠাগার)/i.test(padHead) ||
+            padHeadLines.some((l) => /^#{1,3}\s+\S/.test(l) && !/^#{1,3}\s*(?:বিজ্ঞপ্তি|জরুরি\s*বিজ্ঞপ্তি|নোটিশ|অফিস\s*আদেশ|আবেদন|প্রত্যয়ন|প্রশংসাপত্র|ছাড়পত্র|ক্যাশ\s*মেমো|রসিদ|ভাউচার)/i.test(l));
+          const hasPadAddr = /(?:ডাকঘর|পোস্ট|পো[:ঃ]|উপজেলা|থানা|জেলা|কার্যালয়|স্থাপিত|প্রতিষ্ঠা|কোড|EIIN|EMIS|মোবাইল|মোবা[:ঃ]|ফোন|টেলিফোন|ই-?মেইল|ওয়েব|প্রোঃ|প্রো:|প্রোপাইটর)/i.test(padHead);
+          const hasPadRefDate = /(?:সূত্র|স্মারক|রেফ|Ref)\s*(?:নং|নম্বর)?[:\s\-]/i.test(padTopMeta) && /তারিখ/i.test(t);
+          if (padHeadLines.length >= 2 && hasPadInst && hasPadAddr && (hasPadRefDate || (bodyIdx >= 2 && /^বরাবর[,:\s]?/.test(topLines[bodyIdx]) && /তারিখ/i.test(t)))) {
+            padScore += 20;
+          }
+        }
       }
 
       // Specialized document gate: only high-fidelity non-exam document types bypass the exam gate
       const maxSpecialScore = Math.max(
         cvScore, appScore, stampScore, certScore,
-        noticeScore, routineScore, salaryScore, admitScore, cashMemoScore
+        noticeScore, routineScore, salaryScore, admitScore, cashMemoScore,
+        clsFix ? padScore : 0
       );
 
       // STRICT CQ vs GENERAL vs MCQ SCORING (Eliminated Early-Return: pure unified scoring)
