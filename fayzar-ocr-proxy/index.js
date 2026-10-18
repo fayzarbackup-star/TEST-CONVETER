@@ -33,6 +33,8 @@ const SERVER_KEYS_BEFORE_SWITCH = 3; // Part-16.5: একই মডেলে ৩
 const OCR_LOG_MAX = 30;              // Part-16.5: শেষ ৩০টি OCR-এর বিস্তারিত লগ (KV: OCR_LOG, GET /log)
 // নির্ভুলতা আগে: 3-flash-preview (বাংলা/টেবিল) → 3.8-flash (গণিত) → 3.6-flash (দ্রুত)
 const DEFAULT_MODELS = ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'];
+// G_PROXY_STREAM_v6: বডি > ~২০০KB হলে JSON পার্স বা স্ট্রিংগিফাই না করে সরাসরি স্ট্রিম করার সীমা
+const STREAM_BODY_THRESHOLD_BYTES = 200 * 1024;
 
 /** একই মডেলের বাকি এন্ট্রি এড়িয়ে যাওয়ার জন্য পরের মডেলের সূচক বের করা */
 function skipRestOfModel(plan, from, model) {
@@ -71,13 +73,31 @@ function originAllowed(origin, allowedList) {
   return false;
 }
 
+/** নিরাপদে হেডার পড়া (Headers ইনস্ট্যান্স কিংবা সাধারণ অবজেক্ট — উভয় ক্ষেত্রেই কাজ করে) */
+function getReqHeader(request, name) {
+  if (!request || !request.headers) return '';
+  try {
+    if (typeof request.headers.get === 'function') {
+      return request.headers.get(name) || request.headers.get(String(name).toLowerCase()) || '';
+    }
+    if (typeof request.headers === 'object') {
+      const target = String(name).toLowerCase();
+      for (const k of Object.keys(request.headers)) {
+        if (k.toLowerCase() === target) return String(request.headers[k] ?? '');
+      }
+    }
+  } catch (_) {}
+  return '';
+}
+
 function cors(extra = {}, env = {}, request = null) {
   // একাধিক origin সাপোর্ট: তালিকায় থাকলে অনুরোধের Origin-টাই ফিরিয়ে দেওয়া হয়
   // (তাই প্রোডাকশন + www + localhost ডেভ সবই চালানো যায়)।
   // ⚠️ `Vary: Origin` না থাকলে CDN/browser আগের এক origin-এর CORS উত্তর ক্যাশ করে
   // অন্য origin-কে ভুল উত্তর দিতে পারে — তাই হেডারটি সবসময় পাঠানো হয়।
-  const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  const reqOrigin = request ? (request.headers.get('Origin') || '') : '';
+  const safeEnv = env || {};
+  const allowed = String(safeEnv.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  const reqOrigin = getReqHeader(request, 'Origin');
   let allowOrigin = '*';
   if (allowed.length && !allowed.includes('*')) {
     // প্রতিফলনের সময় exact + wildcard — নইলে সাবডোমেইন-ডিপ্লয়ে CORS ফেল করবে
@@ -87,7 +107,7 @@ function cors(extra = {}, env = {}, request = null) {
     'Access-Control-Allow-Origin': allowOrigin,
     'Vary': 'Origin',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, apikey, X-Fayzar-Models, X-Fayzar-Model, X-Fayzar-Meta, X-Fayzar-Body-Bytes, X-Fayzar-Stream',
     'Access-Control-Expose-Headers': 'X-Fayzar-Key, X-Fayzar-Model, X-Fayzar-Attempts',
     ...extra
   };
@@ -102,11 +122,11 @@ function json(data, status = 200, env = {}, request = null) {
 
 /** শেয়ারড সিক্রেট যাচাই — PROXY_TOKEN না থাকলে সার্ভিস খুলে দিই না (fail-closed) */
 function isAuthorized(request, env) {
-  const token = env.PROXY_TOKEN;
+  const token = env && env.PROXY_TOKEN;
   if (!token) return 'unconfigured';
-  const header = request.headers.get('Authorization') || '';
+  const header = getReqHeader(request, 'Authorization');
   const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
-  const alt = request.headers.get('apikey') || '';
+  const alt = getReqHeader(request, 'apikey');
   if (bearer === token || alt === token) return 'ok';
   // ট্রানজিশন উইন্ডো: পুরোনো ডিপ্লয়ের ক্লায়েন্টকে ভাঙতে না চাইলে LEGACY_TOKEN দিন,
   // সব ক্লায়েন্ট আপডেট হলে সেটি মুছে ফেলুন।
@@ -121,10 +141,10 @@ function isAuthorized(request, env) {
  * তাই মূল সুরক্ষা = রেট-লিমিট + দৈনিক ক্যাপ + অথেনটিকেশন।
  */
 function originAllows(request, env) {
-  const requireOrigin = String(env.REQUIRE_ORIGIN || '').toLowerCase() === 'true';
+  const requireOrigin = String((env && env.REQUIRE_ORIGIN) || '').toLowerCase() === 'true';
   if (!requireOrigin) return { ok: true };
-  const allowed = String(env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  const origin = request.headers.get('Origin') || '';
+  const allowed = String((env && env.ALLOWED_ORIGINS) || '').split(',').map(s => s.trim()).filter(Boolean);
+  const origin = getReqHeader(request, 'Origin');
   if (!allowed.length || allowed.includes('*')) return { ok: true };   // allowlist নেই → পুরোনো আচরণ
   if (!origin) return { ok: false, reason: 'no_origin' };
   if (!originAllowed(origin, allowed)) return { ok: false, reason: 'bad_origin' };
@@ -134,16 +154,19 @@ function originAllows(request, env) {
 /** দৈনিক per-IP ক্যাপ (part-4) — এক IP এক দিনে কতবার OCR করতে পারবে */
 async function dailyCapped(env, request, limitPerDay) {
   if (!limitPerDay) return { blocked: false };
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getReqHeader(request, 'CF-Connecting-IP') || 'unknown';
   const day = new Date().toISOString().slice(0, 10);          // UTC দিন
   const bucket = `IPD:${ip}:${day}`;
   try {
+    if (!env || !env.FAYZAR_OCR_KEYS) return { blocked: false };
     const cur = parseInt(await env.FAYZAR_OCR_KEYS.get(bucket) || '0', 10) || 0;
     if (cur >= limitPerDay) {
       const midnight = new Date(`${day}T24:00:00Z`).getTime() || (Date.now() + 3600000);
       return { blocked: true, used: cur, retryInSec: Math.max(60, Math.ceil((midnight - Date.now()) / 1000)) };
     }
-    await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 90000 });
+    if (typeof env.FAYZAR_OCR_KEYS.put === 'function') {
+      await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 90000 });
+    }
   } catch (e) { /* KV সমস্যা হলে ব্লক করি না */ }
   return { blocked: false };
 }
@@ -151,34 +174,116 @@ async function dailyCapped(env, request, limitPerDay) {
 /** প্রতি-মিনিট রেট লিমিট (best-effort; KV eventual-consistent, তাই কঠোর গ্যারান্টি নয়) */
 async function rateLimited(env, request, limitPerMin) {
   if (!limitPerMin) return false;
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const ip = getReqHeader(request, 'CF-Connecting-IP') || 'unknown';
   const bucket = `RL:${ip}:${Math.floor(Date.now() / 60000)}`;
   try {
+    if (!env || !env.FAYZAR_OCR_KEYS) return false;
     const cur = parseInt(await env.FAYZAR_OCR_KEYS.get(bucket) || '0', 10) || 0;
     if (cur >= limitPerMin) return true;
-    await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 120 });
+    if (typeof env.FAYZAR_OCR_KEYS.put === 'function') {
+      await env.FAYZAR_OCR_KEYS.put(bucket, String(cur + 1), { expirationTtl: 120 });
+    }
   } catch (e) { /* KV সমস্যা হলে ব্লক করি না */ }
   return false;
 }
 
 async function loadJson(env, name, fallback) {
   try {
-    const raw = await env.FAYZAR_OCR_KEYS.get(name);
-    if (!raw) return fallback;
-    const parsed = JSON.parse(raw);
-    return parsed || fallback;
+    if (env && env.FAYZAR_OCR_KEYS && typeof env.FAYZAR_OCR_KEYS.get === 'function') {
+      const raw = await env.FAYZAR_OCR_KEYS.get(name);
+      if (raw != null && raw !== '') {
+        if (typeof raw === 'object') return raw;
+        const parsed = JSON.parse(raw);
+        return parsed || fallback;
+      }
+    }
+    if (env && env[name] != null && env[name] !== '') {
+      if (typeof env[name] === 'object') return env[name];
+      if (typeof env[name] === 'string') return JSON.parse(env[name]) || fallback;
+    }
+    return fallback;
   } catch (e) {
     return fallback;
   }
 }
 
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method === 'OPTIONS') {
-      return new Response(null, { headers: cors({}, env, request) });
+async function saveKv(env, key, val) {
+  try {
+    if (env && env.FAYZAR_OCR_KEYS && typeof env.FAYZAR_OCR_KEYS.put === 'function') {
+      await env.FAYZAR_OCR_KEYS.put(key, val);
     }
+  } catch (e) {}
+}
 
-    const url = new URL(request.url);
+/**
+ * বডি কনজিউম না করে হেডার, মেটা বা রিকোয়েস্ট অবজেক্ট থেকে বডির আকার (বাইট) নির্ণয়।
+ * এতে বড় পেলোডে (> ~২০০KB) request.json() না ডেকে সরাসরি request.body স্ট্রিম করা যায়।
+ */
+function detectBodySizeWithoutParsing(request, url, metaObj) {
+  const hdrBytes = parseInt(getReqHeader(request, 'X-Fayzar-Body-Bytes') || getReqHeader(request, 'Content-Length') || '0', 10);
+  if (hdrBytes > 0) return { bytes: hdrBytes, source: null };
+
+  const metaBytes = Number(metaObj && (metaObj.bytes || metaObj.size || metaObj.contentLength)) || 0;
+  if (metaBytes > 0) return { bytes: metaBytes, source: null };
+
+  const qBytes = parseInt((url && url.searchParams && url.searchParams.get('bytes')) || '0', 10);
+  if (qBytes > 0) return { bytes: qBytes, source: null };
+
+  if (!request) return { bytes: 0, source: null };
+  if (typeof request.byteLength === 'number' && request.byteLength > 0) return { bytes: request.byteLength, source: null };
+  if (typeof request.size === 'number' && request.size > 0) return { bytes: request.size, source: null };
+
+  const b = request.body;
+  if (typeof b === 'string') return { bytes: b.length, source: b };
+  if (b instanceof ArrayBuffer) return { bytes: b.byteLength, source: b };
+  if (ArrayBuffer.isView(b)) return { bytes: b.byteLength, source: b };
+  if (b && typeof b.byteLength === 'number' && b.byteLength > 0) return { bytes: b.byteLength, source: null };
+  if (b && typeof b.length === 'number' && b.length > 0) return { bytes: b.length, source: null };
+
+  // Node native Request-এর অভ্যন্তরীণ Symbol(state).body.length চেক (request.body লক না করে)
+  try {
+    const syms = Object.getOwnPropertySymbols(request);
+    for (const s of syms) {
+      const st = request[s];
+      if (st && st.body && typeof st.body.length === 'number') {
+        return { bytes: st.body.length, source: st.body.source || null };
+      }
+    }
+  } catch (_) {}
+
+  return { bytes: 0, source: null };
+}
+
+/** হেডার বা URL কুয়েরি থেকে মডেল-তালিকা ও ছোট মেটা পড়া */
+function extractRequestMeta(request, url) {
+  let metaObj = null;
+  const rawMeta = getReqHeader(request, 'X-Fayzar-Meta');
+  if (rawMeta && rawMeta.length <= 4096) {
+    try { metaObj = JSON.parse(rawMeta); } catch (_) { metaObj = null; }
+  }
+  const hdrModels = (getReqHeader(request, 'X-Fayzar-Models') || getReqHeader(request, 'X-Fayzar-Model') || '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  const qModels = ((url && url.searchParams && (url.searchParams.get('models') || url.searchParams.get('model'))) || '')
+    .split(',').map(s => s.trim()).filter(Boolean);
+  const metaModels = (metaObj && Array.isArray(metaObj.models))
+    ? metaObj.models.map(s => String(s || '').trim()).filter(Boolean)
+    : (metaObj && metaObj.model ? [String(metaObj.model).trim()] : []);
+
+  const models = hdrModels.length ? hdrModels : (metaModels.length ? metaModels : qModels);
+  return { metaObj, models: models.slice(0, 6) };
+}
+
+export default {
+  async fetch(request, env = {}, ctx = null) {
+    try {
+      if (!request) {
+        return json({ error: 'অনুরোধ (Request) অনুপস্থিত' }, 400, env, null);
+      }
+      if (request.method === 'OPTIONS') {
+        return new Response(null, { headers: cors({}, env, request) });
+      }
+
+      const url = new URL(request.url || 'https://fayzar-ocr-proxy.workers.dev/');
 
     // ---------------------------------------------------------------- AUTH
     const auth = isAuthorized(request, env);
@@ -255,29 +360,105 @@ export default {
 
     // ------------------------------------------------------------------ OCR
     try {
-      // G1: ?raw=1 ⇒ বডি নিজেই তৈরি Gemini-পেলোড (চিন্তা-কনফিগ ক্লায়েন্ট বসায়), মডেল ?models=a,b-এ।
-      // বডি পার্স/স্ট্রিংগিফাই হয় না — free plan-এ ১MB+ পেলোডে exceededCpu হতো।
+      // G_PROXY_STREAM_v6 (WORK_PLAN G1): বডি > ~২০০KB হলে পুরো JSON পার্স বা স্ট্রিংগিফাই না করে
+      // হেডার/মেটা থেকে মডেল নেওয়া এবং request.body সরাসরি স্ট্রিম করে Gemini-তে পাঠানো।
       const raw = url.searchParams.get('raw') === '1';
+      const thresholdBytes = Math.max(1024, parseInt((env && env.STREAM_THRESHOLD_BYTES) || String(STREAM_BODY_THRESHOLD_BYTES), 10));
+      const { metaObj, models: headerOrQueryModels } = extractRequestMeta(request, url);
+      const sizeInfo = detectBodySizeWithoutParsing(request, url, metaObj);
+      let declaredBytes = sizeInfo.bytes;
+      let backupSource = sizeInfo.source;
+      let streamBodyOverride = null;
+      let peekedSmallBytes = null;
+
+      // যদি হেডার বা রিকোয়েস্টে আকার উল্লেখ না থাকে এবং request.body একটি ReadableStream হয়,
+      // তবে ২০০KB পর্যন্ত পড়ে দেখা হবে এটি বড় বডি (> ২০০KB) নাকি ছোট বডি (≤ ২০০KB) — .json() না ডেকেই।
+      if (declaredBytes === 0 && request.body && typeof request.body.getReader === 'function') {
+        const reader = request.body.getReader();
+        const chunks = [];
+        let totalRead = 0;
+        let streamDone = false;
+        while (totalRead <= thresholdBytes) {
+          const { done, value } = await reader.read();
+          if (done) {
+            streamDone = true;
+            break;
+          }
+          const chunk = value instanceof Uint8Array ? value : new TextEncoder().encode(String(value || ''));
+          chunks.push(chunk);
+          totalRead += chunk.byteLength;
+        }
+        declaredBytes = totalRead;
+        if (!streamDone || totalRead > thresholdBytes) {
+          // বডি > ২০০KB: পঠিত অংশ + বাকি স্ট্রিম একত্রে সরাসরি স্ট্রিম হিসেবে প্রবাহিত হবে (.json() ডাকা হবে না)
+          streamBodyOverride = new ReadableStream({
+            start(c) {
+              for (const ch of chunks) c.enqueue(ch);
+            },
+            async pull(c) {
+              const { done, value } = await reader.read();
+              if (done) {
+                try { reader.releaseLock(); } catch (_) {}
+                c.close();
+              } else {
+                c.enqueue(value instanceof Uint8Array ? value : new TextEncoder().encode(String(value || '')));
+              }
+            },
+            cancel() {
+              try { reader.cancel(); } catch (_) {}
+            }
+          });
+        } else {
+          // ছোট বডি (≤ ২০০KB): পঠিত বাইট একত্র করা হলো
+          try { reader.releaseLock(); } catch (_) {}
+          const merged = new Uint8Array(totalRead);
+          let off = 0;
+          for (const ch of chunks) {
+            merged.set(ch, off);
+            off += ch.byteLength;
+          }
+          peekedSmallBytes = merged;
+        }
+      }
+
+      const isLargeStream = declaredBytes > thresholdBytes || getReqHeader(request, 'X-Fayzar-Stream') === '1';
+
       let body = null, rawBuf = null;
-      if (raw) {
-        rawBuf = await request.arrayBuffer();
-        if (!rawBuf.byteLength) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
+      if (isLargeStream) {
+        // বড় বডি (> ~২০০KB): কখনোই request.json() বা request.arrayBuffer() ডাকা হবে না
+        if (!request.body && !streamBodyOverride && !backupSource) {
+          return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
+        }
+      } else if (raw) {
+        rawBuf = peekedSmallBytes ? peekedSmallBytes.buffer : await request.arrayBuffer();
+        if (!rawBuf || !rawBuf.byteLength) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
       } else {
-        body = await request.json();
-        if (!body.payload) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
+        try {
+          body = await request.json();
+        } catch (jsonErr) {
+          if (peekedSmallBytes && peekedSmallBytes.byteLength > 0) {
+            try {
+              body = JSON.parse(new TextDecoder().decode(peekedSmallBytes));
+            } catch (_) {
+              return json({ error: 'অবৈধ JSON পেলোড' }, 400, env, request);
+            }
+          } else {
+            return json({ error: 'অবৈধ JSON পেলোড' }, 400, env, request);
+          }
+        }
+        if (!body || !body.payload) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
       }
       const payload = body && body.payload;
 
-      // ক্লায়েন্ট একটি মডেল বা অগ্রাধিকার-তালিকা পাঠাতে পারে
-      const qModels = (url.searchParams.get('models') || '').split(',').map(s => s.trim()).filter(Boolean);
-      let models = raw
-        ? (qModels.length ? qModels.slice(0, 6) : DEFAULT_MODELS)
+      // ক্লায়েন্ট একটি মডেল বা অগ্রাধিকার-তালিকা পাঠাতে পারে (হেডার/মেটা/কুয়েরি অথবা ছোট বডির JSON থেকে)
+      let models = (isLargeStream || raw)
+        ? (headerOrQueryModels.length ? headerOrQueryModels : DEFAULT_MODELS)
         : Array.isArray(body.models) && body.models.length
           ? body.models.slice(0, 6)
-          : (body.model ? [body.model] : DEFAULT_MODELS);
+          : (body.model ? [body.model] : (headerOrQueryModels.length ? headerOrQueryModels : DEFAULT_MODELS));
 
       // part-7: সময়-বাজেট env দিয়ে নিয়ন্ত্রণযোগ্য (ডিফল্ট ~৭ মিনিট) — ক্লায়েন্টের ৮-মিনিট সিলিংয়ের নিচে
-      const maxTotalMs = Math.max(30000, parseInt(env.MAX_TOTAL_MS || String(MAX_TOTAL_MS), 10));
+      const maxTotalMs = Math.max(30000, parseInt((env && env.MAX_TOTAL_MS) || String(MAX_TOTAL_MS), 10));
 
       const apiKeys = await loadJson(env, 'API_KEYS', []);
       if (!apiKeys.length) return json({ error: 'KV-তে কোনো API key কনফিগার করা নেই' }, 500, env, request);
@@ -288,31 +469,31 @@ export default {
       // Part-17.0: Cloudflare ~১২৫s-এর মধ্যে প্রথম বাইট না পেলে সাব-রিকোয়েস্ট কাটে (HTTP 524) — নিয়ম ১৮-এর দীর্ঘ
       // চিন্তায় ভারী পাতা কখনো সফল হতো না। Gemini-কে চিন্তার সারাংশ চলমান পাঠাতে বলা হয় (includeThoughts) ⇒
       // কয়েক সেকেন্ডেই বাইট আসে; চিন্তার অংশ Worker নিজের কাছে রাখে (ক্লায়েন্টে যায় না), নিয়ম ১৮ অক্ষত।
-      const thoughtsOn = String(env.INCLUDE_THOUGHTS || 'true').toLowerCase() !== 'false';
+      const thoughtsOn = String((env && env.INCLUDE_THOUGHTS) || 'true').toLowerCase() !== 'false';
       const withThoughts = (pl) => {
         if (!thoughtsOn || !pl || typeof pl !== 'object') return pl;
         const gc = Object.assign({}, pl.generationConfig || {});
         const tc = Object.assign({}, gc.thinkingConfig || {});
         // Part-17.1: ডিফল্ট চিন্তার মাত্রা "low" (মাপা: একই নির্ভুলতায় ২–২০ গুণ দ্রুত; স্বয়ংক্রিয় মাত্রায় কখনো ৬০k+ টোকেন
         // চিন্তা ⇒ ৩ মিনিট+ ও ৫২৪-ঝুঁকি)। ক্লায়েন্ট নিজে মাত্রা/বাজেট দিলে সেটাই থাকে। env DEFAULT_THINKING_LEVEL=off ⇒ বন্ধ।
-        const defLevel = String(env.DEFAULT_THINKING_LEVEL || 'low').toLowerCase();
+        const defLevel = String((env && env.DEFAULT_THINKING_LEVEL) || 'low').toLowerCase();
         if (defLevel !== 'off' && tc.thinkingLevel == null && tc.thinkingBudget == null) tc.thinkingLevel = defLevel;
         tc.includeThoughts = true;
         gc.thinkingConfig = tc;
         return Object.assign({}, pl, { generationConfig: gc });
       };
-      const bodyStr = raw ? null : JSON.stringify(withThoughts(payload));
-      const bodyBytes = raw ? rawBuf.byteLength : bodyStr.length;
+      const bodyStr = (isLargeStream || raw) ? null : JSON.stringify(withThoughts(payload));
+      const bodyBytes = isLargeStream ? declaredBytes : (raw ? rawBuf.byteLength : bodyStr.length);
       // Part-16.5: এই অনুরোধের লগ-রেকর্ড (কি মাস্কড)
       // colo/country: Cloudflare-এর কোন ডেটা-সেন্টারে Worker চলল — Google-এর "অঞ্চল-সীমা" নির্ণয়ের জন্য
       const cf = request.cf || {};
-      const logRec = { at: now, bytes: bodyBytes, models, colo: cf.colo || null, country: cf.country || null, attempts: [], outcome: null, ttfbSec: null, totalSec: null, streamedBytes: 0, finish: null };
+      const logRec = { at: now, bytes: bodyBytes, models, streamedRequest: isLargeStream, colo: cf.colo || null, country: cf.country || null, attempts: [], outcome: null, ttfbSec: null, totalSec: null, streamedBytes: 0, finish: null };
       const saveLog = async () => {
         try {
           const cur = await loadJson(env, 'OCR_LOG', []);
           const arr = Array.isArray(cur) ? cur : [];
           arr.push(logRec);
-          await env.FAYZAR_OCR_KEYS.put('OCR_LOG', JSON.stringify(arr.slice(-OCR_LOG_MAX)));
+          await saveKv(env, 'OCR_LOG', JSON.stringify(arr.slice(-OCR_LOG_MAX)));
         } catch (e) { /* লগ ব্যর্থ হলেও OCR চলবে */ }
       };
 
@@ -377,10 +558,26 @@ export default {
                 } catch (e) { /* স্ট্রিম বন্ধ হলে চুপচাপ */ }
               }, waitTickMs);
               try {
+                let outboundBody;
+                if (isLargeStream) {
+                  if (streamBodyOverride) {
+                    outboundBody = streamBodyOverride;
+                    streamBodyOverride = null;
+                  } else if (i === 0 || (!request.bodyUsed && !(request.body && request.body.locked))) {
+                    outboundBody = request.body;
+                  } else if (backupSource != null) {
+                    outboundBody = backupSource;
+                  } else {
+                    outboundBody = request.body;
+                  }
+                } else {
+                  outboundBody = raw ? rawBuf.slice(0) : bodyStr; // প্রতিটি চেষ্টায় নিজস্ব কপি (ফেইলওভারে পুনর্ব্যবহার)
+                }
                 res = await fetch(geminiUrl, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  body: raw ? rawBuf.slice(0) : bodyStr,   // প্রতিটি চেষ্টায় নিজস্ব কপি (ফেইলওভারে পুনর্ব্যবহার)
+                  body: outboundBody,
+                  duplex: 'half',
                   signal: attemptAbort.signal
                 });
               } catch (netErr) {
@@ -458,8 +655,9 @@ export default {
                 logRec.ttfbMs = Date.now() - started;
                 logRec.thoughtChunks = thoughtN;
                 logRec.attempts.push({ key: maskKey(key), model, class: 'OK', status: res.status, sec: logRec.ttfbSec });
-                ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger)));
-                ctx.waitUntil(env.FAYZAR_OCR_KEYS.put('LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() })));
+                const p1 = saveKv(env, 'KEY_LEDGER', JSON.stringify(ledger));
+                const p2 = saveKv(env, 'LAST_GOOD', JSON.stringify({ mask: maskKey(key), model, at: Date.now() }));
+                if (ctx && typeof ctx.waitUntil === 'function') { ctx.waitUntil(p1); ctx.waitUntil(p2); }
                 note({ event: 'streaming', attempt: i + 1, key: maskKey(key), model, elapsedSec: elapsed() });
                 if (j.candidates && j.candidates[0] && j.candidates[0].content) j.candidates[0].content.parts = real;
                 const first = 'data: ' + JSON.stringify(j) + '\r\n\r\n';
@@ -508,6 +706,7 @@ export default {
                     // Part-17.1: প্রথম চিন্তা-সংকেত কখন এল (৫২৪-ঝুঁকি মাপার জন্য — ১২৫s-এর আগে আসছে কি না)
                     if (parts.length > real.length && logRec.firstThoughtMs == null) logRec.firstThoughtMs = Date.now() - started;
                     if (real.some((p) => (p.text && p.text.length) || p.inlineData || p.functionCall)) { commitWith(j, real); break; }
+                    if (typeof j.text === 'string' && j.text.length) { commitWith(j, [{ text: j.text }]); break; }
                     if (cand && cand.finishReason) { midErr = { code: 0, message: 'finished without text (' + cand.finishReason + ')', empty: true }; break; }
                     if (Date.now() - lastNote >= waitTickMs) {
                       lastNote = Date.now();
@@ -516,6 +715,28 @@ export default {
                   }
                   if (committed && pending) { controller.enqueue(encoder.encode(pending)); tail = (tail + pending).slice(-3000); pending = ''; }
                   if (midErr) break;
+                }
+                if (!committed && !midErr && pending.trim()) {
+                  // স্ট্রিমের শেষে ডাবল নিউলাইন না থাকলেও বৈধ JSON/SSE থাকলে তা commit করা
+                  const trimmedPending = pending.trim();
+                  const rawJson = trimmedPending.startsWith('data:')
+                    ? trimmedPending.split(/\r?\n/).filter((l) => l.startsWith('data:')).map((l) => l.slice(5).trim()).join('')
+                    : trimmedPending;
+                  try {
+                    const j = JSON.parse(rawJson);
+                    if (j && !j.error) {
+                      const cand = j.candidates && j.candidates[0];
+                      const parts = (cand && cand.content && cand.content.parts) || [];
+                      const real = parts.filter((p) => !p.thought);
+                      if (real.some((p) => (p.text && p.text.length) || p.inlineData || p.functionCall)) {
+                        commitWith(j, real);
+                        pending = '';
+                      } else if (typeof j.text === 'string' && j.text.length) {
+                        commitWith(j, [{ text: j.text }]);
+                        pending = '';
+                      }
+                    }
+                  } catch (_) {}
                 }
                 if (!committed && !midErr) {
                   const er = parseErrorBlob(pending);
@@ -572,7 +793,7 @@ export default {
             }
 
             // সব চেষ্টা শেষ/সময় শেষ — খতিয়ান সংরক্ষণ করে ক্লায়েন্টকে জানানো
-            await env.FAYZAR_OCR_KEYS.put('KEY_LEDGER', JSON.stringify(ledger));
+            await saveKv(env, 'KEY_LEDGER', JSON.stringify(ledger));
             logRec.outcome = 'failed'; logRec.totalSec = elapsed();
             logRec.finish = lastError ? String(lastError.detail || lastError.status) : null;
             await saveLog();
@@ -607,7 +828,11 @@ export default {
       });
 
     } catch (error) {
-      return json({ error: error.message }, 500, env, request);
+      return json({ error: (error && error.message) || 'সার্ভার ত্রুটি' }, 500, env, request);
+    }
+    } catch (topError) {
+      // যেকোনো অপ্রত্যাশিত ত্রুটিতেও CORS হেডারসহ বোধগম্য JSON উত্তর নিশ্চিত করা
+      return json({ error: (topError && topError.message) || 'সার্ভার ত্রুটি (Worker Error)' }, 500, env, request);
     }
   }
 };

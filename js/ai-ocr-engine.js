@@ -2664,15 +2664,23 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       // models[] পাঠানো হলে Worker একই আপলোড দিয়ে কি ও মডেল — দুই স্তরেই ফেইলওভার করে
       const modelList = (modelPriority && modelPriority.length ? modelPriority : [model]);
       const proxyUrl = SUPABASE_CONFIG.FUNCTIONS_URL + '/?raw=1&models=' + modelList.map(encodeURIComponent).join(',');
+      const serializedBody = JSON.stringify(rawPayload);
+      const reqHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_CONFIG.PROXY_TOKEN}`,
+        'apikey': SUPABASE_CONFIG.PROXY_TOKEN
+      };
+      // G_PROXY_STREAM_v6: বড় অনুরোধে (> ~২০০KB) মেটা-হেডার পাঠানো — যাতে Worker বডি পার্স না করেই মডেল ও আকার জানে
+      if (serializedBody.length > 200 * 1024) {
+        reqHeaders['X-Fayzar-Models'] = modelList.join(',');
+        reqHeaders['X-Fayzar-Body-Bytes'] = String(serializedBody.length);
+        reqHeaders['X-Fayzar-Meta'] = JSON.stringify({ models: modelList, bytes: serializedBody.length });
+      }
 
       const response = await fetch(proxyUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_CONFIG.PROXY_TOKEN}`,
-          'apikey': SUPABASE_CONFIG.PROXY_TOKEN
-        },
-        body: JSON.stringify(rawPayload),
+        headers: reqHeaders,
+        body: serializedBody,
         signal: controller.signal
       });
       
