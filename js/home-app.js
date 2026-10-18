@@ -8,6 +8,7 @@
   'use strict';
   const $ = (id) => document.getElementById(id);
   const W = window;
+  if (typeof W.__FZ_ON_RELAYOUT === 'undefined') W.__FZ_ON_RELAYOUT = false;   // D1–D4: চালু করতে false → true করুন
   const toast = (m, t) => { if (typeof W.showToastNotification === 'function') W.showToastNotification(m, t); };
   const bn = (n) => String(n).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[d]);
   const baseOf = (n) => String(n || 'Document').replace(/\.[^/.]+$/, '').replace(/\s*\(পৃষ্ঠা[^)]*\)\s*$/, '');

@@ -14,6 +14,93 @@
   const pick = (n) => (typeof global !== 'undefined' && global[n]) || (typeof window !== 'undefined' && window[n]) || null;
   const MEASURE_DPI = 150;
 
+  // G3: __FZ_ON_PAGERANGE সুইচ ও পাতা-পরিসর পার্সার ("2-5,8", "১–৩", "সব")
+  function isPageRangeOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_PAGERANGE)) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_PAGERANGE)) return true;
+    if (global && Boolean(global.__FZ_ON_PAGERANGE)) return true;
+    if (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_PAGERANGE === '1' || process.env.__FZ_ON_PAGERANGE === 'true')) return true;
+    return false;
+  }
+
+  function parsePageRange(input, totalPages) {
+    const maxP = typeof totalPages === 'number' && totalPages > 0 ? Math.floor(totalPages) : null;
+    if (input == null) {
+      return { ok: false, valid: false, pages: [], indices: [], outOfRange: [], invalidTokens: [''], error: 'পাতা-পরিসর দেওয়া হয়নি' };
+    }
+    const raw = String(input)
+      .replace(/[০-৯]/g, (d) => String('০১২৩৪৫৬৭৮৯'.indexOf(d)))
+      .replace(/[\u2013\u2014\u2212]/g, '-')
+      .replace(/[;،]/g, ',')
+      .trim();
+
+    if (raw.toLowerCase() === 'all' || raw === 'সব' || raw === '*') {
+      const pages = maxP ? Array.from({ length: maxP }, (_, i) => i + 1) : [];
+      return { ok: true, valid: true, mode: 'all', pages, indices: pages.map((p) => p - 1), outOfRange: [], invalidTokens: [], error: null };
+    }
+    if (!raw) {
+      return { ok: false, valid: false, pages: [], indices: [], outOfRange: [], invalidTokens: [''], error: 'পাতা-পরিসর ফাঁকা রাখা যাবে না (যেমন: 2-5,8)' };
+    }
+
+    const tokens = raw.split(',').map((t) => t.trim());
+    const pageSet = new Set();
+    const outSet = new Set();
+    const invalidTokens = [];
+
+    for (const tok of tokens) {
+      if (!tok) {
+        invalidTokens.push('');
+        continue;
+      }
+      if (/^\d+$/.test(tok)) {
+        const n = parseInt(tok, 10);
+        if (n < 1) {
+          invalidTokens.push(tok);
+        } else if (maxP && n > maxP) {
+          outSet.add(n);
+        } else {
+          pageSet.add(n);
+        }
+        continue;
+      }
+      const m = tok.match(/^(\d+)\s*-\s*(\d+)$/);
+      if (m) {
+        const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+        if (a < 1 || b < 1 || a > b) {
+          invalidTokens.push(tok);
+          continue;
+        }
+        for (let p = a; p <= b; p++) {
+          if (maxP && p > maxP) outSet.add(p);
+          else pageSet.add(p);
+        }
+        continue;
+      }
+      invalidTokens.push(tok);
+    }
+
+    const pages = Array.from(pageSet).sort((a, b) => a - b);
+    const outOfRange = Array.from(outSet).sort((a, b) => a - b);
+    const indices = pages.map((p) => p - 1);
+
+    if (invalidTokens.length > 0) {
+      return { ok: false, valid: false, pages, indices, outOfRange, invalidTokens, error: 'ভুল পাতা-পরিসর: ' + invalidTokens.filter(Boolean).join(', ') };
+    }
+    if (pages.length === 0) {
+      const errMsg = outOfRange.length ? `নির্বাচিত পাতা মোট পাতা-সংখ্যার (${maxP}) বাইরে` : 'সঠিক পাতা-পরিসর দিন (যেমন: 2-5,8)';
+      return { ok: false, valid: false, pages: [], indices: [], outOfRange, invalidTokens: [], error: errMsg };
+    }
+    return { ok: true, valid: true, pages, indices, outOfRange, invalidTokens: [], error: null };
+  }
+
+  function filterQueueByRange(queue, rangeSpec) {
+    const q = Array.isArray(queue) ? queue : [];
+    if (!isPageRangeOn() || rangeSpec == null || rangeSpec === '' || rangeSpec === 'all' || rangeSpec === 'সব') return q;
+    const parsed = parsePageRange(rangeSpec, q.length);
+    if (!parsed.ok || !parsed.pages.length) throw new Error(parsed.error || 'ভুল পাতা-পরিসর');
+    return parsed.pages.map((p) => q[p - 1]).filter(Boolean);
+  }
+
   function pdfLib() { return (typeof window !== 'undefined') && (window.pdfjsLib || window['pdfjs-dist/build/pdf']); }
   const pdfDocs = new Map();
   async function pdfDoc(file) {
@@ -169,12 +256,26 @@
   async function capture(queue, opts) {
     const C = pick('FayzarFaithfulCapture');
     if (!C) throw new Error('faithful-capture লোড হয়নি');
+    if (isPageRangeOn() && opts && opts.pageRange != null) {
+      const parsed = parsePageRange(opts.pageRange, Array.isArray(queue) ? queue.length : 0);
+      if (!parsed.ok || !parsed.pages.length) throw new Error(parsed.error || 'ভুল পাতা-পরিসর');
+      const subQueue = parsed.pages.map((p) => queue[p - 1]).filter(Boolean);
+      const res = await C.run(subQueue, opts);
+      if (res && typeof res === 'object') res.selectedPages = parsed.pages;
+      return res;
+    }
     return C.run(queue, opts);
   }
 
   /** মাপ + নকশা + চিত্র। queue = ক্যাপচারে পাঠানো একই পাতার তালিকা (একই ক্রম) */
   async function layout(cap, queue, opts) {
     const o = opts || {};
+    if (isPageRangeOn()) {
+      if (o.pageRange != null) queue = filterQueueByRange(queue, o.pageRange);
+      else if (cap && Array.isArray(cap.selectedPages) && Array.isArray(queue) && queue.length > cap.selectedPages.length) {
+        queue = cap.selectedPages.map((p) => queue[p - 1]).filter(Boolean);
+      }
+    }
     const G = pick('FayzarPageGeometry'), IR = pick('FayzarLayoutIR'), FX = pick('FayzarFigureExtractor');
     const progress = (m, p) => { if (typeof o.onProgress === 'function') o.onProgress(m, p); };
     const measures = {}, pageInfo = {}, fixedBox = {};
@@ -367,7 +468,7 @@
     return X.produce('', Object.assign({ format, masterDocx: master }, opts || {}));
   }
 
-  const FayzarFaithful = { MEASURE_DPI, capture, layout, produce, measureImage, splitFromNeighbor };
+  const FayzarFaithful = { MEASURE_DPI, capture, layout, produce, measureImage, splitFromNeighbor, isPageRangeOn, parsePageRange, filterQueueByRange };
   global.FayzarFaithful = FayzarFaithful;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithful;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
