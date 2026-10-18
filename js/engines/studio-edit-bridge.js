@@ -123,6 +123,20 @@
   // ───────────────────────── DOM helpers ─────────────────────────
   function isEl(n) { return !!(n && n.nodeType === 1); }
 
+  const DOCX_PREVIEW_EDIT_NOTICE = 'প্রিভিউ = Word; সম্পাদনা বাঁ দিকে';
+
+  /**
+   * WORK_PLAN F2: প্রিভিউ কন্টেইনারটি মাস্টার .docx রেন্ডারার (.fz-page / [data-fz-p]) দিয়ে
+   * আঁকা কি না যাচাই করে। এই মোডে প্রিভিউ সরাসরি Word ফাইল থেকে আসে, তাই DOM থেকে
+   * পুরোনো এইচটিএমএল সিলেক্টরে এডিট সংগ্রহ বন্ধ থাকে।
+   */
+  function isDocxPreviewDom(root) {
+    if (!isEl(root)) return false;
+    if (typeof root.getAttribute === 'function' && root.getAttribute('data-fz-preview-mode') === 'docx') return true;
+    if (typeof root.querySelector === 'function' && root.querySelector('.fz-page, [data-fz-p]')) return true;
+    return false;
+  }
+
   /**
    * Part-14.0 (P0-2): চিত্র-র্যাপার/টুলবার বাদ দিয়ে ফিল্ডের টেক্সট।
    * আগে DOM-এ বসানো SVG-র শীর্ষবিন্দু-লেবেল (A/B/C) innerText-এ ঢুকে
@@ -182,6 +196,7 @@
   function collectFromDom(root, parsedData) {
     const edits = [];
     if (!isEl(root) || !parsedData) return edits;
+    if (isDocxPreviewDom(root) || typeof root.querySelector !== 'function') return edits;
 
     // ── হেডার ফিল্ড সিঙ্ক (.qp-header, .exam-header)
     const headerEl = root.querySelector('.qp-header, .exam-header, .header-container');
@@ -394,7 +409,9 @@
     mathFieldsEdited: mathFieldsEdited,
     textWithoutFigures: textWithoutFigures,
     stripFigMarkers: stripFigMarkers,
-    preserveFigMarkers: preserveFigMarkers
+    preserveFigMarkers: preserveFigMarkers,
+    isDocxPreviewDom: isDocxPreviewDom,
+    DOCX_PREVIEW_EDIT_NOTICE: DOCX_PREVIEW_EDIT_NOTICE
   };
 
   global.StudioEditBridge = api;

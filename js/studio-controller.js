@@ -380,6 +380,320 @@
   }
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
 
+/**
+ * WORK_PLAN F2 (A3_F2_WIRE_FIX_v9): মাস্টার .docx থেকে প্রিভিউ রেন্ডারিং, ডিবাউন্স (~৬০০ms),
+ * পুরোনো রেন্ডার বাতিল (stale-render cancellation) এবং ত্রুটিতে পুরোনো HTML-প্রিভিউতে ফলব্যাক।
+ * DOM ছাড়া Node টেস্টে যাচাইযোগ্য স্বতন্ত্র মডিউল।
+ */
+const FayzarStudioF2Wire = (function (globalScope) {
+  'use strict';
+
+  const DOCX_PREVIEW_DEBOUNCE_MS = 600;
+  const LEGACY_PREVIEW_DEBOUNCE_MS = 300;
+  const DOCX_EDIT_TOAST_MSG = 'প্রিভিউ = Word; সম্পাদনা বাঁ দিকে';
+
+  function isDocxPreviewEnabled(env) {
+    const g = env || (typeof window !== 'undefined' ? window : globalScope);
+    if (!g || g.__FZ_OFF_DOCX_PREVIEW) return false;
+    return !!g.__FZ_ON_DOCX_PREVIEW;
+  }
+
+  function getPreviewDebounceMs(env) {
+    return isDocxPreviewEnabled(env) ? DOCX_PREVIEW_DEBOUNCE_MS : LEGACY_PREVIEW_DEBOUNCE_MS;
+  }
+
+  /**
+   * ডায়নামিক ডিবাউন্সার: সুইচ চালু থাকলে ~৬০০ms, বন্ধ থাকলে ৩০০ms অপেক্ষা করে;
+   * দ্রুত টাইপ করার সময় আগের অপেক্ষমাণ কল বাতিল করে।
+   */
+  function createPreviewDebouncer(fn, getWaitMs, timerApi) {
+    const timers = timerApi || {
+      setTimeout: (cb, ms) => setTimeout(cb, ms),
+      clearTimeout: (id) => clearTimeout(id)
+    };
+    let timeoutId = null;
+    const debounced = function (...args) {
+      if (timeoutId !== null) {
+        timers.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      const wait = typeof getWaitMs === 'function' ? getWaitMs() : (Number(getWaitMs) || LEGACY_PREVIEW_DEBOUNCE_MS);
+      timeoutId = timers.setTimeout(() => {
+        timeoutId = null;
+        fn.apply(this, args);
+      }, wait);
+    };
+    debounced.cancel = function () {
+      if (timeoutId !== null) {
+        timers.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+    debounced.pending = function () {
+      return timeoutId !== null;
+    };
+    return debounced;
+  }
+
+  /**
+   * অ্যাসিঙ্ক্রোনাস রেন্ডার গেট: নতুন রেন্ডার শুরু হলে পুরোনো রেন্ডারের ফলাফল বাতিল করে।
+   */
+  function createRenderGate() {
+    let seq = 0;
+    return {
+      next() { return ++seq; },
+      cancel() { return ++seq; },
+      isCurrent(token) { return token === seq; },
+      current() { return seq; }
+    };
+  }
+
+  /** ডাউনলোড ও প্রিভিউর জন্য একই layoutOptions() থেকে মাস্টার .docx অপশন তৈরি */
+  function buildDocxExportOptions(baseLayoutOpts, extraOpts) {
+    return Object.assign({}, baseLayoutOpts || {}, extraOpts || {}, {
+      format: 'docx',
+      outputFormat: 'docx'
+    });
+  }
+
+  /**
+   * exportDocx()-এর রিটার্ন মান থেকে আসল পেলোড বের করা:
+   * সতর্কতা: Node Buffer বা Uint8Array-এর নিজস্ব `.buffer` প্রপার্টি হলো শেয়ার্ড পুল ArrayBuffer (8192 বাইট)।
+   * তাই ArrayBufferView/Buffer হলে কখনোই `.buffer` প্রপার্টি নেওয়া যাবে না, সরাসরি ভিউটিই রাখতে হবে।
+   */
+  function extractDocxPayload(expRes) {
+    if (!expRes) return null;
+    if (typeof expRes === 'string') return expRes;
+    if (typeof Blob !== 'undefined' && expRes instanceof Blob) return expRes;
+    if (typeof ArrayBuffer !== 'undefined' && (expRes instanceof ArrayBuffer || ArrayBuffer.isView(expRes))) {
+      return expRes;
+    }
+    if (typeof expRes === 'object') {
+      if (expRes.blob != null) return expRes.blob;
+      if (expRes.content != null) return expRes.content;
+      if (expRes.buffer != null) return expRes.buffer;
+    }
+    return expRes;
+  }
+
+  /** বাইনারি বাফারে ZIP-এর End of Central Directory (PK\x05\x06) সিগনেচার আছে কি না যাচাই */
+  function hasZipEocd(bytes) {
+    if (!bytes || bytes.byteLength < 22) return false;
+    const minPos = Math.max(0, bytes.byteLength - 65557);
+    for (let i = bytes.byteLength - 22; i >= minPos; i--) {
+      if (bytes[i] === 0x50 && bytes[i + 1] === 0x4B && bytes[i + 2] === 0x05 && bytes[i + 3] === 0x06) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * মাস্টার .docx পেলোড বৈধ কি না যাচাই:
+   * - বাইনারি Buffer/Uint8Array/ArrayBuffer হলে অবশ্যই বৈধ PKZIP ('PK\x03\x04' ও EOCD 'PK\x05\x06')
+   *   অথবা শুরুতেই বৈধ '<w:document' XML হতে হবে।
+   * - অবজেক্ট হলে documentXml বা JSZip/Blob গঠন থাকতে হবে।
+   */
+  function isValidDocxPayload(payload) {
+    if (!payload) return false;
+    if (typeof Blob !== 'undefined' && payload instanceof Blob) {
+      return payload.size > 0;
+    }
+    if (typeof ArrayBuffer !== 'undefined' && (payload instanceof ArrayBuffer || ArrayBuffer.isView(payload))) {
+      const bytes = payload instanceof ArrayBuffer
+        ? new Uint8Array(payload)
+        : new Uint8Array(payload.buffer, payload.byteOffset, payload.byteLength);
+      if (bytes.byteLength < 4) return false;
+      // বৈধ ZIP সিগনেচার: PK\x03\x04 (0x50, 0x4B, 0x03, 0x04) এবং বৈধ EOCD
+      if (bytes[0] === 0x50 && bytes[1] === 0x4B && bytes[2] === 0x03 && bytes[3] === 0x04) {
+        return hasZipEocd(bytes);
+      }
+      try {
+        const sample = new TextDecoder().decode(bytes.subarray(0, Math.min(bytes.byteLength, 512))).trimStart();
+        if (/^(?:<\?xml[^?]*\?>\s*)?<w:(?:document|body)\b/.test(sample)) return true;
+      } catch (_) {}
+      return false;
+    }
+    if (typeof payload === 'string') {
+      const trimmed = payload.trim();
+      return trimmed.length > 0 && (/^(?:<\?xml[^?]*\?>\s*)?<w:(?:document|body|p)\b/.test(trimmed) || trimmed.startsWith('UEsDB'));
+    }
+    if (typeof payload === 'object') {
+      if (typeof payload.documentXml === 'string') {
+        return /<w:(?:document|body|p)\b/.test(payload.documentXml);
+      }
+      if (typeof payload.file === 'function' || typeof payload.generateAsync === 'function' || typeof payload.arrayBuffer === 'function') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * FayzarDocxPreview.render()-এর আউটপুট বৈধ ও অর্থপূর্ণ কি না যাচাই:
+   * রেন্ডারার যদি নীরবে ত্রুটি গিলে খালি পৃষ্ঠা (<div class="fz-page"></div>) বা ত্রুটি-অবজেক্ট ফেরত দেয়,
+   * তবে সেটিকে ব্যর্থ ধরে পুরোনো HTML-প্রিভিউতে ফলব্যাক করানো হবে।
+   */
+  function isValidPreviewRenderResult(renderRes, rawInput) {
+    if (!renderRes || typeof renderRes !== 'object') return false;
+    if (renderRes.error || renderRes.ok === false || renderRes.status === 'error' || renderRes.failed) return false;
+    const html = typeof renderRes.html === 'string' ? renderRes.html.trim() : '';
+    if (!html) return false;
+    if (renderRes.pageCount === 0 || (Array.isArray(renderRes.pages) && renderRes.pages.length === 0)) return false;
+    if (!/class=["'][^"']*\bfz-page\b/i.test(html) && !/data-fz-p=/i.test(html)) return false;
+
+    if (String(rawInput == null ? '' : rawInput).trim().length > 0) {
+      const visibleText = html
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/gi, ' ')
+        .trim();
+      const hasVisualElements = /<(?:img|svg|canvas|table)\b/i.test(html);
+      if (!visibleText && !hasVisualElements) return false;
+    }
+    return true;
+  }
+
+  /**
+   * প্রিভিউ হালনাগাদের মূল চালক (DOM ছাড়াও টেস্টযোগ্য):
+   * - সুইচ বন্ধ থাকলে সরাসরি `pipeline.previewHtml(raw, options)` চালায়।
+   * - সুইচ চালু থাকলে `pipeline.exportDocx(raw, docxOpts)` থেকে মাস্টার .docx নিয়ে
+   *   `previewRenderer.render(docxBlob, null, docxOpts)` দিয়ে প্রিভিউ তৈরি করে।
+   * - পুরোনো রেন্ডার চলাকালে নতুন রেন্ডার শুরু হলে পুরোনোটির ফল বাতিল (`status: 'cancelled'`) করে।
+   * - যেকোনো ধাপে ত্রুটি হলে স্বয়ংক্রিয়ভাবে পুরোনো `pipeline.previewHtml`-এ ফিরে যায় (`status: 'fallback'`)।
+   */
+  async function runPreviewUpdate(params) {
+    const p = params || {};
+    const { raw, options, layoutOpts, pipeline, previewRenderer, figureHook, gate, env } = p;
+    const token = (gate && typeof gate.next === 'function') ? gate.next() : 1;
+    const useDocx = isDocxPreviewEnabled(env);
+
+    const isStale = () => !!(gate && typeof gate.isCurrent === 'function' && !gate.isCurrent(token));
+
+    const runLegacyHtml = async (fallbackErr) => {
+      if (!pipeline || typeof pipeline.previewHtml !== 'function') {
+        if (fallbackErr) throw fallbackErr;
+        return { status: 'empty', mode: 'html', token };
+      }
+      const htmlRes = await pipeline.previewHtml(raw, options);
+      if (isStale()) {
+        return { status: 'cancelled', mode: 'html', token };
+      }
+      const htmlContent = typeof htmlRes === 'string'
+        ? htmlRes
+        : (htmlRes ? (htmlRes.content != null ? htmlRes.content : (htmlRes.html || '')) : '');
+      return {
+        status: fallbackErr ? 'fallback' : 'ok',
+        mode: 'html',
+        token,
+        html: htmlContent,
+        docType: (htmlRes && htmlRes.docType) ? htmlRes.docType : ((options && options.docType) || 'EXAM_CQ'),
+        parsedData: htmlRes ? htmlRes.parsedData : null,
+        error: fallbackErr || null
+      };
+    };
+
+    if (!useDocx) {
+      return await runLegacyHtml(null);
+    }
+
+    try {
+      if (!pipeline) throw new Error('FayzarPipeline লোড হয়নি।');
+      if (!previewRenderer || typeof previewRenderer.render !== 'function') {
+        throw new Error('FayzarDocxPreview রেন্ডারার লোড হয়নি।');
+      }
+
+      const docxOpts = buildDocxExportOptions(layoutOpts || options, options);
+      let expRes;
+      if (typeof pipeline.exportDocx === 'function') {
+        expRes = await pipeline.exportDocx(raw, docxOpts);
+      } else if (typeof pipeline.process === 'function') {
+        expRes = await pipeline.process(raw, docxOpts);
+      } else {
+        throw new Error('FayzarPipeline.exportDocx পাওয়া যায়নি।');
+      }
+
+      if (isStale()) {
+        return { status: 'cancelled', mode: 'docx', token };
+      }
+
+      let docxBlob = extractDocxPayload(expRes);
+      if (!docxBlob) throw new Error('মাস্টার .docx তৈরি করা যায়নি।');
+
+      // মাস্টার .docx পেলোড বৈধ কি না যাচাই (ভাঙা বা নন-জিপ বাইনারি হলে সাথে সাথে ফলব্যাক)
+      if (!isValidDocxPayload(docxBlob)) {
+        throw new Error('মাস্টার .docx পেলোড অবৈধ বা ক্ষতিগ্রস্ত।');
+      }
+
+      if (typeof figureHook === 'function') {
+        docxBlob = await figureHook(docxBlob, expRes);
+        if (isStale()) {
+          return { status: 'cancelled', mode: 'docx', token };
+        }
+      }
+
+      const renderRes = await previewRenderer.render(docxBlob, null, docxOpts);
+      if (isStale()) {
+        return { status: 'cancelled', mode: 'docx', token };
+      }
+      if (!isValidPreviewRenderResult(renderRes, raw)) {
+        throw new Error((renderRes && renderRes.error) ? String(renderRes.error) : 'FayzarDocxPreview রেন্ডার ব্যর্থ বা খালি আউটপুট দিয়েছে।');
+      }
+
+      let docType = (expRes && expRes.docType) || (options && options.docType) || null;
+      let parsedData = (expRes && expRes.parsedData) || null;
+      if ((!docType || !parsedData) && typeof pipeline.previewHtml === 'function') {
+        try {
+          const metaRes = await pipeline.previewHtml(raw, options);
+          if (isStale()) {
+            return { status: 'cancelled', mode: 'docx', token };
+          }
+          if (metaRes) {
+            if (!docType) docType = metaRes.docType;
+            if (!parsedData) parsedData = metaRes.parsedData;
+          }
+        } catch (_) { /* মেটাডেটা না পেলেও মাস্টার .docx প্রিভিউ চলবে */ }
+      }
+
+      return {
+        status: 'ok',
+        mode: 'docx',
+        token,
+        html: renderRes.html,
+        pages: renderRes.pages || [],
+        pageCount: renderRes.pageCount || (renderRes.pages ? renderRes.pages.length : 1),
+        docType: docType || 'EXAM_CQ',
+        parsedData
+      };
+    } catch (err) {
+      if (isStale()) {
+        return { status: 'cancelled', mode: 'docx', token };
+      }
+      return await runLegacyHtml(err);
+    }
+  }
+
+  return {
+    DOCX_PREVIEW_DEBOUNCE_MS,
+    LEGACY_PREVIEW_DEBOUNCE_MS,
+    DOCX_EDIT_TOAST_MSG,
+    isDocxPreviewEnabled,
+    getPreviewDebounceMs,
+    createPreviewDebouncer,
+    createRenderGate,
+    buildDocxExportOptions,
+    extractDocxPayload,
+    isValidDocxPayload,
+    isValidPreviewRenderResult,
+    runPreviewUpdate
+  };
+})(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this));
+
+if (typeof window !== 'undefined') window.FayzarStudioF2Wire = FayzarStudioF2Wire;
+if (typeof globalThis !== 'undefined') globalThis.FayzarStudioF2Wire = FayzarStudioF2Wire;
+if (typeof module !== 'undefined' && module.exports) Object.assign(module.exports, FayzarStudioF2Wire);
+
 if (typeof document === 'undefined') globalThis.document = { addEventListener() {}, getElementById() { return null; }, querySelectorAll() { return []; } };
 document.addEventListener('DOMContentLoaded', () => {
   // Elements
@@ -813,6 +1127,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return el;
   }
 
+  const _previewRenderGate = FayzarStudioF2Wire.createRenderGate();
+
   async function updatePreview() {
     if (faithfulStudioOnDom() && studioState.faithfulIr) {
       const sess = FayzarStudioFaithful.getState();
@@ -836,6 +1152,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const raw = withoutFigTags(inputText.value.trim());
     if (!raw) {
+      _previewRenderGate.cancel();
+      if (previewContainer && previewContainer.removeAttribute) previewContainer.removeAttribute('data-fz-preview-mode');
       previewContainer.innerHTML = `<div class="text-center py-20 text-slate-400 font-medium"><i class="fas fa-file-word text-5xl mb-3 block text-blue-500/50"></i>বামপাশের বক্সে কোনো প্রশ্নপত্র বা দলিল পেস্ট করুন অথবা উপরের <b>ইনসার্ট ও টেমপ্লেট</b> থেকে নির্বাচন করুন।</div>`;
       updateStatusBar();
       return;
@@ -854,6 +1172,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     try {
+      if (previewContainer && previewContainer.removeAttribute) previewContainer.removeAttribute('data-fz-preview-mode');
+      if (FayzarStudioF2Wire.isDocxPreviewEnabled()) {
+        // WORK_PLAN F2: সুইচ চালু থাকলে মাস্টার .docx থেকে প্রিভিউ আঁকা (ব্যর্থ হলে পুরোনো HTML-প্রিভিউতে ফলব্যাক)
+        const baseLayout = layoutOptions();
+        const docxOptions = Object.assign({}, options, { fontSizePt: studioState.fontSizePt });
+        const outcome = await FayzarStudioF2Wire.runPreviewUpdate({
+          raw,
+          options: docxOptions,
+          layoutOpts: baseLayout,
+          pipeline: typeof FayzarPipeline !== 'undefined' ? FayzarPipeline : null,
+          previewRenderer: typeof FayzarDocxPreview !== 'undefined' ? FayzarDocxPreview : null,
+          gate: _previewRenderGate,
+          figureHook: async (docxBlob, expRes) => {
+            if (typeof StudioFigurePipeline !== 'undefined' && StudioFigurePipeline.hasMarkers(raw)) {
+              const figStore = StudioFigurePipeline.collectStore((expRes && expRes.parsedData) || currentParsedData, studioState.figures);
+              if (StudioFigurePipeline.countFigures(figStore)) {
+                return await StudioFigurePipeline.injectIntoDocx(docxBlob, figStore);
+              }
+            }
+            return docxBlob;
+          }
+        });
+
+        if (!outcome || outcome.status === 'cancelled') return;
+        if (outcome.status === 'fallback' && outcome.error) {
+          console.warn('[StudioController] মাস্টার .docx প্রিভিউ ব্যর্থ, পুরোনো HTML-প্রিভিউতে ফিরে যাওয়া হলো:', outcome.error);
+        }
+
+        const docType = outcome.docType || activeDocType || 'EXAM_CQ';
+        activeDocType = docType;
+        if (outcome.parsedData && !outcome.parsedData.__fzDocType) outcome.parsedData.__fzDocType = docType;
+        currentParsedData = outcome.parsedData;
+        previewContainer.setAttribute('data-fz-preview-mode', outcome.mode === 'docx' ? 'docx' : 'html');
+        previewContainer.innerHTML = outcome.html;
+        if (currentParsedData) currentParsedData.__figures = studioState.figures;
+        if (outcome.mode !== 'docx' && typeof applyFiguresToPreview === 'function') applyFiguresToPreview();
+
+        if (selectedMode === 'AUTO') {
+          detectedBadge.textContent = getDocTypeBanglaLabel(docType);
+          detectedBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+        } else {
+          detectedBadge.textContent = 'ম্যানুয়াল: ' + getDocTypeBanglaLabel(docType);
+          detectedBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300';
+        }
+
+        if (btnMakeOmr) {
+          if (docType === 'EXAM_MCQ') btnMakeOmr.classList.remove('hidden');
+          else btnMakeOmr.classList.add('hidden');
+        }
+        if (groupSplitCtrl) {
+          if (docType === 'EXAM_MCQ') groupSplitCtrl.classList.remove('hidden');
+          else groupSplitCtrl.classList.add('hidden');
+        }
+      } else
       if (typeof FayzarPipeline !== 'undefined' && typeof FayzarPipeline.previewHtml === 'function') {
         const result = await FayzarPipeline.previewHtml(raw, options);
         const docType = result.docType;
@@ -936,6 +1308,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyEditModeState() {
+    if (FayzarStudioF2Wire.isDocxPreviewEnabled() && previewContainer.getAttribute('data-fz-preview-mode') === 'docx') {
+      studioState.isEditing = false;
+      previewContainer.classList.remove('editing-active');
+      previewContainer.querySelectorAll('.fz-page, [contenteditable]').forEach(el => {
+        el.setAttribute('contenteditable', 'false');
+      });
+      if (btnToggleEdit) btnToggleEdit.classList.remove('active');
+      if (txtEditMode) txtEditMode.textContent = FayzarStudioF2Wire.DOCX_EDIT_TOAST_MSG;
+      if (liveEditNotice) liveEditNotice.classList.add('hidden');
+      if (statEditIndicator) statEditIndicator.classList.add('hidden');
+      return;
+    }
+
     previewContainer.classList.toggle('editing-active', studioState.isEditing);
 
     const editables = previewContainer.querySelectorAll('.question-paper, .paper-sheet, .sheet, .stamp-document, .gov-app-document, .cert-document, .cq-column, .mcq-col, [class*="section"]');
@@ -967,6 +1352,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Seamless click-to-edit: clicking inside document turns on edit mode instantly
   previewContainer.addEventListener('click', (e) => {
+    if (FayzarStudioF2Wire.isDocxPreviewEnabled() && previewContainer.getAttribute('data-fz-preview-mode') === 'docx') {
+      showToast(FayzarStudioF2Wire.DOCX_EDIT_TOAST_MSG, 'info');
+      return;
+    }
     if (!studioState.isEditing && !e.target.closest('.figure-toolbar')) {
       studioState.isEditing = true;
       applyEditModeState();
@@ -1007,6 +1396,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (statTotalPages) statTotalPages.textContent = totalPages;
     if (faithfulStudioOnDom() && studioState.faithfulIr && statTotalPages) statTotalPages.textContent = previewContainer.querySelectorAll('.fz-page, .paper-sheet').length || 1;
+    if (FayzarStudioF2Wire.isDocxPreviewEnabled() && statTotalPages) statTotalPages.textContent = previewContainer.querySelectorAll('.fz-page, .paper-sheet').length || 1;
     if (statCurrentPage) statCurrentPage.textContent = '১';
 
     if (statWordCount) {
@@ -1333,6 +1723,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Live Direct Editing
   if (btnToggleEdit) {
     btnToggleEdit.addEventListener('click', () => {
+      if (FayzarStudioF2Wire.isDocxPreviewEnabled() && previewContainer.getAttribute('data-fz-preview-mode') === 'docx') {
+        showToast(FayzarStudioF2Wire.DOCX_EDIT_TOAST_MSG, 'info');
+        if (inputText) inputText.focus();
+        return;
+      }
       studioState.isEditing = !studioState.isEditing;
       applyEditModeState();
     });
@@ -1963,6 +2358,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (inputText) inputText.addEventListener('input', () => AutoSave.markDirty());
 
   function debounce(func, wait) {
+    if (func === updatePreview && typeof FayzarStudioF2Wire !== 'undefined') {
+      return FayzarStudioF2Wire.createPreviewDebouncer(func, () => FayzarStudioF2Wire.getPreviewDebounceMs());
+    }
     let timeout;
     return function(...args) {
       clearTimeout(timeout);
