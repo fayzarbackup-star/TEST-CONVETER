@@ -49,6 +49,7 @@
 | স্তরযুক্ত সাধারণ প্রশ্নপত্র (প্রাথমিক/বৃত্তি) | `js/layout-engine/general-paper-parser.js` | `FayzarGeneralParser`, `isNested` |
 | CQ বুকলেট/কলাম/প্রোফাইল (EXAM_PRIMARY, EXAM_ONECOL) | ⚙️ `js/layout-engine/cq-booklet-planner.js` | `LAYOUT_PROFILES`, `CqBookletPlanner` |
 | MCQ গ্রিড/ট্যাব/পাতা-ভাগ | ⚙️ `js/layout-engine/mcq-layout-planner.js` | `McqLayoutPlanner`, `balancePageHeader` |
+| লেআউট-রেজিস্ট্রি (id/alias → লেআউট, ফ্রন্টম্যাটার-লুকআপ; A2, সুইচ-গেটেড) | `js/layout-engine/layout-registry.js` | `FayzarLayoutRegistry` (`normalizeLookupKey`, `extractFrontmatterFromText`) |
 | ক্রমিক-দূরত্ব (০.২"/০.৩") | `js/layout-engine/layout-units.js` | `FayzarLayoutUnits.questionIndent` |
 | কালপুরুষে প্রশ্নপত্রের লাইন-গুণক (targetFont 'unicode' ⇒ ০.৭২) | `layout-units.js` + ⚙️ `export-dual-engine.js` | `examLineFactor`, `_examLineFactor`, `_fixDocxSpacing` |
 | প্রশ্ন-নম্বর পুনর্বিন্যাস | `js/layout-engine/exam-renumber.js` | `FayzarExamRenumber` |

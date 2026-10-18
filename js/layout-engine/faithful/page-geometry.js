@@ -23,17 +23,155 @@
   const median = (a) => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
 
   function inkMask(img, thr) {
-    const T = thr || 160, W = img.width, H = img.height, d = img.data;
-    const mask = new Uint8Array(W * H);
-    for (let i = 0; i < W * H; i++) if ((d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000 < T) mask[i] = 1;
-    return { W, H, mask };
+    const T = thr || 160, W = img.width, H = img.height, d = img.data, N = W * H;
+    const mask = new Uint8Array(N);
+    if (!global.__FZ_ON_OTSU) {
+      for (let i = 0; i < N; i++) if ((d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000 < T) mask[i] = 1;
+      const out = { W, H, mask };
+      Object.defineProperty(out, 'thr', { value: T, enumerable: false });
+      return out;
+    }
+    if (thr) {
+      for (let i = 0; i < N; i++) if ((d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000 < T) mask[i] = 1;
+      return { W, H, mask, thr: T };
+    }
+    // FZ_ON=OTSU: এক পাসে লুমিন্যান্স ও টাইল-হিস্টোগ্রাম; হালকা কালি ও অসম আলো/ছায়ায় লোকাল Otsu + পটভূমি-নরমালাইজেশন (সীমা ১১০–২০০)
+    const lum = new Uint8Array(N), gHist = new Int32Array(256);
+    const GX = W >= 64 && H >= 64 ? clamp(Math.round(W / 160), 4, 12) : 1;
+    const GY = W >= 64 && H >= 64 ? clamp(Math.round(H / 160), 4, 16) : 1;
+    const nTiles = GX * GY, tHist = new Int32Array(nTiles * 256), tTot = new Int32Array(nTiles);
+    for (let y = 0, i = 0, j = 0; y < H; y++) {
+      const tyOff = (((y * GY) / H) | 0) * GX;
+      for (let tx = 0; tx < GX; tx++) {
+        const xEnd = (((tx + 1) * W) / GX) | 0, tid = tyOff + tx, hOff = tid << 8;
+        let cnt = 0;
+        for (let x = ((tx * W) / GX) | 0; x < xEnd; x++, i++, j += 4, cnt++) {
+          const v = ((d[j] * 299 + d[j + 1] * 587 + d[j + 2] * 114 + 500) / 1000) | 0;
+          lum[i] = v; tHist[hOff + v]++;
+        }
+        tTot[tid] += cnt;
+      }
+    }
+    const pct = (h, off, tot, q) => { const tg = tot * q; let a = 0; for (let v = 0; v < 256; v++) { a += h[off + v]; if (a >= tg) return v; } return 255; };
+    const otsu = (h, off, tot, bg, allowFaded) => {
+      const maxT = Math.min(205, Math.max(95, Math.round(bg - 12))), minW = Math.max(4, tot * 0.0005);
+      let sum = 0; for (let v = 0; v < 256; v++) sum += v * h[off + v];
+      let wB = 0, sB = 0, best = -1, bmB = 0, bmF = bg;
+      for (let t = 0; t <= maxT; t++) {
+        const c = h[off + t]; wB += c; sB += t * c; if (wB < minW) continue;
+        const wF = tot - wB; if (wF < minW) break;
+        const mB = sB / wB, mF = (sum - sB) / wF, df = mF - mB;
+        if (df >= 16 && wB * wF * df * df > best) { best = wB * wF * df * df; bmB = mB; bmF = mF; }
+      }
+      if (best <= 0) return null;
+      let bt = Math.round((bmB + bmF) * 0.5);
+      // উজ্জ্বল পাতায় কালো লেখার পাশাপাশি ফিকে ধূসর কালি (১৪০..bg−২২) থাকলে ওপরের পরিসরে দ্বিতীয় Otsu
+      if (allowFaded && bg >= 220 && bt < 175) {
+        const loG = 140, hiG = Math.min(200, Math.round(bg - 22));
+        let gCnt = 0; for (let v = loG; v <= hiG; v++) gCnt += h[off + v];
+        if (gCnt >= Math.max(6, tot * 0.004)) {
+          let tot2 = 0, sum2 = 0; for (let v = loG; v < 256; v++) { const c = h[off + v]; tot2 += c; sum2 += v * c; }
+          let w2 = 0, s2 = 0, b2 = -1, mB2 = loG, mF2 = bg;
+          for (let t = loG; t <= maxT; t++) {
+            const c = h[off + t]; w2 += c; s2 += t * c; if (w2 < Math.max(4, tot * 0.003)) continue;
+            const wF2 = tot2 - w2; if (wF2 < minW) break;
+            const m0 = s2 / w2, m1 = (sum2 - s2) / wF2, df = m1 - m0;
+            if (df >= 18 && w2 * wF2 * df * df > b2) { b2 = w2 * wF2 * df * df; mB2 = m0; mF2 = m1; }
+          }
+          if (b2 > 0 && mB2 <= bg - 22) bt = Math.max(bt, Math.round((mB2 + mF2) * 0.5));
+        }
+      }
+      if (bg >= 235 && bt < 160 && bmB < 100) bt = Math.round(160 - (160 - bt) * 0.1);
+      return clamp(bt, 110, Math.min(200, maxT));
+    };
+    if (nTiles === 1) {
+      const bg = pct(tHist, 0, N, 0.85), gT = otsu(tHist, 0, N, bg, bg >= 220) || clamp(Math.round(bg - 22), 110, 160);
+      for (let i = 0; i < N; i++) if (lum[i] < gT) mask[i] = 1;
+      return { W, H, mask, thr: gT };
+    }
+    const rawBg = new Float64Array(nTiles), validBgs = [];
+    for (let k = 0; k < nTiles; k++) { const b = pct(tHist, k << 8, tTot[k], 0.85); rawBg[k] = b; if (b >= 90) validBgs.push(b); }
+    const medBg = validBgs.length ? median(validBgs) : 240;
+    for (let k = 0; k < nTiles; k++) if (rawBg[k] < 90) rawBg[k] = medBg;
+    const smBg = new Float64Array(nTiles);
+    let minBg = 255, maxBg = 0;
+    for (let ty = 0; ty < GY; ty++) for (let tx = 0; tx < GX; tx++) {
+      let s = 0, c = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const ny = ty + dy, nx = tx + dx;
+        if (ny >= 0 && ny < GY && nx >= 0 && nx < GX) { const w = (dx === 0 && dy === 0) ? 4 : 1; s += rawBg[ny * GX + nx] * w; c += w; }
+      }
+      const b = s / c; smBg[ty * GX + tx] = b; if (b < minBg) minBg = b; if (b > maxBg) maxBg = b;
+    }
+    const hasShadow = (maxBg - minBg) >= 18, refBg = Math.max(160, maxBg);
+    for (let k = 0; k < nTiles; k++) {
+      const hOff = k << 8, sc = hasShadow ? (refBg / Math.max(90, smBg[k])) : 1;
+      for (let v = 0; v < 256; v++) { const c = tHist[hOff + v]; if (c) gHist[hasShadow ? clamp(Math.round(v * sc), 0, 255) : v] += c; }
+    }
+    const gBg = hasShadow ? refBg : pct(gHist, 0, N, 0.85), gT = otsu(gHist, 0, N, gBg, !hasShadow && gBg >= 220) || clamp(Math.round(gBg - 22), 110, 160);
+    const normT = new Float64Array(nTiles), nh = new Int32Array(256);
+    for (let k = 0; k < nTiles; k++) {
+      const bg = smBg[k], sc = hasShadow ? (refBg / Math.max(90, bg)) : 1;
+      let lt = null;
+      if (hasShadow) {
+        nh.fill(0); const hOff = k << 8;
+        for (let v = 0; v < 256; v++) { const c = tHist[hOff + v]; if (c) nh[clamp(Math.round(v * sc), 0, 255)] += c; }
+        lt = otsu(nh, 0, tTot[k], refBg, bg >= 220);
+      } else lt = otsu(tHist, k << 8, tTot[k], bg, bg >= 220);
+      normT[k] = lt != null ? Math.max(gT, Math.round(lt * 0.85 + gT * 0.15)) : gT;
+    }
+    // টাইল-সীমানায় ফিকে কালি বা ছায়া যেন ধাপ না ফেলে সেজন্য ৩×৩ প্রতিবেশী মসৃণকরণ ও দ্বিরৈখিক প্রক্ষেপণ
+    const tileT = new Float64Array(nTiles);
+    let minT = 255, maxT = 0;
+    for (let ty = 0; ty < GY; ty++) for (let tx = 0; tx < GX; tx++) {
+      const k = ty * GX + tx, bg = hasShadow ? Math.min(rawBg[k], smBg[k]) : smBg[k], sc = hasShadow ? (refBg / Math.max(90, bg)) : 1;
+      let s = 0, c = 0, hiN = normT[k];
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const ny = ty + dy, nx = tx + dx;
+        if (ny >= 0 && ny < GY && nx >= 0 && nx < GX) {
+          const nk = ny * GX + nx, w = (dx === 0 && dy === 0) ? 4 : 1;
+          s += normT[nk] * w; c += w;
+          if (normT[nk] > hiN) hiN = normT[nk];
+        }
+      }
+      const boost = hiN > gT ? (hiN * 0.96 + gT * 0.04) / sc : 0;
+      const lo = hasShadow ? clamp(Math.round(110 * bg / refBg), 70, 110) : 110;
+      const hi = Math.min(200, Math.max(lo, Math.round(bg - (hasShadow ? 18 : 12))));
+      const t = clamp(Math.round(Math.max((s / c) / sc, boost)), lo, hi);
+      tileT[k] = t; if (t < minT) minT = t; if (t > maxT) maxT = t;
+    }
+    if (maxT - minT <= 2) {
+      const uT = clamp(Math.round((minT + maxT) * 0.5), 110, 200);
+      for (let i = 0; i < N; i++) if (lum[i] < uT) mask[i] = 1;
+      return { W, H, mask, thr: uT };
+    }
+    const rowT = new Int32Array(GX), xC = new Int32Array(GX);
+    for (let tx = 0; tx < GX; tx++) xC[tx] = Math.floor((tx + 0.5) * W / GX);
+    for (let y = 0; y < H; y++) {
+      const fy = ((y + 0.5) * GY) / H - 0.5, ty0 = clamp(Math.floor(fy), 0, GY - 1), ty1 = clamp(ty0 + 1, 0, GY - 1), wy = clamp(fy - ty0, 0, 1);
+      for (let tx = 0; tx < GX; tx++) rowT[tx] = Math.round(((1 - wy) * tileT[ty0 * GX + tx] + wy * tileT[ty1 * GX + tx]) * 256);
+      let i = y * W;
+      for (let x = 0, t0 = rowT[0], xE = xC[0]; x < xE; x++, i++) if ((lum[i] << 8) < t0) mask[i] = 1;
+      for (let tx = 0; tx < GX - 1; tx++) {
+        const xA = xC[tx], xB = xC[tx + 1], dt = ((rowT[tx + 1] - rowT[tx]) / Math.max(1, xB - xA)) | 0;
+        for (let x = xA, tCur = rowT[tx]; x < xB; x++, i++, tCur += dt) if ((lum[i] << 8) < tCur) mask[i] = 1;
+      }
+      for (let x = xC[GX - 1], tL = rowT[GX - 1]; x < W; x++, i++) if ((lum[i] << 8) < tL) mask[i] = 1;
+    }
+    const mT = clamp(Math.round(!hasShadow && maxT > gT ? maxT : tileT.reduce((a, b) => a + b, 0) / nTiles), 110, 200);
+    return { W, H, mask, thr: mT };
   }
 
   /**
    * ২০২৬-১০-১৪: ফিকে স্ক্যান (a05: ধূসর লেখা ~১৭০–১৯০) — ১৬০-সীমায় লেখা কালি হয় না ⇒ লাইন/সারি-মাপ অন্ধ।
-   * Otsu-সীমা, ১৬০–২০৫-এ সীমিত (ঝকঝকে পাতায় Otsu ≈১২৮ ⇒ ১৬০ অপরিবর্তিত)
+   * Otsu-সীমা, ১৬০–২০৫-এ সীমিত (ঝকঝকে পাতায় Otsu ≈১২৮ ⇒ ১৬০ অপরিবর্তিত); FZ_ON=OTSU-তে ১১০–২০০ পরিসরে ডায়নামিক Otsu।
    */
   function otsuThreshold(img) {
+    if (global.__FZ_ON_OTSU) {
+      if (img && img.width > 0 && img.height > 0) return inkMask(img).thr;
+      const d0 = (img && img.data) || [], n0 = d0.length >> 2;
+      return n0 ? inkMask({ width: n0, height: 1, data: d0 }).thr : 160;
+    }
     const d = img.data, hist = new Float64Array(256);
     for (let i = 0; i < d.length; i += 4) hist[Math.round((d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000)]++;
     let tot = 0, sum = 0; for (let v = 0; v < 256; v++) { tot += hist[v]; sum += v * hist[v]; }
@@ -969,7 +1107,11 @@
   /** পাতার নিজের পটভূমির উজ্জ্বলতা (নমুনা-বিন্দুর হালকা অংশের মধ্যমা) — স্ক্যানের ধূসর কাগজকে "ছায়া" না ভাবতে */
   function pageBackground(img) {
     const { width: W, height: H, data: d } = img, step = Math.max(1, Math.floor(Math.sqrt(W * H / 40000))), L = [];
-    for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) { const v = lum(d, (y * W + x) * 4); if (v >= 150) L.push(v); }
+    const minL = global.__FZ_ON_OTSU ? otsuThreshold(img) : 150;
+    for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) { const v = lum(d, (y * W + x) * 4); if (v >= minL) L.push(v); }
+    if (!L.length && global.__FZ_ON_OTSU) {
+      for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) { const v = lum(d, (y * W + x) * 4); if (v >= 110) L.push(v); }
+    }
     return L.length ? median(L) : 255;
   }
   /**
@@ -986,7 +1128,7 @@
     const all = [];
     for (let y = y0; y <= y1; y += sy) for (let x = x0; x <= x1; x += sx) { const i = (y * W + x) * 4; all.push([lum(d, i), d[i], d[i + 1], d[i + 2]]); }
     if (all.length < 40) return null;
-    const pageL = o.pageL || 255;
+    const pageL = o.pageL || (global.__FZ_ON_OTSU ? pageBackground(img) : 255);
     const med = (a, k) => median(a.map((p) => p[k]));
     const darkP = all.filter((p) => p[0] < 110);
     if (darkP.length / all.length > 0.6) {   // গাঢ় পটি, হালকা লেখা
@@ -1071,6 +1213,26 @@
       if (strong) inBand.fill(1, s, e);
       s = e;
     }
+    let fgThr = 150;
+    if (global.__FZ_ON_OTSU) {
+      const bHist = new Int32Array(256); let bTot = 0, bSum = 0;
+      for (let y = ya; y < yb; y++) {
+        if (!inBand[y - ya]) continue;
+        let xl = -1, xr = -1;
+        for (let x = 0; x < W; x++) if (lum(d, (y * W + x) * 4) < 110) { if (xl < 0) xl = x; xr = x; }
+        for (let x = xl + 1; x < xr; x++) { const v = clamp(Math.round(lum(d, (y * W + x) * 4)), 0, 255); bHist[v]++; bTot++; bSum += v; }
+      }
+      if (bTot >= 16) {
+        let wB = 0, sB = 0, best = -1, bmB = 40, bmF = 200;
+        for (let t = 0; t < 256; t++) {
+          const c = bHist[t]; wB += c; sB += t * c; if (wB < 4) continue;
+          const wF = bTot - wB; if (wF < 4) break;
+          const mB = sB / wB, mF = (bSum - sB) / wF, df = mF - mB;
+          if (df >= 20 && wB * wF * df * df > best) { best = wB * wF * df * df; bmB = mB; bmF = mF; }
+        }
+        if (best > 0) fgThr = clamp(Math.round((bmB + bmF) * 0.5), 110, 200);
+      }
+    }
     let rows = 0;
     for (let y = ya; y < yb; y++) {
       let xl = -1, xr = -1;
@@ -1079,13 +1241,13 @@
       rows++;
       let run = 0, best = 0;
       for (let x = xl + 1; x < xr; x++) {
-        if (lum(d, (y * W + x) * 4) > 150) { mask[y * W + x] = 1; if (++run > best) best = run; } else run = 0;
+        if (lum(d, (y * W + x) * 4) > fgThr) { mask[y * W + x] = 1; if (++run > best) best = run; } else run = 0;
       }
       // f1: ব্যান্ডের ভেতরের সরু হালকা আড়াআড়ি রেখা (দুই লাইনের মাঝে) লেখা নয় ⇒ সারি বাদ।
       // টানা এক দৌড় ব্যান্ডের ≥৬০% হলেই রেখা — শব্দের ফাঁকে ভাঙা মাত্রা-সারি থাকে
       if (best > (xr - xl) * 0.6) mask.fill(0, y * W, (y + 1) * W);
     }
-    return rows >= 3 ? { W, H, mask } : null;
+    return rows >= 3 ? (global.__FZ_ON_OTSU ? { W, H, mask, thr: fgThr } : { W, H, mask }) : null;
   }
 
   /** পূর্ণ-প্রস্থ (≥৮০%) আড়াআড়ি রেখার শুরু-y (px) — countHLines-এর একই নিয়ম */

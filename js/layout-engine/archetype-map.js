@@ -25,10 +25,60 @@
     'single_column_standard_document': 'GENERAL'
   };
 
+  // __FZ_ON_REGISTRY সুইচ চালু আছে কি না তা যাচাই করার সহায়ক ফাংশন
+  function isRegistrySwitchOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_REGISTRY)) {
+      return true;
+    }
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_REGISTRY)) {
+      return true;
+    }
+    if (global && Boolean(global.__FZ_ON_REGISTRY)) {
+      return true;
+    }
+    if (
+      typeof process !== 'undefined' &&
+      process &&
+      process.env &&
+      (process.env.__FZ_ON_REGISTRY === '1' || process.env.__FZ_ON_REGISTRY === 'true')
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // গ্লোবাল বা ব্রাউজার পরিবেশে FayzarLayoutRegistry থাকলে তা খুঁজে বের করার সহায়ক ফাংশন
+  function getLayoutRegistry() {
+    if (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutRegistry) {
+      return globalThis.FayzarLayoutRegistry;
+    }
+    if (typeof window !== 'undefined' && window.FayzarLayoutRegistry) {
+      return window.FayzarLayoutRegistry;
+    }
+    if (global && global.FayzarLayoutRegistry) {
+      return global.FayzarLayoutRegistry;
+    }
+    return null;
+  }
+
   const ArchetypeMap = {
     ARCHETYPE_TO_DOCTYPE,
     toDocType(archetypeId) {
       if (!archetypeId) return 'GENERAL';
+      // কেবল __FZ_ON_REGISTRY সুইচ চালু থাকলেই FayzarLayoutRegistry হুক ব্যবহৃত হবে
+      if (isRegistrySwitchOn()) {
+        const registry = getLayoutRegistry();
+        if (registry && typeof registry.get === 'function') {
+          const directEntry = registry.get(archetypeId);
+          if (directEntry && directEntry.id) return directEntry.id;
+          const mappedDocType = ARCHETYPE_TO_DOCTYPE[archetypeId];
+          if (mappedDocType) {
+            const mappedEntry = registry.get(mappedDocType);
+            if (mappedEntry && mappedEntry.id) return mappedEntry.id;
+          }
+        }
+      }
+      // সুইচ বন্ধ থাকলে বা রেজিস্ট্রি না থাকলে/না মিললে বিদ্যমান আচরণ হুবহু অপরিবর্তিত
       return ARCHETYPE_TO_DOCTYPE[archetypeId] || 'GENERAL';
     }
   };

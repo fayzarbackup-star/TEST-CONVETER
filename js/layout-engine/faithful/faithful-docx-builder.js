@@ -13,6 +13,136 @@
   'use strict';
   // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
   const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
+  // গণিত-পাতা উচ্চতা-হিসাব সুইচ: শুধু globalThis.__FZ_ON_MATHH সত্য হলে সক্রিয়
+  const mathHOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_MATHH : global.__FZ_ON_MATHH);
+
+  /**
+   * সমীকরণের ধরন শনাক্তকরণ (ভগ্নাংশ/স্ট্যাকড > মূল/বড়-চিহ্ন > সূচক/সহগ > সাধারণ সমীকরণ)।
+   * @returns 'frac' | 'rad' | 'sup' | 'math' | null
+   */
+  function mathKindOf(text, hint) {
+    let hk = null;
+    if (hint && typeof hint === 'object') {
+      if (hint.mathKind === 'frac' || hint.eqType === 'frac' || hint.isFraction) hk = 'frac';
+      else if (hint.mathKind === 'rad' || hint.mathKind === 'sqrt' || hint.eqType === 'rad') hk = 'rad';
+      else if (hint.mathKind === 'sup' || hint.mathKind === 'script' || hint.eqType === 'sup') hk = 'sup';
+      else if (hint.hasEquation || hint.mathKind === 'math' || hint.eqType === 'math') hk = 'math';
+    }
+    const t = String(text || '');
+    let tk = null;
+    if (t) {
+      if (/\\(?:d|t|c)?frac(?![A-Za-z])|\\(?:d|t|c)?binom(?![A-Za-z])|\\(?:over|atop|stackrel|overset|underset)(?![A-Za-z])|\\begin\{(?:p|b|B|v|V)?matrix\}|\\begin\{(?:cases|array|aligned|split)\}|(?:\\(?:sum|prod|coprod|int|oint|iint|bigcup|bigcap|lim)(?![A-Za-z])|[∑∏∐∫∮∬⋃⋂])\s*(?:[_^⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]|\\(?:limits|nolimits))|[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⁄]|\$[^$]*\/[^$]*\$|⟦eq[^⟧]*\/[^⟧]*⟧|\([^()\n]+\)\s*\/\s*\([^()\n]+\)|\{[^{}\n]+\}\s*\/\s*\{[^{}\n]+\}/.test(t)) tk = 'frac';
+      else if (/\\sqrt(?![A-Za-z])|[√∛∜]|\\(?:sum|prod|coprod|int|oint|iint|bigcup|bigcap|lim)(?![A-Za-z])|[∑∏∐∫∮∬⋃⋂]/.test(t)) tk = 'rad';
+      else if (/\^\{[^}]*\}|_\{[^}]*\}|<sup\b|<sub\b|[A-Za-z0-9)\]\u0980-\u09FF]\s*[\^_]\s*[A-Za-z0-9(+\-\u09E6-\u09EF]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]/i.test(t)) tk = 'sup';
+      else if (/(\$|\\(?:alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|omega|sin|cos|tan|cot|sec|csc|log|ln|infty|pm|mp|times|div|neq|leq|geq|approx|equiv|in|notin|subset|subseteq|cup|cap|emptyset|angle|triangle|perp|parallel)(?![A-Za-z])|⟦eq|[\u2200-\u22FF])/.test(t)) tk = 'math';
+    }
+    if (!tk) return hk;
+    if (!hk) return tk;
+    const rank = { frac: 4, rad: 3, sup: 2, math: 1 };
+    return rank[tk] >= rank[hk] ? tk : hk;
+  }
+
+  /** ভগ্নাংশের লব বা হরের ভেতরে আরেকটি ভগ্নাংশ (নেস্টেড) আছে কিনা — একই লাইনের একাধিক ভগ্নাংশকে নেস্টেড ধরা হয় না */
+  function hasNestedFrac(t) {
+    const s = String(t || '');
+    const re = /\\(?:d|t|c)?frac(?![A-Za-z])/g;
+    let m;
+    while ((m = re.exec(s)) !== null) {
+      let i = m.index + m[0].length;
+      for (let arg = 0; arg < 2; arg++) {
+        while (i < s.length && /\s/.test(s[i])) i++;
+        if (s[i] !== '{') break;
+        let depth = 1, start = ++i;
+        while (i < s.length && depth > 0) {
+          if (s[i] === '{') depth++;
+          else if (s[i] === '}') depth--;
+          i++;
+        }
+        const inner = s.slice(start, i - 1);
+        if (/\\(?:d|t|c)?frac(?![A-Za-z])|\\(?:over|atop)(?![A-Za-z])|[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⁄]/.test(inner)) return true;
+      }
+    }
+    return false;
+  }
+
+  /** এক লাইনের সমীকরণের ধরন অনুযায়ী বাড়তি উচ্চতা (pt): ভগ্নাংশ/স্ট্যাকড > মূল > সূচক > সাধারণ */
+  function mathLineExtraPt(text, fs, hint) {
+    const f = fs || 12, t = String(text || ''), k = mathKindOf(t, hint);
+    if (!k) return 0;
+    if (k === 'frac') {
+      return f * (hasNestedFrac(t) ? 1.45 : 1.05);
+    }
+    if (k === 'rad') {
+      const innerSup = /\\sqrt\s*(?:\[[^\]]*\])?\s*\{[^}]*[\^_⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]|√\s*\(?[^)\s]*[\^_⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]/.test(t);
+      return f * (innerSup ? 0.55 : 0.45);
+    }
+    if (k === 'sup') {
+      const both = (/\^|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]|<sup\b/i.test(t)) && (/_|[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]|<sub\b/i.test(t));
+      return f * (both ? 0.38 : 0.28);
+    }
+    return f * 0.12;
+  }
+
+  /** সমীকরণ-যুক্ত লেখার দৃশ্যমান প্রস্থের অনুমানের জন্য LaTeX কমান্ড সংক্ষেপ */
+  function mathVisStr(s) {
+    let out = String(s || '')
+      .replace(/\\sqrt\s*(?:\[[^\]]*\])?\s*\{([^{}]*)\}/g, '√$1')
+      .replace(/[\^_]\s*\{([^{}]*)\}/g, '$1');
+    for (let d = 0; d < 4 && /\\(?:d|t|c)?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/.test(out); d++) {
+      out = out.replace(/\\(?:d|t|c)?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, (_, a, b) => (a.length >= b.length ? a : b));
+    }
+    return out
+      .replace(/\\(?:left|right)\s*([()[\]{}|.])/g, '$1')
+      .replace(/\\[A-Za-z]+/g, 'm')
+      .replace(/[\${}^_]|⟦eq:?|⟧/g, '');
+  }
+
+  function hasEqItem(it) {
+    if (!it) return false;
+    if (it.hasEquation || it.mathKind) return true;
+    if (mathKindOf(it.text, it)) return true;
+    const ls = it.tabLines || it.lines;
+    return Array.isArray(ls) && ls.some((l) => !!mathKindOf(l, it));
+  }
+
+  /** অনুচ্ছেদের সমীকরণ-জনিত মোট বাড়তি উচ্চতা (pt) */
+  function mathExtraH(it, nLines) {
+    if (!it || it.kind === 'figure' || it.kind === 'table') return 0;
+    const fs = it.fontPt || 12, baseLh = lineH(it);
+    const rawLs = (it.tabLines && it.tabLines.length)
+      ? it.tabLines
+      : ((it.keepLines ? it.lines : null) || (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n')));
+    const ls = rawLs.length ? rawLs : [String(it.text || '')];
+    let extra = 0;
+    for (let i = 0; i < ls.length; i++) {
+      const ex = mathLineExtraPt(ls[i], fs, ls.length === 1 ? it : null);
+      if (ex > 0) {
+        const effEx = baseLh > fs * 1.15 ? Math.max(0, (fs * 1.15 + ex) - baseLh) : ex;
+        extra += effEx;
+      }
+    }
+    if (extra === 0 && ls.length > 1) {
+      const hEx = mathLineExtraPt('', fs, it);
+      if (hEx > 0) extra = baseLh > fs * 1.15 ? Math.max(0, (fs * 1.15 + hEx) - baseLh) : hEx;
+    }
+    if (extra === 0 && it.mathExtraPt > 0) {
+      extra = baseLh > fs * 1.15 ? Math.max(0, (fs * 1.15 + it.mathExtraPt) - baseLh) : it.mathExtraPt;
+    }
+    return extra;
+  }
+
+  /** টেবিল-সারির সমীকরণ-জনিত বাড়তি উচ্চতা (pt) */
+  function rowMathExtraPt(row, fs) {
+    if (!Array.isArray(row)) return 0;
+    let mx = 0;
+    for (let k = 0; k < row.length; k++) {
+      const c = String(row[k] || '');
+      if (!c) continue;
+      const cellEx = c.split('\n').reduce((a, ln) => a + mathLineExtraPt(ln, fs), 0);
+      if (cellEx > mx) mx = cellEx;
+    }
+    return mx;
+  }
 
   const FONT = 'SutonnyOMJ';
   const UNI_SENTINEL = 'FzUnicodeFace';
@@ -89,7 +219,7 @@
    */
   // মূল অক্ষর-গোনা মোড়ানো-লাইন (কার/হসন্ত/চন্দ্রবিন্দু আলাদা প্রস্থ নেয় না)
   // ঘরের ভেতরের ছক (subTable) ≈ ৪টি ছোট লাইন (মোড়ানো শিরোনাম + ফাঁকা সারি) — HTML-চিহ্নের দৈর্ঘ্য নয়
-  const wrapLines = (txt, fs, cwPt) => String(txt || '').replace(/<table\b[\s\S]*?(<\/table>|$)/gi, '\n.\n.\n.\n.\n').split('\n').reduce((a, ln) => a + (Math.ceil(ln.replace(/[ঁ-ঃ়া-্ৗ]/g, '').length * fs * 0.45 / Math.max(20, cwPt)) || 1), 0);
+  const wrapLines = (txt, fs, cwPt) => String(txt || '').replace(/<table\b[\s\S]*?(<\/table>|$)/gi, '\n.\n.\n.\n.\n').split('\n').reduce((a, ln) => a + (Math.ceil((mathHOn() ? mathVisStr(ln) : ln).replace(/[ঁ-ঃ়া-্ৗ]/g, '').length * fs * 0.45 / Math.max(20, cwPt)) || 1), 0);
   /**
    * a18: জোড়া ঘর — লম্বা লেখা নিজের কলামে না আঁটলে আর ডানের ঘর ফাঁকা হলে ডানে জোড়া (gridSpan), যতক্ষণ না আঁটে।
    * (মূলে "বিঃদ্রঃ…" চার কলাম জুড়ে; প্রথম সরু ঘরে বসালে সারি ৩ গুণ লম্বা ⇒ পাতা উপচাত।) ফেরত: প্রতি কলামে span, ঢাকা ঘর ০
@@ -115,7 +245,7 @@
     // f1: ভাঁজ-করা ফরম-ছক — মাপা উচ্চতা লাইন-সংখ্যার অনুপাতে ভাগ ("অন্তত", লেখা কাটা পড়ে না)
     if (it.rowWeights && it.rowWeights.length === rows.length && it.heightPt) {
       const tot = it.rowWeights.reduce((a, b) => a + b, 0);
-      const res = it.rowWeights.map((w) => ({ h: Math.max(fs * 1.2 * w, it.heightPt * w / tot), exact: false }));
+      const res = it.rowWeights.map((w, ri) => ({ h: Math.max(fs * 1.2 * w + (mathHOn() ? rowMathExtraPt(rows[ri], fs) : 0), it.heightPt * w / tot), exact: false }));
       res.fitted = true;
       return res;
     }
@@ -152,15 +282,16 @@
           // লাইন ('\n', a19) অনুমানে ১.০১ হলে ২ নয় ⇒ ০.১৫ ছাড়
           // বিন্দু-সারি অক্ষরের অর্ধেক চওড়া (আর line-fit ঘরে আঁটাতে ছোট করে) ⇒ অর্ধেক গোনা
           const ffTrh = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_FB0);
-          const est = (txt, cw) => String(txt || '').split('\n').reduce((a, ln) => a + Math.max(1, Math.ceil(ln.replace(/[ঁ-ঃ়া-্ৗ]/g, '').replace(/([._…·])\1{5,}/g, (s) => s.slice(0, s.length >> 1)).length * fs * 0.45 / Math.max(20, cw) - 0.15)), 0);
+          const est = (txt, cw) => String(txt || '').split('\n').reduce((a, ln) => a + Math.max(1, Math.ceil((mathHOn() ? mathVisStr(ln) : ln).replace(/[ঁ-ঃ়া-্ৗ]/g, '').replace(/([._…·])\1{5,}/g, (s) => s.slice(0, s.length >> 1)).length * fs * 0.45 / Math.max(20, cw) - 0.15)), 0);
           // [Rule FB0: FZ_OFF=FORMFIX / FZ_OFF=FB0] gridFirst ছকের সরু কলামে (<70pt) প্রকৃত সেল-মার্জিন (0 বা 1.4pt) দিয়ে লাইন-মোড়ানো হিসাব এবং ১-লাইনের ছোট শিরোনামে 0.9 সংকোচন পরিহার।
           r.forEach((c, k) => { if (!sp[k]) return; let w = 0; for (let j = k; j < k + sp[k] && j < nCols; j++) w += cwp(j); const effM = ffTrh && it.gridFirst && !it.borderless && w < 70 ? (w < 25 ? 0 : 1.4) : (marPt || 5.4); const cw = w - 2 * effM; const isShortHdr = ffTrh && ri === 0 && !String(c || '').includes('\n') && String(c || '').trim().length <= 16; n = Math.max(n, est(c, (cw < 150 && !isShortHdr) ? cw * 0.9 : cw)); });
-          return { n, h: fs * 1.25 * n + 3 };
+          const mEx = mathHOn() ? rowMathExtraPt(r, fs) : 0;
+          return { n, mEx, h: fs * 1.25 * n + 3 + mEx };
         });
         let need = 0;
         // বাড়ানো শুধু বহু-লাইনের সারি (মোট একই ⇒ অনুমান বেশি হলেও শুধু টেবিলের ভেতরে সরে); বাড়তি জায়গা এক-লাইনের সারি থেকেও (a19)
         // শুধু স্পষ্ট ঘাটতি (a07 ২.৫×, a19 ১.৫×); অনুমানের ভুলে (a18 ১.১৮×) নয়
-        res.forEach((x, ri) => { if (!x.exact && nat[ri] && nat[ri].n >= 2 && nat[ri].h > x.h * 1.25 + 2) { need += nat[ri].h - x.h; x.h = nat[ri].h; } });
+        res.forEach((x, ri) => { if (!x.exact && nat[ri] && ((nat[ri].n >= 2 && nat[ri].h > x.h * 1.25 + 2) || (nat[ri].mEx > 0 && nat[ri].h - 3 > x.h))) { const tgt = nat[ri].n >= 2 ? nat[ri].h : nat[ri].h - 3; need += tgt - x.h; x.h = tgt; } });
         if (need > 0) {
           const slack = res.map((x, ri) => (x.exact || !nat[ri] ? 0 : Math.max(0, x.h - nat[ri].h)));
           const S = slack.reduce((a, b) => a + b, 0);
@@ -188,7 +319,7 @@
         // বহু-লাইনের ঘর ('\n'): প্রতিটি লাইনের মোড়ানো-লাইন যোগ
         lines = Math.max(lines, wrapLines(c, fs, w - 2 * (marPt || 5.4)));
       });
-      return fs * 1.25 * lines + 3;
+      return fs * 1.25 * lines + 3 + (mathHOn() ? rowMathExtraPt(r, fs) : 0);
     };
     const nat = rows.map((r, ri) => (empty[ri] ? 0 : natural(r, ri)));
     // a07: ফাঁকা সারি নেই, সারির লাইন-সংখ্যা ভিন্ন (১/২/৩) ⇒ সমান ভাগে বহু-লাইনের সারি "অন্তত" উচ্চতা ছাড়িয়ে টেবিল লম্বা
@@ -202,7 +333,7 @@
       }
       return old;
     }
-    const maxNat = Math.max(...nat);
+    const maxNat = Math.max(...rows.map((r, ri) => (empty[ri] ? 0 : nat[ri] - (mathHOn() ? rowMathExtraPt(r, fs) : 0))));
     if (rowH < maxNat * 1.8) return old;
     const rest = (it.heightPt - nat.reduce((a, b) => a + b, 0)) / nE;
     if (rest < fs * 1.2) return old;
@@ -214,9 +345,12 @@
   // a03 (২০২৬-১০-১২): নিচের-দাগ (layout-ir applyHorizontalRules) — লেখার নিচ থেকে মূলের দূরত্বে (Word-সীমা ≤৩১pt)
   const textH = (it) => {
     let n = (it.tabLines || (it.keepLines ? it.lines : null) || it.lines || []).length || 1;
+    if (mathHOn() && n === 1 && !it.tabLines && (!it.lines || !it.lines.length) && String(it.text || '').includes('\n')) {
+      n = String(it.text).split('\n').length;
+    }
     const ml = it.diag && it.diag.lines;
     if (!it.tabLines && ml >= 3 && ml >= n * 2) n = ml;
-    return n * lineH(it);
+    return n * lineH(it) + (mathHOn() ? mathExtraH(it, n) : 0);
   };
   const ruleSpace = (it) => (it.ruleBelow && it.rect ? Math.max(0, Math.min(31, Math.round(it.ruleBelow.srcY - (it.rect.y + textH(it))))) : 0);
   const ruleExtra = (it) => (it.ruleBelow ? ruleSpace(it) + it.ruleBelow.sz / 8 : 0);
@@ -235,8 +369,8 @@
       const noH = rh.fitted ? 0 : rows.filter((r) => r.some((c) => c && String(c).trim()) && !(rowH > fs * 1.3)).length;
       const bx = it.borderless ? 0 : 0.5 + 0.75 * noH;
       if (rh.fitted) return rh.reduce((a, x) => a + x.h, 0) + bx;
-      // পুরোনো হিসাব অপরিবর্তিত (চিত্র-ঘরের সারিও এখানে "ফাঁকা" গোনা হতো)
-      return rows.reduce((a, r) => a + (!r.some((c) => c && String(c).trim()) ? rowH * 0.4 : Math.max(rowH, (it.fontPt || 11) * 1.25)), 0) + bx;
+      // পুরোনো হিসাব অপরিবর্তিত (চিত্র-ঘরের সারিও এখানে "ফাঁকা" গোনা হতো); MATHH চালু থাকলে সারির সমীকরণ-উচ্চতাসহ
+      return rows.reduce((a, r) => a + (!r.some((c) => c && String(c).trim()) ? rowH * 0.4 : Math.max(rowH, (it.fontPt || 11) * 1.25 + (mathHOn() ? rowMathExtraPt(r, it.fontPt || 11) : 0))), 0) + bx;
     }
     // a04: Gemini লাইন-বিরতি দেয়নি (১৩ লাইনের অনুচ্ছেদ "১ লাইন") ⇒ উচ্চতা ১৬pt ধরে পরের অংশের আগে ১৮০pt ফাঁক বসত।
     // মাপা লাইন Gemini-র ≥২ গুণ (≥৩) হলে মাপা লাইন-সংখ্যা (textH)
@@ -257,9 +391,11 @@
   const inkOff = (it) => {
     if (it.kind !== 'para') return 0;
     const fs = it.fontPt || 12;
-    const t = String((it.tabLines && it.tabLines[0]) || (it.lines && it.lines[0]) || it.text || '');
+    const ls = (it.tabLines && it.tabLines.length) ? it.tabLines : (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n'));
+    const t = String(ls[0] || it.text || '');
     const k = /[িীৈৌঁ]|র্/.test(t) ? 0.11 : /[ঀ-৿]/.test(t) ? 0.33 : /[A-Za-z]/.test(t) ? 0.22 : 0.12;
-    return k * fs + 0.6 * Math.max(0, lineH(it) - 1.15 * fs);
+    const mOff = mathHOn() ? 0.35 * mathLineExtraPt(t, fs, ls.length <= 1 ? it : null) : 0;
+    return k * fs + 0.6 * Math.max(0, lineH(it) - 1.15 * fs) + mOff;
   };
 
   // ২০২৬-১০-১৩: ওপরের ছোট রেখা (layout-ir ruleAbove, স্বাক্ষর-দাগ) — বর্ডার + ফাঁক লেখার আগে; লাইন-শুরু ততটুকু আগে
@@ -315,13 +451,20 @@
           // f2 (২০২৬-১০-১২): বহু-লাইনের অনুচ্ছেদ পরের অংশের মাপা শুরু পেরোলে (মূলে লাইন ঘন: ৫ লাইন ৪৮pt-এ) পরের সব নামত।
           // লাইন-দূরত্ব মূলের জায়গায় আঁটানো (≥ফন্টের ০.৮৫ — Word-এ কালি কাটে না)
           const nt = it.rect ? nextTop(it0) : null;
-          if (it.kind === 'para' && nt != null && nt > top && nt - top < h - 0.5) {
+          const eqIt = mathHOn() && hasEqItem(it);
+          if (it.kind === 'para' && !eqIt && nt != null && nt > top && nt - top < h - 0.5) {
             const n = Math.round(textH(it) / lineH(it)), fs = it.fontPt || 12;
             const isRuleLn = (it.lines || []).length === 1 && /^([─━═=_\-.…·])\1{5,}$/.test(String(it.lines[0] || "").replace(/\s+/g, ""));
           const pitch = n >= 2 ? Math.max(fs * 0.85, (nt - top) / n) : (isRuleLn ? Math.max(6, nt - top) : 0);
             if (pitch && pitch < lineH(it) - 0.1) { it = Object.assign({}, it, { lineSpacingPt: pitch, lineRule: 'exact' }); h = itemH(it); }
+          } else if (eqIt && it.kind === 'para' && nt != null && nt > top && nt - top < h - 0.5 && it.lineSpacingPt > (it.fontPt || 12) * 1.25) {
+            // সমীকরণ-অনুচ্ছেদে exact নয় (সমীকরণ কেটে যায়); তবে বাড়তি lineSpacingPt থাকলে atLeast রেখেই কমানো
+            const fs = it.fontPt || 12, mEx = mathExtraH(it);
+            const n = Math.max(1, Math.round((textH(it) - mEx) / lineH(it)));
+            const pitch = n >= 2 ? Math.max(fs * 1.15, (nt - top - mEx) / n) : fs * 1.15;
+            if (pitch < it.lineSpacingPt - 0.1) { it = Object.assign({}, it, { lineSpacingPt: pitch }); h = itemH(it); }
           }
-          const before = it.rect ? Math.max(0, top - lead(it) - cur) : 0;
+          const before = it.rect ? Math.max(0, top - lead(it) - cur) : (mathHOn() ? Math.max(0, it.spaceBeforePt || 0) : 0);
           els.push({ it, before, h });
           cur += before + h;
         });
@@ -359,12 +502,14 @@
         }
       });
     }
+    const rawBefore = mathHOn() ? els.map((e) => e.before) : null;
+    const maxCutRatio = mathHOn() ? 0.75 : 0.6;
     for (let k = els.length - 1; k >= 0 && need > 0; k--) {
-      const cut = Math.min(els[k].before * 0.6, need);
+      const cut = Math.min(els[k].before * maxCutRatio, need);
       els[k].before -= cut; need -= cut;
     }
     const sumB = els.reduce((a, e) => a + e.before, 0);
-    const f = need > 0 && sumB > 0 ? Math.max(0, (sumB - need) / sumB) : 1;
+    let f = need > 0 && sumB > 0 ? Math.max(0, (sumB - need) / sumB) : 1;
     // a04: স্ক্যান-পাতার টেবিল কাগজের কিনারা পর্যন্ত ⇒ ফাঁক শূন্য করেও লেখা+টেবিল পাতার চেয়ে লম্বা (শেষ সারি পরের পাতায়,
     // বাকি সব পাতা এক ঘর সরে)। তখন পাতার সরাসরি টেবিলগুলোর মাপা উচ্চতা আনুপাতিক ছোট (≥৮০%; সারি "অন্তত" ⇒ লেখা কাটে না)।
     // অনুমিত উচ্চতা ছাড়াও মাপা অবস্থান দেখা হয়: টেবিলের নিচ ছাপা-সীমা (+৫% ছাড়) পেরোলে যতটুকু বেশি ততটুকু ছোট
@@ -391,6 +536,43 @@
       const s = Math.max(0.8, Math.min(1, (tTarget - (sumH - tabH)) / tabH, 1 - over / tabH));
       if (s < 1) tabs.forEach((e) => { e.it = Object.assign({}, e.it, { heightPt: e.it.heightPt * s }); e.h *= s; });
     }
+    if (mathHOn()) {
+      // পাতা-পরিকল্পনা: সমীকরণের বাড়তি উচ্চতাসহ পাতায় আঁটানো (ফাঁক কমানো সর্বোচ্চ ৭৫%); এক পাতার ধারণক্ষমতা ছাড়ালে সঠিক আইটেম-সীমায় পাতা ভাঙা
+      const curSumH = els.reduce((a, e) => a + e.h, 0);
+      const cap = Math.max(120, lim - page.margins.top - boxExtra);
+      if (curSumH <= cap + 4) {
+        f = 1;
+      } else {
+        // এক পাতার ধারণক্ষমতার বেশি বিষয়বস্তু ⇒ প্রতিটি পাতায় যতটা ধরে বসিয়ে সঠিক স্থানে পাতা-ভাঙন (ফাঁক কমানো সর্বোচ্চ ৭৫%)
+        let pUsed = 0, chunkStart = 0;
+        for (let i = 0; i < els.length; i++) {
+          els[i].before = rawBefore[i];
+          const bMin = i === chunkStart ? 0 : els[i].before * 0.25;
+          if (i > chunkStart && pUsed + bMin + els[i].h > cap) {
+            let cNeed = Math.max(0, els.slice(chunkStart, i).reduce((a, x) => a + x.before + x.h, 0) - cap);
+            for (let k = i - 1; k >= chunkStart && cNeed > 0; k--) {
+              const cut = Math.min(els[k].before * 0.75, cNeed);
+              els[k].before -= cut; cNeed -= cut;
+            }
+            els[i].pageBreak = true;
+            els[i].before = 0;
+            if (els[i].it) els[i].it = Object.assign({}, els[i].it, { pageBreakBefore: true });
+            else if (els[i].band) els[i].band = Object.assign({}, els[i].band, { pageBreakBefore: true });
+            chunkStart = i;
+            pUsed = els[i].h;
+          } else {
+            pUsed += (i === chunkStart ? 0 : els[i].before) + els[i].h;
+          }
+        }
+        // শেষ খণ্ডের ফাঁক সমন্বয় (সর্বোচ্চ ৭৫% কমানো)
+        let lastNeed = Math.max(0, els.slice(chunkStart).reduce((a, x) => a + x.before + x.h, 0) - cap);
+        for (let k = els.length - 1; k >= chunkStart && lastNeed > 0; k--) {
+          const cut = Math.min(els[k].before * 0.75, lastNeed);
+          els[k].before -= cut; lastNeed -= cut;
+        }
+        f = 1;
+      }
+    }
     return { els, f };
   }
 
@@ -411,14 +593,15 @@
 
   function pPr(item, extraBeforePt, sectPrXml) {
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
-    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
-    const before = useEnter ? 0 : tw(totalBefore);
+    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
+    const before = useEnter || (mathHOn() && item.pageBreakBefore) ? 0 : tw(totalBefore);
     const fs = item.fontPt || 12;
     // সমীকরণ থাকলে Word-এ exact লাইনে উপর-নিচ কেটে যায় ⇒ atLeast বা auto
     const hasEq = !globalThis.__FZ_OFF_EQCLIP && (
       /(\$|\\frac|\\sqrt|\\sum|\\int|⟦eq|[\u2200-\u22FF])/.test(String(item.text || ''))
       || (item.lines && item.lines.some((l) => /(\$|\\frac|\\sqrt|\\sum|\\int|⟦eq|[\u2200-\u22FF])/.test(l)))
       || !!item.hasEquation
+      || (mathHOn() && hasEqItem(item))
     );
     // লাইন-দূরত্ব: মাপা দূরত্ব সাধারণ (≈১.২×ফন্ট)-এর চেয়ে বেশি হলে "অন্তত" সেই দূরত্ব (কাটা পড়ার ঝুঁকি নেই)
     // Part-17.8/17.9: লেখার অনুচ্ছেদে "ঠিক" লাইন-উচ্চতা (lineH) — উচ্চতা অনুমানযোগ্য, পাতার হিসাব মেলে
@@ -454,7 +637,8 @@
     const bdr = rb || ra ? `<w:pBdr>${ra}${rb ? `<w:bottom ${rb}/><w:between ${rb}/>` : ''}</w:pBdr>` : '';
     // ওপরের ছোট রেখা ⇒ অনুচ্ছেদের প্রস্থ = রেখার প্রস্থ (মাঝে-বসানো লেখা রেখার মাঝে)
     if (item.ruleAbove) ind = `<w:ind w:left="${tw(item.ruleAbove.indL)}" w:right="${tw(item.ruleAbove.indR)}"/>`;
-    return `<w:pPr>${sectPrXml || ''}${bdr}${shd}${tabs}<w:spacing w:before="${before}" w:after="0" ${line}/>${ind}<w:jc w:val="${jc}"/></w:pPr>`;
+    const pb = mathHOn() && item.pageBreakBefore ? '<w:pageBreakBefore/>' : '';
+    return `<w:pPr>${sectPrXml || ''}${pb}${bdr}${shd}${tabs}<w:spacing w:before="${before}" w:after="0" ${line}/>${ind}<w:jc w:val="${jc}"/></w:pPr>`;
   }
 
   function paraXml(item, extraBeforePt, ctx) {
@@ -687,7 +871,8 @@
       const fi = item.firstIndentPt || 0;
       const rest = Object.assign({}, item, { spaceBeforePt: 0, firstIndentPt: 0, indentPt: (item.indentPt || 0) + (fi < 0 ? -fi : 0) });
       const last = item.tabLines.length - 1, noRule = (x) => Object.assign({}, x, { ruleBelow: null });
-      return item.tabLines.map((ln, k) => {
+      const preEnter = mathHOn() && !globalThis.__FZ_OFF_ENTERGAP && !item.pageBreakBefore ? enterGapXml((item.spaceBeforePt || 0) + (extraBeforePt || 0)) : '';
+      return preEnter + item.tabLines.map((ln, k) => {
         const ppr0 = k ? pPr(k === last ? rest : noRule(rest), 0) : pPr(last ? noRule(item) : item, extraBeforePt);
         const lead = hasLead(ln, k ? rest.indentPt : (item.indentPt || 0) + fi);
         const ppr = markParaRpr(lead ? leadStop(ppr0, usedTabs(ln)) : ppr0, lead ? String(ln).replace(DOTS, '') : ln, lead);
@@ -713,9 +898,9 @@
       : item.keepLines && item.lines && item.lines.length > 1
       ? item.lines.map((ln) => runsFor(ln, item)).join('<w:r><w:br/></w:r>')
       : runsFor(rawTxt, item);
-    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
+    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
-    const enterLead = useEnter ? enterGapXml(totalBefore) : '';
+    const enterLead = useEnter && !(mathHOn() && item.pageBreakBefore) ? enterGapXml(totalBefore) : '';
     return `${enterLead}<w:p>${markParaRpr(pPr(item, extraBeforePt), rawTxt, false)}${body}</w:p>`;
   }
 
@@ -741,7 +926,7 @@
   }
 
   function spacer(pt) {
-    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
+    const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     if (useEnter) return enterGapXml(pt);
     return pt > 1 ? `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="${tw(pt)}" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p>` : '';
   }
@@ -777,7 +962,8 @@
       const nL = String(txt || '').split('\n').length, fsz = item.fontPt || 11;
       const curRowH = rh.fitted && rh[ri] ? rh[ri].h : (isEmpty(rows[ri], ri) && rowH ? rowH * 0.4 : rowH);
       const hasCellTxt = !!(txt && String(txt).trim());
-      const tight = (!formFixOn || hasCellTxt)
+      const cellHasEq = mathHOn() && !!mathKindOf(txt);
+      const tight = !cellHasEq && (!formFixOn || hasCellTxt)
         && rh.fitted && rh[ri] && (!rh[ri].exact || rowIsAtLeast)
         && !String(txt || '').includes('\n') && curRowH - BA < fsz * (rowIsAtLeast && rh[ri].exact ? 1.68 : 1.6)
         ? ` w:line="${tw(Math.max(fsz * 1.05, curRowH - BA))}" w:lineRule="exact"` : '';
@@ -1258,6 +1444,13 @@
   }
 
   const FayzarFaithfulDocx = { FONT, bodyXml, build, runsFor, pPr, paraXml, planPage };
+  Object.defineProperties(FayzarFaithfulDocx, {
+    itemH: { value: itemH, enumerable: false },
+    textH: { value: textH, enumerable: false },
+    mathKindOf: { value: mathKindOf, enumerable: false },
+    mathLineExtraPt: { value: mathLineExtraPt, enumerable: false },
+    mathExtraH: { value: mathExtraH, enumerable: false }
+  });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

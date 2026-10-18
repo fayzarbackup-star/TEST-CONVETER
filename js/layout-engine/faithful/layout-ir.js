@@ -22,6 +22,89 @@
   'use strict';
   // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
   const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
+  // গণিত-পাতা উচ্চতা-হিসাব সুইচ: শুধু globalThis.__FZ_ON_MATHH সত্য হলে সক্রিয়
+  const mathHOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_MATHH : global.__FZ_ON_MATHH);
+
+  /**
+   * সমীকরণের ধরন শনাক্তকরণ (ভগ্নাংশ/স্ট্যাকড > মূল/বড়-চিহ্ন > সূচক/সহগ > সাধারণ সমীকরণ)।
+   * @returns 'frac' | 'rad' | 'sup' | 'math' | null
+   */
+  function mathKindOf(text, hint) {
+    let hk = null;
+    if (hint && typeof hint === 'object') {
+      if (hint.mathKind === 'frac' || hint.eqType === 'frac' || hint.isFraction) hk = 'frac';
+      else if (hint.mathKind === 'rad' || hint.mathKind === 'sqrt' || hint.eqType === 'rad') hk = 'rad';
+      else if (hint.mathKind === 'sup' || hint.mathKind === 'script' || hint.eqType === 'sup') hk = 'sup';
+      else if (hint.hasEquation || hint.mathKind === 'math' || hint.eqType === 'math') hk = 'math';
+    }
+    const t = String(text || '');
+    let tk = null;
+    if (t) {
+      if (/\\(?:d|t|c)?frac(?![A-Za-z])|\\(?:d|t|c)?binom(?![A-Za-z])|\\(?:over|atop|stackrel|overset|underset)(?![A-Za-z])|\\begin\{(?:p|b|B|v|V)?matrix\}|\\begin\{(?:cases|array|aligned|split)\}|(?:\\(?:sum|prod|coprod|int|oint|iint|bigcup|bigcap|lim)(?![A-Za-z])|[∑∏∐∫∮∬⋃⋂])\s*(?:[_^⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]|\\(?:limits|nolimits))|[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⁄]|\$[^$]*\/[^$]*\$|⟦eq[^⟧]*\/[^⟧]*⟧|\([^()\n]+\)\s*\/\s*\([^()\n]+\)|\{[^{}\n]+\}\s*\/\s*\{[^{}\n]+\}/.test(t)) tk = 'frac';
+      else if (/\\sqrt(?![A-Za-z])|[√∛∜]|\\(?:sum|prod|coprod|int|oint|iint|bigcup|bigcap|lim)(?![A-Za-z])|[∑∏∐∫∮∬⋃⋂]/.test(t)) tk = 'rad';
+      else if (/\^\{[^}]*\}|_\{[^}]*\}|<sup\b|<sub\b|[A-Za-z0-9)\]\u0980-\u09FF]\s*[\^_]\s*[A-Za-z0-9(+\-\u09E6-\u09EF]|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]/i.test(t)) tk = 'sup';
+      else if (/(\$|\\(?:alpha|beta|gamma|delta|epsilon|theta|lambda|mu|pi|sigma|omega|sin|cos|tan|cot|sec|csc|log|ln|infty|pm|mp|times|div|neq|leq|geq|approx|equiv|in|notin|subset|subseteq|cup|cap|emptyset|angle|triangle|perp|parallel)(?![A-Za-z])|⟦eq|[\u2200-\u22FF])/.test(t)) tk = 'math';
+    }
+    if (!tk) return hk;
+    if (!hk) return tk;
+    const rank = { frac: 4, rad: 3, sup: 2, math: 1 };
+    return rank[tk] >= rank[hk] ? tk : hk;
+  }
+
+  /** ভগ্নাংশের লব বা হরের ভেতরে আরেকটি ভগ্নাংশ (নেস্টেড) আছে কিনা — একই লাইনের একাধিক ভগ্নাংশকে নেস্টেড ধরা হয় না */
+  function hasNestedFrac(t) {
+    const s = String(t || '');
+    const re = /\\(?:d|t|c)?frac(?![A-Za-z])/g;
+    let m;
+    while ((m = re.exec(s)) !== null) {
+      let i = m.index + m[0].length;
+      for (let arg = 0; arg < 2; arg++) {
+        while (i < s.length && /\s/.test(s[i])) i++;
+        if (s[i] !== '{') break;
+        let depth = 1, start = ++i;
+        while (i < s.length && depth > 0) {
+          if (s[i] === '{') depth++;
+          else if (s[i] === '}') depth--;
+          i++;
+        }
+        const inner = s.slice(start, i - 1);
+        if (/\\(?:d|t|c)?frac(?![A-Za-z])|\\(?:over|atop)(?![A-Za-z])|[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⁄]/.test(inner)) return true;
+      }
+    }
+    return false;
+  }
+
+  /** এক লাইনের সমীকরণের ধরন অনুযায়ী বাড়তি উচ্চতা (pt): ভগ্নাংশ/স্ট্যাকড > মূল > সূচক > সাধারণ */
+  function mathLineExtraPt(text, fs, hint) {
+    const f = fs || 12, t = String(text || ''), k = mathKindOf(t, hint);
+    if (!k) return 0;
+    if (k === 'frac') {
+      return f * (hasNestedFrac(t) ? 1.45 : 1.05);
+    }
+    if (k === 'rad') {
+      const innerSup = /\\sqrt\s*(?:\[[^\]]*\])?\s*\{[^}]*[\^_⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]|√\s*\(?[^)\s]*[\^_⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]/.test(t);
+      return f * (innerSup ? 0.55 : 0.45);
+    }
+    if (k === 'sup') {
+      const both = (/\^|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱ]|<sup\b/i.test(t)) && (/_|[₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]|<sub\b/i.test(t));
+      return f * (both ? 0.38 : 0.28);
+    }
+    return f * 0.12;
+  }
+
+  /** সমীকরণ-যুক্ত লেখার দৃশ্যমান প্রস্থের অনুমানের জন্য LaTeX কমান্ড সংক্ষেপ */
+  function mathVisStr(s) {
+    let out = String(s || '')
+      .replace(/\\sqrt\s*(?:\[[^\]]*\])?\s*\{([^{}]*)\}/g, '√$1')
+      .replace(/[\^_]\s*\{([^{}]*)\}/g, '$1');
+    for (let d = 0; d < 4 && /\\(?:d|t|c)?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/.test(out); d++) {
+      out = out.replace(/\\(?:d|t|c)?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g, (_, a, b) => (a.length >= b.length ? a : b));
+    }
+    return out
+      .replace(/\\(?:left|right)\s*([()[\]{}|.])/g, '$1')
+      .replace(/\\[A-Za-z]+/g, 'm')
+      .replace(/[\${}^_]|⟦eq:?|⟧/g, '');
+  }
 
   const FS_CLASS = { s: 10, m: 12, l: 14, xl: 18 };
   // Part-17.7: list_item — প্রতিটি মুদ্রিত লাইন আলাদা ভুক্তি (অ = …, ১। শাপলা …); জোড়া দিলে তালিকা এক লাইনে গলে যেত
@@ -45,6 +128,12 @@
       const top = /[A-Z0-9bdfhklt(){}[\]'"!?/|ij]/.test(t) ? 0.71 : 0.47;
       const bot = /[gjpqyQJ(){}[\],;]/.test(t) ? 0.21 : 0;          // (Times-এর Q/J-র লেজও নিচে নামে)
       r = Math.max(r, top + bot);
+    }
+    if (mathHOn()) {
+      const mk = mathKindOf(t);
+      if (mk === 'frac') r = Math.max(r || INK_RATIO, 1.75);
+      else if (mk === 'rad') r = Math.max(r || INK_RATIO, 1.3);
+      else if (mk === 'sup') r = Math.max(r || INK_RATIO, 1.12);
     }
     return r || INK_RATIO;
   }
@@ -155,7 +244,7 @@
     // a07 পাতা ৪ (কাত স্ক্যান: লেখা-লাইন ১টিই মাপা): ভাগ-সংখ্যা = সারি-সংখ্যা, ফাঁকা সারি নেই ⇒ সারি i = ভাগ i (অনুমান লাগে না)
     if (!globalThis.__FZ_OFF_BAND && bands.length === rows.length && rows.every((r) => r.some((c) => c && String(c).trim()))) return bands.map((b) => b.y1 - b.y0);
     const nC = Math.max(...rows.map((r) => r.length)), W = m.rectPt.w;
-    const wrap = (t, cw) => String(t || '').split('\n').reduce((a, ln) => a + (Math.ceil(ln.replace(/[ঁ-ঃ়া-্ৗ]/g, '').replace(/([._\-…·─])\1{5,}/g, (s) => s.slice(0, 6)).length * fs * 0.45 / Math.max(20, cw)) || 1), 0);
+    const wrap = (t, cw) => String(t || '').split('\n').reduce((a, ln) => a + (Math.ceil((mathHOn() ? mathVisStr(ln) : ln).replace(/[ঁ-ঃ়া-্ৗ]/g, '').replace(/([._\-…·─])\1{5,}/g, (s) => s.slice(0, 6)).length * fs * 0.45 / Math.max(20, cw)) || 1), 0);
     const empty = rows.map((r) => !r.some((c) => c && String(c).trim()));
     let est = rows.map((r, i) => (empty[i] ? 0 : Math.max(1, ...r.map((c, k) => (c ? wrap(c, W * (fr ? fr[k] : 1 / nC) - 10.8) : 1)))));
     // ২০২৬-১০-১৪ (a18): ঘরের পরের ঘরগুলো ফাঁকা ⇒ লেখা সেগুলো জুড়ে (জোড়া-ঘর, "বিঃদ্রঃ" পুরো-প্রস্থ) — কলাম-প্রস্থে মোড়ানো-অনুমান
@@ -654,13 +743,18 @@
       // Part-17.9: ঘরের ফন্ট — সারি-লাইনের কালি-উচ্চতা ÷ টেবিলের লেখার অক্ষর-শ্রেণির অনুপাত (ক্যালিব্রেটেড)
       let cellFontSrc = 0;
       const tblText = (b.lines || []).join(' ');
-      if (m && !m.empty && m.cellInkPt) cellFontSrc = m.cellInkPt / inkRatioFor(tblText);
+      const tblCells = mathHOn() ? rows.flatMap((r) => r.map((c) => String(c || '').trim()).filter(Boolean)) : [];
+      const eqCells = tblCells.filter((c) => mathKindOf(c));
+      const tblInkRatio = mathHOn() && tblCells.length && eqCells.length * 2 < tblCells.length
+        ? inkRatioFor(tblCells.filter((c) => !mathKindOf(c)).join(' ') || tblText)
+        : inkRatioFor(tblText);
+      if (m && !m.empty && m.cellInkPt) cellFontSrc = m.cellInkPt / tblInkRatio;
       // প্রস্থ-ভিত্তিক (থাকলে, ১.৫ গুণের ভেতরে) অগ্রাধিকার
       if (m && !m.empty && m.cellWidthFontPt && (!cellFontSrc || (m.cellWidthFontPt / cellFontSrc < 1.5 && cellFontSrc / m.cellWidthFontPt < 1.5))) cellFontSrc = m.cellWidthFontPt;
       // কাজ ২ (a17 p6, FZ_OFF=DOTFONT): অনুচ্ছেদ-ভরা (≥৮০ অক্ষর) বিন্দু-সারিওয়ালা ফরম-ছকে সারি-ব্যান্ডের বিন্দুহীন লেখার কালি-উচ্চতা থেকে ঘরের আসল ফন্ট উদ্ধার
       const hasLongDotCell = /([._…·])\1{4,}/.test(tblText) && rows.some((r) => r.some((c) => String(c || '').replace(/\s+/g, '').length >= 80));
       if (!globalThis.__FZ_OFF_DOTFONT && m && !m.empty && m.hasGrid && hasLongDotCell) {
-        let dotlessFont = m.dotlessCellInkPt ? m.dotlessCellInkPt / inkRatioFor(tblText) : 0;
+        let dotlessFont = m.dotlessCellInkPt ? m.dotlessCellInkPt / tblInkRatio : 0;
         if (!dotlessFont && Array.isArray(m.textInkXPt) && Array.isArray(m.textLinesPt) && m.textLinesPt.length >= 3) {
           const lhs = m.textLinesPt.map((ly) => {
             const cs = m.textInkXPt.filter((c) => c[2] - c[1] >= 4 && ly >= c[1] - 2 && ly <= c[2] + 2);
@@ -1022,7 +1116,7 @@
     // ২০২৬-১০-১৪ (a17 p4 "কর্মকর্তাদের নাম ⟦ ⟧ পদবি ⟦ ⟧ স্বাক্ষর"): নিচে-দাগের শিরোনাম-সারিতে Gemini ⟦ ⟧ দেয় কলামের ফাঁক বোঝাতে,
     // builder তা □ বানাত। দাগওয়ালা লেখায় চেকবক্স হয় না (a03-এর আসল বাক্সগুলো দাগহীন সারিতে) ⇒ বাদ। বন্ধ: FZ_OFF=ULBOX
     const noBox = (l) => (b.underline && !globalThis.__FZ_OFF_ULBOX ? String(l).replace(/ ?[[⟦]\s?[\]⟧]/g, '') : l);
-    return Object.assign(base, {
+    const paraOut = Object.assign(base, {
       kind: 'para', text: noBox(b.text || ''), lines: (ul ? ul : b.lines || []).map(noBox), keepLines, keepJust, fs: b.fs,
       tabLines: tabs ? tabs.lines.map(noBox) : null, tabStopsSrc: tabs ? tabs.stops : null,
       italic: !!b.italic, underline: ul ? false : !!b.underline || !!(m && m.underline),
@@ -1030,6 +1124,17 @@
       firstIndentPt: m && m.firstIndentPt && Math.abs(m.firstIndentPt) >= 4 ? m.firstIndentPt : 0,
       lineSpacingPt: m && m.pitchPt ? m.pitchPt : 0
     });
+    if (mathHOn()) {
+      const mLines = (paraOut.tabLines && paraOut.tabLines.length ? paraOut.tabLines : (paraOut.lines && paraOut.lines.length ? paraOut.lines : [paraOut.text || '']));
+      const rank = { frac: 4, rad: 3, sup: 2, math: 1 };
+      let bestK = b.hasEquation ? 'math' : null;
+      for (const ln of mLines) {
+        const k = mathKindOf(ln, b);
+        if (k && (!bestK || rank[k] > rank[bestK])) bestK = k;
+      }
+      if (bestK) { paraOut.hasEquation = true; paraOut.mathKind = bestK; }
+    }
+    return paraOut;
   }
 
   /** পাতার স্বাভাবিককরণ: স্কেল, কাগজ, মার্জিন, মূল-লেখা-আকার; item-এর rect/ফন্ট রূপান্তর */
@@ -1147,9 +1252,17 @@
         // ২০২৬-১০-১৩: মাপা লাইন-সংখ্যা = Gemini-র লাইন-সংখ্যা (≥২) হলে জোড়া পড়েনি ⇒ ২.২ গুণ পর্যন্ত বিশ্বাস্য
         // (a13: ১১pt লেখা ১৯pt দূরত্বে ৫ লাইন — ফেলে দিলে অনুচ্ছেদ ২৫pt খাটো, নিচের সব ওপরে)
         const sameN = it.m && it.m.lines && it.lines && it.lines.length >= 2 && it.m.lines.length === it.lines.length;
-        if (it.lineSpacingPt > it.fontPt * (sameN ? 2.2 : 1.6)) it.lineSpacingPt = 0;
+        const maxLsMul = mathHOn() && it.hasEquation ? (sameN ? 2.8 : 2.2) : (sameN ? 2.2 : 1.6);
+        if (it.lineSpacingPt > it.fontPt * maxLsMul) it.lineSpacingPt = 0;
         it.lineSpacingPt = r1((it.lineSpacingPt || 0) * scale);
         it.firstIndentPt = r1((it.firstIndentPt || 0) * scale);
+        if (mathHOn() && it.hasEquation) {
+          const rawML = (it.tabLines && it.tabLines.length ? it.tabLines : (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n')));
+          const mLines = rawML.length ? rawML : [String(it.text || '')];
+          let exSum = mLines.reduce((acc, ln) => acc + mathLineExtraPt(ln, it.fontPt, mLines.length === 1 ? it : null), 0);
+          if (exSum === 0) exSum = mathLineExtraPt('', it.fontPt, it);
+          it.mathExtraPt = r1(exSum);
+        }
       } else if (it.kind === 'table') {
         // Part-17.8: মাপা ঘরের ফন্ট (মূল-লেখার ±১৫%-এ হলে মূল-লেখার আকার); মাপ না থাকলে আগের মতো
         const est = it.cellFontSrc ? it.cellFontSrc * scale : 0;
@@ -1280,7 +1393,8 @@
       // শুধু একই কলামে পড়া লেবেল+বাক্স জোড়া (আলাদা কলামে থাকলে এমনিতেই পাশাপাশি — জোড়ায় নেস্টেড টেবিল উচ্চতা বাড়াত, a02)
       cols.forEach((c) => { if (c.items.length > 1) attachBoxLabels(c.items); });
       const gapBeforePt = r1(Math.max(0, band.y0 - prevY1));
-      prevY1 = Math.max(prevY1, band.y1);
+      const bandMathBot = mathHOn() ? Math.max(band.y1, ...band.items.map((x) => x.rect.y + Math.max(x.rect.h, ((x.lines && x.lines.length) || 1) * (x.fontPt || 12) * 1.15 + (x.mathExtraPt || 0)))) : band.y1;
+      prevY1 = Math.max(prevY1, bandMathBot);
       const cells = cols.map((c, i) => {
         const cx0 = i === 0 ? left : r1((cols[i - 1].x1 + c.x0) / 2);
         const cx1 = i === cols.length - 1 ? Math.max(right, c.x1) : r1((c.x1 + cols[i + 1].x0) / 2);
@@ -1299,7 +1413,8 @@
           // Part-17.8: ট্যাব-অবস্থান ঘর/স্তম্ভের বাম কিনারা থেকে (Word-নিয়ম; ইনডেন্ট থেকে নয়)
           if (it.tabStopsAbs) out.tabStops = it.tabStopsAbs.map((x) => r1(x - cx0)).filter((x) => x > out.indentPt + 2);
           out.spaceBeforePt = r1(Math.max(0, it.rect.y - (k === 0 ? band.y0 : yPrev)));
-          yPrev = it.rect.y + it.rect.h;
+          const effH = mathHOn() && it.mathExtraPt ? Math.max(it.rect.h, ((it.lines && it.lines.length) || 1) * (it.fontPt || 12) * 1.15 + it.mathExtraPt) : it.rect.h;
+          yPrev = it.rect.y + effH;
           return out;
         });
         return { x0: r1(cx0), x1: r1(cx1), items };
@@ -1972,6 +2087,10 @@
   }
 
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
+  Object.defineProperties(FayzarLayoutIR, {
+    mathKindOf: { value: mathKindOf, enumerable: false },
+    mathLineExtraPt: { value: mathLineExtraPt, enumerable: false }
+  });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

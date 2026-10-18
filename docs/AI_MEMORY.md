@@ -23,6 +23,7 @@
 - **GitHub Repo**: `https://github.com/fayzarbackup-star/TEST-CONVETER/tree/arena/01a0f18b-test-conveter`
 
 ## 3. Recently Implemented Features (DO NOT OVERWRITE)
+0. **2026-10-18 রাত — Gemini v3 রাউন্ড**: A1_MATHH→fayzarbackup1, A2_REGISTRY→2, A3_OTSU→4 (Task+Argon)। bridge fetch দিয়ে তিন জিপ নামানো (`--name` আসলে ফিল্টার — ভুল নামে "No files")। বসানো সুইচ-গেটেড: রেজিস্ট্রি ১৬ আর্কিটাইপ (`__FZ_ON_REGISTRY`), Otsu বাকি ফাংশনে + `mask.thr`, MATHH ফাঁক-কমানো। টেস্ট ১৯৫৪/০। ব্যাকআপ scratch/backups/v3_apply_20261018। bridge FETCH_FILES-এ `[role=button]` + debug যোগ। Claude in Chrome গ্রুপ বারবার ভাঙে → উত্তর আনায় bridge।
 1. **Cloudflare Proxy Failover**: `fayzar-ocr-proxy/index.js` manages key rotation, masking, rate-limiting, and error handling for Gemini API.
 2. **Two-Phase Self-Recheck**: Implemented in `js/ai-ocr-engine.js` prompt. The AI evaluates text internally before finalizing output.
 3. **Key Ledger UI**: Built into `index.html` to monitor API keys. Logic resides in `fayzar-ocr-proxy/ledger.js`.
@@ -569,4 +570,8 @@
 
 - ২০২৬-১০-১৬ বিকাল: মাল্টি-অ্যাসিস্ট্যান্ট ক্রোম এক্সটেনশন ব্রিজ (`gemini-bridge-extension/`, পোর্ট ১৮৭৬৫) সম্পন্ন। ব্যবহারকারীর রানিং ক্রোমে ৪টি অ্যাকাউন্টের লগইন অক্ষত রেখে ৪টি জিমিনি ট্যাবে অটোমেশন সংযোগ নিশ্চিত (A-1 লেআউট, A-2 ক্লাসিফায়ার, A-3 .doc লেগ্যাসি, A-4 সিনিয়র লিড)। সেন্ট্রাল CLI `tools/agent_manager.mjs` এবং ট্র্যাকার `docs/MULTI_AGENT_MANAGEMENT.md` তৈরি। TASK-01 (a05 e2e) সমাধান ও Word COM ভেরিফাইড (`measure-doc.ps1` এ GetFullPath ফিক্স; pages=2, paras=320, tables=8; স্কোর ৮০.৮ ছবি / ৭০.৫ লেআউট)। TASK-02 (CLSFIX পর্যালোচনা) এর জন্য `scratch/bundles/TASK-02_bundle.zip` তৈরি। ১৮৭২ টেস্ট পাস অক্ষত।
 - ২০২৬-১০-১৬ গভীর রাত / ১৭ ভোর (Part-19.6): জিপ ফাইল ভিত্তিক তথ্য আদান-প্রদান প্রোটোকল বাস্তবায়ন (`fetch_all_patches.mjs`, `switch-mode` API)। ৪টি ট্যাবকেই স্বয়ংক্রিয়ভাবে Argon থেকে দ্রুতগতির Flash মোডে সুইচ করা হয়েছে যা টাইমআউট বা স্ট্রিম ড্রপ রোধ করে। এক্সটেনশন ব্রিজে ডুপ্লিকেট ডিসপ্যাচ ও ফলব্যাক অপসারণ করে কঠোর সিঙ্গেল ডিসপ্যাচ নিশ্চিত করা হয়েছে। ডায়নামিক স্ক্রিপ্ট ইনজেকশন চলায় এক্সটেনশন ম্যানুয়ালি রিলোড করতে হয় না। A-3 ট্যাবে `A3_GOAL4B_OTSU_THRESHOLD_bundle.zip` আনপ্যাক ও টাস্ক সমাধান চলছে। ১৮৭২/১৮৭২ টেস্ট গেট শতভাগ গ্রিন, কোর ফ্রোজেন ইঞ্জিন সম্পূর্ণ সুরক্ষিত।
+- ২০২৬-১০-১৮ বিকাল: IDM আনইন্সটলের পর তিনটি Gemini প্যাচ বসানো: A1_MATHH (`__FZ_ON_MATHH`, গণিত-লাইনের বাড়তি উচ্চতা; layout-ir + faithful-docx-builder), A3_OTSU (`__FZ_ON_OTSU`, page-geometry inkMask-এ Otsu/টাইল-নরমালাইজেশন), A2_REGISTRY (নতুন layout-registry.js + টেস্ট ২৯/২৯, archetype-map হুক)।
+  যাচাই: hunk-মিল + দেওয়া পুরো ফাইলের সাথে হুবহু মিল (A1 diff-এ একটি newline-ত্রুটি ছিল, হাতে মিলিয়ে নিরাপদ প্রমাণিত)। ব্যাকআপ scratchpad backup-before-A123। টেস্ট ১৯০১/০। push হয়নি।
+  ডাউনলোড: bridge এক্সটেনশন আবার বসানো; Antigravity এজেন্ট Drive-viewer div সিলেক্টর ঠিক করায় `agent_manager.mjs fetch --tab N` কাজ করে (A3 হ্যাশ মিলেছে)।
+  সন্ধ্যা: v3 বান্ডেল তিনটি (A1 টেস্ট/প্রান্তিক, A2 run-all+REGISTRY সুইচ, A3 টেস্ট/বাকি থ্রেশহোল্ড) তৈরি, পাঠানো হয়নি; পরের বার নতুন অ্যাকাউন্ট বাধ্যতামূলক।
 

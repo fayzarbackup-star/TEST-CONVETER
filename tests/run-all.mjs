@@ -24,6 +24,7 @@ const suites = fs.readdirSync(TDIR)
   .sort()
   .map((f) => ({ name: f.replace(/\.test\.(mjs|js)$/, ''), file: path.join('tests', f) }));
 if (!suites.some((s) => s.name === 'classify-score') && fs.existsSync(path.join(TDIR, 'classify-score.test.mjs'))) suites.push({ name: 'classify-score', file: path.join('tests', 'classify-score.test.mjs') });
+if (!suites.some((s) => s.name === 'layout-registry') && fs.existsSync(path.join(TDIR, 'layout-registry.test.mjs'))) suites.push({ name: 'layout-registry', file: path.join('tests', 'layout-registry.test.mjs') });
 if (ONLY) suites.splice(0, suites.length, ...suites.filter((s) => s.name.includes(ONLY)));
 
 const rows = [];
