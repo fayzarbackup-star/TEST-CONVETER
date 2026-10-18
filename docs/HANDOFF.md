@@ -1,8 +1,8 @@
-# হ্যান্ডঅফ — ২০২৬-১০-১৮ (রাত)
-- পদ্ধতি: docs/GEMINI_TAB_WORKFLOW.md। কখনো জিজ্ঞেস নয়: নিজেই Chrome-এ অবতার → অ্যাকাউন্ট বদল (৮টি লগইন) → জিপ পাঠাও → ৩–৫ মিনিটে একটি করে ট্যাব রিফ্রেশ → fetch।
-- উত্তর আনা: bridge (`node gemini-bridge-extension/bridge_server.mjs` background) → `agent_manager.mjs status` / `reload --tab N` / `fetch --tab N`। **`--name` = ফাইলনামের ফিল্টার** (আউটপুট-নাম নয়; ভুল নাম দিলে "No files")। Claude in Chrome-এর ট্যাব-গ্রুপ প্রায়ই ভাঙে; উত্তর আনায় bridge-ই নির্ভরযোগ্য।
-- v3 রাউন্ড শেষ ও বসানো (সব সুইচ-গেটেড, ডিফল্ট অপরিবর্তিত): A2_REGISTRY (১৬ আর্কিটাইপ এন্ট্রি, `__FZ_ON_REGISTRY`, টেস্ট ৪৬/৪৬), A3_OTSU (inkMask/pageBackground/blockShade/darkBandMask, `mask.thr`, টেস্ট ৭/৭), A1_MATHH (faithful-docx-builder + layout-ir, টেস্ট ২৯/২৯)। পুরো সেট ১৯৫৪/০। push হয়নি।
-- ব্যাকআপ: scratch/backups/v3_apply_20261018/। উত্তর-জিপ: Downloads\gemini-inbox\A*_v3*.zip।
-- bridge বদল: background.js FETCH_FILES-এ `[role=button]` কার্ড + খালি হলে `debug`; bridge_server `/fetch-files` debug পাস করে (এক্সটেনশন `/reload` করা হয়েছে)।
-- বাকি: (১) otsu-threshold ও math-height টেস্ট run-all-এ যুক্ত কি না যাচাই/যোগ; (২) A2-এর README অনুযায়ী HTML-এ layout-registry script ট্যাগ (সুইচ বন্ধ থাকায় ঐচ্ছিক); (৩) MATHH/OTSU চালু করে asis-score ২–৩টি ফাইল (গণিত-পাতা, স্ক্যান) → ভালো হলে ডিফল্ট চালুর সিদ্ধান্ত ব্যবহারকারীর; (৪) push (main)।
-- পরের রাউন্ড: নতুন কাজ ঠিক করে v4 বান্ডেল → অব্যবহৃত অ্যাকাউন্ট (3, 6, 7, 8)।
+# হ্যান্ডঅফ — ২০২৬-১০-১৮ (গভীর রাত)
+- পদ্ধতি: docs/GEMINI_TAB_WORKFLOW.md-এর শুরুর "সহজ পথ" (bridge + `tools/gemini-round.mjs send|watch|list`)। কখনো ব্যবহারকারীকে জিজ্ঞেস নয়।
+- v3 (REGISTRY/OTSU/MATHH) বসানো ও GitHub main-এ push (commit db6108e); টেস্ট ১৯৫৪/০।
+- **v4 চলমান** (scratch/bundles/rounds.json): ট্যাব0 fayzarbackup2 ← A2_REGISTRY_E2_v4 (CASH_MEMO পাইপলাইনে রেজিস্ট্রি-রাউটিং); ট্যাব1 fayzarbackup4 ← A3_ROWCHECK_v4 (ছবি থেকে ছক-সারি যাচাই); ট্যাব2 fayzarbackup1 ← A1_REBREAK_v4 (লাইন-মেলানো DP মডিউল)। প্রম্পট: scratch/bundles/prompts/*_v4.md।
+- `gemini-round.mjs watch` background-এ চলছে; বন্ধ হলে আবার চালাও। উত্তর এলে: Downloads\gemini-inbox → scratchpad-এ খোলা → cmp (চলতি ফাইলের সাথে) → ব্যাকআপ (scratch/backups/) → বসানো → সংশ্লিষ্ট টেস্ট → পুরো সেট → push।
+- পরের নতুন অ্যাকাউন্টের কাজ তৈরি আছে: scratch/bundles/prompts/A3_CLS_PAD_v4.md (প্যাড-নোটিশ/আবেদন → OFFICE_PAD; বান্ডেল এখনো বানানো হয়নি)।
+- bridge বদল (১০-১৮): background.js `sendPromptTrusted` + `attachViaDebugger` (debugger permission), FETCH_FILES `[role=button]` + debug; bridge_server `/send` ফাইল-পথ পাঠায়, `/fetch-files` debug দেয়। `--name` = ফাইলনাম-ফিল্টার।
+- বাকি সিদ্ধান্ত: নমুনা PDF ("Downloads\AS it IS") এই পিসিতে নেই ⇒ asis-score মাপা যায়নি; MATHH/OTSU ডিফল্ট চালু করার আগে স্কোর লাগবে (ফোল্ডার ফিরিয়ে দিলে মাপা হবে)।

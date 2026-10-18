@@ -523,11 +523,8 @@
     // উপ-লেআউট নির্বাচন হুক
     selectSubLayout: selectCashMemoSubLayout,
 
-    // পার্স হুক: subLayout অনুযায়ী FayzarCashMemoLayout.parse বা FayzarReceiptLayout.parse কল করে
+    // পার্স হুক: ঠিক আগের মতো RECEIPT_LAYOUT (wants বা স্পষ্ট subLayout) আগে, তারপর CASH_MEMO_LAYOUT
     parse(input, options, thirdArg) {
-      const subLayout = resolveSubLayoutFromArgs(input, options, thirdArg);
-      const mod = getTargetModuleForSubLayout(subLayout, 'parse');
-
       let rawText = '';
       let callOpts = typeof options === 'object' && options !== null ? Object.assign({}, options) : {};
       if (typeof options === 'string' && typeof thirdArg === 'object' && thirdArg !== null) {
@@ -547,19 +544,56 @@
         rawText = String(input == null ? '' : input);
       }
 
-      if ((subLayout === 'receipt' || subLayout === 'voucher') && !callOpts.memoKind) {
-        callOpts = Object.assign({}, callOpts, { memoKind: subLayout });
+      // ১. কলার যদি স্পষ্টভাবে subLayout ('receipt' | 'voucher' | 'cash-memo') পাঠায়
+      const explicitSub =
+        (typeof options === 'string' ? normalizeExplicitSubLayout(options) : '') ||
+        (typeof thirdArg === 'string' ? normalizeExplicitSubLayout(thirdArg) : '') ||
+        (options && typeof options === 'object'
+          ? normalizeExplicitSubLayout(
+              options.subLayout ??
+                options.sub_layout ??
+                (options.frontmatter && (options.frontmatter.sub_layout || options.frontmatter.subLayout)) ??
+                (options.__frontmatter && (options.__frontmatter.sub_layout || options.__frontmatter.subLayout))
+            )
+          : '');
+
+      if (explicitSub === 'receipt' || explicitSub === 'voucher') {
+        const rlMod = getTargetModuleForSubLayout(explicitSub, 'parse');
+        if (!callOpts.memoKind) {
+          callOpts = Object.assign({}, callOpts, { memoKind: explicitSub });
+        }
+        return rlMod.parse(rawText, callOpts);
       }
 
-      return mod.parse(rawText, callOpts);
+      if (explicitSub === 'cash-memo') {
+        const cmMod = getTargetModuleForSubLayout('cash-memo', 'parse');
+        return cmMod.parse(rawText, callOpts);
+      }
+
+      // ২. পাইপলাইনের বিদ্যমান ক্রম: আগে FayzarReceiptLayout.wants(rawText, callOpts), তারপর FayzarCashMemoLayout
+      const root = getGlobalRoot();
+      const rl = root.FayzarReceiptLayout;
+      if (rl && typeof rl.wants === 'function' && rl.wants(rawText, callOpts)) {
+        return rl.parse(rawText, callOpts);
+      }
+      const cm = getTargetModuleForSubLayout('cash-memo', 'parse');
+      return cm.parse(rawText, callOpts);
     },
 
-    // HTML প্রিভিউ রেন্ডার হুক
+    // HTML প্রিভিউ রেন্ডার হুক: ঠিক আগের মতো RECEIPT_LAYOUT আগে, তারপর CASH_MEMO_LAYOUT (একই আর্গুমেন্ট, একই esc)
     renderHtml(model, options, h) {
-      const subLayout = resolveSubLayoutFromArgs(model, options, h);
-      const mod = getTargetModuleForSubLayout(subLayout, 'renderHtml');
       const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
       const passH = typeof options === 'string' ? undefined : h;
+      if (model && model.kind === 'RECEIPT_LAYOUT') {
+        const rlMod = getTargetModuleForSubLayout(model.variant === 'voucher' ? 'voucher' : 'receipt', 'renderHtml');
+        return rlMod.renderHtml(model, passOpts, passH);
+      }
+      if (model && model.kind === 'CASH_MEMO_LAYOUT') {
+        const cmMod = getTargetModuleForSubLayout('cash-memo', 'renderHtml');
+        return cmMod.renderHtml(model, passOpts, passH);
+      }
+      const subLayout = resolveSubLayoutFromArgs(model, options, h);
+      const mod = getTargetModuleForSubLayout(subLayout, 'renderHtml');
       return mod.renderHtml(model, passOpts, passH);
     },
 

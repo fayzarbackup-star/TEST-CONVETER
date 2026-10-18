@@ -163,6 +163,27 @@
       return null;
     },
 
+    /** A2_REGISTRY_E2: লেআউট রেজিস্ট্রি ও __FZ_ON_REGISTRY সুইচ */
+    _isRegistryOn() {
+      if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_REGISTRY)) return true;
+      if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_REGISTRY)) return true;
+      if (typeof global !== 'undefined' && Boolean(global.__FZ_ON_REGISTRY)) return true;
+      return false;
+    },
+
+    _getLayoutRegistry() {
+      if (typeof FayzarLayoutRegistry !== 'undefined') return FayzarLayoutRegistry;
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutRegistry) return globalThis.FayzarLayoutRegistry;
+      if (typeof window !== 'undefined' && window.FayzarLayoutRegistry) return window.FayzarLayoutRegistry;
+      if (typeof global !== 'undefined' && global.FayzarLayoutRegistry) return global.FayzarLayoutRegistry;
+      if (typeof require === 'function') {
+        try { return require('./layout-registry.js'); } catch (e) {
+          try { return require('../layout-engine/layout-registry.js'); } catch (e2) {}
+        }
+      }
+      return null;
+    },
+
     _getCvLayout() {
       if (typeof FayzarCvLayout !== 'undefined') return FayzarCvLayout;
       if (typeof globalThis !== 'undefined' && globalThis.FayzarCvLayout) return globalThis.FayzarCvLayout;
@@ -472,6 +493,15 @@
 
         case 'CASH_MEMO': {
           // Part-19.4: ক্যাশমেমো ২-আপ/৩-আপ (দোকানের নমুনা); T2 দল ৪: রসিদ/ভাউচার-ছাঁচ আলাদা মডিউলে
+          // A2_REGISTRY_E2: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে পার্স
+          if (this._isRegistryOn()) {
+            this._getReceiptLayout();
+            this._getCashMemoLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve('CASH_MEMO', options && options.__frontmatter, text) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get('CASH_MEMO') : null);
+            if (entry && typeof entry.parse === 'function') return entry.parse(text, options);
+          }
           const RL = this._getReceiptLayout();
           if (RL && RL.wants(text, options)) return RL.parse(text, options);
           const CM = this._getCashMemoLayout();
@@ -583,6 +613,17 @@
         }
 
         case 'CASH_MEMO': {
+          // A2_REGISTRY_E2: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে HTML রেন্ডার
+          if (this._isRegistryOn()) {
+            this._getReceiptLayout();
+            this._getCashMemoLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve('CASH_MEMO', options && options.__frontmatter, rawText) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get('CASH_MEMO') : null);
+            if (entry && typeof entry.renderHtml === 'function' && parsedData && (parsedData.kind === 'RECEIPT_LAYOUT' || parsedData.kind === 'CASH_MEMO_LAYOUT')) {
+              return entry.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+            }
+          }
           const RL = this._getReceiptLayout();
           if (RL && parsedData && parsedData.kind === 'RECEIPT_LAYOUT') return RL.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
           const CM = this._getCashMemoLayout();
