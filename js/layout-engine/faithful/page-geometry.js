@@ -18,6 +18,8 @@
   // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
   const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
   const SPECK_OFF = !!global.__FZ_OFF_SPECK;   // নির্ণয়-সুইচ (ছিটে-বাদ বন্ধ করতে)
+  // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
+  const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const median = (a) => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
@@ -468,12 +470,49 @@
           xsM.forEach((p) => { const r = rM[rM.length - 1]; if (r && p.x - r.x1 <= Math.max(2, ppt * 1.5) && p.x - r.x0 <= Math.max(6, ppt * 4)) { r.x1 = p.x; if (p.long > r.long) { r.long = p.long; r.xm = p.x; } } else rM.push({ x0: p.x, x1: p.x, xm: p.x, long: p.long }); });
           if (rM.length >= 2) finalRules = rM;
         }
-        res.vRulesPt = finalRules.map((r) => ({ x: (r.x0 + r.x1) / 2 / ppt, cov: Math.round(r.long / th * 100) / 100 }));
+        res.vRulesPt = finalRules.map((r) => {
+          const outR = { x: (r.x0 + r.x1) / 2 / ppt, cov: Math.round(r.long / th * 100) / 100 };
+          if (tableGridOn()) {
+            let ry0 = ty1, ry1 = ty0, runStart = -1, runLen = 0;
+            const xm = Math.round((r.x0 + r.x1) / 2);
+            for (let y = ty0; y <= ty1; y++) {
+              const on = y < ty1 && (gm.mask[y * W + xm] || (xm > 0 && gm.mask[y * W + xm - 1]) || (xm + 1 < W && gm.mask[y * W + xm + 1]));
+              if (on) {
+                if (runStart < 0) runStart = y;
+                runLen++;
+              } else if (runStart >= 0) {
+                if (runLen >= minRun) {
+                  if (runStart < ry0) ry0 = runStart;
+                  if (y - 1 > ry1) ry1 = y - 1;
+                }
+                runStart = -1;
+                runLen = 0;
+              }
+            }
+            outR.y0 = Math.round((ry0 <= ry1 ? ry0 : ty0) / ppt * 10) / 10;
+            outR.y1 = Math.round((ry0 <= ry1 ? ry1 + 1 : ty1) / ppt * 10) / 10;
+          }
+          return outR;
+        });
       }
       // g41: পূর্ণ-প্রস্থ আড়াআড়ি রেখার অবস্থান (pt) — শুধু ওপর-নিচের সীমানা থাকলে Gemini-র "লাইন-সারি" আসলে
       // এক সারির বহু-লাইনের ঘর (রেফারেন্স-ছক)। লেখার লাইনের কেন্দ্রও (সারি-বণ্টনের জন্য)।
       const hr = { x0: Math.max(0, Math.floor(tx0)), y0: Math.max(0, Math.floor(ty0) - 6), x1: Math.min(W, Math.ceil(tx1)), y1: Math.min(H, Math.ceil(ty1) + 6) };
       let hys = hLinePositions(gm, hr);
+      if (tableGridOn() && res.vRulesPt && res.vRulesPt.length >= 3) {
+        const candYs = hLinePositions(gm, Object.assign({}, hr, { minFrac: 0.55 }));
+        if (candYs.length > hys.length) {
+          const vXs = res.vRulesPt.map((v) => v.x * ppt);
+          const validPartial = candYs.filter((y) => {
+            if (hys.some((hy) => Math.abs(hy - y) <= 3 * ppt)) return true;
+            const sp = hLineSpan(gm, hr, y);
+            const touchesOuter = sp.x0 <= tx0 + 6 * ppt || sp.x1 >= tx1 - 6 * ppt;
+            const alignsV = vXs.some((vx) => Math.abs(sp.x0 - vx) <= 6 * ppt || Math.abs(sp.x1 - vx) <= 6 * ppt);
+            return touchesOuter && alignsV;
+          });
+          if (validPartial.length > hys.length) hys = validPartial;
+        }
+      }
       if (hys.length < 2 && !global.__FZ_OFF_BROKEN) { const bys = brokenHLinePositions(gm, hr, ppt); if (bys.length >= 3) { hys = bys; res.brokenRules = true; } }
       // ২০২৬-১০-১৪ (a02 পরিবার-ছক, মালিকের Word-যাচাই): ধূসর-ছায়ার শিরোনাম-সারির হাফটোন-রেখা ১৬টি "দাগ" (৩০pt-এ) ⇒ রেখা-ভাগ
       // মেলে না, Gemini-র ধারাবাহিক লাইন ("স্ত্রী: ☐") আলাদা সারি থেকে যায়। ≤৪.৫pt ফাঁকে ≥৪ দাগের গুচ্ছ = ছায়া-পটি ⇒ শুধু ওপর-নিচের দাগ
@@ -510,6 +549,62 @@
           const cs = tcAll.filter((c) => c.y1 >= l.y0 && c.y0 <= l.y1 && (c.x0 + c.x1) / 2 >= ex[j] && (c.x0 + c.x1) / 2 < e1);
           return cs.length ? [Math.min(...cs.map((c) => c.x0)) / ppt, (Math.max(...cs.map((c) => c.x1)) + 1) / ppt] : null;
         })) };
+      }
+      if (tableGridOn()) {
+        // ১) অনুভূমিক ও খাড়া রেখা আলাদা শনাক্তকরণ (insideH বনাম insideV)
+        const inH = res.hRulesPt.filter((y) => y > ty0 / ppt + 4 && y < ty1 / ppt - 4);
+        const inV = res.vRulesPt.filter((v) => v.x > tx0 / ppt + 4 && v.x < tx1 / ppt - 4 && v.cov >= 0.25);
+        res.hasInsideH = inH.length >= 1;
+        res.hasInsideV = inV.length >= 1;
+        if (inV.length >= 1 && res.hRulesPt.length <= 2) res.hasGrid = true;
+        // ২) পাশাপাশি ছোট বাক্স শনাক্তকরণ (পূর্ণ-প্রস্থ রেখা না থাকলেও প্রতিটি বাক্সের নিজস্ব চার পাশের রেখা)
+        const sBoxes = detectSmallBoxes(gm, { x0: tx0, y0: ty0, x1: tx1, y1: ty1 }, { pxPerPt: ppt, comps: mine });
+        if (sBoxes.length >= 2) {
+          res.smallBoxesPt = sBoxes;
+          res.hasGrid = true;
+          res.isSmallBoxRow = true;
+          if (res.hRulesPt.length < 2) {
+            res.hRulesPt = [Math.min(...sBoxes.map((b) => b.y0)), Math.max(...sBoxes.map((b) => b.y1))];
+          }
+        }
+        // ৩) শিরোনাম-ঘরের (প্রথম সারি) মোটা লেখা ও নিচে-দাগ শনাক্তকরণ
+        const yBand0 = res.hRulesPt.length >= 2 ? [res.hRulesPt[0] * ppt, res.hRulesPt[1] * ppt]
+          : (linesOf(tcAll, H).length ? [linesOf(tcAll, H)[0].y0 - 2, linesOf(tcAll, H)[0].y1 + 4] : null);
+        if (yBand0) {
+          const hdrComps = tcAll.filter((c) => (c.y0 + c.y1) / 2 >= yBand0[0] && (c.y0 + c.y1) / 2 <= yBand0[1]);
+          const bodyComps = tcAll.filter((c) => (c.y0 + c.y1) / 2 > yBand0[1]);
+          const strokeOf = (cs) => {
+            if (!cs.length) return 0;
+            const runs = [];
+            for (const c of cs) {
+              const my = Math.round((c.y0 + c.y1) / 2);
+              let r = 0;
+              for (let x = c.x0; x <= c.x1 + 1; x++) {
+                if (x <= c.x1 && gm.mask[my * W + x]) r++;
+                else if (r) { if (r <= (c.y1 - c.y0 + 1) * 0.6) runs.push(r); r = 0; }
+              }
+            }
+            return runs.length ? runs.reduce((a, b) => a + b, 0) / runs.length : 0;
+          };
+          const hStroke = strokeOf(hdrComps), bStroke = strokeOf(bodyComps);
+          if (hStroke > 0 && ((bStroke > 0 && hStroke >= bStroke * 1.12) || (bStroke === 0 && hStroke >= 2.4 * ppt))) {
+            res.headBold = true;
+          }
+          // শিরোনাম-ঘরের নিচে-দাগ: সারি-রেখার (yBand0[1]) অন্তত ২px ওপরে লেখার প্রস্থের ≥৫৫% টানা অনুভূমিক রেখা বা চ্যাপ্টা খণ্ড
+          const hdrLines = linesOf(hdrComps, H);
+          if (hdrLines.length) {
+            const hl = hdrLines[hdrLines.length - 1], lw = hl.x1 - hl.x0 + 1;
+            const flatUl = mine.some((c) => (c.y1 - c.y0 + 1) <= Math.max(3, 2.5 * ppt) && (c.x1 - c.x0 + 1) >= lw * 0.5 && (c.x1 - c.x0 + 1) < (tx1 - tx0) * 0.9
+              && c.y0 >= hl.y1 - 2 && c.y1 < yBand0[1] - 1.5 * ppt && Math.min(c.x1, hl.x1) - Math.max(c.x0, hl.x0) >= lw * 0.5);
+            let runUl = false;
+            for (let y = Math.max(hl.y1 - 1, Math.floor(hl.y0 + (hl.y1 - hl.y0) * 0.75)); y < Math.min(H, Math.floor(yBand0[1] - 2)); y++) {
+              let run = 0, best = 0;
+              for (let x = hl.x0; x <= hl.x1; x++) { if (gm.mask[y * W + x]) { if (++run > best) best = run; } else run = 0; }
+              if (best >= lw * 0.65 && best < (tx1 - tx0) * 0.9) { runUl = true; break; }
+            }
+            if (flatUl || runUl) res.headUnderline = true;
+          }
+        }
       }
     }
     // (শুধু টেবিল-ব্লকে — বাংলা মাত্রার টানা রেখা সাধারণ লেখায় "রেখা" মনে হতে পারে)
@@ -988,12 +1083,111 @@
 
   const applyDrift = (box, f) => (f && box ? [f.a * box[0] + f.b, box[1], f.a * box[2] + f.b, box[3]].map((v, i) => (i % 2 === 0 ? clamp(v, 0, 1000) : v)) : box);
 
-  /** Part-17.8: পাতার খাড়া বিভাজক-রেখা (পাশাপাশি কলামের মাঝের দাগ) — সরু ও ≥২৫pt লম্বা; পাতার ফ্রেম বাদ */
+  /** Part-17.8 + B2: পাতার বা ছকের খাড়া বিভাজক-রেখা — কলাম-স্ক্যান (আড়াআড়ি দাগে জোড়া থাকলেও শনাক্ত) ও সরু খণ্ড */
   function verticalRules(m, opts) {
     const o = opts || {}, ppt = o.pxPerPt || 1;
-    return (o.comps || components(m, null, 6))
-      .filter((c) => !isFrameComp(m, c) && (c.x1 - c.x0 + 1) <= Math.max(4, ppt * 2.5) && (c.y1 - c.y0 + 1) >= 25 * ppt)
-      .map((c) => ({ x: (c.x0 + c.x1) / 2 / ppt, y: c.y0 / ppt, h: (c.y1 - c.y0 + 1) / ppt }));
+    if (!tableGridOn()) {
+      return (o.comps || components(m, null, 6))
+        .filter((c) => !isFrameComp(m, c) && (c.x1 - c.x0 + 1) <= Math.max(4, ppt * 2.5) && (c.y1 - c.y0 + 1) >= 25 * ppt)
+        .map((c) => ({ x: (c.x0 + c.x1) / 2 / ppt, y: c.y0 / ppt, h: (c.y1 - c.y0 + 1) / ppt }));
+    }
+    const gm = o.gridMask || (m && m.mask ? m : (m && m.data ? inkMask(m) : null));
+    if (!gm || !gm.mask) return [];
+    const { W, H, mask } = gm;
+    let x0 = 0, y0 = 0, x1 = W, y1 = H;
+    if (Array.isArray(o.box) && o.box.length >= 4) {
+      y0 = clamp(Math.floor(o.box[0] / 1000 * H), 0, H);
+      x0 = clamp(Math.floor(o.box[1] / 1000 * W), 0, W);
+      y1 = clamp(Math.ceil(o.box[2] / 1000 * H), 0, H);
+      x1 = clamp(Math.ceil(o.box[3] / 1000 * W), 0, W);
+    } else if (o.rect) {
+      x0 = clamp(Math.floor(o.rect.x0 != null ? o.rect.x0 : (o.rect.x || 0) * ppt), 0, W);
+      y0 = clamp(Math.floor(o.rect.y0 != null ? o.rect.y0 : (o.rect.y || 0) * ppt), 0, H);
+      x1 = clamp(Math.ceil(o.rect.x1 != null ? o.rect.x1 : ((o.rect.x || 0) + (o.rect.w || W)) * ppt), 0, W);
+      y1 = clamp(Math.ceil(o.rect.y1 != null ? o.rect.y1 : ((o.rect.y || 0) + (o.rect.h || H)) * ppt), 0, H);
+    }
+    const minLen = Math.max(10, Math.round((o.minLenPt || (o.box || o.rect ? 15 : 25)) * ppt));
+    const maxT = Math.max(4, Math.round(ppt * 3));
+    const colRuns = [];
+    for (let x = x0; x < x1; x++) {
+      const runs = [];
+      let s = -1, miss = 0, last = -1;
+      for (let y = y0; y <= y1; y++) {
+        const on = y < y1 && mask[y * W + x];
+        if (on) { if (s < 0) s = y; last = y; miss = 0; continue; }
+        if (s >= 0 && (++miss > 2 || y === y1)) {
+          if (last - s + 1 >= minLen) runs.push([s, last]);
+          s = -1; miss = 0;
+        }
+      }
+      colRuns.push(runs);
+    }
+    const raw = [], open = [];
+    for (let xi = 0; xi <= x1 - x0; xi++) {
+      const x = x0 + xi, runs = xi < colRuns.length ? colRuns[xi] : [];
+      const still = [];
+      for (const g of open) {
+        const r = runs.find((q) => !q.used && Math.min(q[1], g.y1) - Math.max(q[0], g.y0) >= 0.75 * Math.min(q[1] - q[0] + 1, g.y1 - g.y0 + 1));
+        if (r) { r.used = true; g.x1 = x; g.y0 = Math.min(g.y0, r[0]); g.y1 = Math.max(g.y1, r[1]); still.push(g); }
+        else if (g.x1 - g.x0 + 1 <= maxT) raw.push(g);
+      }
+      open.length = 0; open.push(...still);
+      for (const r of runs) if (!r.used) open.push({ x0: x, x1: x, y0: r[0], y1: r[1] });
+    }
+    const hasBox = !!(o.box || o.rect || o.includeFrame);
+    return raw
+      .filter((g) => hasBox || !((g.y1 - g.y0 + 1) >= H * 0.7 && (g.x0 <= W * 0.15 || g.x1 >= W * 0.85)))
+      .map((g) => {
+        const xp = Math.round(((g.x0 + g.x1) / 2 / ppt) * 10) / 10;
+        const yp = Math.round((g.y0 / ppt) * 10) / 10;
+        const hp = Math.round(((g.y1 - g.y0 + 1) / ppt) * 10) / 10;
+        return { x: xp, y: yp, h: hp, y0: yp, y1: Math.round((yp + hp) * 10) / 10, t: Math.round(((g.x1 - g.x0 + 1) / ppt) * 10) / 10 };
+      })
+      .sort((a, b) => a.x - b.x || a.y - b.y);
+  }
+
+  /** B2: পাশাপাশি ছোট ছোট বাক্স শনাক্তকরণ (যেমন "বড় সংখ্যা গোল কর" — পূর্ণ-প্রস্থ রেখা নয়, প্রতিটি ছোট বাক্সের নিজস্ব সীমা) */
+  function detectSmallBoxes(m, rect, opts) {
+    if (!tableGridOn()) return [];
+    const o = opts || {}, ppt = o.pxPerPt || 1;
+    const gm = o.gridMask || (m && m.mask ? m : (m && m.data ? inkMask(m) : null));
+    if (!gm || !gm.mask) return [];
+    const { W, H, mask } = gm;
+    const x0 = rect ? clamp(Math.floor(rect.x0 != null ? rect.x0 : 0), 0, W) : 0;
+    const y0 = rect ? clamp(Math.floor(rect.y0 != null ? rect.y0 : 0), 0, H) : 0;
+    const x1 = rect ? clamp(Math.ceil(rect.x1 != null ? rect.x1 : W), 0, W) : W;
+    const y1 = rect ? clamp(Math.ceil(rect.y1 != null ? rect.y1 : H), 0, H) : H;
+    const comps = o.comps || components(gm, { x0, y0, x1, y1 }, 8);
+    const hasBoxPerimeter = (c) => {
+      const cw = c.x1 - c.x0 + 1, ch = c.y1 - c.y0 + 1;
+      if (cw < 10 * ppt || cw > 160 * ppt || ch < 10 * ppt || ch > 90 * ppt) return false;
+      let topH = 0, botH = 0, leftV = 0, rightV = 0;
+      const band = Math.max(2, Math.round(2 * ppt));
+      for (let x = c.x0; x <= c.x1; x++) {
+        for (let d = 0; d < band && c.y0 + d <= c.y1; d++) if (mask[(c.y0 + d) * W + x]) { topH++; break; }
+        for (let d = 0; d < band && c.y1 - d >= c.y0; d++) if (mask[(c.y1 - d) * W + x]) { botH++; break; }
+      }
+      for (let y = c.y0; y <= c.y1; y++) {
+        for (let d = 0; d < band && c.x0 + d <= c.x1; d++) if (mask[y * W + c.x0 + d]) { leftV++; break; }
+        for (let d = 0; d < band && c.x1 - d >= c.x0; d++) if (mask[y * W + c.x1 - d]) { rightV++; break; }
+      }
+      return topH >= cw * 0.65 && botH >= cw * 0.65 && leftV >= ch * 0.65 && rightV >= ch * 0.65;
+    };
+    const cands = comps.filter(hasBoxPerimeter).sort((a, b) => a.x0 - b.x0);
+    if (cands.length < 2) return [];
+    const medY0 = median(cands.map((c) => c.y0)), medY1 = median(cands.map((c) => c.y1));
+    const rowBoxes = cands.filter((c) => Math.abs(c.y0 - medY0) <= 8 * ppt && Math.abs(c.y1 - medY1) <= 8 * ppt);
+    const distinct = [];
+    for (const b of rowBoxes) {
+      const prev = distinct[distinct.length - 1];
+      if (!prev || b.x0 >= prev.x1 - 2) distinct.push(b);
+    }
+    if (distinct.length < 2) return [];
+    return distinct.map((b) => ({
+      x0: r1g(b.x0 / ppt), y0: r1g(b.y0 / ppt),
+      x1: r1g((b.x1 + 1) / ppt), y1: r1g((b.y1 + 1) / ppt),
+      w: r1g((b.x1 - b.x0 + 1) / ppt), h: r1g((b.y1 - b.y0 + 1) / ppt)
+    }));
   }
 
   /**
@@ -1252,7 +1446,7 @@
 
   /** পূর্ণ-প্রস্থ (≥৮০%) আড়াআড়ি রেখার শুরু-y (px) — countHLines-এর একই নিয়ম */
   function hLinePositions(m, r) {
-    const { W, mask } = m, need = (r.x1 - r.x0) * 0.8, ys = [];
+    const { W, mask } = m, need = (r.x1 - r.x0) * ((tableGridOn() && r.minFrac) ? r.minFrac : 0.8), ys = [];
     let prev = false;
     for (let y = r.y0; y < r.y1; y++) {
       let run = 0, best = 0, miss = 0;
@@ -1356,7 +1550,7 @@
    * সুইচ: global.__FZ_ON_ROWCHECK (বন্ধ থাকলে null)।
    */
   function tableRowBands(m, box, opts) {
-    if (!global.__FZ_ON_ROWCHECK) return null;
+    if (!global.__FZ_ON_ROWCHECK && !tableGridOn()) return null;
     const o = opts || {}, ppt = o.pxPerPt || 1;
     const gm = o.gridMask || (m && m.mask ? m : (m && m.data ? inkMask(m) : null));
     if (!gm || !gm.mask) return [];
@@ -1439,7 +1633,7 @@
    * @returns null (সুইচ বন্ধে) | { measured, gemini, match, bands, suggestion, suspects, tallest, shortest, medianHeight }
    */
   function checkTableRows(m, box, geminiRowCount, opts) {
-    if (!global.__FZ_ON_ROWCHECK) return null;
+    if (!global.__FZ_ON_ROWCHECK && !tableGridOn()) return null;
     const bands = tableRowBands(m, box, opts) || [];
     const measured = bands.length;
     const gemini = Math.max(0, Math.round(Number(geminiRowCount) || 0));
@@ -1466,6 +1660,7 @@
   }
 
   const FayzarPageGeometry = { RATIO, inkMask, otsuThreshold, components, linesOf, estimateFontPt, blockMetrics, pageMargins, detectFrame, countHLines, verticalRules, horizontalRules, boxFrames, fitBoxDrift, fitExtentDrift, applyDrift, snapBoxesToLines, vDashComps, median, pageBackground, blockShade, hLinePositions, darkBandMask, tableRowBands, checkTableRows };
+  Object.defineProperty(FayzarPageGeometry, 'detectSmallBoxes', { value: detectSmallBoxes, enumerable: false });
   global.FayzarPageGeometry = FayzarPageGeometry;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarPageGeometry;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

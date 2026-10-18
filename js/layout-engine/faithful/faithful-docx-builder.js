@@ -24,6 +24,8 @@
     (global && global.__FZ_ON_PGBORDER) ||
     (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_PGBORDER === '1' || process.env.__FZ_ON_PGBORDER === 'true'))
   );
+  // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
+  const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -356,9 +358,9 @@
    * a18: জোড়া ঘর — লম্বা লেখা নিজের কলামে না আঁটলে আর ডানের ঘর ফাঁকা হলে ডানে জোড়া (gridSpan), যতক্ষণ না আঁটে।
    * (মূলে "বিঃদ্রঃ…" চার কলাম জুড়ে; প্রথম সরু ঘরে বসালে সারি ৩ গুণ লম্বা ⇒ পাতা উপচাত।) ফেরত: প্রতি কলামে span, ঢাকা ঘর ০
    */
-  function rowSpans(r, ri, nCols, colWPt, fs, marPt, figRows, fullV) {
+  function rowSpans(r, ri, nCols, colWPt, fs, marPt, figRows, fullV, vMergesRow) {
     const sp = new Array(nCols).fill(1);
-    const blank = (j) => !(r[j] && String(r[j]).trim());
+    const blank = (j) => !(r[j] && String(r[j]).trim()) && !(tableGridOn() && vMergesRow && vMergesRow[j]);
     const boxPosOn = globalThis.__FZ_ON_BOXPOS && !globalThis.__FZ_OFF_BOXPOS;
     const wraps = (txt, cwPt) => (!boxPosOn || !/^\s*□\s/m.test(String(txt || ""))) ? wrapLines(txt, fs, cwPt) > 1
       : String(txt || "").split("\n").some((ln) => wrapLines(ln, fs, cwPt) > 1);
@@ -1244,6 +1246,34 @@
   }
 
   function tableXml(item, extraBeforePt, ctx) {
+    // B2: পাশাপাশি ছোট ছোট বাক্স (মাঝে ফাঁকসহ) — প্রতিটি বাক্সের নিজস্ব ৪-পাশের বর্ডার এবং মাঝের ফাঁকা ঘর বর্ডারহীন
+    if (tableGridOn() && Array.isArray(item.smallBoxesPt) && item.smallBoxesPt.length >= 2 && item.rows && item.rows.length === 1 && item.rows[0].length === item.smallBoxesPt.length) {
+      const sbs = item.smallBoxesPt;
+      const hasGaps = sbs.some((b, i) => i > 0 && (b.x0 - sbs[i - 1].x1) >= 3);
+      if (hasGaps) {
+        const expRow = [], expWidths = [], isGapCol = [];
+        sbs.forEach((b, i) => {
+          if (i > 0) {
+            const gw = Math.max(4, b.x0 - sbs[i - 1].x1);
+            expRow.push(''); expWidths.push(tw(gw)); isGapCol.push(true);
+          }
+          expRow.push(item.rows[0][i]);
+          expWidths.push(tw(Math.max(14, b.w || (b.x1 - b.x0))));
+          isGapCol.push(false);
+        });
+        const totTw = expWidths.reduce((a, c) => a + c, 0);
+        const NIL = '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
+        const BXB = '<w:tcBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:left w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:tcBorders>';
+        const bh = Math.max(18, sbs[0].h || (sbs[0].y1 - sbs[0].y0) || 22);
+        const fsz = item.fontPt || 11;
+        const tcs = expRow.map((c, j) => {
+          const bdr = isGapCol[j] ? '' : BXB;
+          return `<w:tc><w:tcPr><w:tcW w:w="${expWidths[j]}" w:type="dxa"/>${bdr}<w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr>${c ? runsFor(String(c), { fontPt: fsz, bold: !!item.bold, align: 'c' }) : ''}</w:p></w:tc>`;
+        }).join('');
+        return spacer((item.spaceBeforePt || 0) + (extraBeforePt || 0)) +
+          `<w:tbl><w:tblPr><w:tblW w:w="${totTw}" w:type="dxa"/><w:tblInd w:w="${tw(item.indentPt || 0)}" w:type="dxa"/>${NIL}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="28" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="28" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${expWidths.map((w) => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid><w:tr><w:trPr><w:trHeight w:val="${tw(bh)}" w:hRule="atLeast"/></w:trPr>${tcs}</w:tr></w:tbl>`;
+      }
+    }
     let cellMeta = null;
     if (formKitOn() && item.rows && item.rows.length) {
       let normRows = item.rows.map((r) => r.slice());
@@ -1375,13 +1405,23 @@
       const cFill = formKitOn() ? resolveCellFill(ri, k, rows[ri]) : null;
       const cColor = formKitOn() ? resolveCellColor(ri, k, txt, cFill, cMeta) : null;
       const baseCellIt = ri === 0 && item.headFontPt ? Object.assign({}, cellItem, { fontPt: item.headFontPt }) : cellItem;
-      const rowCellItem = formKitOn()
+      let rowCellItem = formKitOn()
         ? Object.assign({}, baseCellIt, {
             color: cColor || baseCellIt.color,
             bold: cMeta && cMeta.bold != null ? !!cMeta.bold : (cFill && isDarkHex(cFill) ? true : baseCellIt.bold),
             italic: cMeta && cMeta.italic != null ? !!cMeta.italic : baseCellIt.italic
           })
         : baseCellIt;
+      if (tableGridOn() && ri === 0) {
+        const hBold = !!(item.headBold || (item.headCellBold && item.headCellBold[k]) || (cMeta && cMeta.bold));
+        const hUl = !!(item.headUnderline || (item.headCellUnderline && item.headCellUnderline[k]) || (cMeta && cMeta.underline));
+        if (hBold || hUl) {
+          rowCellItem = Object.assign({}, rowCellItem, {
+            bold: hBold ? true : rowCellItem.bold,
+            underline: hUl ? true : rowCellItem.underline
+          });
+        }
+      }
       if (formKitOn() && typeof txt === 'string' && isPlaceholderStr(txt)) txt = stripPlaceholderWrap(txt);
       const pShd = ri === 0 && item.headShade && globalThis.__FZ_ON_PCELLSHD && !globalThis.__FZ_OFF_TBLSHADE ? `<w:shd w:val="clear" w:color="auto" w:fill="${item.headShade}"/>` : '';
       const defSz = Math.round((rowCellItem.fontPt || 11) * 2);
@@ -1442,10 +1482,21 @@
     };
     const NILB = '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
     const B = item.borderless ? NILB :'<w:tblBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:left w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:insideH w:val="single" w:sz="6" w:space="0" w:color="000000"/><w:insideV w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:tblBorders>';
-    // f1: মাপে খাড়া দাগ নেই (layout-ir noVRules) ⇒ বাঁ/ডান/ভেতরের খাড়া দাগ বাদ
-    const BV = !item.borderless && item.noVRules
+    // f1: মাপে খাড়া দাগ নেই (layout-ir noVRules) ⇒ বাঁ/ডান/ভেতরের খাড়া দাগ বাদ; B2: অনুভূমিক (insideH) ও খাড়া (insideV) আলাদা নিয়ন্ত্রণ
+    let BV = !item.borderless && item.noVRules && !(tableGridOn() && item.keepHRules)
       ? (globalThis.__FZ_ON_NOVGRAY ? B.replace(/w:sz="6"/g, 'w:sz="4"').replace(/w:color="000000"/g, 'w:color="DFDFDF"') : B.replace(/<w:(left|right|insideV|top|bottom|insideH) [^>]*\/>/g, '<w:$1 w:val="nil"/>'))
       : B;
+    if (tableGridOn() && !item.borderless) {
+      if (item.noInsideH || item.noHRules || item.insideH === false) {
+        BV = BV.replace(/<w:insideH [^>]*\/>/, '<w:insideH w:val="nil"/>');
+      }
+      if (item.noInsideV || item.insideV === false || (item.noVRules && item.keepHRules)) {
+        BV = BV.replace(/<w:insideV [^>]*\/>/, '<w:insideV w:val="nil"/>');
+        if (item.noVRules && item.outerV !== true) {
+          BV = BV.replace(/<w:(left|right) [^>]*\/>/g, '<w:$1 w:val="nil"/>');
+        }
+      }
+    }
     // Part-17.8: সারির উচ্চতা অন্তত মূলের সমান (মাপা টেবিল-উচ্চতা ÷ সারি)
     // ফাঁকা সারি (আলাদা ছোট টেবিলের মাঝের ফাঁক) মূলে সরু ⇒ সাধারণ সারির ০.৪ ভাগ, "ঠিক" উচ্চতায়
     const figRows = new Set((item.cellFigures || []).map((f) => f.cell[0]));
@@ -1532,7 +1583,7 @@
     // a18: জোড়া ঘর (rowSpans বা gridSpans) ⇒ gridSpan, প্রস্থ = জোড়া কলামগুলোর যোগফল
     const hasBoxRow = rows.some((r) => r.some((c) => typeof c === 'string' && c.startsWith(BOX_MARK)));
     const trs = rows.map((r, ri) => {
-      const sp = (item.gridSpans && item.gridSpans[ri]) ? item.gridSpans[ri].slice() : rowSpans(r, ri, nCols, (k) => cw(k) / 20, item.fontPt || 11, marPt, figRows, item.fullVRule);
+      const sp = (item.gridSpans && item.gridSpans[ri]) ? item.gridSpans[ri].slice() : rowSpans(r, ri, nCols, (k) => cw(k) / 20, item.fontPt || 11, marPt, figRows, item.fullVRule, VM && VM[ri]);
       if (formKitOn() && item._cellMeta && item._cellMeta[ri]) {
         item._cellMeta[ri].forEach((cm, ck) => {
           const cs = cm && (cm.span || cm.gridSpan || cm.colSpan);
@@ -1569,7 +1620,7 @@
         const shd = tcFill ? `<w:shd w:val="clear" w:color="auto" w:fill="${tcFill}"/>` : '';
         // [Rule FB5: FZ_OFF=FORMFIX / FZ_OFF=FB5] bandBorders নিজেই উল্লম্ব-মার্জ করা ঘরের মাঝের বর্ডার nil করে দেয়; তাই <w:vMerge/> ট্যাগ বাদ রেখে প্রতিটি সারি এডিট-যোগ্য রাখা এবং অঙ্ক-বাক্সের সরু ঘরে (<=24pt) tcMar শূন্য রাখা।
         const vm = VM && VM[ri] && VM[ri][k];
-        const vmXml = (formFixTbl && !globalThis.__FZ_OFF_FB5) ? '' : (vm === 'restart' ? '<w:vMerge w:val="restart"/>' : vm === 'continue' ? '<w:vMerge/>' : '');
+        const vmXml = (formFixTbl && !globalThis.__FZ_OFF_FB5 && !tableGridOn()) ? '' : (vm === 'restart' ? '<w:vMerge w:val="restart"/>' : vm === 'continue' ? '<w:vMerge/>' : '');
         const tcMarXml = (item.gridFirst || (formFixTbl && !globalThis.__FZ_OFF_FB5 && w <= tw(24))) && !item.borderless && w < tw(70) ? `<w:tcMar><w:left w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/><w:right w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/></w:tcMar>` : '';
         return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${sp[k] > 1 ? `<w:gridSpan w:val="${sp[k]}"/>` : ''}${vmXml}${bandBorders(ri, k, sp[k]) || ruleBorder(ri, k, sp[k])}${shd}${tcMarXml}<w:vAlign w:val="${va}"/></w:tcPr>${cellBody(vm === 'continue' ? '' : r[k], ri, k, w)}</w:tc>`;
       }).join('');

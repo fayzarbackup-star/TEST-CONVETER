@@ -26,6 +26,8 @@
   const mathHOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_MATHH : global.__FZ_ON_MATHH);
   // B9/B4 ফরমকিট সুইচ: শুধু globalThis.__FZ_ON_FORMKIT সত্য হলে সক্রিয়
   const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
+  // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
+  const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -307,17 +309,53 @@
    */
   function splitTableAtGaps(tbl, m) {
     const rows = tbl.rows || [];
-    const gaps = m && !m.empty && m.tableGapsPt ? m.tableGapsPt : [];
-    if (!gaps.length || !tbl.rect) return tbl;
+    const tg = tableGridOn();
+    const gaps = m && !m.empty && Array.isArray(m.tableGapsPt) ? m.tableGapsPt : [];
+    const R = tbl.rect || (m && m.rectPt) || (tg ? { x: 54, y: 100, w: tbl.widthPt || 450, h: tbl.heightPt || Math.max(40, rows.length * 18) } : null);
+    if (!R) return tbl;
     const empty = (r) => !r.some((c) => c && String(c).trim());
     // ফাঁকা সারিতে ভাগ (পরপর ফাঁকা সারি একটি ভাগ-বিন্দু)
     const groups = []; let cur = [];
     rows.forEach((r) => { if (empty(r)) { if (cur.length) { groups.push(cur); cur = []; } } else cur.push(r); });
     if (cur.length) groups.push(cur);
-    if (groups.length < 2 || groups.length - 1 !== gaps.length) return tbl;
-    const R = tbl.rect;
-    const edges = [R.y, ...gaps.flatMap((g) => g), R.y + R.h];   // [ওপর, ফাঁক১-শুরু, ফাঁক১-শেষ, …, নিচ]
-    // (টেবিলের ভেতরের চিত্র পরে nestFiguresInTables-এ নিজ নিজ ভাগের আয়ত দেখে বসে)
+    // B2: যদি ফাঁকা সারি না দেওয়া থাকে কিন্তু মাপা tableGapsPt থাকে, তবে লাইন/উচ্চতা দেখে সারিগুলোকে ফাঁকের ওপর-নিচে ভাগ
+    if (tg && groups.length === 1 && gaps.length >= 1 && rows.length >= gaps.length + 1) {
+      const tl = m && Array.isArray(m.textLinesPt) && m.textLinesPt.length === rows.length ? m.textLinesPt : null;
+      const gBounds = [R.y, ...gaps.flatMap((g) => g), R.y + R.h];
+      const byGap = Array.from({ length: gaps.length + 1 }, () => []);
+      rows.forEach((r, ri) => {
+        const y = tl ? tl[ri] : R.y + ((ri + 0.5) / rows.length) * R.h;
+        let bi = 0;
+        for (let k = 0; k < gaps.length; k++) if (y >= (gaps[k][0] + gaps[k][1]) / 2) bi = k + 1;
+        byGap[bi].push(r);
+      });
+      if (byGap.every((g) => g.length > 0)) {
+        return byGap.map((g, k) => Object.assign({}, tbl, {
+          rows: g, rect: { x: R.x, y: gBounds[2 * k], w: R.w, h: Math.max(1, gBounds[2 * k + 1] - gBounds[2 * k]) },
+          splitPart: k, rowHeightsPt: null, rowBand: null, headShade: k ? null : tbl.headShade
+        }));
+      }
+    }
+    // B2: ফাঁকা সারি আছে (যেমন A/B/C আলাদা ছোট টেবিল একত্রে), এবং হয় tableGapsPt মেলে অথবা খাড়া রেখা ফাঁকা সারি ভেদ করে যায়নি / splitAtEmpty সত্য
+    const vContinuous = m && Array.isArray(m.vRulesPt) && m.vRulesPt.length >= 2 && m.vRulesPt.every((v) => (v.cov || 0) >= 0.95);
+    const allowEmptyRowSplit = tg && groups.length >= 2 && (!gaps.length && (tbl.splitAtEmpty || !m || !m.hasGrid || !vContinuous));
+    if (!gaps.length && !allowEmptyRowSplit) return tbl;
+    if (groups.length < 2 || (!allowEmptyRowSplit && groups.length - 1 !== gaps.length)) return tbl;
+    let edges;
+    if (gaps.length === groups.length - 1) {
+      edges = [R.y, ...gaps.flatMap((g) => g), R.y + R.h];
+    } else {
+      const totR = rows.length || 1, gapH = Math.min(12, R.h * 0.08);
+      edges = [];
+      let accR = 0;
+      groups.forEach((g, k) => {
+        const y0 = R.y + (accR / totR) * R.h + (k > 0 ? gapH / 2 : 0);
+        accR += g.length;
+        const y1 = R.y + (accR / totR) * R.h - (k < groups.length - 1 ? gapH / 2 : 0);
+        edges.push(r1(y0), r1(Math.max(y0 + 8, y1)));
+        accR += 1; // ফাঁকা সারি
+      });
+    }
     return groups.map((g, k) => Object.assign({}, tbl, {
       rows: g, rect: { x: R.x, y: edges[2 * k], w: R.w, h: Math.max(1, edges[2 * k + 1] - edges[2 * k]) }, splitPart: k, rowHeightsPt: null, rowBand: null, headShade: k ? null : tbl.headShade,
       cellAligns: tbl.cellAligns ? g.map((r) => tbl.cellAligns[rows.indexOf(r)] || null) : null
@@ -588,7 +626,15 @@
    * @returns নতুন সারি বা null (বদল নয়)
    */
   function mergeLineRows(rows, m) {
+    if (tableGridOn() && m && !m.empty && (!Array.isArray(m.hRulesPt) || m.hRulesPt.length < 2)) {
+      const rb = m.tableRowBands || m.rowBandsPt || m.rowBands;
+      if (Array.isArray(rb) && rb.length >= 1) {
+        m = Object.assign({}, m, { hasGrid: true, hRulesPt: [rb[0].y0, ...rb.map((b) => b.y1)] });
+      }
+    }
     if (!m || m.empty || !m.hasGrid || !Array.isArray(m.hRulesPt) || m.hRulesPt.length < 2 || rows.length < 2) return null;
+    // B2: নামতার ছক বা শুধু খাড়া-রেখাওয়ালা ছকে (যেখানে ভেতরে আড়াআড়ি দাগ নেই, hRulesPt.length === 2, কিন্তু প্রতিটি সারির সব কলামে আলাদা তথ্য) সারিগুলো এক ঘরে গলানো হবে না
+    if (tableGridOn() && (m.hasInsideH === false || (m.hRulesPt.length === 2 && Array.isArray(m.vRulesPt) && m.vRulesPt.length >= 2 && rows.every((r) => r.length >= 2 && r.every((c) => c && String(c).trim()))))) return null;
     const R = m.hRulesPt.slice().sort((a, b) => a - b), bands = R.length - 1;
     if (bands >= rows.length) return null;
     const L = Array.isArray(m.textLinesPt) ? m.textLinesPt : [];
@@ -620,7 +666,8 @@
     }
     // f1 (অনলাইন-ফরম): সারির কলাম-সংখ্যা ভিন্ন (লেবেল|মান, সংখ্যা-বাক্স, রেডিও-লাইন) ⇒ এটা বহু-লাইনের ঘর নয়;
     // হালকা সারি-রেখা কালিতে না ধরায় ব্যান্ড কম দেখায় — জোড়া নয়
-    if (rows.some((r) => r.length !== nCols)) return null;
+    if (!tableGridOn() && rows.some((r) => r.length !== nCols)) return null;
+    if (tableGridOn() && rows.some((r) => r.length > nCols)) return null;
     // a18: পুরো-ফাঁকা সারি (Gemini আলাদা মুদ্রিত সারি হিসেবেই লেখে) থাকলে সারিগুলো আসল — রেখা কম ধরা মাপের ভুল, জোড়া নয়
     if (nCols > 1 && rows.some((r) => r.every((c) => !c))) return null;
     const out = Array.from({ length: bands + xb }, () => Array.from({ length: nCols }, () => []));
@@ -846,6 +893,38 @@
     // a12: "১।"-এর মাপে শুধু দাঁড়ি পড়লে (১×৬pt) খাড়া মনে হতো ⇒ ছবি, প্রায় অদৃশ্য — আসল খাড়া লেখা লম্বা (≥১৮pt)
     if (rect && rect.h > rect.w * 2.5 && rect.h >= 18 && (!b.lines || b.lines.length <= 2) && b.box) return Object.assign(base, { kind: 'figure', rotatedText: true });
     if (b.type === 'table') {
+      if (tableGridOn()) {
+        // B2: pageInfo বা m-এ verticalRules / horizontalRules / tableRowBands দেওয়া থাকলে m.vRulesPt ও m.hRulesPt সমৃদ্ধ করা
+        const m0 = m && !m.empty ? Object.assign({}, m) : { empty: false, rectPt: rect || { x: 54, y: 100, w: 450, h: 120 } };
+        const R0 = m0.rectPt || rect || { x: 54, y: 100, w: 450, h: 120 };
+        const rb = m0.tableRowBands || m0.rowBandsPt || m0.rowBands || (pageInfo && pageInfo.tableRowBands);
+        if ((!Array.isArray(m0.hRulesPt) || m0.hRulesPt.length < 2) && Array.isArray(rb) && rb.length >= 1) {
+          m0.hRulesPt = [rb[0].y0, ...rb.map((x) => x.y1)];
+          m0.hasGrid = true;
+        }
+        const hrSrc = m0.horizontalRules || (pageInfo && (pageInfo.horizontalRules || pageInfo.hrules));
+        if ((!Array.isArray(m0.hRulesPt) || m0.hRulesPt.length < 2) && Array.isArray(hrSrc) && hrSrc.length) {
+          const hitH = hrSrc.filter((r) => r.y >= R0.y - 6 && r.y <= R0.y + R0.h + 6 && Math.min((r.x || R0.x) + (r.w || R0.w), R0.x + R0.w) - Math.max(r.x || R0.x, R0.x) >= R0.w * 0.5);
+          if (hitH.length >= 2) {
+            m0.hRulesPt = hitH.map((r) => r.y).sort((a, c) => a - c);
+            m0.hRuleSpansPt = hitH.slice().sort((a, c) => a.y - c.y).map((r) => [r.x != null ? r.x : R0.x, (r.x != null ? r.x : R0.x) + (r.w != null ? r.w : R0.w)]);
+            m0.hasGrid = true;
+          }
+        }
+        const vrSrc = m0.verticalRules || (pageInfo && (pageInfo.verticalRules || pageInfo.vrules));
+        if ((!Array.isArray(m0.vRulesPt) || !m0.vRulesPt.length) && Array.isArray(vrSrc) && vrSrc.length) {
+          const hitV = vrSrc.filter((v) => v.x >= R0.x - 8 && v.x <= R0.x + R0.w + 8 && ((v.y == null && v.y0 == null) || (Math.min((v.y1 != null ? v.y1 : v.y + (v.h || R0.h)), R0.y + R0.h) - Math.max((v.y0 != null ? v.y0 : v.y), R0.y) >= R0.h * 0.2)));
+          if (hitV.length) {
+            m0.vRulesPt = hitV.map((v) => {
+              const vy0 = v.y0 != null ? v.y0 : (v.y != null ? v.y : R0.y);
+              const vy1 = v.y1 != null ? v.y1 : (v.y != null && v.h != null ? v.y + v.h : R0.y + R0.h);
+              return { x: v.x, y0: vy0, y1: vy1, cov: v.cov != null ? v.cov : Math.min(1, Math.max(0.25, (vy1 - vy0) / Math.max(1, R0.h))) };
+            }).sort((a, c) => a.x - c.x);
+            m0.hasGrid = true;
+          }
+        }
+        if (m || m0.hasGrid || m0.smallBoxesPt || m0.tableGapsPt) m = m0;
+      }
       let rows = (b.lines || []).filter((l) => l.trim()).map((l) => l.split(/\s*\|\s*/).map((c) => c.trim()));
       if (formKitOn() && rows.length >= 2) {
         // B4: "দাগ টেনে মিল কর" ২-কলামের ছকে শেষ সারি ("৩০ 25") এক ঘরে ঢুকে গেলে দুই ঘরে ভাগ
@@ -875,7 +954,17 @@
           rows = rows.map((r) => (r.length > k ? r.slice(0, k - 1).concat(r.slice(k - 1).filter(Boolean).join('   ')) : r));
       }
       // অনুরোধ ঘ (a07 পাতা ১-এর ছক, FZ_OFF=HEADMERGE): প্রথম কয়েকটি সারির মাঝে আড়াআড়ি দাগ না থাকলে এবং শুধু ছোট টুকরো লেখা থাকলে একটি হেডার-সারিতে সংযোজন
-      if (!folded && !serialFolded && !globalThis.__FZ_OFF_HEADMERGE) {
+      // B2 সুরক্ষা: ফাঁকা বিভাজক সারি, tableGapsPt, প্রতিটি সারির নিজস্ব আড়াআড়ি দাগ (hRulesPt.length >= rows.length + 1), বা আংশিক রেখা-বিস্তার থাকলে হেডার-মার্জ সারি গলাবে না
+      const skipHeadMergeB2 = tableGridOn() && (
+        rows.some((r) => r.every((c) => !String(c || '').trim()))
+        || (m && Array.isArray(m.tableGapsPt) && m.tableGapsPt.length > 0)
+        || (b.splitAtEmpty || (m && m.splitAtEmpty))
+        || (m && Array.isArray(m.hRulesPt) && m.hRulesPt.length >= rows.length + 1)
+        || (m && Array.isArray(m.hRuleSpansPt) && m.hRuleSpansPt.length > 0)
+        || (m && Array.isArray(m.vRulesPt) && m.vRulesPt.some((v) => v && v.y0 != null && v.y1 != null && v.cov != null && v.cov < 0.95))
+        || !m || !Array.isArray(m.textLinesPt) || m.textLinesPt.length < 2
+      );
+      if (!folded && !serialFolded && !globalThis.__FZ_OFF_HEADMERGE && !skipHeadMergeB2) {
         let HM = global.FayzarHeaderMerge;
         if (!HM && typeof require === 'function') { try { HM = global.FayzarHeaderMerge = require('./header-merge.js'); } catch (e) { HM = null; } }
         if (!HM && typeof XMLHttpRequest !== 'undefined') {
@@ -1227,13 +1316,135 @@
           });
         }
       }
-      if (fzOn('GRIDFIRST') && !folded) {
+      const hasPartialRuleSpansB2 = !!(m && m.rectPt && (
+        (Array.isArray(m.hRuleSpansPt) && m.hRuleSpansPt.some((sp) => Array.isArray(sp) && (sp[1] - sp[0]) < m.rectPt.w * 0.92))
+        || (Array.isArray(m.vRulesPt) && m.vRulesPt.some((v) => v && v.y0 != null && v.y1 != null && v.x > m.rectPt.x + 6 && v.x < m.rectPt.x + m.rectPt.w - 6 && (v.y1 - v.y0) < m.rectPt.h * 0.92))
+      ));
+      const skipGridFirstB2 = tableGridOn() && (
+        rows.some((r) => r.every((c) => !String(c || '').trim()))
+        || (m && Array.isArray(m.tableGapsPt) && m.tableGapsPt.length > 0)
+        || (b.splitAtEmpty || (m && m.splitAtEmpty))
+        || hasPartialRuleSpansB2
+        || !m || (!Array.isArray(m.textInkXPt) && !Array.isArray(m.textLinesPt))
+      );
+      if (fzOn('GRIDFIRST') && !folded && !skipGridFirstB2) {
         let GF = global.FayzarGridFirst;
         if (!GF && typeof require === 'function') { try { GF = global.FayzarGridFirst = require('./grid-first.js'); } catch (e) { GF = null; } }
         if (!GF && typeof XMLHttpRequest !== 'undefined') {
           try { const x = new XMLHttpRequest(); x.open('GET', 'js/layout-engine/faithful/grid-first.js', false); x.send(null); if (x.status >= 200 && x.status < 300 && x.responseText) { (0, eval)(x.responseText); GF = global.FayzarGridFirst; } } catch (e) { GF = null; }
         }
         if (GF && typeof GF.applyGridFirst === 'function') GF.applyGridFirst(tbl, m, pageInfo);
+      }
+      if (tableGridOn()) {
+        const R = (m && m.rectPt) || rect || { x: 54, y: 100, w: tbl.widthPt || 450, h: tbl.heightPt || 120 };
+        const curRows = Array.isArray(tbl.rows) && tbl.rows.length ? tbl.rows : rows;
+        const curNCols = curRows.length ? Math.max(...curRows.map((r) => r.length)) : nCols;
+        // ১) রেখা-জাল থেকে কলাম-প্রস্থ (বাহ্যিক + ভেতরের nCols+1 দাগ বা nCols-1 ভেতরের দাগ)
+        if (!tbl.colFractions && m && Array.isArray(m.vRulesPt) && curNCols > 1) {
+          const vs = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.25)).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+          const uniqV = [];
+          vs.forEach((x) => { if (!uniqV.length || x - uniqV[uniqV.length - 1] > 4) uniqV.push(x); });
+          if (uniqV.length === curNCols + 1) {
+            const totW = Math.max(1, uniqV[uniqV.length - 1] - uniqV[0]);
+            const fr = uniqV.slice(1).map((x, k) => r1((x - uniqV[k]) / totW * 1000) / 1000);
+            if (fr.every((f) => f >= 0.02)) tbl.colFractions = fr;
+          }
+        }
+        // ২) আংশিক খাড়া ও অনুভূমিক রেখা থেকে ঘর-জোড়া (gridSpans ও vMerges)
+        if (m && Array.isArray(m.vRulesPt) && curNCols >= 2 && curRows.length >= 2) {
+          const inV = m.vRulesPt.filter((v) => typeof v === 'object' && v.x > R.x + 6 && v.x < R.x + R.w - 6 && v.y0 != null && v.y1 != null)
+            .sort((a, c) => a.x - c.x);
+          const hSorted = Array.isArray(m.hRulesPt) ? m.hRulesPt.slice().sort((a, c) => a - c) : [];
+          const hB = hSorted.length >= curRows.length + 1
+            ? hSorted.slice(0, curRows.length + 1)
+            : Array.from({ length: curRows.length + 1 }, (_, i) => R.y + (i / curRows.length) * R.h);
+          if (inV.length === curNCols - 1) {
+            curRows.forEach((r, ri) => {
+              const by0 = hB[ri], by1 = hB[ri + 1], bh = Math.max(1, by1 - by0);
+              const rowSp = new Array(curNCols).fill(1);
+              const rowVB = new Array(curNCols - 1).fill(true);
+              let hasRowSpan = false;
+              inV.forEach((v, k) => {
+                const ov = Math.min(v.y1, by1) - Math.max(v.y0, by0);
+                if (ov < bh * 0.3 && !(r[k + 1] && String(r[k + 1]).trim())) {
+                  let root = k;
+                  while (root > 0 && rowSp[root] === 0) root--;
+                  rowSp[root]++;
+                  rowSp[k + 1] = 0;
+                  rowVB[k] = false;
+                  hasRowSpan = true;
+                }
+              });
+              if (hasRowSpan) {
+                if (!Array.isArray(tbl.gridSpans) || tbl.gridSpans.length !== curRows.length) {
+                  tbl.gridSpans = curRows.map((_, i) => (tbl.gridSpans && Array.isArray(tbl.gridSpans[i]) ? tbl.gridSpans[i] : new Array(curNCols).fill(1)));
+                }
+                tbl.gridSpans[ri] = rowSp;
+                if (!Array.isArray(tbl.vRuleBands) || tbl.vRuleBands.length !== curRows.length) {
+                  tbl.vRuleBands = curRows.map((_, i) => (tbl.vRuleBands && Array.isArray(tbl.vRuleBands[i]) ? tbl.vRuleBands[i] : new Array(curNCols - 1).fill(true)));
+                }
+                tbl.vRuleBands[ri] = rowVB;
+              }
+            });
+          }
+        }
+        if (m && Array.isArray(m.hRuleSpansPt) && Array.isArray(m.hRulesPt) && m.hRuleSpansPt.length === curRows.length + 1 && curNCols >= 2 && curRows.length >= 2) {
+          const fr = (Array.isArray(tbl.colFractions) && tbl.colFractions.length === curNCols) ? tbl.colFractions : new Array(curNCols).fill(1 / curNCols);
+          const colEdges = [R.x];
+          fr.forEach((f) => colEdges.push(colEdges[colEdges.length - 1] + f * R.w));
+          for (let bi = 1; bi < curRows.length; bi++) {
+            const sp = m.hRuleSpansPt[bi];
+            if (!sp) continue;
+            for (let k = 0; k < curNCols; k++) {
+              const cx0 = colEdges[k], cx1 = colEdges[k + 1], cw0 = Math.max(1, cx1 - cx0);
+              const ov = Math.min(sp[1], cx1) - Math.max(sp[0], cx0);
+              if (ov < cw0 * 0.3 && !(curRows[bi][k] && String(curRows[bi][k]).trim())) {
+                if (!Array.isArray(tbl.vMerges) || tbl.vMerges.length !== curRows.length) {
+                  tbl.vMerges = curRows.map((_, i) => (tbl.vMerges && Array.isArray(tbl.vMerges[i]) ? tbl.vMerges[i] : new Array(curNCols).fill(null)));
+                }
+                if (!Array.isArray(tbl.vMerges[bi - 1])) tbl.vMerges[bi - 1] = new Array(curNCols).fill(null);
+                if (!Array.isArray(tbl.vMerges[bi])) tbl.vMerges[bi] = new Array(curNCols).fill(null);
+                if (!tbl.vMerges[bi - 1][k]) tbl.vMerges[bi - 1][k] = 'restart';
+                tbl.vMerges[bi][k] = 'continue';
+                if (Array.isArray(tbl.gridSpans) && Array.isArray(tbl.gridSpans[bi]) && tbl.gridSpans[bi][k] === 0) {
+                  tbl.gridSpans[bi] = new Array(curNCols).fill(1);
+                }
+              }
+            }
+          }
+        }
+        // ৩) অনুভূমিক আর খাড়া রেখা আলাদা (insideH বনাম insideV)
+        if (m && !m.empty && m.hasGrid) {
+          const inH = Array.isArray(m.hRulesPt) ? m.hRulesPt.filter((y) => y > R.y + 4 && y < R.y + R.h - 4) : [];
+          const inV = Array.isArray(m.vRulesPt) ? m.vRulesPt.filter((v) => (typeof v === 'number' ? v : v.x) > R.x + 4 && (typeof v === 'number' ? v : v.x) < R.x + R.w - 4 && (v.cov == null || v.cov >= 0.25)) : [];
+          if (m.hasInsideH === false || ((curRows.length >= 2 || (b.lines && b.lines.length >= 2)) && Array.isArray(m.hRulesPt) && inH.length === 0 && inV.length >= 1)) {
+            tbl.noInsideH = true;
+            tbl.borderless = false;
+          }
+          if (m.hasInsideV === false || (curNCols >= 2 && Array.isArray(m.vRulesPt) && inV.length === 0 && (inH.length >= 1 || (Array.isArray(m.hRulesPt) && m.hRulesPt.length >= 2)))) {
+            tbl.noInsideV = true;
+            tbl.keepHRules = true;
+            tbl.borderless = false;
+          }
+        }
+        // ৪) পাশাপাশি ছোট বাক্স চেনা
+        const sb = (m && m.smallBoxesPt) || b.smallBoxes;
+        if (Array.isArray(sb) && sb.length >= 2) {
+          tbl.smallBoxesPt = sb;
+          tbl.borderless = false;
+          const totBoxW = sb.reduce((a, x) => a + (x.w || (x.x1 - x.x0)), 0) || 1;
+          if (sb.length === curNCols) tbl.colFractions = sb.map((x) => r1((x.w || (x.x1 - x.x0)) / totBoxW * 1000) / 1000);
+        }
+        // ৫) শিরোনাম-ঘরের মোটা লেখা ও নিচে-দাগ
+        if (b.headBold || (m && m.headBold) || (curRows.length >= 2 && curRows[0].some((c) => /\*\*[^*]+\*\*/.test(String(c || ''))))) {
+          tbl.headBold = true;
+        }
+        if (b.headUnderline || (m && m.headUnderline) || (curRows.length >= 2 && curRows[0].some((c) => /<u>[^<]+<\/u>/i.test(String(c || ''))))) {
+          tbl.headUnderline = true;
+        }
+        if (m && m.headCellBold) tbl.headCellBold = m.headCellBold;
+        if (m && m.headCellUnderline) tbl.headCellUnderline = m.headCellUnderline;
+        if (b.splitAtEmpty || (m && m.splitAtEmpty)) tbl.splitAtEmpty = true;
       }
       if (formKitOn()) {
         if (m && m.headFill) tbl.headFill = normHexColor(m.headFill);
