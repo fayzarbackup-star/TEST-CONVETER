@@ -1350,7 +1350,122 @@
     return { top: y0 / ppt, left: x0 / ppt, right: (m.W - 1 - x1) / ppt, bottom: (m.H - 1 - y1) / ppt };
   }
 
-  const FayzarPageGeometry = { RATIO, inkMask, otsuThreshold, components, linesOf, estimateFontPt, blockMetrics, pageMargins, detectFrame, countHLines, verticalRules, horizontalRules, boxFrames, fitBoxDrift, fitExtentDrift, applyDrift, snapBoxesToLines, vDashComps, median, pageBackground, blockShade, hLinePositions, darkBandMask };
+  /**
+   * ২০২৬-১০-১৮ (A3_ROWCHECK_v4): ছকের বাক্সের ভেতরের আনুভূমিক রেখা (ভাঙা ও ডাবল-লাইনসহ) থেকে সারি-ব্যান্ড [{ y0, y1 }] (px)।
+   * কাছাকাছি দ্বৈত/মোটা রেখা এক দাগে মিলিত হয়; ঘরের লেখার নিচের ছোট দাগ (underline) সারি-রেখা হিসেবে ধরা হয় না।
+   * সুইচ: global.__FZ_ON_ROWCHECK (বন্ধ থাকলে null)।
+   */
+  function tableRowBands(m, box, opts) {
+    if (!global.__FZ_ON_ROWCHECK) return null;
+    const o = opts || {}, ppt = o.pxPerPt || 1;
+    const gm = o.gridMask || (m && m.mask ? m : (m && m.data ? inkMask(m) : null));
+    if (!gm || !gm.mask) return [];
+    const { W, H, mask } = gm;
+    let bx0 = 0, by0 = 0, bx1 = W, by1 = H;
+    if (Array.isArray(box) && box.length >= 4) {
+      by0 = clamp(Math.floor(box[0] / 1000 * H), 0, H);
+      bx0 = clamp(Math.floor(box[1] / 1000 * W), 0, W);
+      by1 = clamp(Math.ceil(box[2] / 1000 * H), 0, H);
+      bx1 = clamp(Math.ceil(box[3] / 1000 * W), 0, W);
+    } else if (box && typeof box === 'object') {
+      bx0 = clamp(Math.floor(box.x0 != null ? box.x0 : 0), 0, W);
+      by0 = clamp(Math.floor(box.y0 != null ? box.y0 : 0), 0, H);
+      bx1 = clamp(Math.ceil(box.x1 != null ? box.x1 : W), 0, W);
+      by1 = clamp(Math.ceil(box.y1 != null ? box.y1 : H), 0, H);
+    }
+    if (bx1 - bx0 < 20 || by1 - by0 < 6) return [];
+    const colCnt = new Int32Array(bx1 - bx0), rowCnt = new Int32Array(by1 - by0);
+    for (let y = by0; y < by1; y++) {
+      const yOff = y * W; let rc = 0;
+      for (let x = bx0; x < bx1; x++) if (mask[yOff + x]) { rc++; colCnt[x - bx0]++; }
+      rowCnt[y - by0] = rc;
+    }
+    let tx0 = -1, tx1 = -1, ty0 = -1, ty1 = -1;
+    for (let x = bx0; x < bx1; x++) if (colCnt[x - bx0] >= 2) { if (tx0 < 0) tx0 = x; tx1 = x; }
+    for (let y = by0; y < by1; y++) if (rowCnt[y - by0] >= 2) { if (ty0 < 0) ty0 = y; ty1 = y; }
+    const tw = tx1 - tx0 + 1, th = ty1 - ty0 + 1;
+    if (tx0 < 0 || ty0 < 0 || tw < 20 || th < 6) return [];
+    const hr = { x0: Math.max(0, tx0), y0: Math.max(0, ty0 - 4), x1: Math.min(W, tx1 + 1), y1: Math.min(H, ty1 + 5) };
+    const rawYs = hLinePositions(gm, hr).slice();
+    if (!global.__FZ_OFF_BROKEN) {
+      const bys = brokenHLinePositions(gm, hr, ppt);
+      for (const by of bys) {
+        let bestY = by, bestC = -1;
+        for (let yy = Math.max(hr.y0, by - 1); yy <= Math.min(hr.y1 - 1, by + 4); yy++) {
+          const c = yy >= by0 && yy < by1 ? rowCnt[yy - by0] : 0;
+          if (c > bestC) { bestC = c; bestY = yy; }
+        }
+        rawYs.push(bestY);
+      }
+    }
+    if (rawYs.length < 2) return [];
+    rawYs.sort((a, b) => a - b);
+    const off = Math.max(5, Math.round(2.5 * ppt)), edgeTol = Math.max(8, Math.round(tw * 0.08));
+    const validYs = rawYs.filter((y) => {
+      const sp = hLineSpan(gm, hr, y);
+      if (sp.x1 - sp.x0 >= tw * 0.8 && sp.x0 <= hr.x0 + edgeTol && sp.x1 >= hr.x1 - edgeTol) return true;
+      let xMin = W, xMax = -1, fill = 0, aboveInk = 0;
+      for (let x = hr.x0; x < hr.x1; x++) {
+        let on = false;
+        for (let d = -2; d <= 2; d++) { const yy = y + d; if (yy >= 0 && yy < H && mask[yy * W + x]) { on = true; break; } }
+        if (!on) continue;
+        if (x < xMin) xMin = x;
+        if (x > xMax) xMax = x;
+        fill++;
+        const ya = y - off;
+        if (ya >= 0 && ya < H && mask[ya * W + x]) aboveInk++;
+      }
+      const span = xMax - xMin + 1;
+      return span >= tw * 0.82 && xMin <= hr.x0 + edgeTol && xMax >= hr.x1 - edgeTol && fill >= span * 0.55 && aboveInk <= fill * 0.35;
+    });
+    if (validYs.length < 2) return [];
+    const doubleGap = Math.max(7, Math.round(6.5 * ppt));
+    const groups = [[validYs[0]]];
+    for (let i = 1; i < validYs.length; i++) {
+      const y = validYs[i], g = groups[groups.length - 1];
+      if (y - g[g.length - 1] <= doubleGap) g.push(y);
+      else groups.push([y]);
+    }
+    const rules = groups.map((g) => Math.round((g[0] + g[g.length - 1]) / 2));
+    const bands = [];
+    for (let i = 0; i + 1 < rules.length; i++) {
+      if (rules[i + 1] > rules[i]) bands.push({ y0: rules[i], y1: rules[i + 1] });
+    }
+    return bands;
+  }
+
+  /**
+   * ২০২৬-১০-১৮ (A3_ROWCHECK_v4): ছবির মাপা সারি-ব্যান্ডের সাথে Gemini-র সারি-সংখ্যার তুলনা ও সংশোধন-পরামর্শ।
+   * @returns null (সুইচ বন্ধে) | { measured, gemini, match, bands, suggestion, suspects, tallest, shortest, medianHeight }
+   */
+  function checkTableRows(m, box, geminiRowCount, opts) {
+    if (!global.__FZ_ON_ROWCHECK) return null;
+    const bands = tableRowBands(m, box, opts) || [];
+    const measured = bands.length;
+    const gemini = Math.max(0, Math.round(Number(geminiRowCount) || 0));
+    const match = measured > 0 && measured === gemini;
+    const suggestion = (!measured || measured === gemini) ? 'ok' : (measured > gemini ? 'split' : 'merge');
+    if (!measured) {
+      return { measured, gemini, match, bands, suggestion, suspects: [], tallest: null, shortest: null, medianHeight: 0 };
+    }
+    const heights = bands.map((b) => b.y1 - b.y0);
+    const medH = median(heights) || 1;
+    const items = bands.map((b, i) => {
+      const h = b.y1 - b.y0, ratio = Math.round((h / medH) * 100) / 100;
+      return { index: i, y0: b.y0, y1: b.y1, h, ratio, kind: h >= medH ? 'tall' : 'short' };
+    });
+    const byHeightAsc = items.slice().sort((a, b) => a.h - b.h || a.index - b.index);
+    const shortest = byHeightAsc[0];
+    const tallest = byHeightAsc[byHeightAsc.length - 1];
+    const diff = Math.abs(measured - gemini);
+    const byDev = items.slice().sort((a, b) => Math.abs(b.h - medH) - Math.abs(a.h - medH) || a.index - b.index);
+    const outliers = byDev.filter((x) => x.h >= medH * 1.35 || x.h <= medH * 0.65);
+    const needCount = diff > 0 ? Math.min(items.length, Math.max(diff, outliers.length, 1)) : outliers.length;
+    const suspects = byDev.slice(0, needCount);
+    return { measured, gemini, match, bands, suggestion, suspects, tallest, shortest, medianHeight: medH };
+  }
+
+  const FayzarPageGeometry = { RATIO, inkMask, otsuThreshold, components, linesOf, estimateFontPt, blockMetrics, pageMargins, detectFrame, countHLines, verticalRules, horizontalRules, boxFrames, fitBoxDrift, fitExtentDrift, applyDrift, snapBoxesToLines, vDashComps, median, pageBackground, blockShade, hLinePositions, darkBandMask, tableRowBands, checkTableRows };
   global.FayzarPageGeometry = FayzarPageGeometry;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarPageGeometry;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
