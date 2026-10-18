@@ -30,7 +30,7 @@
     /**
      * @param {string} text  পূর্ণ মার্কডাউন (ফ্রন্টম্যাটার থাকলেও চলে)
      * @param {object} opt   { format, docType, figures, pageSize, margin, fontSize, columns,
-     *                         auditNote, suppressAuditNote, __frontmatter, parsedData, renumber }
+     *                         auditNote, suppressAuditNote, __frontmatter, parsedData, renumber, studioFit }
      * @returns {Promise<{ blob: Blob, format: string, steps: string[], figures: number, mhtmlImages: boolean }>}
      */
     /** Part-18.0: য়/ড়/ঢ়-এর দুই-অংশ রূপ (ব্যঞ্জন + ়) ⇒ একক অক্ষর (U+09DF/09DC/09DD) — সব parser/শনাক্তকারী এই রূপে লেখা */
@@ -43,6 +43,9 @@
       const o = Object.assign({ format: 'doc' }, opt || {});
       if (this.FORMATS.indexOf(o.format) === -1) throw new Error('অজানা ফরম্যাট: ' + o.format);
       const steps = [];
+      // WORK_PLAN F1: স্টুডিও/টেমপ্লেট পথে (যেখানে বাইরের masterDocx নেই) এক-পাতা ফিট ও টেবিলের আসল মার্জিন/উচ্চতা সক্রিয়;
+      // studioFit: false দিলে আগের আচরণ অবিকল থাকে (গেট যাচাই)।
+      const studioFit = o.studioFit !== undefined ? !!o.studioFit : !o.masterDocx;
 
       // ১) মাস্টার .docx — Part-17.5: হুবহু-লেআউট মোড নিজের মাস্টার দেয় (opt.masterDocx); না দিলে টেমপ্লেট-পথ
       let master;
@@ -52,7 +55,13 @@
       } else {
         const Pipeline = pick('FayzarPipeline');
         if (!Pipeline || typeof Pipeline.exportDocx !== 'function') throw new Error('FayzarPipeline লোড হয়নি');
+        const isBijoyTarget = (o.format === 'doc' || o.format === 'docx-bijoy');
         const pipeOpts = Object.assign({}, o, { font: 'Kalpurush' });
+        // WORK_PLAN F1: শেষ ফাইল বিজয় (.doc / .docx-bijoy) হলে মাস্টার বানানোর সময় targetFont: 'bijoy' পাঠাতে হবে —
+        // নইলে আবেদনপত্র (AL.geometry) ও ক্যাশমেমো (CM.geometry) কালপুরুষের মাপে তৈরি হয়ে ২ পাতায় চলে যায়।
+        if (studioFit && isBijoyTarget && !pipeOpts.targetFont) {
+          pipeOpts.targetFont = 'bijoy';
+        }
         delete pipeOpts.format; delete pipeOpts.figures;
         const res = await Pipeline.exportDocx(text, pipeOpts);
         master = res && res.content;
@@ -86,7 +95,8 @@
       if (!Conv) throw new Error('DocxToDocConverter লোড হয়নি');
       const dr = await new Conv().convertDocxToDoc(bijoy, {
         pageSize: o.pageSize || 'a4', margin: o.margin || 'normal', preserveSutonny: true, optimizeForQuestionPaper: true,
-        honorCellMargins: !!o.masterDocx   // Part-17.7: হুবহু-মোডের মাস্টার — ঘর-মার্জিন মূলের মতো
+        honorCellMargins: !!(o.masterDocx || studioFit),   // Part-17.7 + F1: হুবহু-মোড ও স্টুডিও-টেমপ্লেটে ঘরের আসল মার্জিন ও সারির উচ্চতা
+        studioFit: studioFit
       });
       let doc = dr && (dr.blob || dr.convertedBlob);
       if (!doc) throw new Error('Word 2003 .doc তৈরি হয়নি');

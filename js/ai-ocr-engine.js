@@ -16,6 +16,28 @@
 (function (global) {
   'use strict';
 
+  // Node পরিবেশে অফলাইন পরীক্ষার জন্য ন্যূনতম ব্রাউজার-গ্লোবাল ফলব্যাক
+  const window = (typeof global.window !== 'undefined') ? global.window : global;
+  const localStorage = (typeof global.localStorage !== 'undefined')
+    ? global.localStorage
+    : { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+  const document = (typeof global.document !== 'undefined')
+    ? global.document
+    : {
+        readyState: 'complete',
+        getElementById: () => null,
+        querySelector: () => null,
+        createElement: () => ({
+          style: {},
+          classList: { add: () => {}, remove: () => {}, contains: () => false },
+          appendChild: () => {},
+          addEventListener: () => {}
+        }),
+        createTextNode: () => ({}),
+        body: { appendChild: () => {}, removeChild: () => {} },
+        addEventListener: () => {}
+      };
+
   const STORAGE_KEYS = {
     FREE_COUNT: 'fayzar_ai_ocr_free_count',
     BYOK_KEY: 'fayzar_ai_ocr_gemini_key',
@@ -1743,16 +1765,583 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   }
 }
 
-  // Helper: Split media items into chunks
-  function splitMediaIntoChunks(mediaItems, chunkSize) {
+  // =========================================================================
+  // G_CHUNK_v5 (WORK_PLAN G2): বড় ফাইল ভাগে পাঠানো (সুইচ: window.__FZ_ON_CHUNK)
+  // =========================================================================
+  const CHUNK_THRESHOLD_PAGES = 8;          // পাতা-সংখ্যা > ৮ হলে ভাগে পাঠানো হবে
+  const CHUNK_MIN_PAGES = 5;                // প্রতি ভাগে সর্বনিম্ন ৫ পাতা (বাইট সীমা মানলে)
+  const CHUNK_MAX_PAGES = 8;                // প্রতি ভাগে সর্বোচ্চ ৮ পাতা
+  const CHUNK_MAX_BASE64_BYTES = 700 * 1024; // প্রতি ভাগে সর্বোচ্চ ~৭০০KB base64 পেলোড
+  let _inChunkExecution = false;
+
+  /** চাংকিং সুইচ (window.__FZ_ON_CHUNK) চালু আছে কি না */
+  function isChunkSwitchEnabled() {
+    if (typeof window !== 'undefined' && window.__FZ_ON_CHUNK) return true;
+    if (typeof global !== 'undefined' && global.__FZ_ON_CHUNK) return true;
+    if (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_CHUNK) return true;
+    return false;
+  }
+
+  /** হুবহু-মোড (faithful) সক্রিয় কি না — হুবহু-মোড অপরিবর্তিত থাকবে */
+  function isFaithfulModeActive(opts) {
+    if (opts && (opts.mode === 'faithful' || opts.faithful === true || opts.ocrMode === 'faithful')) return true;
+    if (state && (state.mode === 'faithful' || state.ocrMode === 'faithful' || state.faithfulMode === true)) return true;
+    if (typeof window !== 'undefined' && (window.__FZ_OCR_MODE === 'faithful' || window.__FZ_FAITHFUL_MODE === true)) return true;
+    return false;
+  }
+
+  /** exam-renumber.js মডিউল লোড/প্রাপ্তি (ব্রাউজার ও Node উভয় পরিবেশে) */
+  function getExamRenumberApi() {
+    if (typeof FayzarExamRenumber !== 'undefined' && FayzarExamRenumber) return FayzarExamRenumber;
+    if (global && global.FayzarExamRenumber) return global.FayzarExamRenumber;
+    if (typeof require === 'function') {
+      try { return require('./layout-engine/exam-renumber.js'); } catch (e) {}
+    }
+    return null;
+  }
+
+  /** proxy-failure-policy.js মডিউল লোড/প্রাপ্তি (ব্রাউজার ও Node উভয় পরিবেশে, ফলব্যাকসহ) */
+  function getProxyPolicyApi() {
+    if (typeof FayzarProxyPolicy !== 'undefined' && FayzarProxyPolicy) return FayzarProxyPolicy;
+    if (global && global.FayzarProxyPolicy) return global.FayzarProxyPolicy;
+    if (typeof require === 'function') {
+      try { return require('./proxy-failure-policy.js'); } catch (e) {}
+    }
+    return {
+      parseProxyFailure(status, body) {
+        const b = body || {};
+        const attempts = Array.isArray(b.attempts) ? b.attempts : [];
+        const lastDetail = (b.lastError && b.lastError.detail) || '';
+        const lastStatus = (b.lastError && b.lastError.status) || 0;
+        if (status === 401 || status === 403) return { kind: 'unauthorized', waitSec: 0, detail: String(b.error || 'unauthorized'), attempts };
+        if (status === 429 && (b.limit === 'ip_daily' || /দৈনিক/.test(String(b.error || '')))) return { kind: 'daily_cap', waitSec: 3600, detail: String(b.error || 'daily cap'), attempts };
+        if (status === 429) return { kind: 'all_cooling', waitSec: Number(b.retryInSec) || 60, detail: String(b.error || 'all keys cooling'), attempts };
+        if (attempts.some(a => a.class === 'LOCATION') || /user location is not supported/i.test(lastDetail)) return { kind: 'location', waitSec: 90, detail: lastDetail || 'location', attempts };
+        const allFatal = attempts.length > 0 && attempts.every(a => a.class === 'FATAL_INPUT');
+        const looksFatalInput = (lastStatus === 400 && !/API key not valid|API_KEY_INVALID/i.test(lastDetail));
+        if (allFatal || looksFatalInput) return { kind: 'fatal_input', waitSec: 0, detail: lastDetail || 'invalid payload', attempts };
+        if (status === 0 || status >= 500) return { kind: 'server_error', waitSec: 60, detail: lastDetail || `HTTP ${status}`, attempts };
+        return { kind: 'unknown', waitSec: 60, detail: lastDetail || `HTTP ${status}`, attempts };
+      },
+      decideProxyFallback(status, body, hasOwnKey) {
+        const info = this.parseProxyFailure(status, body);
+        if (info.kind === 'fatal_input' || info.kind === 'unauthorized' || info.kind === 'daily_cap') {
+          return { action: 'abort', kind: info.kind, waitSec: info.waitSec, tone: 'error', message: `প্রক্সি ত্রুটি (${info.kind}): ${info.detail}` };
+        }
+        if (hasOwnKey) {
+          return { action: 'direct', kind: info.kind, waitSec: info.waitSec, tone: 'warning', message: 'আপনার নিজের API Key দিয়ে সরাসরি চেষ্টা করা হচ্ছে...' };
+        }
+        return { action: 'abort', kind: info.kind, waitSec: info.waitSec, tone: 'warning', message: `প্রক্সি সার্ভার ব্যস্ত (${info.detail})` };
+      }
+    };
+  }
+
+  /** একটি পাতার base64 পেলোড আকার (বাইট/অক্ষর) নির্ণয় */
+  function estimateBase64Bytes(item) {
+    if (item == null) return 0;
+    if (typeof item === 'number') return Math.max(0, item);
+    if (typeof item === 'string') {
+      const idx = item.indexOf('base64,');
+      return idx >= 0 ? item.length - (idx + 7) : item.length;
+    }
+    if (typeof item === 'object') {
+      if (typeof item.base64Bytes === 'number') return Math.max(0, item.base64Bytes);
+      if (typeof item.base64Size === 'number') return Math.max(0, item.base64Size);
+      if (typeof item.bytes === 'number') return Math.max(0, item.bytes);
+      const raw = typeof item.data === 'string' ? item.data : (typeof item.base64 === 'string' ? item.base64 : '');
+      if (raw) {
+        const idx = raw.indexOf('base64,');
+        const len = idx >= 0 ? raw.length - (idx + 7) : raw.length;
+        if (len > 0) return len;
+      }
+      if (typeof item.size === 'number') return Math.max(0, item.size);
+      if (typeof item.byteLength === 'number') return Math.max(0, item.byteLength);
+    }
+    return 0;
+  }
+
+  function sumChunkBase64Bytes(items) {
+    let total = 0;
+    for (let i = 0; i < items.length; i++) total += estimateBase64Bytes(items[i]);
+    return total;
+  }
+
+  function attachChunkMetadata(chunkArr, startPage, endPage, index, totalChunks) {
+    const bytes = sumChunkBase64Bytes(chunkArr);
+    Object.defineProperty(chunkArr, 'startPage', { value: startPage, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'endPage', { value: endPage, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'totalBytes', { value: bytes, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'bytes', { value: bytes, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'index', { value: index, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'totalChunks', { value: totalChunks, enumerable: false, configurable: true });
+    Object.defineProperty(chunkArr, 'items', { value: chunkArr, enumerable: false, configurable: true });
+    return chunkArr;
+  }
+
+  /**
+   * ভাগ-পরিকল্পনা: সাধারণ (লেআউট) মোডে পাতা > ৮ হলে ৫–৮ পাতা করে ভাগ তৈরি,
+   * যেখানে প্রতিটি ভাগের পেলোড ≤ ~৭০০KB base64। হুবহু-মোডে (faithful) ভাগ হয় না।
+   */
+  function planOcrChunks(mediaItems, options = {}) {
+    if (!Array.isArray(mediaItems) || mediaItems.length === 0) return [];
+    const opts = options || {};
+    if (isFaithfulModeActive(opts) || opts.enabled === false || (opts.respectSwitch && !isChunkSwitchEnabled())) {
+      return [attachChunkMetadata(mediaItems.slice(), 1, mediaItems.length, 0, 1)];
+    }
+
+    const thresholdPages = opts.thresholdPages != null ? opts.thresholdPages : CHUNK_THRESHOLD_PAGES;
+    const minPages = opts.minPages != null ? opts.minPages : CHUNK_MIN_PAGES;
+    const maxPages = opts.maxPages != null ? opts.maxPages : CHUNK_MAX_PAGES;
+    const maxBytes = opts.maxBytes != null
+      ? opts.maxBytes
+      : (opts.maxBase64Bytes != null ? opts.maxBase64Bytes : CHUNK_MAX_BASE64_BYTES);
+
+    // পাতা-সংখ্যা ≤ ৮ হলে কোনো ভাগ নয় — একসাথে যাবে
+    if (mediaItems.length <= thresholdPages) {
+      return [attachChunkMetadata(mediaItems.slice(), 1, mediaItems.length, 0, 1)];
+    }
+
+    // ধাপ ১: পেলোড-বাইট (≤ ~৭০০KB) ও সর্বোচ্চ পাতা (৮) মেনে প্রাথমিক ভাগ
     const chunks = [];
-    for (let i = 0; i < mediaItems.length; i += chunkSize) {
-      chunks.push(mediaItems.slice(i, i + chunkSize));
+    let current = [];
+    let currentBytes = 0;
+
+    for (let i = 0; i < mediaItems.length; i++) {
+      const item = mediaItems[i];
+      const itemBytes = estimateBase64Bytes(item);
+      if (current.length > 0 && (current.length >= maxPages || (currentBytes + itemBytes > maxBytes))) {
+        chunks.push(current);
+        current = [];
+        currentBytes = 0;
+      }
+      current.push(item);
+      currentBytes += itemBytes;
+    }
+    if (current.length > 0) chunks.push(current);
+
+    // ধাপ ২: শেষ ভাগে পাতা < ৫ হলে এবং বাইট-সীমা অনুমতি দিলে আগের ভাগ থেকে পাতা সরিয়ে ৫–৮ পাতায় ভারসাম্য আনা
+    while (chunks.length >= 2 && chunks[chunks.length - 1].length < minPages) {
+      let donorIdx = -1;
+      for (let d = chunks.length - 2; d >= 0; d--) {
+        if (chunks[d].length > minPages) {
+          donorIdx = d;
+          break;
+        }
+      }
+      if (donorIdx === -1) break;
+
+      let canShift = true;
+      for (let k = donorIdx; k < chunks.length - 1; k++) {
+        const movingItem = chunks[k][chunks[k].length - 1];
+        const nextBytes = sumChunkBase64Bytes(chunks[k + 1]) + estimateBase64Bytes(movingItem);
+        const nextLen = chunks[k + 1].length + 1 - (k + 1 < chunks.length - 1 ? 1 : 0);
+        if (nextBytes > maxBytes || nextLen > maxPages) {
+          canShift = false;
+          break;
+        }
+      }
+      if (!canShift) break;
+
+      for (let k = donorIdx; k < chunks.length - 1; k++) {
+        const moved = chunks[k].pop();
+        chunks[k + 1].unshift(moved);
+      }
+    }
+
+    // ধাপ ৩: পাশাপাশি ভাগের আকার ৫–৮ সীমার ভেতরে আরও সুষম করা (বাইট-সীমা অক্ষুণ্ন রেখে)
+    let balanced = true;
+    while (balanced && chunks.length >= 2) {
+      balanced = false;
+      for (let k = 0; k < chunks.length - 1; k++) {
+        if (chunks[k].length - chunks[k + 1].length >= 2 && chunks[k].length > minPages && chunks[k + 1].length < maxPages) {
+          const candidate = chunks[k][chunks[k].length - 1];
+          if (sumChunkBase64Bytes(chunks[k + 1]) + estimateBase64Bytes(candidate) <= maxBytes) {
+            chunks[k].pop();
+            chunks[k + 1].unshift(candidate);
+            balanced = true;
+          }
+        }
+      }
+    }
+
+    let pageCursor = 1;
+    for (let idx = 0; idx < chunks.length; idx++) {
+      const len = chunks[idx].length;
+      attachChunkMetadata(chunks[idx], pageCursor, pageCursor + len - 1, idx, chunks.length);
+      pageCursor += len;
     }
     return chunks;
   }
 
-  async function processWithChunking(apiKey, mediaItems, onProgress, onStream) {
+  /** অগ্রগতি বার্তা তৈরি: "ভাগ ২/৪ চলছে…" */
+  function formatChunkProgress(chunkNumber, totalChunks) {
+    return `ভাগ ${toBengaliNumber(chunkNumber)}/${toBengaliNumber(totalChunks)} চলছে…`;
+  }
+
+  /** কোনো টেক্সটের শুরুতে YAML ফ্রন্টম্যাটার থাকলে তা আলাদা করা (পাতা-বিরতি '---' অক্ষত রেখে) */
+  function splitLeadingFrontmatter(rawText) {
+    const s = String(rawText == null ? '' : rawText);
+    const m = s.match(/^\s*(---\r?\n([\s\S]*?)\r?\n---)(?:\r?\n|$)/);
+    if (!m) return { frontmatter: '', body: s };
+    const inner = m[2] || '';
+    const hasYamlKey = /^[ \t]*[a-zA-Z0-9_]+[ \t]*:/m.test(inner);
+    const hasQuestionLine = /^[ \t]*[০-৯0-9]+(?:।|\.[ \t]+|\)[ \t]+)/m.test(inner);
+    if (!hasYamlKey || hasQuestionLine) {
+      return { frontmatter: '', body: s };
+    }
+    const body = s.slice(m[0].length);
+    return { frontmatter: m[1].trim(), body };
+  }
+
+  /**
+   * ভাগের উত্তর জোড়া:
+   * - ফ্রন্টম্যাটার শুধু প্রথম ভাগের রাখা
+   * - প্রশ্ন-নম্বর পরের ভাগে চালু রাখা (exam-renumber.js থাকলে সেটি ডেকে)
+   * - পাতা-বিরতি চিহ্ন বজায় রাখা
+   */
+  function mergeOcrChunks(chunkOutputs, options = {}) {
+    if (!Array.isArray(chunkOutputs) || chunkOutputs.length === 0) return '';
+    const opts = options || {};
+    let keptFrontmatter = '';
+    const bodySegments = [];
+    const collectedAuditNotes = [];
+
+    const auditRegex = /\[এআই অডিট নোট ও পরিবর্তনসমূহ:[\s\S]*?\]/g;
+
+    for (let i = 0; i < chunkOutputs.length; i++) {
+      const entry = chunkOutputs[i];
+      const isObj = entry && typeof entry === 'object';
+      const rawText = isObj ? String(entry.text || '') : String(entry == null ? '' : entry);
+      const startPage = isObj && typeof entry.startPage === 'number' ? entry.startPage : null;
+      const endPage = isObj && typeof entry.endPage === 'number' ? entry.endPage : null;
+      const totalChunks = isObj && typeof entry.totalChunks === 'number' ? entry.totalChunks : chunkOutputs.length;
+
+      if (isObj && entry.failed) {
+        const pageRange = (startPage && endPage)
+          ? ` (পৃষ্ঠা ${toBengaliNumber(startPage)}–${toBengaliNumber(endPage)})`
+          : '';
+        const errReason = entry.policyMessage || (entry.policy && entry.policy.message) || (entry.error && entry.error.message) || 'সার্ভার ত্রুটি';
+        bodySegments.push(`[অসম্পূর্ণ: ভাগ ${toBengaliNumber(i + 1)}/${toBengaliNumber(totalChunks)}${pageRange} ব্যর্থ হয়েছে — ${errReason}। বাকি ভাগের ফলাফল সংরক্ষিত আছে।]`);
+        continue;
+      }
+
+      if (!rawText.trim()) continue;
+
+      const { frontmatter, body: rawBody } = splitLeadingFrontmatter(rawText);
+      if (frontmatter && !keptFrontmatter && i === 0) {
+        keptFrontmatter = frontmatter;
+      } else if (frontmatter && !keptFrontmatter) {
+        keptFrontmatter = frontmatter;
+      }
+
+      let body = rawBody;
+
+      // অডিট নোট মাঝপথে না রেখে একত্রে শেষে নেওয়ার জন্য আলাদা করা
+      const notes = body.match(auditRegex);
+      if (notes && notes.length) {
+        for (const n of notes) collectedAuditNotes.push(n.trim());
+        body = body.replace(auditRegex, '').trim();
+      }
+
+      // পরের ভাগের চিত্র-ট্যাগের পৃষ্ঠা-নম্বর সমন্বয় ([[FIG:p=...]])
+      if (startPage && startPage > 1) {
+        const offset = startPage - 1;
+        body = body.replace(/\[\[\s*FIG\s*:\s*p\s*=\s*(\d+)/gi, (full, pNum) => {
+          const n = parseInt(pNum, 10);
+          return isNaN(n) ? full : `[[FIG:p=${n + offset}`;
+        });
+      }
+
+      // প্রথম ভাগের পরের ভাগে ডুপ্লিকেট প্রতিষ্ঠান/পরীক্ষার শিরোনাম (# ...) থাকলে বাদ দেওয়া
+      if (i > 0 && opts.stripDuplicateMainTitle !== false) {
+        body = body.replace(/^\s*#\s+[^\r\n]+(?:\r?\n|$)/, '');
+      }
+
+      // পাতা-বিরতি চিহ্ন (\f সহ) অক্ষত রেখে শুধু শুরুর/শেষের অতিরিক্ত ফাঁকা নিউলাইন ছাঁটা
+      body = body.replace(/^[\r\n]+|[\r\n]+$/g, '');
+      if (body) bodySegments.push(body);
+    }
+
+    const joiner = typeof opts.pageBreakMarker === 'string' && opts.pageBreakMarker.length > 0
+      ? `\n${opts.pageBreakMarker}\n`
+      : '\n\n';
+    let mergedBody = bodySegments.join(joiner);
+
+    // প্রশ্ন-নম্বর পরের ভাগে ধারাবাহিক রাখা (js/layout-engine/exam-renumber.js ব্যবহার করে)
+    let docType = opts.docType || '';
+    if (!docType && keptFrontmatter) {
+      const tm = keptFrontmatter.match(/doc_type:\s*([A-Za-z0-9_-]+)/);
+      if (tm) docType = tm[1];
+    }
+
+    const examRenumber = opts.examRenumber || getExamRenumberApi();
+    const shouldRenumber = opts.renumber !== false && (
+      !docType ||
+      (examRenumber && typeof examRenumber.isExamType === 'function'
+        ? examRenumber.isExamType(docType)
+        : /^EXAM/i.test(docType))
+    );
+
+    if (shouldRenumber && mergedBody) {
+      const lines = mergedBody.split('\n');
+      let currentSection = { title: '', normTitle: '', questions: [] };
+      const sections = [currentSection];
+      const duplicateHeadingLines = new Set();
+
+      // প্রশ্ন-লাইনের রেজেক্স: শুরুতে ট্যাব নেই (উপ-প্রশ্ন/অপশন বাদ), অঙ্ক + (। বা . বা ))
+      const qLineRe = /^([ ]*)([০-৯0-9]+)(।|\.[ \t]+|\)[ \t]+)([ \t]*)(.*)$/;
+
+      for (let li = 0; li < lines.length; li++) {
+        const line = lines[li];
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        if (/^---SECTION_BREAK:/i.test(trimmed)) {
+          if (currentSection.questions.length > 0) {
+            currentSection = { title: trimmed, normTitle: trimmed, questions: [] };
+            sections.push(currentSection);
+          }
+          continue;
+        }
+
+        const secMatch = trimmed.match(/^##\s+(.+)$/);
+        if (secMatch) {
+          const rawTitle = secMatch[1].trim();
+          const normTitle = rawTitle.replace(/\s+/g, ' ');
+          if (currentSection.questions.length === 0) {
+            currentSection.title = rawTitle;
+            currentSection.normTitle = normTitle;
+          } else if (normTitle !== currentSection.normTitle) {
+            currentSection = { title: rawTitle, normTitle: normTitle, questions: [] };
+            sections.push(currentSection);
+          } else if (opts.dedupeRepeatedSectionHeadings !== false) {
+            duplicateHeadingLines.add(li);
+          }
+          continue;
+        }
+
+        // পাতা-বিরতি বা টেবিল লাইন প্রশ্ন নয়
+        if (/^(?:---|\*\*\*|={3,}|<!--|\f|\|)/.test(trimmed)) continue;
+
+        const qm = line.match(qLineRe);
+        if (qm) {
+          currentSection.questions.push({
+            num: qm[2],
+            text: qm[5],
+            _lineIdx: li,
+            _lead: qm[1],
+            _sep: qm[3],
+            _space: qm[4]
+          });
+        }
+      }
+
+      const parsedData = { sections };
+      if (examRenumber && typeof examRenumber.renumberExamSections === 'function') {
+        examRenumber.renumberExamSections(parsedData, opts.renumberOptions);
+      } else {
+        // ফলব্যাক: যদি exam-renumber.js না-ও থাকে তবুও ধারাবাহিক নম্বরায়ন নিশ্চিত করা
+        for (const sec of sections) {
+          if (!sec.questions.length) continue;
+          const useBn = /[০-৯]/.test(sec.questions[0].num);
+          sec.questions.forEach((q, idx) => {
+            q.num = useBn ? toBengaliNumber(idx + 1) : String(idx + 1);
+          });
+        }
+      }
+
+      for (const sec of sections) {
+        for (const q of sec.questions) {
+          lines[q._lineIdx] = `${q._lead}${q.num}${q._sep}${q._space}${q.text}`;
+        }
+      }
+
+      const finalLines = duplicateHeadingLines.size > 0
+        ? lines.filter((_, idx) => !duplicateHeadingLines.has(idx))
+        : lines;
+      mergedBody = finalLines.join('\n');
+    }
+
+    if (collectedAuditNotes.length > 0) {
+      mergedBody = (mergedBody ? mergedBody + '\n\n' : '') + collectedAuditNotes[collectedAuditNotes.length - 1];
+    }
+
+    if (keptFrontmatter) {
+      return mergedBody ? `${keptFrontmatter}\n${mergedBody}` : keptFrontmatter;
+    }
+    return mergedBody;
+  }
+
+  /**
+   * কোনো ভাগ ব্যর্থ হলে শুধু সেই ভাগই পুনঃচেষ্টা (proxy-failure-policy.js মেনে);
+   * তবুও ব্যর্থ হলে বাকি সফল ভাগের ফলসহ স্পষ্ট বার্তা প্রদান।
+   */
+  async function runChunkedOcr(mediaItems, requestFn, options = {}) {
+    const opts = options || {};
+    const chunks = planOcrChunks(mediaItems, opts);
+    if (chunks.length === 0) return '';
+    if (chunks.length === 1) {
+      return await requestFn(chunks[0], 0, 1, {
+        attempt: 1,
+        startPage: chunks[0].startPage || 1,
+        endPage: chunks[0].endPage || chunks[0].length
+      });
+    }
+
+    const proxyPolicy = opts.proxyPolicy || getProxyPolicyApi();
+    const hasOwnKey = Boolean(opts.hasOwnKey);
+    const maxRetries = opts.maxRetries != null ? opts.maxRetries : 1;
+    const totalChunks = chunks.length;
+    const chunkResults = [];
+    let successCount = 0;
+    let lastError = null;
+
+    for (let i = 0; i < totalChunks; i++) {
+      const chunk = chunks[i];
+      const startPage = chunk.startPage || 1;
+      const endPage = chunk.endPage || chunk.length;
+      const progressText = formatChunkProgress(i + 1, totalChunks);
+      const pct = Math.min(92, Math.round(45 + ((i + 0.3) / totalChunks) * 45));
+
+      if (typeof opts.onProgress === 'function') {
+        opts.onProgress(progressText, pct, i + 1, totalChunks);
+      }
+      if (typeof opts.onToast === 'function') {
+        opts.onToast(progressText, 'info');
+      } else if (typeof window !== 'undefined' && typeof window.showToastNotification === 'function') {
+        window.showToastNotification(progressText, 'info');
+      }
+      setLoading(true, progressText, pct);
+
+      let attempt = 0;
+      let chunkSucceeded = false;
+      let chunkText = '';
+      let chunkErr = null;
+      let chunkPolicyDecision = null;
+
+      while (attempt <= maxRetries) {
+        attempt++;
+        try {
+          chunkText = await requestFn(chunk, i, totalChunks, {
+            attempt,
+            startPage,
+            endPage,
+            fallbackAction: chunkPolicyDecision ? chunkPolicyDecision.action : null,
+            policy: chunkPolicyDecision
+          });
+          chunkSucceeded = true;
+          break;
+        } catch (err) {
+          chunkErr = err;
+          lastError = err;
+          const status = (err && (err.proxyStatus != null ? err.proxyStatus : (err.status != null ? err.status : 0))) || 0;
+          const body = (err && (err.proxyBody || err.body)) || null;
+
+          const parsed = (proxyPolicy && typeof proxyPolicy.parseProxyFailure === 'function')
+            ? proxyPolicy.parseProxyFailure(status, body)
+            : { kind: (status === 401 || status === 403) ? 'unauthorized' : (status === 400 ? 'fatal_input' : 'server_error'), waitSec: 0 };
+          chunkPolicyDecision = (proxyPolicy && typeof proxyPolicy.decideProxyFallback === 'function')
+            ? proxyPolicy.decideProxyFallback(status, body, hasOwnKey)
+            : { action: hasOwnKey ? 'direct' : 'abort', kind: parsed.kind, message: (err && err.message) || 'প্রক্সি ব্যর্থ' };
+
+          // proxy-failure-policy.js অনুযায়ী: fatal_input, unauthorized, daily_cap অথবা BYOK-বিহীন all_cooling/location-এ পুনঃচেষ্টা নয়
+          const nonRetryableKind = (
+            parsed.kind === 'fatal_input' ||
+            parsed.kind === 'unauthorized' ||
+            parsed.kind === 'daily_cap' ||
+            ((parsed.kind === 'all_cooling' || parsed.kind === 'location') && chunkPolicyDecision.action === 'abort' && !opts.retryOnCooling)
+          );
+
+          if (nonRetryableKind || attempt > maxRetries) {
+            break;
+          }
+        }
+      }
+
+      if (chunkSucceeded) {
+        successCount++;
+        chunkResults.push({
+          text: chunkText,
+          failed: false,
+          chunkIndex: i,
+          totalChunks,
+          startPage,
+          endPage,
+          attempts: attempt
+        });
+        if (typeof opts.onStream === 'function') {
+          const previewMerged = mergeOcrChunks(chunkResults, opts);
+          opts.onStream(previewMerged);
+        }
+      } else {
+        const failMsg = (chunkPolicyDecision && chunkPolicyDecision.message) || (chunkErr && chunkErr.message) || 'ভাগের রূপান্তর ব্যর্থ হয়েছে';
+        chunkResults.push({
+          text: '',
+          failed: true,
+          error: chunkErr,
+          policy: chunkPolicyDecision,
+          policyMessage: failMsg,
+          chunkIndex: i,
+          totalChunks,
+          startPage,
+          endPage,
+          attempts: attempt
+        });
+        if (typeof opts.onToast === 'function') {
+          opts.onToast(failMsg, (chunkPolicyDecision && chunkPolicyDecision.tone) || 'warning');
+        }
+      }
+    }
+
+    if (successCount === 0) {
+      const finalMsg = (chunkResults[0] && chunkResults[0].policyMessage) || (lastError && lastError.message) || 'সকল ভাগের রূপান্তর ব্যর্থ হয়েছে।';
+      throw new Error(finalMsg);
+    }
+
+    return mergeOcrChunks(chunkResults, opts);
+  }
+
+  // Helper: Split media items into chunks
+  function splitMediaIntoChunks(mediaItems, chunkSize) {
+    if (typeof chunkSize === 'number' && chunkSize > 0) {
+      const chunks = [];
+      for (let i = 0; i < mediaItems.length; i += chunkSize) {
+        chunks.push(mediaItems.slice(i, i + chunkSize));
+      }
+      return chunks;
+    }
+    return planOcrChunks(mediaItems, chunkSize || {});
+  }
+
+  async function processWithChunking(apiKey, mediaItems, onProgress, onStream, options = {}) {
+    if (isChunkSwitchEnabled() && !isFaithfulModeActive(options) && Array.isArray(mediaItems) && mediaItems.length > CHUNK_THRESHOLD_PAGES) {
+      const userCustomKey = localStorage.getItem('fayzar_ai_ocr_custom_byok');
+      const hasOwnKey = Boolean((userCustomKey && userCustomKey.trim()) || (apiKey && apiKey.trim()));
+      return await runChunkedOcr(
+        mediaItems,
+        async (chunkItems, chunkIdx, totalChunks) => {
+          _inChunkExecution = true;
+          try {
+            return await executeGeminiRequest(apiKey, chunkItems, (liveChunk) => {
+              if (onProgress) {
+                onProgress(
+                  `${formatChunkProgress(chunkIdx + 1, totalChunks)} (${toBengaliNumber(liveChunk.length)} অক্ষর)`,
+                  Math.min(94, Math.round(45 + ((chunkIdx + 0.5) / totalChunks) * 45))
+                );
+              }
+            });
+          } finally {
+            _inChunkExecution = false;
+          }
+        },
+        Object.assign({}, options, {
+          hasOwnKey,
+          onProgress,
+          onStream,
+          onToast: showToast
+        })
+      );
+    }
     // ইউজারের রিকোয়েস্ট অনুযায়ী চাংকিং (Chunking) সম্পূর্ণ বাদ দেওয়া হলো।
     // এখন সব পেজ একসাথে জেমিনিতে যাবে এবং স্বাভাবিক প্রক্রিয়ার সময় পর্যন্ত অপেক্ষা করবে।
     if (onProgress) onProgress('⚡ রূপান্তর হচ্ছে (সব পেজ একসাথে)...', 50);
@@ -1929,10 +2518,17 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
 
       setLoading(true, total > 1 ? `সবগুলো (${toBengaliNumber(total)}টি) পেজ একসাথে Gemini AI-তে পাঠানো হচ্ছে...` : 'Gemini AI দিয়ে রূপান্তর হচ্ছে...', 45);
 
-      const text = await executeGeminiRequest(activeKey, mediaItems, (liveText) => {
-        if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = liveText;
-        setLoading(true, `লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveText.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveText.length / 30)));
-      });
+      const text = (isChunkSwitchEnabled() && !isFaithfulModeActive() && mediaItems.length > CHUNK_THRESHOLD_PAGES)
+        ? await processWithChunking(
+            activeKey,
+            mediaItems,
+            (msg, pct) => setLoading(true, msg, pct),
+            (liveText) => { if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = liveText; }
+          )
+        : await executeGeminiRequest(activeKey, mediaItems, (liveText) => {
+            if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = liveText;
+            setLoading(true, `লাইভ স্ট্রিমিং চলছে (${toBengaliNumber(liveText.length)} অক্ষর)...`, Math.min(95, 45 + Math.round(liveText.length / 30)));
+          });
 
       setLoading(false);
       if (text && text.trim()) {
@@ -2369,7 +2965,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         const { text, keyId } = await executeGeminiRequestViaSupabase(payload, primaryModel, onStreamChunk, candidateModels);
         console.log(`[Supabase] Success via key: ${keyId}`);
         // part-7: বহু-পৃষ্ঠার কভারেজ-যাচাই → কম পৃষ্ঠা এলে [অসম্পূর্ণ: …] (অটো-ডাউনলোড বন্ধ হবে)
-        const guarded = coverageMandateApplied ? applyPageCoverageGuard(text, mediaParts.length) : text;
+        const guarded = (coverageMandateApplied && !_inChunkExecution) ? applyPageCoverageGuard(text, mediaParts.length) : text;
         return stripOcrArtifacts(guarded);
       } catch (supabaseErr) {
         console.error('[Supabase] Proxy failed:', supabaseErr.message);
@@ -2382,7 +2978,12 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
           window.showToastNotification(policy.message, policy.tone || 'warning');
         }
         if (policy.action === 'abort') {
-          throw new Error(policy.message);
+          const abortErr = new Error(policy.message);
+          if (_inChunkExecution || isChunkSwitchEnabled()) {
+            abortErr.proxyStatus = supabaseErr.proxyStatus || 0;
+            abortErr.proxyBody = supabaseErr.proxyBody || null;
+          }
+          throw abortErr;
         }
       }
     }
@@ -4679,8 +5280,26 @@ ${bodyContentXml}
     fastOptimizeImageFile,
     executeGeminiRequest,
     cleanOcrResponse,
+    splitMediaIntoChunks,
+    planOcrChunks,
+    mergeOcrChunks,
+    runChunkedOcr,
+    formatChunkProgress,
+    estimateBase64Bytes,
+    processWithChunking,
     state
   };
 
-})(typeof window !== 'undefined' ? window : this);
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = global.FayzarAiOcrEngine;
+    module.exports.splitMediaIntoChunks = splitMediaIntoChunks;
+    module.exports.planOcrChunks = planOcrChunks;
+    module.exports.mergeOcrChunks = mergeOcrChunks;
+    module.exports.runChunkedOcr = runChunkedOcr;
+    module.exports.formatChunkProgress = formatChunkProgress;
+    module.exports.estimateBase64Bytes = estimateBase64Bytes;
+    module.exports.processWithChunking = processWithChunking;
+  }
+
+})(typeof window !== 'undefined' ? window : globalThis);
 

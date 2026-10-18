@@ -20,6 +20,14 @@
     options: 'option_row', option: 'option_row', mcq_options: 'option_row', subheading: 'heading', section: 'heading',
     pagenumber: 'page_number', page_no: 'page_number', label: 'label_value', field: 'label_value', seal: 'stamp'
   };
+  // B9/B4 ফরমকিট সুইচ: চালু থাকলে ফরমের উপাদান ও ট্যাব-কলামের অতিরিক্ত ব্লক-ধরন ও ট্যাগ-ক্ষেত্র পার্স করা হয়
+  const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
+  const FORMKIT_TYPES = ['box_row', 'form_box', 'photo_box', 'label_box', 'schedule_box', 'radio_list', 'match_col'];
+  const FORMKIT_SYNONYM = {
+    digit_box: 'box_row', digit_boxes: 'box_row', nid_box: 'box_row', boxrow: 'box_row',
+    photobox: 'photo_box', formbox: 'form_box', labelbox: 'label_box', schedulebox: 'schedule_box',
+    radio: 'radio_list', matching: 'match_col', match: 'match_col'
+  };
   const AL = { l: 'l', left: 'l', c: 'c', center: 'c', centre: 'c', r: 'r', right: 'r', j: 'j', justify: 'j', justified: 'j' };
   const AUDIT_RE = /\[\s*এআই অডিট নোট[\s\S]*$/;
   // WORK_PLAN B6: লাইনের শেষে একক `]`-এ বন্ধ ট্যাগও (g33: "…u=0]" না ধরায় পাতা-২-এর সব লেখা আগের ব্লকে ঢুকে ২০২ লাইন হতো)
@@ -33,8 +41,9 @@
     const b = bn2en(body).replace(/\$/g, '');
     let t = (/\bt(?:ype)?\s*=\s*([a-z_]+)/i.exec(b) || /^\s*([a-z_]+)\s*(?:[;,]|$)/i.exec(b) || [])[1];
     t = t ? t.toLowerCase() : 'other';
+    if (formKitOn() && FORMKIT_SYNONYM[t]) t = FORMKIT_SYNONYM[t];
     if (SYNONYM[t]) t = SYNONYM[t];
-    if (TYPES.indexOf(t) === -1) t = 'other';
+    if (TYPES.indexOf(t) === -1 && !(formKitOn() && FORMKIT_TYPES.indexOf(t) !== -1)) t = 'other';
     const pm = /\bp(?:age|g)?\s*=\s*(\d+)/i.exec(b);
     const bm = /\bbox\s*=\s*[\[(]?\s*(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)/i.exec(b);
     let box = null;
@@ -49,7 +58,7 @@
     const bo = /\bb(?:old)?\s*=\s*([01]|true|false)\b/i.exec(b);
     const io = /\bit(?:alic)?\s*=\s*([01]|true|false)\b/i.exec(b);
     const uo = /\bu(?:nderline)?\s*=\s*([01]|true|false)\b/i.exec(b);
-    return {
+    const out = {
       italic: io ? /^(1|true)$/i.test(io[1]) : null,
       underline: uo ? /^(1|true)$/i.test(uo[1]) : null,
       type: t,
@@ -59,6 +68,19 @@
       fs: fm ? fm[1].toLowerCase() : null,
       bold: bo ? /^(1|true)$/i.test(bo[1]) : null
     };
+    if (formKitOn()) {
+      const flm = /\b(?:fill|bg|shade)\s*=\s*#?([0-9a-f]{3,6}|[a-z]+)\b/i.exec(b);
+      const clm = /\b(?:color|fg)\s*=\s*#?([0-9a-f]{3,6}|[a-z]+)\b/i.exec(b);
+      const bdm = /\b(?:bdr|border|style)\s*=\s*([a-z_-]+)\b/i.exec(b);
+      const phm = /\b(?:ph|placeholder)\s*=\s*([01]|true|false)\b/i.exec(b);
+      const bxm = /\b(?:boxes|box_count)\s*=\s*(\d+)\b/i.exec(b);
+      if (flm) out.fill = flm[1];
+      if (clm) out.color = clm[1];
+      if (bdm) out.border = bdm[1];
+      if (phm) out.placeholder = /^(1|true)$/i.test(phm[1]);
+      if (bxm) out.boxCount = parseInt(bxm[1], 10);
+    }
+    return out;
   }
 
   /**
@@ -72,8 +94,12 @@
   function expandFill(text) {
     // ফাঁকা টেবিল-সারির চিহ্ন: আগের লাইন (একটি ফাঁকা সারি) মোট N বার — অসীম ফাঁকা "| | |" সারিও একই ফাঁদ ছিল
     // a05 (২০২৬-১০-১৫): Gemini চিহ্নের পরে ফাঁকা ঘরও লেখে ("⟦rows×2⟧ | | | |") ⇒ আগে মিলত না, চিহ্ন ঘরে আক্ষরিক ছাপা হতো
-    const s = String(text == null ? '' : text).replace(globalThis.__FZ_OFF_ROWSFIX ? /^([^\n]*)\n[ \t]*⟦\s*rows?\s*[×xX*]\s*([০-৯\d]+)\s*⟧[ \t]*$/gm : /^([^\n]*)\n[ \t]*⟦\s*rows?\s*[×xX*]\s*([০-৯\d]+)\s*⟧[ \t|]*$/gm,
+    let s = String(text == null ? '' : text).replace(globalThis.__FZ_OFF_ROWSFIX ? /^([^\n]*)\n[ \t]*⟦\s*rows?\s*[×xX*]\s*([০-৯\d]+)\s*⟧[ \t]*$/gm : /^([^\n]*)\n[ \t]*⟦\s*rows?\s*[×xX*]\s*([০-৯\d]+)\s*⟧[ \t|]*$/gm,
       (m, row, n) => Array(Math.max(1, Math.min(60, parseInt(bn2en(n), 10) || 1))).fill(row).join('\n'));
+    if (formKitOn()) {
+      s = s.replace(/⟦\s*box(?:es)?\s*[×xX*]\s*([০-৯\d]+)\s*⟧/gi,
+        (m, n) => Array(Math.max(1, Math.min(40, parseInt(bn2en(n), 10) || 1))).fill('□').join(' '));
+    }
     return s.replace(/⟦\s*([^\s×xX*⟧])\s*[×xX*]\s*([০-৯\d]+)\s*⟧/g,
       (m, c, n) => c.repeat(Math.max(1, Math.min(400, parseInt(bn2en(n), 10) || 1))));
   }
@@ -170,6 +196,7 @@
   }
 
   const FayzarLayoutTags = { TYPES, parseTagBody, parse, expandFill, byPage, needsContinuation, lastBlockInfo, mergeContinuation };
+  Object.defineProperty(FayzarLayoutTags, 'FORMKIT_TYPES', { value: FORMKIT_TYPES, enumerable: false });
   global.FayzarLayoutTags = FayzarLayoutTags;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutTags;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

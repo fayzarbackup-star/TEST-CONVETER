@@ -15,6 +15,9 @@
 
   const BLOCK_TYPES = ['title', 'heading', 'paragraph', 'list_item', 'question', 'option_row', 'table', 'figure',
     'caption', 'header', 'footer', 'page_number', 'label_value', 'signature', 'stamp', 'other'];
+  // B9/B4 ফরমকিট সুইচ: চালু থাকলে ফরমের উপাদান ও ট্যাব-কলামের অতিরিক্ত ব্লক-ধরন ও নির্দেশনা সক্রিয়
+  const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
+  const FORMKIT_TYPES = ['box_row', 'form_box', 'photo_box', 'label_box', 'schedule_box', 'radio_list', 'match_col'];
 
   function build(opts) {
     const o = opts || {};
@@ -22,6 +25,8 @@
     const pageNote = pages > 1
       ? `The request contains ${pages} page images in order; page numbers are 1-based in that order (p=1 is the first image).`
       : 'The request contains 1 page image (p=1).';
+    const typesList = formKitOn() ? BLOCK_TYPES.concat(FORMKIT_TYPES).join(' | ') : BLOCK_TYPES.join(' | ');
+    const formKitNote = formKitOn() ? `\n   - FORM & TAB-COLUMN ELEMENTS (when present): use t=box_row for digit/character box strips (e.g. mobile 01 + 11 boxes, 17-box NID), t=photo_box for empty "ছবি" boxes, t=label_box for right-aligned label boxes ("ফরম-৮"), t=schedule_box for centered small "তফসিল" boxes, t=radio_list for ○ radio lists, t=match_col for two-column matching ("দাগ টেনে মিল কর"). Optional tag attributes: fill=<hex>, color=<hex>, bdr=<single|dashed|dotDash>.` : '';
     return `You are an elite Bengali/English document transcriber AND layout analyst. Your output will be rebuilt into an editable Word file that must look EXACTLY like the source pages ("as it is" mode).
 
 ${pageNote}
@@ -33,7 +38,7 @@ ${pageNote}
 
 2. LAYOUT BLOCKS (one tag line before each block, in natural reading order of the page):
    [[B:t=<type>;p=<page>;box=<ymin>,<xmin>,<ymax>,<xmax>;al=<l|c|r|j>;fs=<s|m|l|xl>;b=<0|1>;it=<0|1>;u=<0|1>]]
-   - t (type): ${BLOCK_TYPES.join(' | ')}
+   - t (type): ${typesList}
    - p: page number as defined above.
    - box: tight bounding box of the WHOLE block (all its lines) in normalized 0-1000 coordinates of THAT page image (ymin,xmin,ymax,xmax).
    - al: alignment of the block's lines: l=left, c=center, r=right, j=justified.
@@ -46,7 +51,7 @@ ${pageNote}
    - PRINTED LINES ARE SACRED: every printed line of the page = exactly one line in your output. When a paragraph, list item, numbered point or note (NOT a table — see rule 3) WRAPS onto a 2nd/3rd printed line, you MUST break your output at exactly the same word where the print wraps. Never join two printed lines into one long line, and never split one printed line into two. (Example: a numbered item "১। ... ... কাজ" whose text continues on the next printed line "সম্পন্ন করতে হবে।" is written as TWO lines.) The number of text lines you write for a block must equal the number of printed lines inside its box.
    - One block = one visually separate unit (a paragraph, one question, one option row, one table, one figure, a header line, a signature area...). Text that sits side by side (e.g. a logo, an institution name and a date on one line) must be separate blocks with their own boxes.
    - COLUMNS: when content is arranged in two or more side-by-side columns (e.g. two lists separated by a gap or a vertical line, a word column and an answer column), write EACH COLUMN as its own block with its own box. Never join text from different columns into one line.
-   - Every printed character must belong to exactly one block. Blocks must not overlap unless one is physically inside the other.
+   - Every printed character must belong to exactly one block. Blocks must not overlap unless one is physically inside the other.${formKitNote}
 
 3. TABLES: t=table; write each row on its own line with cells separated by " | " (keep empty cells as empty). Merged cells: write the text once in the first cell and leave the merged positions empty.
    - In a table, ONE OUTPUT LINE = ONE TABLE ROW (a row ends at a printed horizontal rule or row boundary). When the text inside a cell wraps onto several printed lines, keep the whole cell text in that SAME row on ONE output line — never start a new row for a wrapped cell line.
@@ -91,6 +96,7 @@ ${pageNote}
   }
 
   const FayzarFaithfulPrompt = { BLOCK_TYPES, build, continuation };
+  Object.defineProperty(FayzarFaithfulPrompt, 'FORMKIT_TYPES', { value: FORMKIT_TYPES, enumerable: false });
   global.FayzarFaithfulPrompt = FayzarFaithfulPrompt;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulPrompt;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

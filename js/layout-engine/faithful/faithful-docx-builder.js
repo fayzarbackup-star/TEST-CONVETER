@@ -15,6 +15,87 @@
   const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
   // গণিত-পাতা উচ্চতা-হিসাব সুইচ: শুধু globalThis.__FZ_ON_MATHH সত্য হলে সক্রিয়
   const mathHOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_MATHH : global.__FZ_ON_MATHH);
+  // B9/B4 ফরমকিট সুইচ: শুধু globalThis.__FZ_ON_FORMKIT সত্য হলে সক্রিয়
+  const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
+
+  const NAMED_HEX = {
+    gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
+    darkgray: '808080', darkgrey: '808080', placeholder: '808080', muted: '808080',
+    blue: '1F4E79', navy: '003366', headerblue: '1F4E79',
+    red: 'FF0000', white: 'FFFFFF', black: '000000', yellow: 'FFF2CC', green: 'E2EFDA'
+  };
+  function normHex(c) {
+    if (!c || typeof c !== 'string') return null;
+    const s = c.trim().replace(/^#/, '');
+    if (NAMED_HEX[s.toLowerCase()]) return NAMED_HEX[s.toLowerCase()];
+    if (/^[0-9A-Fa-f]{6}$/.test(s)) return s.toUpperCase();
+    if (/^[0-9A-Fa-f]{3}$/.test(s)) return s.split('').map((x) => x + x).join('').toUpperCase();
+    return null;
+  }
+  function isDarkHex(hex) {
+    const h = normHex(hex);
+    if (!h) return false;
+    const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) < 150;
+  }
+  function isPlaceholderStr(s) {
+    const t = String(s || '').trim();
+    if (!t) return false;
+    if (/^⟦\s*ph\s*[:：]([\s\S]*?)⟧$/i.test(t)) return true;
+    return /^(?:\(\s*(?:বাংলায়|ইংরেজিতে|বাংলা|ইংরেজি|In\s+Bangla|In\s+English|ঐচ্ছিক|Optional)[^)]*\)|DD\s*[/.\-]\s*MM\s*[/.\-]\s*YYYY|YYYY\s*[/.\-]\s*MM\s*[/.\-]\s*DD|দিন\s*[/.\-]\s*মাস\s*[/.\-]\s*বছর|(?:এখানে\s+)?লিখুন\.{0,3}|নির্বাচন\s+করুন\.{0,3}|Select.*|Enter.*|(?:উদাঃ|যেমন\s*[:ঃ]|e\.g\.)\s*.+)$/i.test(t);
+  }
+  function stripPlaceholderWrap(s) {
+    return String(s || '').replace(/^⟦\s*ph\s*[:：]([\s\S]*?)⟧$/i, '$1').trim();
+  }
+  function parseInlineBoxes(text) {
+    const s = String(text || '').trim();
+    if (!s) return null;
+    const brkRe = /^([^[\]□]*?)\s*((?:\[\s*[^\][\s]{0,2}\s*\]\s*){4,})$/;
+    const m1 = brkRe.exec(s);
+    if (m1) {
+      const cells = [...m1[2].matchAll(/\[\s*([^\][\s]{0,2})\s*\]/g)].map((x) => x[1] || '');
+      return { label: m1[1].trim(), cells };
+    }
+    const sqRe = /^([^□☐]*?)\s*(?:([০-৯0-9]{1,2})\s+)?((?:[□☐]\s*){4,})$/;
+    const m2 = sqRe.exec(s);
+    if (m2) {
+      const pre = m2[2] ? m2[2].split('') : [];
+      const rest = (m2[3].match(/[□☐]/g) || []).map(() => '');
+      return { label: m2[1].trim(), cells: pre.concat(rest) };
+    }
+    return null;
+  }
+  const MCQ_SPLIT_RE = /\s+(?=(?:\([ক-হa-dA-DiIvVxX]+\)|[ক-হa-dA-D][.)।])\s*\S)/g;
+  const MCQ_TEST_RE = /(?:^|\s)(?:\([ক-হa-dA-DiIvVxX]+\)|[ক-হa-dA-D][.)।])\s*\S/g;
+  function tabifyMcqBuilder(lines, lineSegs, availW, indPt) {
+    const ls = (lines || []).filter((l) => String(l || '').trim());
+    if (!ls.length || !ls.some((l) => (String(l).match(MCQ_TEST_RE) || []).length >= 2)) return null;
+    const out = [], stops = [];
+    const baseInd = indPt || 0, w = Math.max(120, (availW || 450) - baseInd);
+    ls.forEach((l, i) => {
+      const parts = String(l).trim().split(MCQ_SPLIT_RE).map((p) => p.trim()).filter(Boolean);
+      if (parts.length < 2) { out.push(l); return; }
+      out.push(parts.join('	'));
+      const segs = lineSegs && lineSegs[i] ? lineSegs[i] : null;
+      if (segs && segs.length === parts.length) {
+        segs.slice(1).forEach((s) => stops.push(s.x));
+      } else if (segs && segs.length > parts.length) {
+        const gaps = [];
+        for (let k = 1; k < segs.length; k++) gaps.push({ k, g: segs[k].x - (segs[k - 1].x + (segs[k - 1].w || 0)), x: segs[k].x });
+        gaps.sort((a, b) => b.g - a.g);
+        gaps.slice(0, parts.length - 1).sort((a, b) => a.k - b.k).forEach((g) => stops.push(g.x));
+      } else {
+        for (let k = 1; k < parts.length; k++) stops.push(Math.round((baseInd + (w * k) / parts.length) * 10) / 10);
+      }
+    });
+    if (!stops.length) return null;
+    stops.sort((a, b) => a - b);
+    const merged = [];
+    for (const s of stops) { if (!merged.length || s - merged[merged.length - 1] > 8) merged.push(s); }
+    return { lines: out, stops: merged };
+  }
+  const TRAIL_MARK_RE = /^(.*?\S)(?:	|\s{2,})(\(?[০-৯0-9]+(?:\.[০-৯0-9]+)?(?:\s*[×*xX]\s*[০-৯0-9]+\s*=\s*[০-৯0-9]+)?\)?|\[[০-৯0-9]+\])\s*$/;
+  const Q_TRAIL_MARK_RE = /^(.*[?।:ঃ)])\s+(\(?[০-৯0-9]{1,3}\)?|\[[০-৯0-9]{1,3}\])\s*$/;
 
   /**
    * সমীকরণের ধরন শনাক্তকরণ (ভগ্নাংশ/স্ট্যাকড > মূল/বড়-চিহ্ন > সূচক/সহগ > সাধারণ সমীকরণ)।
@@ -158,6 +239,23 @@
   // Part-17.9 + g41: লেখার অংশ-বিশেষ — **মোটা**, *বাঁকা* (ইটালিক লেবেল), ^{উপরে} (2^{nd}, O ^{(ve-)}) — Gemini-র চিহ্ন ⇒ আলাদা রান
   const MARK = /(<u>[^<]*<\/u>|\*\*[^*]+\*\*|\*[^*\s][^*]*?\*|\^\{[^}]*\})/;
   function runsFor(text, item) {
+    if (formKitOn()) {
+      if ((text == null || text === '') && item && typeof item.placeholder === 'string' && item.placeholder) {
+        return runsFor(item.placeholder, Object.assign({}, item, { placeholder: false, color: item.color || '808080' }));
+      }
+      if (item && item.placeholder === true && !item.color) {
+        item = Object.assign({}, item, { color: '808080' });
+      }
+      if (item && !item.color && (item.fill || item.shade) && isDarkHex(item.fill || item.shade)) {
+        item = Object.assign({}, item, { color: 'FFFFFF' });
+      }
+      if (typeof text === 'string' && /⟦\s*ph\s*[:：][^⟧]+⟧/i.test(text)) {
+        return text.split(/(⟦\s*ph\s*[:：][^⟧]+⟧)/i).filter(Boolean).map((seg) => {
+          const pm = /^⟦\s*ph\s*[:：]([\s\S]*?)⟧$/i.exec(seg);
+          return pm ? runsFor(pm[1].trim(), Object.assign({}, item, { color: '808080' })) : runsFor(seg, item);
+        }).join('');
+      }
+    }
     // a03 (২০২৬-১০-১২): Gemini খালি চেকবক্সকে "⟦ ⟧" (প্রম্পটের পূরণ-চিহ্ন দেখে) বা "[ ]" লেখে ⇒ মূলের মতো বাক্স-চিহ্ন □
     // (অ-বাংলা রানে — বিজয়-পথে অক্ষত)। ⟦c×N⟧ পূরণ-চিহ্ন layout-tags আগেই খোলে
     // f2 (২০২৬-১০-১২): Gemini কখনো HTML-চিহ্ন দেয় ("<u>www.bnswc.gov.bd</u>" হুবহু ছাপা হতো) ⇒ <b>/<i>/<sup> আমাদের চিহ্নে,
@@ -178,6 +276,11 @@
   }
 
   function runsPlain(text, item) {
+    // B9: লাল '*' (আবশ্যক ক্ষেত্রের তারকা চিহ্ন) — সাদা লেখার শিরোনাম-ব্যান্ড ছাড়া অন্য কোথাও একক '*' লাল রঙে
+    if (formKitOn() && !item._noStar && String(text || '').includes('*') && normHex(item.color) !== 'FFFFFF') {
+      return String(text).split(/(\*)/).filter((s) => s !== '')
+        .map((s) => runsPlain(s, s === '*' ? Object.assign({}, item, { color: item.starColor || 'FF0000', _noStar: true }) : Object.assign({}, item, { _noStar: true }))).join('');
+    }
     // ২০২৬-১০-১৩: বিন্দু-সারি (≥৬) মোটা — সাধারণ ওজনে SutonnyOMJ-এর বিন্দু খুদে/ধূসর (মূলে কালো, f2/a03 পূরণ-লাইন ছোট দেখাত)
     // ২০২৬-১০-১৪ (মালিকের a17/a02 Word-যাচাই: "'....' গুলো এখনও বোল্ড", মূলে চিকন) ⇒ ডিফল্ট বন্ধ; FZ_ON=DOTBOLD-এ পুরোনো
     if (globalThis.__FZ_ON_DOTBOLD && !item.bold && /[.…·]{6,}/.test(text)) {
@@ -189,10 +292,12 @@
     // Part-17.7: renderDocxRuns নামে "sutonny" থাকলেই বিজয়-এনকোড করে ফেলে ⇒ মাস্টার ইউনিকোড রাখতে নিরপেক্ষ নাম দিয়ে পরে বদল
     // g41: লেখার রং (গাঢ় পটিতে সাদা) — rPr-এ sz-এর ঠিক আগে (স্কিমা-ক্রম)
     // শুধু-লেখার পেছনে পটি (shadeRun): rPr-এর শেষে (lang থাকলে তার আগে)
-    const runShd = item.shadeRun && /^[0-9A-F]{6}$/i.test(item.shade || '') ? `<w:shd w:val="clear" w:color="auto" w:fill="${item.shade}"/>` : '';
+    const rShadeVal = formKitOn() ? normHex(item.fill || item.shade) : (item.shade || '');
+    const runShd = item.shadeRun && /^[0-9A-F]{6}$/i.test(rShadeVal || '') ? `<w:shd w:val="clear" w:color="auto" w:fill="${rShadeVal}"/>` : '';
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
+    const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
     const colored = (xml) => {
-      let x = item.color ? xml.replace(/<w:sz /g, `<w:color w:val="${item.color}"/><w:sz `) : xml;
+      let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
       // স্কিমা-ক্রম: … shd, vertAlign, …, lang
       if (runShd || sup) x = x.replace(/(<w:lang[^>]*\/>)?<\/w:rPr>/g, (m0, lang) => `${runShd}${sup}${lang || ''}</w:rPr>`);
       return x;
@@ -356,6 +461,10 @@
   const ruleExtra = (it) => (it.ruleBelow ? ruleSpace(it) + it.ruleBelow.sz / 8 : 0);
 
   function itemH(it) {
+    if (formKitOn()) {
+      if (it.kind === 'box_row' || it.type === 'box_row' || Array.isArray(it.boxes) || it.boxCount > 0) return (it.heightPt || 18) + 2;
+      if (it.kind === 'photo_box' || it.type === 'photo_box' || it.photoBox) return (it.heightPt || (it.rect && it.rect.h) || 105) + 4;
+    }
     if (it.kind === 'figure') return (it.heightPt || 0) + 2;
     if (it.kind === 'table') {
       const rh = tableRowHeights(it);
@@ -624,16 +733,28 @@
       const jr = item.align === 'j' && item.justRightPt >= 2 ? ` w:right="${tw(item.justRightPt)}"` : '';
       ind = `<w:ind w:left="${tw((item.indentPt || 0) + (fi < 0 ? -fi : 0))}"${jr}${fi > 0 ? ` w:firstLine="${tw(fi)}"` : (fi < 0 ? ` w:hanging="${tw(-fi)}"` : '')}/>`;
     }
-    // Part-17.8: মাপা ট্যাব-অবস্থান
+    // Part-17.8 + B4: মাপা ট্যাব-অবস্থান (বাঁ/ডান/মাঝ ও লিডার সমর্থনসহ)
+    const fmtTabStop = (x) => {
+      if (formKitOn() && x && typeof x === 'object') {
+        const pos = x.pos != null ? x.pos : (x.x != null ? x.x : 0);
+        const val = x.val || (x.align === 'r' || x.type === 'right' ? 'right' : (x.align === 'c' || x.type === 'center' ? 'center' : 'left'));
+        const ldr = x.leader ? ` w:leader="${x.leader}"` : '';
+        return `<w:tab w:val="${val}"${ldr} w:pos="${tw(pos)}"/>`;
+      }
+      return `<w:tab w:val="left" w:pos="${tw(x)}"/>`;
+    };
     const tabs = item.tabLines && item.tabStops && item.tabStops.length
-      ? '<w:tabs>' + item.tabStops.map((x) => `<w:tab w:val="left" w:pos="${tw(x)}"/>`).join('') + '</w:tabs>' : '';
+      ? '<w:tabs>' + item.tabStops.map(fmtTabStop).join('') + '</w:tabs>' : '';
     // হাতে-ভাঙা লাইনে "দুপাশে সমান" দিলে Word লাইনগুলো টেনে ছড়ায় ⇒ বাঁয়ে
     const jc = item.align === 'j' && item.keepLines && !item.keepJust && item.lines && item.lines.length > 1 ? 'left' : (JC[item.align] || 'left');
-    // g41: অনুচ্ছেদ-ছায়া (ধূসর/রঙিন পটি) — স্কিমা-ক্রমে tabs-এর আগে
-    const shd = item.shade && !item.shadeRun && /^[0-9A-F]{6}$/i.test(item.shade) ? `<w:shd w:val="clear" w:color="auto" w:fill="${item.shade}"/>` : '';
+    // g41 + B9: অনুচ্ছেদ-ছায়া (ধূসর/রঙিন পটি, shade বা fill) — স্কিমা-ক্রমে tabs-এর আগে
+    const pShadeVal = formKitOn() ? normHex(item.fill || item.shade) : item.shade;
+    const shd = pShadeVal && !item.shadeRun && /^[0-9A-F]{6}$/i.test(pShadeVal) ? `<w:shd w:val="clear" w:color="auto" w:fill="${pShadeVal}"/>` : '';
     // নিচের-দাগ: bottom + between একই (পাশাপাশি একই-বর্ডারের অনুচ্ছেদ Word এক দল ধরে শুধু শেষে bottom আঁকে)
-    const rb = item.ruleBelow ? `w:val="single" w:sz="${item.ruleBelow.sz}" w:space="${ruleSpace(item)}" w:color="000000"` : '';
-    const ra = item.ruleAbove ? `<w:top w:val="single" w:sz="${item.ruleAbove.sz}" w:space="${raSpace(item)}" w:color="000000"/>` : '';
+    const rbVal = formKitOn() && item.ruleBelow ? (item.ruleBelow.dashDot || item.ruleBelow.style === 'dotDash' || item.ruleBelow.style === 'dashDot' ? 'dotDash' : (item.ruleBelow.dashed || item.ruleBelow.style === 'dashed' ? 'dashed' : 'single')) : 'single';
+    const raVal = formKitOn() && item.ruleAbove ? (item.ruleAbove.dashDot || item.ruleAbove.style === 'dotDash' || item.ruleAbove.style === 'dashDot' ? 'dotDash' : (item.ruleAbove.dashed || item.ruleAbove.style === 'dashed' ? 'dashed' : 'single')) : 'single';
+    const rb = item.ruleBelow ? `w:val="${rbVal}" w:sz="${item.ruleBelow.sz || 6}" w:space="${ruleSpace(item)}" w:color="${(formKitOn() && normHex(item.ruleBelow.color)) || '000000'}"` : '';
+    const ra = item.ruleAbove ? `<w:top w:val="${raVal}" w:sz="${item.ruleAbove.sz || 6}" w:space="${raSpace(item)}" w:color="${(formKitOn() && normHex(item.ruleAbove.color)) || '000000'}"/>` : '';
     const bdr = rb || ra ? `<w:pBdr>${ra}${rb ? `<w:bottom ${rb}/><w:between ${rb}/>` : ''}</w:pBdr>` : '';
     // ওপরের ছোট রেখা ⇒ অনুচ্ছেদের প্রস্থ = রেখার প্রস্থ (মাঝে-বসানো লেখা রেখার মাঝে)
     if (item.ruleAbove) ind = `<w:ind w:left="${tw(item.ruleAbove.indL)}" w:right="${tw(item.ruleAbove.indR)}"/>`;
@@ -668,6 +789,170 @@
       return `<w:p>${fp}${drawing}</w:p>`;
     }
     if (item.kind === 'table') return tableXml(item, extraBeforePt, ctx);
+    if (formKitOn()) {
+      // ১) সংখ্যা-বাক্সের সারি (যেমন ০১ + ১১ ঘর, NID-এর ১৭ ঘর)
+      const ib = !item.boxes && !item.boxCount && item.kind !== 'box_row' && item.type !== 'box_row'
+        ? parseInlineBoxes(item.text || (item.lines && item.lines[0]) || '')
+        : null;
+      if (item.kind === 'box_row' || item.type === 'box_row' || Array.isArray(item.boxes) || item.boxCount > 0 || ib || String(item.text || '').startsWith(BOX_MARK)) {
+        let cells;
+        if (Array.isArray(item.boxes)) {
+          cells = item.boxes.map((c) => String(c == null ? '' : c));
+        } else if (item.boxCount > 0) {
+          const pre = item.prefix != null ? String(item.prefix).split('') : [];
+          const rem = Math.max(0, item.boxCount - pre.length);
+          cells = pre.concat(Array(rem).fill(''));
+        } else if (String(item.text || '').startsWith(BOX_MARK)) {
+          cells = String(item.text).slice(BOX_MARK.length).split(BOX_SEP);
+        } else if (ib) {
+          cells = ib.cells;
+        } else {
+          cells = String(item.text || '').split(/\s*\|\s*|\s+/).filter(Boolean);
+        }
+        const lab = item.label != null ? String(item.label) : (ib && ib.label ? ib.label : '');
+        const avW = (item.widthPt || (item.rect && item.rect.w) || (ctx && ctx.availW) || 420);
+        if (lab) {
+          return tableXml({
+            kind: 'table', borderless: true, widthPt: avW, spaceBeforePt: item.spaceBeforePt || 0,
+            fontPt: item.fontPt || 11, colFractions: [0.35, 0.65], colAligns: ['l', 'l'],
+            rows: [[lab, BOX_MARK + cells.join(BOX_SEP)]]
+          }, extraBeforePt, ctx);
+        }
+        return spacer((item.spaceBeforePt || 0) + (extraBeforePt || 0)) +
+          boxRowXml(cells, avW).replace(/<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"\/><\/w:pPr><\/w:p>$/, '');
+      }
+      // ২) দুই কলামে স্বাক্ষরের ড্যাশ-রেখা (B9.4)
+      const sigCols = Array.isArray(item.signatures) ? item.signatures
+        : (item.kind === 'signature_row' && Array.isArray(item.columns) ? item.columns
+        : (item.type === 'signature' && Array.isArray(item.columns) ? item.columns : null));
+      const rawSigLines = (item.lines && item.lines.length ? item.lines : String(item.text || '').split('\n')).map((l) => String(l || '').trim()).filter(Boolean);
+      const cleanSigLines = rawSigLines.filter((l) => !/^[-─_]{3,}(?:\s+[-─_]{3,})*$/.test(l));
+      const autoTwoColSig = !sigCols && (item.type === 'signature' || item.kind === 'signature_row')
+        && cleanSigLines.length === 1 && /\t|\s{3,}/.test(cleanSigLines[0])
+        ? cleanSigLines[0].split(/\t|\s{3,}/).map((s) => s.trim()).filter(Boolean)
+        : null;
+      const finalSigCols = sigCols || (autoTwoColSig && autoTwoColSig.length >= 2 ? autoTwoColSig : null);
+      if (finalSigCols && finalSigCols.length >= 2) {
+        const avW = (ctx && ctx.availW) || (item.rect && item.rect.w) || 450;
+        const nS = finalSigCols.length, colW = avW / nS;
+        const cells = finalSigCols.map((sc, idx) => {
+          const sTxt = typeof sc === 'object' ? (sc.text || sc.label || '') : String(sc || '');
+          const sLines = sTxt.split('\n').map((l) => l.trim()).filter((l) => l && !/^[-─_]{3,}$/.test(l));
+          const lbl = sLines.join('\n') || 'স্বাক্ষর';
+          return {
+            x0: idx * colW, x1: (idx + 1) * colW,
+            items: [{
+              kind: 'para', type: 'signature', text: lbl, lines: sLines.length ? sLines : [lbl], keepLines: sLines.length > 1,
+              fontPt: item.fontPt || 11, bold: !!item.bold, align: 'c',
+              ruleAbove: { sz: 6, dashed: true, indL: 12, indR: 12 }
+            }]
+          };
+        });
+        return gridXml({ kind: 'grid', gapBeforePt: (item.spaceBeforePt || 0) + (extraBeforePt || 0), cells }, Object.assign({}, ctx || {}, { boxes: [] }));
+      }
+      if (item.type === 'signature' && !item.ruleAbove && (item.dashed || rawSigLines.length > cleanSigLines.length) && cleanSigLines.length) {
+        item = Object.assign({}, item, {
+          text: cleanSigLines.join('\n'), lines: cleanSigLines, align: 'c',
+          ruleAbove: { sz: 6, dashed: true, indL: item.indentPt || 12, indR: item.rightIndentPt || 12 }
+        });
+      }
+      // ৩) ড্যাশ/ড্যাশ-ডট বর্ডারের বক্স, খালি "ছবি"-বাক্স, ডানে বসানো লেবেল-বাক্স ("ফরম-৮"), মাঝের ছোট "তফসিল" বাক্স
+      const inPageBoxes = !!(item.boxIds && item.boxIds.length && ctx && Array.isArray(ctx.boxes) && ctx.boxes.length);
+      const rawTxt0 = (item.lines && item.lines.length ? item.lines.join(' ') : String(item.text || '')).trim();
+      const isPhotoBox = !!(item.kind === 'photo_box' || item.type === 'photo_box' || item.photoBox || (item.boxed && /^(?:পাসপোর্ট\s*সাইজ(?:ের)?\s*)?(?:ছবি|ফটো|Photo|১\s*কপি\s*ছবি)?$/i.test(rawTxt0)));
+      const isLabelBox = !!(item.kind === 'label_box' || item.type === 'label_box' || item.labelBox || ((item.boxed || item.type === 'form_box' || item.borderStyle || item.dashed || item.dashDot) && /^(?:ফরম|ফর্ম|Form)\s*[-–—:নং#]*\s*[০-৯0-9ক-হA-Za-z-]+$/i.test(rawTxt0)));
+      const isScheduleBox = !!(item.kind === 'schedule_box' || item.type === 'schedule_box' || item.scheduleBox || ((item.boxed || item.type === 'form_box' || item.borderStyle || item.dashed || item.dashDot) && /^তফসিল(?:\s*পরিচয়|\s*বিবরণ)?$/.test(rawTxt0)));
+      const hasBoxBorder = !!(item.kind === 'box' || item.type === 'form_box' || item.boxed || item.borderStyle || item.dashed || item.dashDot || isPhotoBox || isLabelBox || isScheduleBox);
+      if (hasBoxBorder && !inPageBoxes && !item._insideBoxRender) {
+        const avW = (ctx && ctx.availW) || 450;
+        const bStyle = item.dashDot || item.borderStyle === 'dotDash' || item.borderStyle === 'dashDot' || item.borderStyle === 'dash-dot'
+          ? 'dotDash'
+          : (item.dashed || item.borderStyle === 'dashed' ? 'dashed' : (item.borderStyle || 'single'));
+        let wPt = item.widthPt || (item.rect && item.rect.w) || (isPhotoBox ? 85 : isLabelBox ? 72 : isScheduleBox ? 90 : Math.min(avW, 240));
+        let hPt = item.heightPt || (item.rect && item.rect.h) || (isPhotoBox ? 105 : 0);
+        let x0 = item.rect && item.rect.x != null ? item.rect.x : (isLabelBox || item.align === 'r' ? Math.max(0, avW - wPt) : (isScheduleBox || item.align === 'c' ? Math.max(0, (avW - wPt) / 2) : (item.indentPt || 0)));
+        const innerItem = Object.assign({}, item, {
+          _insideBoxRender: true, kind: 'para',
+          text: isPhotoBox && !rawTxt0 ? 'ছবি' : (item.text || ''),
+          lines: isPhotoBox && (!item.lines || !item.lines.length) ? [rawTxt0 || 'ছবি'] : item.lines,
+          align: (isPhotoBox || isLabelBox || isScheduleBox) ? 'c' : (item.align || 'l'),
+          indentPt: 0, rightIndentPt: 0, centerShiftPt: null, spaceBeforePt: 0, fill: null, shade: null
+        });
+        const innerXml = paraXml(innerItem, 0, ctx);
+        const boxDesc = {
+          x0, x1: x0 + wPt, sz: (bStyle === 'dashed' || bStyle === 'dotDash') ? 4 : (item.borderSz || 6),
+          dashed: bStyle === 'dashed', dashDot: bStyle === 'dotDash', style: bStyle,
+          fill: normHex(item.fill || item.shade), heightPt: hPt > 0 ? hPt : null, vAlign: isPhotoBox || isLabelBox || isScheduleBox ? 'center' : null
+        };
+        return spacer((item.spaceBeforePt || 0) + (extraBeforePt || 0)) + boxTableXml(boxDesc, innerXml, 0);
+      }
+      // ৪) রেডিও-তালিকা (options বা radio ক্ষেত্র থাকলে ○ চিহ্নসহ লাইন)
+      if (Array.isArray(item.options) || Array.isArray(item.radio)) {
+        const opts = (item.options || item.radio).map((o) => {
+          const s = String(o || '').trim().replace(/^\(\s*\)\s*/, '○ ').replace(/^\(\s*[•*]\s*\)\s*/, '● ');
+          return /^[○●◯◉]/.test(s) ? s : '○ ' + s;
+        });
+        item = Object.assign({}, item, { text: opts.join('\n'), lines: opts, keepLines: true, align: 'l', options: null, radio: null });
+      }
+      // ৫) B4 ট্যাব-কলাম: MCQ-বিকল্প, লাইনের শেষের নম্বর ডান-ট্যাবে, "দাগ টেনে মিল কর" কলাম
+      const avW = (ctx && ctx.availW) || (item.rect && item.rect.w) || 450;
+      const curLines = item.lines && item.lines.length ? item.lines : (item.text ? String(item.text).split('\n') : []);
+      if ((!item.tabLines || !item.tabLines.length) && curLines.length) {
+        if (item.type === 'option_row' || curLines.some((l) => (String(l).match(MCQ_TEST_RE) || []).length >= 2)) {
+          const mcq = tabifyMcqBuilder(curLines, item.lineSegs, avW, item.indentPt || 0);
+          if (mcq) {
+            item = Object.assign({}, item, {
+              tabLines: mcq.lines,
+              tabStops: (item.tabStops && item.tabStops.length) ? item.tabStops : (item.optionStops || mcq.stops),
+              align: 'l', keepLines: mcq.lines.length > 1
+            });
+          }
+        } else if (item.type === 'match_col' || item.matchCols) {
+          const stopPos = (item.tabStops && item.tabStops[0]) || item.colStopPt || Math.round(avW * 0.65);
+          const mLines = curLines.map((l) => {
+            const sp = String(l).trim().split(/\t|\s{2,}|\s+/);
+            return sp.length >= 2 ? sp[0] + '\t' + sp.slice(1).join(' ') : l;
+          });
+          item = Object.assign({}, item, { tabLines: mLines, tabStops: [stopPos], align: 'l', keepLines: true });
+        } else {
+          const rPos = item.rightTabPos || item.rightTabPt || ((item.indentPt || 0) + ((item.rect && item.rect.w > 40) ? item.rect.w : avW));
+          if (item.marks != null || item.trailingNumber != null) {
+            const mkStr = String(item.marks != null ? item.marks : item.trailingNumber);
+            const tLines = curLines.map((l, idx) => (idx === curLines.length - 1 ? String(l).replace(/\s+$/, '') + '\t' + mkStr : l));
+            item = Object.assign({}, item, { tabLines: tLines, tabStops: [{ pos: rPos, val: 'right' }], align: 'l' });
+          } else {
+            let hitR = false;
+            const tLines = curLines.map((l) => {
+              let m = TRAIL_MARK_RE.exec(String(l));
+              if (!m && (item.type === 'question' || item.rightTab)) m = Q_TRAIL_MARK_RE.exec(String(l));
+              if (!m) return l;
+              hitR = true;
+              return m[1].trimEnd() + '\t' + m[2].trim();
+            });
+            if (hitR) {
+              item = Object.assign({}, item, { tabLines: tLines, tabStops: [{ pos: rPos, val: 'right' }], align: 'l' });
+            }
+          }
+        }
+      } else if (item.tabLines && item.tabLines.length && item.tabStops && item.tabStops.length) {
+        // ইতিমধ্যে tabLines থাকলে এবং শেষ অংশ নম্বর/মান হলে বা rightTab থাকলে শেষ স্টপটি ডান-ট্যাবে রূপান্তর
+        const allEndNum = item.rightTab || item.tabLines.every((l) => {
+          const ps = String(l).split('\t');
+          return ps.length >= 2 && /^(\(?[০-৯0-9]+(?:\.[০-৯0-9]+)?(?:\s*[×*xX]\s*[০-৯0-9]+\s*=\s*[০-৯0-9]+)?\)?|\[[০-৯0-9]+\])$/.test(ps[ps.length - 1].trim());
+        });
+        if (allEndNum && item.type !== 'match_col' && !item.matchCols) {
+          const newStops = item.tabStops.slice();
+          const lastSt = newStops[newStops.length - 1];
+          if (typeof lastSt === 'number') newStops[newStops.length - 1] = { pos: lastSt, val: 'right' };
+          item = Object.assign({}, item, { tabStops: newStops });
+        }
+      }
+      // B4: পাশের ছোট লেবেল (noWrap) যেন কখনো দুই লাইনে না ভাঙে (অভ্যন্তরীণ স্পেসকে non-breaking space-এ রূপান্তর)
+      if (item.noWrap && !item.tabLines && String(item.text || '').trim().length <= 28) {
+        const nb = (s) => String(s || '').replace(/ /g, '\u00A0');
+        item = Object.assign({}, item, { text: nb(item.text), lines: item.lines ? item.lines.map(nb) : item.lines });
+      }
+    }
     // ২০২৬-১০-১৪ (a17 p4): docx-to-doc নিচে-বর্ডারের w:space পড়ে না (সবসময় ১pt) ⇒ .doc-এ মূলের ~২৩pt দূরের দাগ লেখার গায়ে।
     // ফাঁক ≥৪pt ⇒ লেখা বর্ডারহীন + ফাঁকের সমান "ঠিক" উচ্চতার অনুচ্ছেদ যার নিচে দাগ (পুরো লেখা-প্রস্থে)। বন্ধ: FZ_OFF=RULEGAP
     // a16 p1: ডানে/মাঝে/ইনডেন্টের অনুচ্ছেদে বর্ডার শুধু অনুচ্ছেদের প্রস্থে (মূলের পুরো-প্রস্থ দাগ "om2@…"-এর নিচে ছোট) ⇒ ফাঁক ছোট হলেও আলাদা
@@ -789,7 +1074,7 @@
     const lpos = item.rect && item.rect.w > 40 ? (item.indentPt || 0) + item.rect.w - 1 : 0;
     // বিন্দুর আগের শুধু ফাঁকা-অক্ষর বাদ (ট্যাব নয় — "\t:\t......"-এর শেষ ট্যাব রাখতে হয়, নইলে লিডার-ট্যাব পরের বাঁ-স্টপে থামে, a06)
     const DOTS = /[ \u00a0]*[.…·]{6,}\s*$/;
-    const stops = (item.tabStops || []).filter((t) => t < lpos - 12);
+    const stops = (item.tabStops || []).map((t) => (formKitOn() && t && typeof t === 'object' ? (t.pos != null ? t.pos : t.x) : t)).filter((t) => t < lpos - 12);
     const fsz = item.fontPt || 12;
     const plainLen = (s) => { const clean = String(s).replace(/\*\*|<[^>]+>/g, ''); return (pleaderOn ? clean.replace(/[ঁ-ঃ়া-্ৗ]/g, '') : clean).length; };
     const est = (s) => { const n = plainLen(s); return n * fsz * (n <= 2 ? 0.3 : 0.5); };   // ":" একা সরু
@@ -932,13 +1217,66 @@
   }
 
   function tableXml(item, extraBeforePt, ctx) {
+    let cellMeta = null;
+    if (formKitOn() && item.rows && item.rows.length) {
+      let normRows = item.rows.map((r) => r.slice());
+      cellMeta = normRows.map((r) => r.map((c) => (c && typeof c === 'object' && !Array.isArray(c) ? Object.assign({}, c) : null)));
+      normRows = normRows.map((r, ri) => r.map((c, ck) => {
+        if (c && typeof c === 'object' && !Array.isArray(c)) {
+          if (Array.isArray(c.boxes) || c.boxCount > 0) {
+            const pre = c.prefix != null ? String(c.prefix).split('') : [];
+            const bxArr = Array.isArray(c.boxes) ? c.boxes : pre.concat(Array(Math.max(0, (c.boxCount || 11) - pre.length)).fill(''));
+            return BOX_MARK + bxArr.join(BOX_SEP);
+          }
+          if (Array.isArray(c.options) || Array.isArray(c.radio)) {
+            return (c.options || c.radio).map((o) => {
+              const s = String(o || '').trim().replace(/^\(\s*\)\s*/, '○ ').replace(/^\(\s*[•*]\s*\)\s*/, '● ');
+              return /^[○●◯◉]/.test(s) ? s : '○ ' + s;
+            }).join('\n');
+          }
+          if ((c.text == null || c.text === '') && typeof c.placeholder === 'string' && c.placeholder) {
+            cellMeta[ri][ck].color = cellMeta[ri][ck].color || '808080';
+            return c.placeholder;
+          }
+          return c.text != null ? String(c.text) : (c.value != null ? String(c.value) : '');
+        }
+        if (typeof c === 'string') {
+          const ib = parseInlineBoxes(c);
+          if (ib && !ib.label) return BOX_MARK + ib.cells.join(BOX_SEP);
+        }
+        return c != null ? String(c) : '';
+      }));
+      // B4: "দাগ টেনে মিল কর" ২-কলামের ছকে শেষ সারি ("৩০ 25") এক ঘরে থাকলে দুই ঘরে ভাগ
+      if (normRows.length >= 2) {
+        const twoColRows = normRows.filter((r) => r.length === 2 && r[0] && r[1]);
+        if (twoColRows.length >= normRows.length - 1 || item.type === 'match_col' || item.matchCols) {
+          normRows = normRows.map((r, ri) => {
+            if (r.length === 1 || (r.length === 2 && r[0] && !r[1])) {
+              const sp = String(r[0] || '').trim().split(/\s{2,}|\t|\s+/);
+              if (sp.length === 2) {
+                if (cellMeta[ri] && cellMeta[ri].length < 2) cellMeta[ri].push(null);
+                return [sp[0], sp[1]];
+              }
+            }
+            return r;
+          });
+        }
+      }
+      // B9: সংখ্যা-বাক্সের সারি (যেমন ০১ + ১১ ঘর, NID ১৭ ঘর) লেবেলসহ থাকলে ভাঁজ করা
+      const isBoxR = (r) => r.length >= 5 && String(r[0] || '').trim().length > 1 && r.slice(1).every((c) => String(c || '').trim().length <= 2);
+      if (normRows.some(isBoxR)) {
+        normRows = normRows.map((r) => (isBoxR(r) ? [r[0], BOX_MARK + r.slice(1).join(BOX_SEP)] : r));
+      }
+      const isSingleBoxStrip = normRows.length === 1 && normRows[0].length >= 5 && normRows[0].every((c) => String(c || '').trim().length <= 2);
+      item = Object.assign({}, item, { rows: normRows, _cellMeta: cellMeta, _singleBoxStrip: isSingleBoxStrip });
+    }
     const rows = item.rows && item.rows.length ? item.rows : [['']];
     const nCols = Math.max(...rows.map((r) => r.length));
     // Part-17.9: সীমানাহীন টেবিল = কলামে সাজানো লেখা ⇒ ঘরের ভেতরের ফাঁক প্রায় শূন্য, প্রস্থে সামান্য ছাড় (নইলে সরু কলামে লেখা ভাঙত)
     // (কলাম-সীমা ফাঁকের মাঝখানে ⇒ ঘরের ভেতরের ফাঁক = সবচেয়ে সরু কলাম-ফাঁকের অর্ধেক, ১–৫.৪pt — "১। কবিতা" মাঝের ফাঁক থাকে)
-    const marPt = item.borderless ? Math.max(1, Math.min(5.4, (item.colGapPt || 2) / 2 - 0.5)) : 5.4;
+    const marPt = item._singleBoxStrip ? 0 : (item.borderless ? Math.max(1, Math.min(5.4, (item.colGapPt || 2) / 2 - 0.5)) : 5.4);
     const cellMarTw = Math.round(marPt * 20);
-    const width = Math.max(72, (item.widthPt || 400) + (item.borderless ? 2 * marPt + 2 : 0));
+    const width = item._singleBoxStrip ? Math.max(nCols * 14, Math.min(nCols * 18, item.widthPt || nCols * 16)) : Math.max(72, (item.widthPt || 400) + (item.borderless ? 2 * marPt + 2 : 0));
     const colW = Math.floor(tw(width) / nCols);
     const cellItem = { fontPt: item.fontPt || 11, align: 'c' };
     // Part-17.7: ঘরের চিত্র (মিলাও-প্রশ্ন) — ঘরের প্রস্থে আঁটানো
@@ -949,13 +1287,50 @@
       const key = f.cell[0] + ':' + f.cell[1];
       (figAt[key] = figAt[key] || []).push(fit);
     });
+    const isFormTbl = formKitOn() && !item._singleBoxStrip && nCols >= 2 && !!(
+      item.formTable || item.isForm || item.labelColFill || item.noVRules
+      || rows.some((r) => r.some((c) => typeof c === 'string' && (c.startsWith(BOX_MARK) || /^[○●◯◉]/.test(c.trim()) || /\*\s*:?$/.test(c.trim()) || isPlaceholderStr(c))))
+    );
+    const resolveCellFill = (ri, k, rowArr) => {
+      const cm = item._cellMeta && item._cellMeta[ri] ? item._cellMeta[ri][k] : null;
+      const direct = (cm && (cm.fill || cm.shade || cm.bg))
+        || (item.cellFills && item.cellFills[ri] && item.cellFills[ri][k])
+        || (item.cellShades && item.cellShades[ri] && item.cellShades[ri][k])
+        || (item.rowFills && item.rowFills[ri])
+        || (ri === 0 && (item.headFill || item.headShade));
+      if (direct) return normHex(direct);
+      const rNe = (rowArr || rows[ri] || []).filter((c) => c && String(c).trim());
+      const isFullSpanHdr = nCols >= 2 && rNe.length === 1 && String((rowArr || rows[ri])[0] || '').trim() && !/[:ঃ*]$/.test(String((rowArr || rows[ri])[0] || '').trim()) && item.headerBandFill;
+      if (isFullSpanHdr) return normHex(item.headerBandFill);
+      const colF = item.colFills && item.colFills[k];
+      if (colF) return normHex(colF);
+      if (k === 0 && nCols >= 2 && !(rNe.length === 1 && !(rowArr || rows[ri])[1]) && (item.labelColFill || isFormTbl)) {
+        return normHex(typeof item.labelColFill === 'string' ? item.labelColFill : 'F2F2F2');
+      }
+      return normHex(item.fill || item.shade);
+    };
+    const resolveCellColor = (ri, k, txt, cFill, cm) => {
+      const direct = (cm && (cm.color || cm.fg))
+        || (item.cellColors && item.cellColors[ri] && item.cellColors[ri][k])
+        || (item.rowColors && item.rowColors[ri])
+        || (ri === 0 && item.headColor)
+        || (item.colColors && item.colColors[k]);
+      if (direct) return normHex(direct);
+      if (cFill && isDarkHex(cFill)) return 'FFFFFF';
+      if ((cm && cm.placeholder) || (k >= 1 && isPlaceholderStr(txt))) return '808080';
+      return normHex(item.color);
+    };
     const cellBody = (txt, ri, k, cellWTw) => {
       const figs = figAt[ri + ':' + k] || [];
       const figXml = ctx ? figs.map((f) => paraXml(Object.assign({}, f, { spaceBeforePt: 0, indentPt: 0 }), 0, ctx).replace('<w:jc w:val="left"/>', '<w:jc w:val="center"/>')).join('') : '';
       // Part-17.9: কলামের মাপা অবস্থান (না থাকলে মাঝে)
+      if (formKitOn() && typeof txt === 'string' && /^\(\s*[•*]?\s*\)\s*\S/m.test(txt.trim())) {
+        txt = txt.split('\n').map((ln) => ln.replace(/^(\s*)\(\s*\)\s*/, '$1○ ').replace(/^(\s*)\(\s*[•*]\s*\)\s*/, '$1● ')).join('\n');
+      }
       const isRadioOrBox = typeof txt === 'string' && (txt.startsWith(BOX_MARK) || (!globalThis.__FZ_OFF_BOXPOS && /^[○●◯◉□☐☑■✓✔•◦]/m.test(txt.trim())));
       const isTotalSpan = ri === rows.length - 1 && k === 0 && item.lastRowSpan > 1;
-      const jc = isTotalSpan ? 'right' : isRadioOrBox ? 'left' : JC[(item.cellAligns && item.cellAligns[ri] && item.cellAligns[ri][k]) || (item.colAligns && item.colAligns[k]) || 'c'];
+      const cmAlign = formKitOn() && item._cellMeta && item._cellMeta[ri] && item._cellMeta[ri][k] ? item._cellMeta[ri][k].align : null;
+      const jc = isTotalSpan ? 'right' : (cmAlign && JC[cmAlign]) ? JC[cmAlign] : isRadioOrBox ? 'left' : JC[(item.cellAligns && item.cellAligns[ri] && item.cellAligns[ri][k]) || (item.colAligns && item.colAligns[k]) || 'c'];
       // [Rule FB3: FZ_OFF=FORMFIX / FZ_OFF=FB3] যখন সারির উচ্চতা exact থেকে atLeast করা হয়, তখন লেখাসহ এক-লাইনের rh.fitted ঘরে tight থাকবে, কিন্তু ফাঁকা ঘরে কোনো w:line না দিয়ে কেবল pSz সারির উচ্চতা (÷ 2.2) ও প্রস্থ অনুযায়ী সীমিত রাখা হবে।
       const formFixOn = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_FB3);
       const rowIsAtLeast = !!(item.gridFirst || formFixOn);
@@ -969,7 +1344,18 @@
         ? ` w:line="${tw(Math.max(fsz * 1.05, curRowH - BA))}" w:lineRule="exact"` : '';
       const room = rh.fitted && rh[ri] && !tight ? Math.max(0, rh[ri].h - BA - fsz * 1.35 * nL) : 0;
       const sh = item.rowShiftPt && item.rowShiftPt[ri] ? Math.max(-room, Math.min(room, 2 * item.rowShiftPt[ri])) : 0;
-      const rowCellItem = ri === 0 && item.headFontPt ? Object.assign({}, cellItem, { fontPt: item.headFontPt }) : cellItem;
+      const cMeta = formKitOn() && item._cellMeta && item._cellMeta[ri] ? item._cellMeta[ri][k] : null;
+      const cFill = formKitOn() ? resolveCellFill(ri, k, rows[ri]) : null;
+      const cColor = formKitOn() ? resolveCellColor(ri, k, txt, cFill, cMeta) : null;
+      const baseCellIt = ri === 0 && item.headFontPt ? Object.assign({}, cellItem, { fontPt: item.headFontPt }) : cellItem;
+      const rowCellItem = formKitOn()
+        ? Object.assign({}, baseCellIt, {
+            color: cColor || baseCellIt.color,
+            bold: cMeta && cMeta.bold != null ? !!cMeta.bold : (cFill && isDarkHex(cFill) ? true : baseCellIt.bold),
+            italic: cMeta && cMeta.italic != null ? !!cMeta.italic : baseCellIt.italic
+          })
+        : baseCellIt;
+      if (formKitOn() && typeof txt === 'string' && isPlaceholderStr(txt)) txt = stripPlaceholderWrap(txt);
       const pShd = ri === 0 && item.headShade && globalThis.__FZ_ON_PCELLSHD && !globalThis.__FZ_OFF_TBLSHADE ? `<w:shd w:val="clear" w:color="auto" w:fill="${item.headShade}"/>` : '';
       const defSz = Math.round((rowCellItem.fontPt || 11) * 2);
       const effMarTw = (item.gridFirst || (formFixOn && (cellWTw || colW) <= tw(24))) && !item.borderless && (cellWTw || colW) < tw(70) ? ((cellWTw || colW) < tw(25) ? 0 : 28) : cellMarTw;
@@ -1120,6 +1506,16 @@
     const hasBoxRow = rows.some((r) => r.some((c) => typeof c === 'string' && c.startsWith(BOX_MARK)));
     const trs = rows.map((r, ri) => {
       const sp = (item.gridSpans && item.gridSpans[ri]) ? item.gridSpans[ri].slice() : rowSpans(r, ri, nCols, (k) => cw(k) / 20, item.fontPt || 11, marPt, figRows, item.fullVRule);
+      if (formKitOn() && item._cellMeta && item._cellMeta[ri]) {
+        item._cellMeta[ri].forEach((cm, ck) => {
+          const cs = cm && (cm.span || cm.gridSpan || cm.colSpan);
+          if (cs > 1 && sp[ck] > 0) {
+            const maxS = Math.min(cs, nCols - ck);
+            sp[ck] = maxS;
+            for (let j = ck + 1; j < ck + maxS; j++) sp[j] = 0;
+          }
+        });
+      }
       if (ri === rows.length - 1 && item.lastRowSpan > 1 && item.lastRowSpan <= nCols) { sp[0] = item.lastRowSpan; for (let j = 1; j < item.lastRowSpan; j++) sp[j] = 0; }
       // ২০২৬-১০-১৪ (a19/a18): মূল ফরমে উঁচু সারির ছোট ঘর (ক্রমিক "৬।", "নাম/পদবি", পাশের ২-লাইনের পাশে ১-লাইনের শিরোনাম) ওপরে —
       // সারির সবচেয়ে বেশি লাইনের ঘরের চেয়ে কম লাইন ⇒ vAlign top; সমান হলে আগের মতো মাঝে
@@ -1141,8 +1537,9 @@
         const rowHasBox = hasBoxRow || r.some((c) => typeof c === 'string' && c.startsWith(BOX_MARK));
         const sparseSerialTop = ri > 0 && k === 0 && maxLn === 1 && lns[0] === 1 && r.slice(1).every((c) => !(c && String(c).trim())) && curH >= (item.fontPt || 11) * 2;
         const va = hv ? (hv === 't' ? 'top' : 'center') : !globalThis.__FZ_OFF_VTOP && !rowHasBox && !item.noVRules && lns[k] && (sparseSerialTop || (!item.headShade && (isSerRow || hasBlankCell) && tallRow) || (maxLn >= 2 && (lns[k] < maxLn || ((maxLn >= 3 || tallRow) && !globalThis.__FZ_OFF_VTOP4)))) ? 'top' : 'center';
-        // a02: শিরোনাম-সারির মাপা ধূসর পটি (layout-ir headShade)
-        const shd = ri === 0 && item.headShade ? `<w:shd w:val="clear" w:color="auto" w:fill="${item.headShade}"/>` : '';
+        // a02 + B9: শিরোনাম-সারি, লেবেল-কলাম বা ঘরের পটভূমি-রং (headShade / fill / cellFills)
+        const tcFill = formKitOn() ? resolveCellFill(ri, k, r) : (ri === 0 && item.headShade ? item.headShade : null);
+        const shd = tcFill ? `<w:shd w:val="clear" w:color="auto" w:fill="${tcFill}"/>` : '';
         // [Rule FB5: FZ_OFF=FORMFIX / FZ_OFF=FB5] bandBorders নিজেই উল্লম্ব-মার্জ করা ঘরের মাঝের বর্ডার nil করে দেয়; তাই <w:vMerge/> ট্যাগ বাদ রেখে প্রতিটি সারি এডিট-যোগ্য রাখা এবং অঙ্ক-বাক্সের সরু ঘরে (<=24pt) tcMar শূন্য রাখা।
         const vm = VM && VM[ri] && VM[ri][k];
         const vmXml = (formFixTbl && !globalThis.__FZ_OFF_FB5) ? '' : (vm === 'restart' ? '<w:vMerge w:val="restart"/>' : vm === 'continue' ? '<w:vMerge/>' : '');
@@ -1164,8 +1561,10 @@
   function boxRowXml(cells, availPt) {
     const n = Math.max(1, cells.length), bw = tw(Math.max(8, Math.min(18, (availPt - 2) / n)));
     const BB = '<w:tblBorders>' + ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('') + '</w:tblBorders>';
-    const tcs = cells.map((c) => `<w:tc><w:tcPr><w:tcW w:w="${bw}" w:type="dxa"/></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr>${c ? runsFor(c, { fontPt: 9, align: 'c' }) : ''}</w:p></w:tc>`).join('');
-    return `<w:tbl><w:tblPr><w:tblW w:w="${bw * n}" w:type="dxa"/>${BB}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${cells.map(() => `<w:gridCol w:w="${bw}"/>`).join('')}</w:tblGrid><w:tr>${tcs}</w:tr></w:tbl>` +
+    const va = formKitOn() ? '<w:vAlign w:val="center"/>' : '';
+    const trP = formKitOn() ? `<w:trPr><w:trHeight w:val="${tw(16)}" w:hRule="atLeast"/></w:trPr>` : '';
+    const tcs = cells.map((c) => `<w:tc><w:tcPr><w:tcW w:w="${bw}" w:type="dxa"/>${va}</w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr>${c ? runsFor(c, { fontPt: 9, align: 'c' }) : ''}</w:p></w:tc>`).join('');
+    return `<w:tbl><w:tblPr><w:tblW w:w="${bw * n}" w:type="dxa"/>${BB}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${cells.map(() => `<w:gridCol w:w="${bw}"/>`).join('')}</w:tblGrid><w:tr>${trP}${tcs}</w:tr></w:tbl>` +
       '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>';
   }
 
@@ -1210,6 +1609,27 @@
 
   function gridXml(band, ctx) {
     const widths = band.cells.map((c) => Math.max(tw(20), tw(c.x1 - c.x0)));
+    if (formKitOn() && band.cells.length >= 2) {
+      for (let k = 1; k < band.cells.length; k++) {
+        const c = band.cells[k];
+        if (!c.items || c.items.length !== 1 || c.items[0].kind !== 'para') continue;
+        const it = c.items[0], ls = (it.lines || []).filter(Boolean);
+        const raw = String(it.text || (ls[0] || '')).trim();
+        const cleanLen = raw.replace(/\*\*|<[^>]+>/g, '').replace(/[ঁ-ঃ়া-্ৗ]/g, '').length;
+        if (ls.length <= 1 && cleanLen > 0 && cleanLen <= 24) {
+          const needTw = tw(cleanLen * (it.fontPt || 12) * 0.62 + 10);
+          if (widths[k] < needTw && widths[k - 1] > needTw + tw(30)) {
+            const diff = needTw - widths[k];
+            widths[k - 1] -= diff;
+            widths[k] += diff;
+          }
+          it.noWrap = true;
+          if (it.indentPt && tw(it.indentPt) + needTw > widths[k]) {
+            it.indentPt = Math.max(0, (widths[k] - needTw) / 20);
+          }
+        }
+      }
+    }
     const ffGrid = !!(fzOn('FORMFIX') && !globalThis.__FZ_OFF_FB7);
     const endP = ffGrid ? CELL_END.replace('w:line="20"', 'w:line="4"') : CELL_END;
     const NIL = '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
@@ -1221,7 +1641,8 @@
       const safe = /<\/w:p>\s*$/.test(inner) ? inner : inner + (globalThis.__FZ_OFF_CELLEND ? '<w:p/>' : endP);
       // Part-17.8: কলামের মাঝের খাড়া দাগ (মূলে থাকলে)
       const rule = c.ruleRight ? '<w:tcBorders><w:right w:val="single" w:sz="6" w:space="0" w:color="000000"/></w:tcBorders>' : '';
-      return `<w:tc><w:tcPr><w:tcW w:w="${widths[k]}" w:type="dxa"/>${rule}</w:tcPr>${safe}</w:tc>`;
+      const gShd = formKitOn() && normHex(c.fill || c.shade) ? `<w:shd w:val="clear" w:color="auto" w:fill="${normHex(c.fill || c.shade)}"/>` : '';
+      return `<w:tc><w:tcPr><w:tcW w:w="${widths[k]}" w:type="dxa"/>${rule}${gShd}</w:tcPr>${safe}</w:tc>`;
     }).join('');
     const gridRuleBelowXml = ffGrid && !globalThis.__FZ_OFF_IR7 && band.ruleBelow
       ? `<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="${band.ruleBelow.sz || 6}" w:space="0" w:color="000000"/></w:pBdr><w:spacing w:before="0" w:after="0" w:line="4" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr></w:pPr></w:p>`
@@ -1235,19 +1656,28 @@
   const TINY = '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="4" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p>';
   const CELL_END = '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr></w:pPr><w:r><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r></w:p>';
   function boxTableXml(box, innerXml, leftPt) {
-    const w = Math.max(tw(20), tw(box.x1 - box.x0)), v = box.dashed ? 'dashed' : 'single';
-    const bd = ['top', 'left', 'bottom', 'right'].map((s) => `<w:${s} w:val="${v}" w:sz="${box.sz || 6}" w:space="0" w:color="000000"/>`).join('');
+    const w = Math.max(tw(20), tw(box.x1 - box.x0));
+    const v = formKitOn()
+      ? (box.dashDot || box.style === 'dotDash' || box.style === 'dashDot' || box.style === 'dash-dot' || box.borderStyle === 'dotDash' || box.borderStyle === 'dashDot'
+        ? 'dotDash'
+        : (box.dashed || box.style === 'dashed' || box.borderStyle === 'dashed' ? 'dashed' : (box.style === 'double' ? 'double' : (box.style === 'dotted' ? 'dotted' : 'single'))))
+      : (box.dashed ? 'dashed' : 'single');
+    const bCol = (formKitOn() && normHex(box.borderColor || box.color)) || '000000';
+    const bd = ['top', 'left', 'bottom', 'right'].map((s) => `<w:${s} w:val="${v}" w:sz="${box.sz || 6}" w:space="0" w:color="${bCol}"/>`).join('');
     const NIL = '<w:tblBorders>' + ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="nil"/>`).join('') + '</w:tblBorders>';
     const MAR = '<w:tblCellMar>' + ['top', 'left', 'bottom', 'right'].map((s) => `<w:${s} w:w="0" w:type="dxa"/>`).join('') + '</w:tblCellMar>';
+    const bShd = formKitOn() && normHex(box.fill || box.shade) ? `<w:shd w:val="clear" w:color="auto" w:fill="${normHex(box.fill || box.shade)}"/>` : '';
+    const bVa = formKitOn() && box.vAlign ? `<w:vAlign w:val="${box.vAlign}"/>` : '';
+    const bTrPr = formKitOn() && box.heightPt > 0 ? `<w:trPr><w:trHeight w:val="${tw(box.heightPt)}" w:hRule="exact"/></w:trPr>` : '';
     const safe = /<\/w:p>\s*$/.test(innerXml) ? innerXml : innerXml + TINY;    // ঘর অনুচ্ছেদে শেষ হতেই হবে
-    return `<w:tbl><w:tblPr><w:tblW w:w="${w}" w:type="dxa"/><w:tblInd w:w="${tw(box.x0 - leftPt)}" w:type="dxa"/>${NIL}<w:tblLayout w:type="fixed"/>${MAR}</w:tblPr><w:tblGrid><w:gridCol w:w="${w}"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:tcBorders>${bd}</w:tcBorders></w:tcPr>${safe}</w:tc></w:tr></w:tbl>`;
+    return `<w:tbl><w:tblPr><w:tblW w:w="${w}" w:type="dxa"/><w:tblInd w:w="${tw(box.x0 - leftPt)}" w:type="dxa"/>${NIL}<w:tblLayout w:type="fixed"/>${MAR}</w:tblPr><w:tblGrid><w:gridCol w:w="${w}"/></w:tblGrid><w:tr>${bTrPr}<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:tcBorders>${bd}</w:tcBorders>${bShd}${bVa}</w:tcPr>${safe}</w:tc></w:tr></w:tbl>`;
   }
   /** আধার [L,R] থেকে [nL,nR]-এ সরানো অংশের ইনডেন্ট/ট্যাব/মাঝে-বসানো (অপরিবর্তিত আধারে একই বস্তু) */
   function shiftInto(it, L, R, nL, nR) {
     if (Math.abs(nL - L) < 0.05 && Math.abs(nR - R) < 0.05) return it;
     const dx = nL - L, o = Object.assign({}, it);
     if (o.indentPt != null) o.indentPt = Math.max(0, o.indentPt - dx);
-    if (o.tabStops) o.tabStops = o.tabStops.map((t) => Math.max(1, t - dx));
+    if (o.tabStops) o.tabStops = o.tabStops.map((t) => (formKitOn() && t && typeof t === 'object' ? Object.assign({}, t, { pos: Math.max(1, (t.pos != null ? t.pos : t.x) - dx) }) : Math.max(1, t - dx)));
     if (o.centerShiftPt != null) o.centerShiftPt -= (nL + nR) / 2 - (L + R) / 2;
     if (o.rightIndentPt != null) o.rightIndentPt = Math.max(0, o.rightIndentPt - (R - nR));
     if (o.justRightPt != null) o.justRightPt = Math.max(0, o.justRightPt - (R - nR));

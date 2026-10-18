@@ -285,6 +285,7 @@
         try {
           if (faithful) await faithfulDownload(fFmt);
           else if (cleanStyle) await cleanDownload(fFmt);
+          else if (W.__FZ_ON_RELAYOUT && W.FayzarRelayout && W.FayzarRelayout.hasCustomExport()) await W.FayzarRelayout.download(fFmt);
           else await Eng().downloadWordDocument(tplFmt);
         } catch (e) { toast('ফাইল তৈরি হয়নি: ' + ((e && e.message) || e), 'error'); }
       };
@@ -295,6 +296,18 @@
     setStyle(cleanStyle && !faithful ? 'clean' : 'layout');
     if ($('colPick')) setCols((Eng() && Eng().state && Eng().state.layoutColumns) || 'auto');
     $('btnBack2').hidden = fromHistory && !queue().length;
+    // D1–D4: ফলাফল-পাতায় লেআউট/সেটিং বদল ও "ঠিক হয়নি?" (সুইচ __FZ_ON_RELAYOUT)
+    if (W.__FZ_ON_RELAYOUT && W.FayzarRelayout) {
+      W.FayzarRelayout.mountResult({
+        faithful,
+        baseName: () => (lastRun && lastRun.baseName) || 'Document',
+        getText: resultText,
+        setText: (t) => { $('wizardPreviewContent').value = t; if (Eng() && Eng().state) Eng().state.unicodeText = t; persist(); },
+        reOcr: async (promptText) => { const inp = $('ai-custom-directive-input'), prev = inp ? inp.value : ''; if (inp) inp.value = prev ? prev + '\n' + promptText : promptText; try { await convert(); } finally { if (inp) inp.value = prev; } },
+        saveBlob,
+        toast
+      });
+    }
   }
   // Part-18.9: কলাম-বাছাই — ইঞ্জিনের state.layoutColumns (ডাউনলোডের সময় প্ল্যানারে যায়; আবার OCR লাগে না)
   function setCols(v) {
