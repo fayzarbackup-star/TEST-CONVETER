@@ -36,6 +36,15 @@
     return /cambria\s*math|mathjax|stix\s*(?:two|general)?|latin\s*modern\s*math/i.test(s) ? 'Times New Roman' : s;
   }
 
+  // B8: .doc-এ পাতার বর্ডারের দূরত্ব (w:pgBorders offsetFrom ও space) অবিকল রাখার সুইচ
+  function isPgBorderOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_PGBORDER)) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_PGBORDER)) return true;
+    if (typeof global !== 'undefined' && global && Boolean(global.__FZ_ON_PGBORDER)) return true;
+    if (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_PGBORDER === '1' || process.env.__FZ_ON_PGBORDER === 'true')) return true;
+    return false;
+  }
+
   class DocxToDocConverter {
     constructor() {
       this.domParser = typeof DOMParser !== 'undefined' ? new DOMParser() : null;
@@ -784,15 +793,17 @@
       // Part-17.7: পাতার বর্ডার (w:pgBorders) ⇒ Word-HTML @page border/padding। না থাকলে কিছুই যোগ হয় না (চালু আউটপুট অপরিবর্তিত)
       let pageBorderCss = '';
       let pageFrame = null;
+      let pgBorders = null;
       if (sectPr) {
         const pb = Array.from(sectPr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'pgBorders');
         if (pb) {
           const STYLE = { single: 'solid', double: 'double', dotted: 'dotted', dashed: 'dashed', thick: 'solid' };
-          const parts = [], pads = {};
+          const parts = [], pads = {}, activeSides = {};
           ['top', 'right', 'bottom', 'left'].forEach((side) => {
             const el = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === side);
             const val = el && (el.getAttribute('w:val') || el.getAttribute('val'));
             if (!el || !val || val === 'nil' || val === 'none') { pads[side] = 0; return; }
+            activeSides[side] = true;
             const sz = parseInt(el.getAttribute('w:sz') || el.getAttribute('sz') || '4', 10);
             const css = STYLE[val] || 'solid';
             const wPt = Math.max(0.5, (css === 'double' ? sz / 8 * 3 : sz / 8));
@@ -802,26 +813,87 @@
           // Part-17.9: Word-HTML আমদানি সবসময় "পাতার কিনারা থেকে" মাপে (সর্বোচ্চ ৩১pt) — "লেখা থেকে" (w:offsetFrom="text")
           // বর্ডার .doc-এ সেভাবে আসে না ⇒ পাতা-স্থির আয়তক্ষেত্র-আকৃতি (VML) হিসেবে ঠিক জায়গায় আঁকা
           const offsetFrom = pb.getAttribute('w:offsetFrom') || pb.getAttribute('offsetFrom');
-          const allSame = ['top', 'right', 'bottom', 'left'].every((s) => pads[s] !== undefined);
-          if (parts.length && offsetFrom === 'text' && allSame) {
-            const inPt = (v) => parseFloat(v) * 72;
-            const firstEl = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1);
-            const v0 = firstEl ? (firstEl.getAttribute('w:val') || firstEl.getAttribute('val')) : 'single';
-            const sz0 = firstEl ? parseInt(firstEl.getAttribute('w:sz') || firstEl.getAttribute('sz') || '4', 10) : 4;
-            const x = inPt(marginLeft) - pads.left, y = inPt(marginTop) - pads.top;
-            pageFrame = {
-              x, y, w: inPt(width) - inPt(marginLeft) - inPt(marginRight) + pads.left + pads.right,
-              h: inPt(height) - inPt(marginTop) - inPt(marginBottom) + pads.top + pads.bottom,
-              double: v0 === 'double', weightPt: Math.max(0.75, v0 === 'double' ? sz0 / 8 * 3 : sz0 / 8)
+          if (isPgBorderOn()) {
+            // B8: ইঞ্চিতে .toFixed(2) রাউন্ডিং এড়িয়ে সরাসরি twips (÷২০) থেকে নিখুঁত pt হিসাব
+            const pgSzEl = sectPr.querySelector("pgSz");
+            const pgMarEl = sectPr.querySelector("pgMar");
+            const twPt = (el, attrName, fallbackIn) => {
+              if (el) {
+                const v = parseInt(el.getAttribute("w:" + attrName) || el.getAttribute(attrName), 10);
+                if (!isNaN(v) && v >= 0) return v / 20;
+              }
+              return parseFloat(fallbackIn) * 72;
             };
-          } else if (parts.length) {
-            pageBorderCss = '\t' + parts.join(';\n\t') + `;\n\tpadding:${pads.top}.0pt ${pads.right}.0pt ${pads.bottom}.0pt ${pads.left}.0pt;\n` +
-              '\tmso-page-border-surround-header:no;\n\tmso-page-border-surround-footer:no;\n';
+            const wPtEx = twPt(pgSzEl, "w", width);
+            const hPtEx = twPt(pgSzEl, "h", height);
+            const mPt = {
+              top: twPt(pgMarEl, "top", marginTop),
+              right: twPt(pgMarEl, "right", marginRight),
+              bottom: twPt(pgMarEl, "bottom", marginBottom),
+              left: twPt(pgMarEl, "left", marginLeft)
+            };
+            const effOffset = (offsetFrom || 'page').toLowerCase() === 'text' ? 'text' : 'page';
+            const edgePt = {}, textOffsetPt = {};
+            ['top', 'right', 'bottom', 'left'].forEach((s) => {
+              if (effOffset === 'text') {
+                textOffsetPt[s] = pads[s];
+                edgePt[s] = Math.max(0, +(mPt[s] - pads[s]).toFixed(2));
+              } else {
+                edgePt[s] = pads[s];
+                textOffsetPt[s] = Math.max(0, +(mPt[s] - pads[s]).toFixed(2));
+              }
+            });
+            pgBorders = {
+              offsetFrom: effOffset,
+              space: Object.assign({}, pads),
+              edgePt,
+              textOffsetPt,
+              widthPt: +wPtEx.toFixed(2),
+              heightPt: +hPtEx.toFixed(2)
+            };
+            const allFourActive = ['top', 'right', 'bottom', 'left'].every((s) => activeSides[s]);
+            if (parts.length && effOffset === 'text' && allFourActive) {
+              const firstEl = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1);
+              const v0 = firstEl ? (firstEl.getAttribute('w:val') || firstEl.getAttribute('val')) : 'single';
+              const sz0 = firstEl ? parseInt(firstEl.getAttribute('w:sz') || firstEl.getAttribute('sz') || '4', 10) : 4;
+              pageFrame = {
+                x: edgePt.left,
+                y: edgePt.top,
+                w: +(wPtEx - edgePt.left - edgePt.right).toFixed(2),
+                h: +(hPtEx - edgePt.top - edgePt.bottom).toFixed(2),
+                double: v0 === 'double',
+                weightPt: Math.max(0.75, v0 === 'double' ? sz0 / 8 * 3 : sz0 / 8),
+                offsetFrom: 'text',
+                spacePt: Object.assign({}, pads),
+                edgePt: Object.assign({}, edgePt)
+              };
+            } else if (parts.length) {
+              pageBorderCss = '\t' + parts.join(';\n\t') +
+                `;\n\tmso-page-border-offset-from:${effOffset};\n\tpadding:${pads.top}.0pt ${pads.right}.0pt ${pads.bottom}.0pt ${pads.left}.0pt;\n` +
+                '\tmso-page-border-surround-header:no;\n\tmso-page-border-surround-footer:no;\n';
+            }
+          } else {
+            const allSame = ['top', 'right', 'bottom', 'left'].every((s) => pads[s] !== undefined);
+            if (parts.length && offsetFrom === 'text' && allSame) {
+              const inPt = (v) => parseFloat(v) * 72;
+              const firstEl = Array.from(pb.childNodes || []).find((c) => c.nodeType === 1);
+              const v0 = firstEl ? (firstEl.getAttribute('w:val') || firstEl.getAttribute('val')) : 'single';
+              const sz0 = firstEl ? parseInt(firstEl.getAttribute('w:sz') || firstEl.getAttribute('sz') || '4', 10) : 4;
+              const x = inPt(marginLeft) - pads.left, y = inPt(marginTop) - pads.top;
+              pageFrame = {
+                x, y, w: inPt(width) - inPt(marginLeft) - inPt(marginRight) + pads.left + pads.right,
+                h: inPt(height) - inPt(marginTop) - inPt(marginBottom) + pads.top + pads.bottom,
+                double: v0 === 'double', weightPt: Math.max(0.75, v0 === 'double' ? sz0 / 8 * 3 : sz0 / 8)
+              };
+            } else if (parts.length) {
+              pageBorderCss = '\t' + parts.join(';\n\t') + `;\n\tpadding:${pads.top}.0pt ${pads.right}.0pt ${pads.bottom}.0pt ${pads.left}.0pt;\n` +
+                '\tmso-page-border-surround-header:no;\n\tmso-page-border-surround-footer:no;\n';
+            }
           }
         }
       }
 
-      return {
+      const outSec = {
         pageBorderCss,
         pageFrame,
         width,
@@ -835,6 +907,8 @@
         colSep,
         breakType
       };
+      if (isPgBorderOn() && pgBorders) outSec.pgBorders = pgBorders;
+      return outSec;
     }
 
     _parseParagraph(pNode, styleResolver, mediaMap, opts) {
@@ -1568,7 +1642,10 @@ ${page.pageBorderCss || ''}${colsCss}${parsedBody.headerHtml ? '\tmso-header:h1;
         if (page.pageFrame) {
           const f = page.pageFrame;
           const sid = '_x0000_s' + (1025 + (this._anchorSeq = (this._anchorSeq || 0) + 1));
-          const shape = `<!--[if gte vml 1]><v:rect id="${sid}" style='position:absolute;margin-left:${f.x.toFixed(1)}pt;margin-top:${f.y.toFixed(1)}pt;width:${f.w.toFixed(1)}pt;height:${f.h.toFixed(1)}pt;z-index:-251658240;mso-position-horizontal-relative:page;mso-position-vertical-relative:page' filled="f" strokeweight="${f.weightPt.toFixed(2)}pt"><v:stroke linestyle="${f.double ? 'thinThin' : 'single'}"/><w:wrap anchorx="page" anchory="page"/></v:rect><![endif]-->`;
+          const metaAttr = (isPgBorderOn() && f.spacePt)
+            ? ` data-offset-from="${f.offsetFrom || 'text'}" data-space="${f.spacePt.top},${f.spacePt.right},${f.spacePt.bottom},${f.spacePt.left}"`
+            : '';
+          const shape = `<!--[if gte vml 1]><v:rect id="${sid}"${metaAttr} style='position:absolute;margin-left:${f.x.toFixed(1)}pt;margin-top:${f.y.toFixed(1)}pt;width:${f.w.toFixed(1)}pt;height:${f.h.toFixed(1)}pt;z-index:-251658240;mso-position-horizontal-relative:page;mso-position-vertical-relative:page' filled="f" strokeweight="${f.weightPt.toFixed(2)}pt"><v:stroke linestyle="${f.double ? 'thinThin' : 'single'}"/><w:wrap anchorx="page" anchory="page"/></v:rect><![endif]-->`;
           const firstP = secHtml.search(/<p[\s>]/i);
           const firstTbl = secHtml.search(/<table[\s>]/i);
           if (firstP >= 0 && (firstTbl < 0 || firstP < firstTbl)) {

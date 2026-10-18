@@ -17,6 +17,13 @@
   const mathHOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_MATHH : global.__FZ_ON_MATHH);
   // B9/B4 ফরমকিট সুইচ: শুধু globalThis.__FZ_ON_FORMKIT সত্য হলে সক্রিয়
   const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
+  // B8 পাতার বর্ডার দূরত্ব সুইচ: শুধু globalThis.__FZ_ON_PGBORDER সত্য হলে সক্রিয়
+  const pgBorderOn = () => !!(
+    (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_PGBORDER) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_PGBORDER) ||
+    (global && global.__FZ_ON_PGBORDER) ||
+    (typeof process !== 'undefined' && process && process.env && (process.env.__FZ_ON_PGBORDER === '1' || process.env.__FZ_ON_PGBORDER === 'true'))
+  );
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -1791,18 +1798,37 @@
 
   function sectPr(page, isLast) {
     const m = page.margins;
+    // a09: নিচের মার্জিন মূলের শেষ লাইন পর্যন্ত মাপা ⇒ কয়েক pt বাড়তি উচ্চতাতেই শেষ অনুচ্ছেদ পরের পাতায় (সব পরের পাতা এক ঘর সরে)।
+    // লেখা ওপর থেকে বসে ⇒ নিচের মার্জিন কমালে অবস্থান বদলায় না, শুধু ছাড় বাড়ে (ফ্রেমের পাতায় নয় — নিচের বর্ডার নামত)
+    // ২০২৬-১০-১২: তলা ১৮→১০pt (f2: মূলের লেখা নিচ থেকে ১৬pt পর্যন্ত ⇒ ১৮pt-এ শেষ লাইন পরের পাতায়)
+    const bottom = page.frame ? m.bottom : Math.min(m.bottom, Math.max(10, m.bottom - 36));
     // প্রতিটি সেকশন (মূলের প্রতিটি পাতা) নতুন পাতায় শুরু — DOCX-নিয়মে type সেকশনের নিজের শুরু বোঝায়
     // Part-17.7: মূল পাতার বর্ডার-ফ্রেম (একক/দ্বৈত) — লেখা থেকে মাপা দূরত্বে (Word-সীমা ≤৩১pt)
     let borders = '';
     if (page.frame) {
       const v = page.frame.style === 'double' ? 'double' : 'single', sp = page.frame.spacePt || {};
-      const side = (n) => `<w:${n} w:val="${v}" w:sz="${v === 'double' ? 6 : 12}" w:space="${Math.round(sp[n] || 0)}" w:color="000000"/>`;
-      borders = `<w:pgBorders w:offsetFrom="text">${side('top')}${side('left')}${side('bottom')}${side('right')}</w:pgBorders>`;
+      if (pgBorderOn()) {
+        // B8: পাতার কিনারা থেকে দূরত্ব ≤৩১pt হলে offsetFrom="page" ও কিনারা-দূরত্ব ব্যবহারযোগ্য;
+        // >৩১pt হলে Word-এর ৩১pt সীমার কারণে offsetFrom="text" রেখে docx-to-doc-এ হুবহু দূরত্ব নেওয়া হয়।
+        const mSides = { top: m.top, left: m.left, bottom, right: m.right };
+        const edge = {};
+        const fitsPageOffset = page.frame.offsetFrom === 'page' || ['top', 'left', 'bottom', 'right'].every((n) => {
+          edge[n] = Math.round((mSides[n] || 0) - (sp[n] || 0));
+          return edge[n] >= 0 && edge[n] <= 31;
+        });
+        const mode = page.frame.offsetFrom || (fitsPageOffset ? 'page' : 'text');
+        const side = (n) => {
+          const valSp = mode === 'page'
+            ? (page.frame.offsetFrom === 'page' && sp[n] != null ? Math.round(sp[n]) : Math.round((mSides[n] || 0) - (sp[n] || 0)))
+            : Math.round(sp[n] || 0);
+          return `<w:${n} w:val="${v}" w:sz="${v === 'double' ? 6 : 12}" w:space="${clamp(valSp, 0, 31)}" w:color="000000"/>`;
+        };
+        borders = `<w:pgBorders w:offsetFrom="${mode}">${side('top')}${side('left')}${side('bottom')}${side('right')}</w:pgBorders>`;
+      } else {
+        const side = (n) => `<w:${n} w:val="${v}" w:sz="${v === 'double' ? 6 : 12}" w:space="${Math.round(sp[n] || 0)}" w:color="000000"/>`;
+        borders = `<w:pgBorders w:offsetFrom="text">${side('top')}${side('left')}${side('bottom')}${side('right')}</w:pgBorders>`;
+      }
     }
-    // a09: নিচের মার্জিন মূলের শেষ লাইন পর্যন্ত মাপা ⇒ কয়েক pt বাড়তি উচ্চতাতেই শেষ অনুচ্ছেদ পরের পাতায় (সব পরের পাতা এক ঘর সরে)।
-    // লেখা ওপর থেকে বসে ⇒ নিচের মার্জিন কমালে অবস্থান বদলায় না, শুধু ছাড় বাড়ে (ফ্রেমের পাতায় নয় — নিচের বর্ডার নামত)
-    // ২০২৬-১০-১২: তলা ১৮→১০pt (f2: মূলের লেখা নিচ থেকে ১৬pt পর্যন্ত ⇒ ১৮pt-এ শেষ লাইন পরের পাতায়)
-    const bottom = page.frame ? m.bottom : Math.min(m.bottom, Math.max(10, m.bottom - 36));
     return `<w:sectPr><w:type w:val="nextPage"/><w:pgSz w:w="${tw(page.widthPt)}" w:h="${tw(page.heightPt)}"${page.widthPt > page.heightPt ? ' w:orient="landscape"' : ''}/><w:pgMar w:top="${tw(m.top)}" w:right="${tw(m.right)}" w:bottom="${tw(bottom)}" w:left="${tw(m.left)}" w:header="360" w:footer="360" w:gutter="0"/>${borders}<w:cols w:space="720"/></w:sectPr>`;
   }
 
@@ -1900,7 +1926,7 @@
     return zip.generateAsync({ type: o.type || (typeof Blob !== 'undefined' ? 'blob' : 'uint8array'), mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
   }
 
-  const FayzarFaithfulDocx = { FONT, UNICODE_FONTS, resolveDocxFont, bodyXml, build, runsFor, pPr, paraXml, planPage };
+  const FayzarFaithfulDocx = { FONT, UNICODE_FONTS, resolveDocxFont, bodyXml, build, runsFor, pPr, paraXml, planPage, sectPr };
   Object.defineProperties(FayzarFaithfulDocx, {
     itemH: { value: itemH, enumerable: false },
     textH: { value: textH, enumerable: false },
