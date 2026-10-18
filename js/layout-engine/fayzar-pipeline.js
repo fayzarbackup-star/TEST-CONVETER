@@ -427,7 +427,21 @@
         case 'EXAM_COMBINED':
         case 'EXAM_GENERAL':
         case 'EXAM_MATH':
-        case 'EXAM_MCQ': {
+        case 'EXAM_MCQ':
+        case 'EXAM_PRIMARY':
+        case 'EXAM_ONECOL': {
+          // A2_REGISTRY_EXAM: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে পার্স
+          if (this._isRegistryOn()) {
+            this._getQuestionEngine();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, text) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.parse === 'function') {
+              const parsed = entry.parse(text, Object.assign({}, options, { docType }));
+              if (parsed) return parsed;
+            }
+          }
+          if (docType === 'EXAM_PRIMARY' || docType === 'EXAM_ONECOL') break;
           const qEngine = this._getQuestionEngine();
           if (qEngine && typeof qEngine.parseQuestionPaper === 'function') {
           return qEngine.parseQuestionPaper(text, { docType });
@@ -587,7 +601,20 @@
         case 'EXAM_COMBINED':
         case 'EXAM_GENERAL':
         case 'EXAM_MATH':
-        case 'EXAM_MCQ': {
+        case 'EXAM_MCQ':
+        case 'EXAM_PRIMARY':
+        case 'EXAM_ONECOL': {
+          // A2_REGISTRY_EXAM: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে HTML রেন্ডার
+          if (this._isRegistryOn()) {
+            this._getQuestionEngine();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, rawText) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.renderHtml === 'function' && parsedData) {
+              return entry.renderHtml(parsedData, options);
+            }
+          }
+          if (docType === 'EXAM_PRIMARY' || docType === 'EXAM_ONECOL') break;
           const qEngine = this._getQuestionEngine();
           if (qEngine && typeof qEngine.renderToHtml === 'function') {
             return qEngine.renderToHtml(parsedData, options);

@@ -121,6 +121,49 @@
     };
   }
 
+  // প্রশ্নপত্র (EXAM_*) ইঞ্জিন ও প্ল্যানার লোডার এবং পার্স/রেন্ডার সহায়ক ফাংশন (A2_REGISTRY_EXAM_v6)
+  function getQuestionEngineModule() {
+    if (typeof QuestionEngine !== 'undefined') return QuestionEngine;
+    const root = getGlobalRoot();
+    if (root && root.QuestionEngine) return root.QuestionEngine;
+    if (typeof window !== 'undefined' && window.QuestionEngine) return window.QuestionEngine;
+    if (typeof global !== 'undefined' && global.QuestionEngine) return global.QuestionEngine;
+    if (typeof require === 'function') {
+      try {
+        return require('../engines/question-engine.js');
+      } catch (e) {
+        try {
+          return require('./engines/question-engine.js');
+        } catch (e2) {}
+      }
+    }
+    return null;
+  }
+
+  function parseExamWithQuestionEngine(defaultDocType, input, options) {
+    const { rawText, callOpts } = unpackParseArgs(input, options);
+    const docType = (callOpts && callOpts.docType) || defaultDocType;
+    if (docType === 'EXAM_GENERAL' || docType === 'EXAM_PRIMARY') {
+      getLayoutModule('FayzarGeneralParser', './general-paper-parser.js');
+    }
+    const qEngine = getQuestionEngineModule();
+    if (qEngine && typeof qEngine.parseQuestionPaper === 'function') {
+      return qEngine.parseQuestionPaper(rawText, { docType });
+    }
+    return null;
+  }
+
+  function renderExamHtmlWithQuestionEngine(model, options) {
+    const passOpts = typeof options === 'string' ? undefined : options;
+    getLayoutModule('CqBookletPlanner', './cq-booklet-planner.js');
+    getLayoutModule('McqLayoutPlanner', './mcq-layout-planner.js');
+    const qEngine = getQuestionEngineModule();
+    if (qEngine && model && typeof qEngine.renderToHtml === 'function') {
+      return qEngine.renderToHtml(model, passOpts);
+    }
+    return null;
+  }
+
   // ডিফল্ট সেটিংসের গভীর অনুলিপি (Deep Copy) তৈরি ও ফ্রন্টম্যাটার ওভাররাইড প্রয়োগ
   function buildEffectiveSettings(defaultSettings, frontmatter) {
     const base = defaultSettings || {};
@@ -670,7 +713,7 @@
     }
   };
 
-  // archetype-map.js-এর ARCHETYPE_TO_DOCTYPE এবং E3 লেআউটসমূহের জন্য রেজিস্ট্রি এন্ট্রিসমূহ
+  // archetype-map.js-এর ARCHETYPE_TO_DOCTYPE, E3 এবং EXAM_* লেআউটসমূহের জন্য রেজিস্ট্রি এন্ট্রিসমূহ
   const ARCHETYPE_REGISTRY_ENTRIES = [
     {
       id: 'EXAM_COMBINED',
@@ -702,8 +745,14 @@
         frontmatterFields: ['doc_type', 'columns', 'paper', 'orientation'],
         instructionsBn: 'সৃজনশীল (ক/খ/গ/ঘ) এবং বহুনির্বাচনি (ক/খ/গ/ঘ অপশন) উভয় অংশসহ সমন্বিত প্রশ্নপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'EXAM_COMBINED_DEFAULT'
+      fixtures: ['combined.input.md'],
+      sampleTemplateId: 'EXAM_COMBINED_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_COMBINED', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
     },
     {
       id: 'EXAM_CQ',
@@ -735,8 +784,23 @@
         frontmatterFields: ['doc_type', 'columns', 'paper', 'orientation'],
         instructionsBn: 'উদ্দীপক এবং ক, খ, গ, ঘ উপ-প্রশ্নসহ সৃজনশীল প্রশ্নপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'EXAM_CQ_DEFAULT'
+      fixtures: [
+        'cq-booklet-2.input.md',
+        'cq-booklet-6.input.md',
+        'cq-booklet-10.input.md',
+        'cq-booklet-16.input.md',
+        'cq-inline-numbering.input.md',
+        'cq-long.input.md',
+        'cq-marks-edge.input.md',
+        'cq-short.input.md'
+      ],
+      sampleTemplateId: 'EXAM_CQ_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_CQ', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
     },
     {
       id: 'EXAM_MCQ',
@@ -768,8 +832,20 @@
         frontmatterFields: ['doc_type', 'columns', 'paper', 'orientation'],
         instructionsBn: 'চারটি বিকল্প (ক, খ, গ, ঘ) বিশিষ্ট বহুনির্বাচনি প্রশ্নপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'EXAM_MCQ_DEFAULT'
+      fixtures: [
+        'mcq-header-fallback.input.md',
+        'mcq-long-options.input.md',
+        'mcq-mixed-options.input.md',
+        'mcq-pure-28.input.md',
+        'mcq-shrink-21.input.md'
+      ],
+      sampleTemplateId: 'EXAM_MCQ_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_MCQ', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
     },
     {
       id: 'EXAM_GENERAL',
@@ -809,9 +885,15 @@
         frontmatterFields: ['doc_type', 'columns', 'sub_layout'],
         instructionsBn: 'সাধারণ বাংলা বা ইংরেজি লিখিত পরীক্ষার প্রশ্নপত্র।'
       },
-      fixtures: [],
+      fixtures: ['primary-class4-bangla.input.md'],
       sampleTemplateId: 'EXAM_GENERAL_DEFAULT',
-      selectSubLayout: selectExamGeneralSubLayout
+      selectSubLayout: selectExamGeneralSubLayout,
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_GENERAL', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
     },
     {
       id: 'EXAM_MATH',
@@ -843,8 +925,92 @@
         frontmatterFields: ['doc_type', 'columns', 'paper'],
         instructionsBn: 'সমীকরণ ও গাণিতিক প্রতীকসংবলিত গণিত বা বিজ্ঞান প্রশ্নপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'EXAM_MATH_DEFAULT'
+      fixtures: ['math-equations.input.md'],
+      sampleTemplateId: 'EXAM_MATH_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_MATH', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
+    },
+    {
+      id: 'EXAM_PRIMARY',
+      archetypes: ['primary_question_paper'],
+      aliases: ['PRIMARY_EXAM', 'PRIMARY_QUESTION_PAPER', 'primary_question_paper'],
+      subLayouts: ['exam-primary'],
+      labelBn: 'প্রাথমিক শ্রেণির প্রশ্নপত্র (২য়–৫ম শ্রেণি)',
+      labelEn: 'Primary Grade Question Paper (Class 2–5)',
+      category: 'exam',
+      isNonExam: false,
+      defaultSettings: {
+        paper: 'A4',
+        orientation: 'landscape',
+        columns: 2,
+        booklet: true,
+        copies: 1,
+        fontSizePt: 11,
+        lineSpacing: 1.15,
+        marginsTwips: { top: 720, bottom: 720, left: 720, right: 720 }
+      },
+      allowedOverrides: ALLOWED_OVERRIDES.slice(),
+      whenApplicable: {
+        frontmatterTypes: ['EXAM_PRIMARY'],
+        factsRule: null,
+        heuristics: []
+      },
+      promptFragment: {
+        sectorHint: 'EXAM_PRIMARY',
+        frontmatterFields: ['doc_type', 'grade', 'columns'],
+        instructionsBn: 'প্রাথমিক বিদ্যালয়ের (২য়–৫ম শ্রেণি) ল্যান্ডস্কেপ ২-কলামের প্রশ্নপত্র।'
+      },
+      fixtures: ['primary-class4-bangla.input.md'],
+      sampleTemplateId: 'EXAM_PRIMARY_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_GENERAL', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
+    },
+    {
+      id: 'EXAM_ONECOL',
+      archetypes: ['one_column_exam_paper'],
+      aliases: ['ONECOL_EXAM', 'ONE_COLUMN_EXAM_PAPER', 'one_column_exam_paper'],
+      subLayouts: ['exam-onecol'],
+      labelBn: 'এক কলামের প্রশ্নপত্র (EXAM_ONECOL)',
+      labelEn: 'Single Column Exam Paper',
+      category: 'exam',
+      isNonExam: false,
+      defaultSettings: {
+        paper: 'A4',
+        orientation: 'portrait',
+        columns: 1,
+        booklet: false,
+        copies: 1,
+        fontSizePt: 11,
+        lineSpacing: 1.15,
+        marginsTwips: { top: 720, bottom: 720, left: 720, right: 720 }
+      },
+      allowedOverrides: ALLOWED_OVERRIDES.slice(),
+      whenApplicable: {
+        frontmatterTypes: ['EXAM_ONECOL'],
+        factsRule: null,
+        heuristics: []
+      },
+      promptFragment: {
+        sectorHint: 'EXAM_ONECOL',
+        frontmatterFields: ['doc_type', 'columns', 'profile_key'],
+        instructionsBn: 'এক কলামে লম্বালম্বি (A4 Portrait) প্রশ্নপত্র।'
+      },
+      fixtures: ['math-equations.input.md'],
+      sampleTemplateId: 'EXAM_ONECOL_DEFAULT',
+      parse(input, options) {
+        return parseExamWithQuestionEngine('EXAM_ONECOL', input, options);
+      },
+      renderHtml(model, options) {
+        return renderExamHtmlWithQuestionEngine(model, options);
+      }
     },
     {
       id: 'GOVT_APP',
@@ -1445,7 +1611,7 @@
     }
   };
 
-  // ডিফল্ট CASH_MEMO এন্ট্রি এবং ARCHETYPE_TO_DOCTYPE ও E3 এন্ট্রি নিবন্ধন
+  // ডিফল্ট CASH_MEMO এন্ট্রি এবং ARCHETYPE_TO_DOCTYPE, E3 ও EXAM_* এন্ট্রি নিবন্ধন
   FayzarLayoutRegistry.register(CASH_MEMO_ENTRY);
   for (let i = 0; i < ARCHETYPE_REGISTRY_ENTRIES.length; i++) {
     FayzarLayoutRegistry.register(ARCHETYPE_REGISTRY_ENTRIES[i]);
