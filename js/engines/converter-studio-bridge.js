@@ -18,6 +18,7 @@
   if (typeof BroadcastChannel !== 'undefined') {
     try {
       broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
+      if (broadcastChannel && typeof broadcastChannel.unref === 'function') broadcastChannel.unref();
     } catch (e) {
       // BroadcastChannel unavailable in restricted contexts
     }
@@ -37,6 +38,9 @@
      * @param {HTMLIFrameElement} [targetIframe] - Optional iframe to message directly
      */
     sendToStudio(options, targetIframe = null) {
+      if (faithfulStudioOn() && options && (options.ir || options.faithfulIr)) {
+        return sendFaithfulToStudio(options, targetIframe);
+      }
       if (!options || !options.text) return false;
 
       const payload = {
@@ -83,6 +87,10 @@
      * Gets transfer data if available and fresh
      */
     getTransferData() {
+      if (faithfulStudioOn()) {
+        const fData = getFaithfulTransferData();
+        if (fData) return fData;
+      }
       try {
         const raw = sessionStorage.getItem(TRANSFER_KEY) || localStorage.getItem(TRANSFER_KEY);
         if (!raw) return null;
@@ -101,6 +109,7 @@
      * Clears transfer data
      */
     clearTransferData() {
+      _lastFaithfulTransfer = null;
       try {
         sessionStorage.removeItem(TRANSFER_KEY);
         localStorage.removeItem(TRANSFER_KEY);
@@ -202,6 +211,13 @@
      * Opens studio.html with the document preloaded
      */
     openInStudio(options = {}) {
+      if (faithfulStudioOn() && options && (options.ir || options.faithfulIr)) {
+        this.sendToStudio(options);
+        if (typeof window !== 'undefined' && typeof window.open === 'function') {
+          window.open('studio.html?source=converter&t=' + Date.now(), '_blank');
+        }
+        return;
+      }
       if (options.text) {
         this.sendToStudio(options);
       }
@@ -209,6 +225,204 @@
       window.open(studioUrl, '_blank');
     }
   };
+
+  // WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সেতু সহায়ক (__FZ_ON_FAITHFUL_STUDIO)
+  const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+    || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+
+  let _lastFaithfulTransfer = null;
+
+  function encodeBytesToBase64(u8) {
+    if (!u8 || !(u8 instanceof Uint8Array)) return null;
+    if (typeof Buffer !== 'undefined') return Buffer.from(u8).toString('base64');
+    let bin = '';
+    for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+    return typeof btoa === 'function' ? btoa(bin) : null;
+  }
+
+  function decodeBase64ToBytes(b64) {
+    if (!b64 || typeof b64 !== 'string') return null;
+    const clean = b64.replace(/^data:[^;]+;base64,/i, '').replace(/[^A-Za-z0-9+/=]/g, '');
+    if (typeof Buffer !== 'undefined') return new Uint8Array(Buffer.from(clean, 'base64'));
+    if (typeof atob === 'function') {
+      const bin = atob(clean);
+      const u8 = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      return u8;
+    }
+    return null;
+  }
+
+  function extractSyncBytes(masterDocx) {
+    if (!masterDocx) return null;
+    if (masterDocx._u8 instanceof Uint8Array) return masterDocx._u8;
+    if (masterDocx instanceof Uint8Array) return masterDocx;
+    if (typeof ArrayBuffer !== 'undefined' && masterDocx instanceof ArrayBuffer) return new Uint8Array(masterDocx);
+    if (typeof Buffer !== 'undefined' && Buffer.isBuffer(masterDocx)) return new Uint8Array(masterDocx);
+    if (typeof masterDocx === 'object' && ArrayBuffer.isView(masterDocx)) {
+      return new Uint8Array(masterDocx.buffer, masterDocx.byteOffset, masterDocx.byteLength);
+    }
+    return null;
+  }
+
+  function snapshotIrInBridge(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    const D = (global && global.FayzarFaithfulDocx) || (typeof window !== 'undefined' && window.FayzarFaithfulDocx);
+    if (D && typeof D.snapshotIrLayout === 'function') return D.snapshotIrLayout(ir);
+    const IR = (global && global.FayzarLayoutIR) || (typeof window !== 'undefined' && window.FayzarLayoutIR);
+    if (IR && typeof IR.snapshotIrLayout === 'function') return IR.snapshotIrLayout(ir);
+    ir.pages.forEach((page) => {
+      (page.bands || []).forEach((band) => {
+        (band.cells || []).forEach((cell) => {
+          (cell.items || []).forEach((it) => {
+            if (!it || typeof it !== 'object' || it._fzLayoutSnap) return;
+            it._fzLayoutSnap = {
+              text: it.text != null ? String(it.text) : '',
+              lines: Array.isArray(it.lines) ? it.lines.slice() : null,
+              tabLines: Array.isArray(it.tabLines) ? it.tabLines.slice() : null,
+              rows: Array.isArray(it.rows)
+                ? it.rows.map((r) => (Array.isArray(r) ? r.map((c) => (c && typeof c === 'object' ? Object.assign({}, c) : c)) : r))
+                : null
+            };
+          });
+        });
+      });
+    });
+    return ir;
+  }
+
+  function extractIrBlocksInBridge(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return [];
+    const D = (global && global.FayzarFaithfulDocx) || (typeof window !== 'undefined' && window.FayzarFaithfulDocx);
+    if (D && typeof D.extractBlocks === 'function') return D.extractBlocks(ir);
+    const IR = (global && global.FayzarLayoutIR) || (typeof window !== 'undefined' && window.FayzarLayoutIR);
+    if (IR && typeof IR.extractBlocks === 'function') return IR.extractBlocks(ir);
+    snapshotIrInBridge(ir);
+    const blocks = [];
+    let idx = 0;
+    ir.pages.forEach((page, pi) => {
+      (page.bands || []).forEach((band, bi) => {
+        (band.cells || []).forEach((cell, ci) => {
+          (cell.items || []).forEach((it, ii) => {
+            if (!it || it.kind === 'figure') return;
+            const text = it.kind === 'table'
+              ? (it.rows || []).map((r) => (r || []).map((c) => (c && typeof c === 'object' ? String(c.text || '') : String(c == null ? '' : c))).join('\t')).join('\n')
+              : (Array.isArray(it.tabLines) && it.tabLines.length ? it.tabLines.join('\n') : (Array.isArray(it.lines) && it.lines.length ? it.lines.join('\n') : String(it.text || '')));
+            blocks.push({
+              id: `p${pi}-b${bi}-c${ci}-i${ii}`,
+              index: idx++,
+              pageIndex: pi,
+              bandIndex: bi,
+              cellIndex: ci,
+              itemIndex: ii,
+              kind: it.kind || 'para',
+              type: it.type || (it.kind === 'table' ? 'table' : 'body'),
+              text
+            });
+          });
+        });
+      });
+    });
+    return blocks;
+  }
+
+  function updateIrBlockTextInBridge(ir, target, newText) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    const D = (global && global.FayzarFaithfulDocx) || (typeof window !== 'undefined' && window.FayzarFaithfulDocx);
+    if (D && typeof D.updateBlockText === 'function') return D.updateBlockText(ir, target, newText);
+    const IR = (global && global.FayzarLayoutIR) || (typeof window !== 'undefined' && window.FayzarLayoutIR);
+    if (IR && typeof IR.updateBlockText === 'function') return IR.updateBlockText(ir, target, newText);
+    snapshotIrInBridge(ir);
+    const blocks = extractIrBlocksInBridge(ir);
+    const isNum = typeof target === 'number' || (typeof target === 'string' && /^\d+$/.test(target.trim()));
+    const blk = isNum ? blocks[Number(target)] : blocks.find((b) => b.id === target);
+    if (!blk) return ir;
+    const it = ir.pages[blk.pageIndex].bands[blk.bandIndex].cells[blk.cellIndex].items[blk.itemIndex];
+    if (it.kind === 'table') {
+      const rowLines = Array.isArray(newText) ? newText : String(newText == null ? '' : newText).split('\n');
+      it.rows = (it.rows || []).map((row, rIdx) => {
+        const cols = Array.isArray(rowLines[rIdx]) ? rowLines[rIdx] : (rowLines[rIdx] !== undefined ? String(rowLines[rIdx]).split('\t') : []);
+        return row.map((cellVal, cIdx) => cols[cIdx] !== undefined ? String(cols[cIdx]) : cellVal);
+      });
+    } else {
+      const str = String(newText == null ? '' : newText);
+      it.text = str;
+      if (Array.isArray(it.tabLines) && it.tabLines.length) it.tabLines = str.split('\n');
+      if (Array.isArray(it.lines)) it.lines = str.split('\n');
+    }
+    return ir;
+  }
+
+  function sendFaithfulToStudio(options, targetIframe = null) {
+    const ir = options.ir || options.faithfulIr;
+    snapshotIrInBridge(ir);
+    const resolvedText = options.text || extractIrBlocksInBridge(ir).map((b) => b.text).join('\n\n');
+    const masterDocx = options.masterDocx !== undefined ? options.masterDocx : (options.blob || null);
+    const syncBytes = extractSyncBytes(masterDocx);
+    const masterDocxBase64 = typeof masterDocx === 'string'
+      ? masterDocx
+      : (syncBytes ? encodeBytesToBase64(syncBytes) : (options.masterDocxBase64 || null));
+    const payload = {
+      text: resolvedText,
+      fileName: options.fileName || 'Converted_Document',
+      docType: options.docType || 'AUTO',
+      font: options.font || 'kalpurush',
+      paperSize: options.paperSize || (resolvedText.length > 500 && /সৃজনশীল|বহুনির্বাচনি|MCQ/i.test(resolvedText) ? 'a4-landscape' : 'a4-portrait'),
+      figuresKey: options.figuresKey || null,
+      source: 'fayzar-converter',
+      timestamp: Date.now(),
+      mode: options.mode || 'faithful',
+      ir,
+      masterDocx
+    };
+    if (masterDocxBase64) payload.masterDocxBase64 = masterDocxBase64;
+    const storageJsonPayload = Object.assign({}, payload);
+    if (!masterDocx || !(typeof masterDocx === 'object' && masterDocx.documentXml)) {
+      delete storageJsonPayload.masterDocx;
+    }
+    const jsonStr = JSON.stringify(storageJsonPayload);
+    _lastFaithfulTransfer = { payload, storageJson: jsonStr };
+    try {
+      localStorage.setItem(TRANSFER_KEY, jsonStr);
+      sessionStorage.setItem(TRANSFER_KEY, jsonStr);
+    } catch (e) {}
+    if (broadcastChannel) {
+      try { broadcastChannel.postMessage({ action: 'LOAD_DOCUMENT', payload }); } catch (e) {}
+    }
+    if (targetIframe && targetIframe.contentWindow) {
+      try { targetIframe.contentWindow.postMessage({ action: 'LOAD_DOCUMENT', payload }, '*'); } catch (e) {}
+    }
+    return payload;
+  }
+
+  function getFaithfulTransferData() {
+    let data = null;
+    try {
+      const raw = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(TRANSFER_KEY))
+        || (typeof localStorage !== 'undefined' && localStorage.getItem(TRANSFER_KEY));
+      if (raw) data = JSON.parse(raw);
+    } catch (e) { data = null; }
+    if (!data && _lastFaithfulTransfer && _lastFaithfulTransfer.storageJson) {
+      try { data = JSON.parse(_lastFaithfulTransfer.storageJson); } catch (_) { data = null; }
+    }
+    if (!data || Date.now() - (data.timestamp || 0) >= 48 * 3600 * 1000) return null;
+    if (data.ir) {
+      snapshotIrInBridge(data.ir);
+      if (!data.masterDocx) {
+        if (_lastFaithfulTransfer && _lastFaithfulTransfer.payload && _lastFaithfulTransfer.payload.timestamp === data.timestamp && _lastFaithfulTransfer.payload.masterDocx) {
+          data.masterDocx = _lastFaithfulTransfer.payload.masterDocx;
+        } else if (data.masterDocxBase64) {
+          data.masterDocx = decodeBase64ToBytes(data.masterDocxBase64);
+        }
+      }
+    }
+    return data;
+  }
+
+  Object.defineProperties(ConverterStudioBridge, {
+    extractIrBlocks: { value: extractIrBlocksInBridge, enumerable: false },
+    updateIrBlockText: { value: updateIrBlockTextInBridge, enumerable: false }
+  });
 
   global.ConverterStudioBridge = ConverterStudioBridge;
   if (typeof module !== 'undefined' && module.exports) {

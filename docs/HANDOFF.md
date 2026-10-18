@@ -1,9 +1,12 @@
-# হ্যান্ডঅফ — ২০২৬-১০-১৮ (গভীর রাত)
-- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md শুরুর "ট্যাব-নিয়ম" (অ্যাকাউন্ট-ভিত্তিক `--acct`, background, অনুমতি নয়, থামা নয়, পুরোনো-ভিত্তি বিপদ)। কোড Gemini লেখে; Claude বান্ডেল/যাচাই/বসানো/push। F1–F3/H-এর অনুমতি আছে।
-- শুরু: bridge (পোর্ট 18765; EADDRINUSE = আগেই চালু) → `node tools/gemini-tabs-state.mjs` → `node tools/gemini-round.mjs list` → `watch --every 240 --stop-on-file` (bg)।
-- বসানো-ধাপ: inbox → scratchpad → cmp → সুইচ-চিহ্ন grep → ব্যাকআপ scratch/backups/ → বসাও → টেস্ট → `run-all` → push।
-- **builder-ক্রম:** u/7 B_TABLE_REBASE_v9 চলছে (১৬:৩৫Z পাঠানো) → এলে বসাও → F3 rebase (in/A1_F3_REBASE_v8, u/1) → A1_F1_PAGEFIT_FIX_v6 (u/1) → F2_WIRE FIX (stage_f2w8; u/0)। শেষ দুটো studio-controller ছোঁয়, একটার পর একটা।
-- ফাঁকা u/5, u/6: পরের প্রস্তাব u/6-এ D1–D4 puppeteer E2E টেস্ট (builder ছোঁয় না; ফাইল: index.html, js/result-relayout.js, tests/result-relayout.test.mjs, নমুনা tests/studio-edit-e2e.test.mjs) — বান্ডেল এখনো বানানো হয়নি।
-- WORK_PLAN-এর ☐/◐ ১০-১৮ রাতে কোড দেখে হালনাগাদ করা।
-- **হুবহু স্কোর:** চালাতে `node serve.js` (bg, 3008) + `$env:ASIS_DIR="$env:USERPROFILE\Downloads"` → `node qa/golden/asis-score.mjs --ids f1`। ১০-১৮: f1 ৬৯.০→**৮০.৭** (লেআউট ৭৪, পাতা ৩/৩)। ২১টির শেষ-মাপা গড় ৭৭.১ (১০-১৪…১৬)। মূল PDF শুধু f1-এর আছে; "AS it IS" ফোল্ডার নেই ⇒ বাকি ২০টির নতুন মাপ সম্ভব নয়।
-- বাকি সিদ্ধান্ত (ব্যবহারকারী): "AS it IS" নমুনা-ফোল্ডার ফেরত দেওয়া; H — ক্যাশমেমো ৯/১০pt, পুরোনো ফোল্ডার মোছা; OCR-প্রক্সি deploy কবে; সুইচ ডিফল্ট-চালু।
+# হ্যান্ডঅফ — ২০২৬-১০-১৮ (রাত ১১:৫০)
+- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md "ট্যাব-নিয়ম"। কোড Gemini লেখে; Claude বান্ডেল/যাচাই/বসানো/push। F1–F3/H-এর অনুমতি আছে।
+- শুরু: `node gemini-bridge-extension/bridge_server.mjs` (bg; EADDRINUSE = আগেই চালু) → `node tools/gemini-tabs-state.mjs` → `node tools/gemini-round.mjs list` → `watch --every 240 --stop-on-file` (bg)।
+- **নতুন চ্যাটে পাঠানোর নিয়ম (১০-১৮ শিক্ষা):** `/navigate-tab?tabIndex=N&url=…/u/N/app` → ~১০ সে. অপেক্ষা → `/switch-mode?tabId=<id>&mode=Argon` (id: `/tabs`) → `send --acct N --file … --force`। পাতা পুরো লোডের আগে পাঠালে Task-চিপ বাছাই হয় না ⇒ Chat/Flash-এ জিপ পড়তে পারে না। চলমান কাজের ট্যাবে কখনো navigate নয়।
+- **চলছে (২৩:৪০-এ পাঠানো, ব্যবহারকারী নিশ্চিত করেছেন ৪টিই চলছে):** u/1 A1_F3_REBASE_v10 (শুধু builder+layout-ir ফেরত; বাকি ৬ ফাইল v8 থেকে: `…\f50c5ff8-…\scratchpad\in\A1_F3_REBASE_v8`), u/2 D_E2E_v10, u/3 T_ROWCHECK_FLAKY_v10, u/0 Q_ASIS_SCORE_v10। বান্ডেল/স্টেজ: scratch/bundles/stage_f3r10, stage_de2e, stage_rowflaky, stage_asis।
+- রিসেট: u/5 ২৩:৫১, u/4 ২৩:৫৯, u/6 ০১:৪৯, u/7 ০২:১৫ (সাপ্তাহিক রিসেট ২৫ অক্টো.)।
+- **পরের সারি:** F3 বসলে → A1_F1_PAGEFIT_FIX_v6 (prompts + stage_f1) → F2_WIRE FIX (stage_f2w8; ভাঙে `studio-layout-parity`) — দুটোই studio-controller, একটার পর একটা, ফাঁকা অ্যাকাউন্টে। তারপর B3/B4 স্কোর মেপে ডিফল্ট-চালু (নমুনা লাগবে)।
+- বসানো-ধাপ: inbox → scratchpad → cmp → বান্ডেলের ফাইলগুলোতেই সুইচ-গণনা মেলাও → ব্যাকআপ scratch/backups/ → বসাও (জিপের README প্রজেক্ট README-তে নয়) → টেস্ট → run-all → `node scratch/github_sync.js --push`।
+- শেষ push 75ad34f (B টেবিল-গ্রিড)। run-all ২৩৬৯/১ (row-check §৮ সময়-গেট লোডে; u/3 ঠিক করছে)।
+- **হুবহু স্কোর:** `node serve.js` (bg) + `$env:ASIS_DIR="$env:USERPROFILE\Downloads"` → `node qa/golden/asis-score.mjs --ids f1`। f1 ৮০.৭ (আগে ৬৯.০); ২১টির পুরোনো গড় ৭৭.১। মূল PDF শুধু f1-এর আছে।
+- **নমুনা হারিয়েছে:** "AS it IS" স্থায়ীভাবে মোছা (অন্য পিসিতেও নেই)। ব্যবহারকারী নতুন নমুনা আনবেন → রাখা হবে প্রজেক্টের `samples/asis/` (push-বাদ) + আলাদা ব্যাকআপ; নতুন manifest + `--capture` (Gemini খরচ) দিয়ে নতুন ভিত্তিরেখা। পুরোনো ২১টির ক্যাপচার/স্কোর qa/golden-data/asis-এ শুধু ইতিহাস।
+- বাকি সিদ্ধান্ত (ব্যবহারকারী): ক্যাশমেমো ৯/১০pt; পুরোনো ফোল্ডার মোছা; OCR-প্রক্সি deploy; সুইচ ডিফল্ট-চালু।

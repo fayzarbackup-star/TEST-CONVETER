@@ -4,6 +4,383 @@
  * Floating Selection Mini-Toolbar, Dual-Theme Workspace, and Board Typesetting.
  */
 
+/**
+ * Fayzar Publishing Studio - Microsoft Word Office Suite Controller
+ * Orchestrates authentic Office Ribbon Tabs, Dual Rulers, Live WYSIWYG Editing,
+ * Floating Selection Mini-Toolbar, Dual-Theme Workspace, and Board Typesetting.
+ */
+
+// WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সুইচ ও সহায়ক ইঞ্জিন (__FZ_ON_FAITHFUL_STUDIO)
+(function (global) {
+  'use strict';
+
+  function faithfulStudioOn() {
+    return !!(
+      (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_FAITHFUL_STUDIO) ||
+      (typeof window !== 'undefined' && window.__FZ_ON_FAITHFUL_STUDIO) ||
+      (typeof process !== 'undefined' && process.env && process.env.FZ_ON &&
+        process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'))
+    );
+  }
+
+  function escFaithfulHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function getDocxBuilder() {
+    if (typeof FayzarFaithfulDocx !== 'undefined' && FayzarFaithfulDocx) return FayzarFaithfulDocx;
+    if (global && global.FayzarFaithfulDocx) return global.FayzarFaithfulDocx;
+    return null;
+  }
+
+  function getLayoutIrEngine() {
+    if (typeof FayzarLayoutIR !== 'undefined' && FayzarLayoutIR) return FayzarLayoutIR;
+    if (global && global.FayzarLayoutIR) return global.FayzarLayoutIR;
+    return null;
+  }
+
+  function getDocxPreviewEngine() {
+    if (typeof FayzarDocxPreview !== 'undefined' && FayzarDocxPreview) return FayzarDocxPreview;
+    if (global && global.FayzarDocxPreview) return global.FayzarDocxPreview;
+    return null;
+  }
+
+  function getExportEngine() {
+    if (typeof FayzarExport !== 'undefined' && FayzarExport) return FayzarExport;
+    if (global && global.FayzarExport) return global.FayzarExport;
+    return null;
+  }
+
+  function getBridgeEngine() {
+    if (typeof ConverterStudioBridge !== 'undefined' && ConverterStudioBridge) return ConverterStudioBridge;
+    if (global && global.ConverterStudioBridge) return global.ConverterStudioBridge;
+    return null;
+  }
+
+  function snapshotFaithfulIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    const D = getDocxBuilder();
+    if (D && typeof D.snapshotIrLayout === 'function') return D.snapshotIrLayout(ir);
+    const IR = getLayoutIrEngine();
+    if (IR && typeof IR.snapshotIrLayout === 'function') return IR.snapshotIrLayout(ir);
+    ir.pages.forEach((page) => {
+      (page.bands || []).forEach((band) => {
+        (band.cells || []).forEach((cell) => {
+          (cell.items || []).forEach((it) => {
+            if (!it || typeof it !== 'object' || it._fzLayoutSnap) return;
+            it._fzLayoutSnap = {
+              text: it.text != null ? String(it.text) : '',
+              lines: Array.isArray(it.lines) ? it.lines.slice() : null,
+              tabLines: Array.isArray(it.tabLines) ? it.tabLines.slice() : null,
+              rows: Array.isArray(it.rows)
+                ? it.rows.map((r) => (Array.isArray(r) ? r.map((c) => (c && typeof c === 'object' ? Object.assign({}, c) : c)) : r))
+                : null
+            };
+          });
+        });
+      });
+    });
+    return ir;
+  }
+
+  function extractFaithfulBlocks(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return [];
+    snapshotFaithfulIr(ir);
+    const D = getDocxBuilder();
+    if (D && typeof D.extractBlocks === 'function') return D.extractBlocks(ir);
+    const IR = getLayoutIrEngine();
+    if (IR && typeof IR.extractBlocks === 'function') return IR.extractBlocks(ir);
+    const B = getBridgeEngine();
+    if (B && typeof B.extractIrBlocks === 'function') return B.extractIrBlocks(ir);
+    const blocks = [];
+    let idx = 0;
+    ir.pages.forEach((page, pi) => {
+      (page.bands || []).forEach((band, bi) => {
+        (band.cells || []).forEach((cell, ci) => {
+          (cell.items || []).forEach((it, ii) => {
+            if (!it || it.kind === 'figure') return;
+            const text = it.kind === 'table'
+              ? (it.rows || []).map((r) => (r || []).map((c) => (c && typeof c === 'object' ? String(c.text || '') : String(c == null ? '' : c))).join('\t')).join('\n')
+              : (Array.isArray(it.tabLines) && it.tabLines.length ? it.tabLines.join('\n') : (Array.isArray(it.lines) && it.lines.length ? it.lines.join('\n') : String(it.text || '')));
+            blocks.push({
+              id: `p${pi}-b${bi}-c${ci}-i${ii}`,
+              index: idx++,
+              pageIndex: pi,
+              bandIndex: bi,
+              cellIndex: ci,
+              itemIndex: ii,
+              kind: it.kind || 'para',
+              type: it.type || (it.kind === 'table' ? 'table' : 'body'),
+              text
+            });
+          });
+        });
+      });
+    });
+    return blocks;
+  }
+
+  function updateFaithfulBlockText(ir, target, newText) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    snapshotFaithfulIr(ir);
+    const D = getDocxBuilder();
+    if (D && typeof D.updateBlockText === 'function') return D.updateBlockText(ir, target, newText);
+    const IR = getLayoutIrEngine();
+    if (IR && typeof IR.updateBlockText === 'function') return IR.updateBlockText(ir, target, newText);
+    const B = getBridgeEngine();
+    if (B && typeof B.updateIrBlockText === 'function') return B.updateIrBlockText(ir, target, newText);
+    return ir;
+  }
+
+  /**
+   * WORK_PLAN F3: যদি FayzarDocxPreview না থাকে বা নিষ্ক্রিয় থাকে, তবে IR থেকে সহজ HTML প্রিভিউ তৈরি।
+   */
+  function renderSimpleFaithfulHtml(ir, containerEl) {
+    if (!ir || !Array.isArray(ir.pages)) return '';
+    const PT_PX = 4 / 3;
+    const alignMap = { l: 'left', c: 'center', r: 'right', j: 'justify' };
+    let blkIdx = 0;
+    const pagesHtml = ir.pages.map((page, pi) => {
+      const wPx = Math.round((page.widthPt || 595.3) * PT_PX);
+      const hPx = Math.round((page.heightPt || 841.9) * PT_PX);
+      const m = page.margins || { top: 54, right: 54, bottom: 54, left: 54 };
+      const pad = `${Math.round((m.top || 54) * PT_PX)}px ${Math.round((m.right || 54) * PT_PX)}px ${Math.round((m.bottom || 54) * PT_PX)}px ${Math.round((m.left || 54) * PT_PX)}px`;
+      const bandsHtml = (page.bands || []).map((band, bi) => {
+        const renderItem = (it, ci, ii) => {
+          if (!it) return '';
+          if (it.kind === 'figure') {
+            const src = it.image && it.image.dataUrl ? escFaithfulHtml(it.image.dataUrl) : '';
+            const fw = Math.round((it.widthPt || 100) * PT_PX);
+            return src ? `<div class="fz-fig"><img src="${src}" style="width:${fw}px;height:auto;" alt="figure"/></div>` : '';
+          }
+          const bId = `p${pi}-b${bi}-c${ci}-i${ii}`;
+          const bIndex = blkIdx++;
+          if (it.kind === 'table') {
+            const trs = (it.rows || []).map((r) => {
+              const tds = (r || []).map((c) => {
+                const txt = c && typeof c === 'object' ? (c.text || '') : String(c == null ? '' : c);
+                return `<td style="border:1px solid #000;padding:2px 4px;">${escFaithfulHtml(txt)}</td>`;
+              }).join('');
+              return `<tr>${tds}</tr>`;
+            }).join('');
+            return `<table class="fz-table" data-block-id="${bId}" data-block-index="${bIndex}" style="border-collapse:collapse;width:100%;font-size:${it.fontPt || 11}pt;"><tbody>${trs}</tbody></table>`;
+          }
+          const txt = Array.isArray(it.tabLines) && it.tabLines.length
+            ? it.tabLines.join('\n')
+            : (Array.isArray(it.lines) && it.lines.length ? it.lines.join('\n') : String(it.text || ''));
+          const st = [
+            `font-size:${it.fontPt || 12}pt`,
+            `text-align:${alignMap[it.align] || 'left'}`,
+            it.bold ? 'font-weight:bold' : '',
+            it.italic ? 'font-style:italic' : '',
+            it.underline ? 'text-decoration:underline' : '',
+            it.indentPt ? `margin-left:${Math.round(it.indentPt * PT_PX)}px` : '',
+            it.spaceBeforePt ? `margin-top:${Math.round(it.spaceBeforePt * PT_PX)}px` : 'margin-top:0',
+            'margin-bottom:0'
+          ].filter(Boolean).join(';');
+          return `<p class="fz-p" data-fz-p="${bIndex}" data-block-id="${bId}" data-block-index="${bIndex}" style="${st}">${escFaithfulHtml(txt).replace(/\n/g, '<br/>')}</p>`;
+        };
+        if (band.kind === 'grid' && Array.isArray(band.cells) && band.cells.length > 1) {
+          const colsHtml = band.cells.map((c, ci) => {
+            const cwPt = Math.max(20, (c.x1 || 0) - (c.x0 || 0));
+            const inner = (c.items || []).map((it, ii) => renderItem(it, ci, ii)).join('');
+            return `<div class="fz-grid-cell" style="flex:0 0 ${Math.round(cwPt * PT_PX)}px;">${inner}</div>`;
+          }).join('');
+          return `<div class="fz-grid-band" style="display:flex;align-items:flex-start;">${colsHtml}</div>`;
+        }
+        const cell0 = (band.cells && band.cells[0]) || { items: [] };
+        return (cell0.items || []).map((it, ii) => renderItem(it, 0, ii)).join('');
+      }).join('');
+      return `<div class="fz-page paper-sheet faithful-fallback-page" data-page="${pi + 1}" style="width:${wPx}px;min-height:${hPx}px;padding:${pad};background:#fff;box-sizing:border-box;">${bandsHtml}</div>`;
+    }).join('');
+    if (containerEl && typeof containerEl === 'object') {
+      containerEl.innerHTML = pagesHtml;
+    }
+    return pagesHtml;
+  }
+
+  /**
+   * WORK_PLAN F3: বামের প্যানেলে IR-এর সম্পাদনাযোগ্য ব্লকের লেখা-তালিকা রেন্ডার।
+   */
+  function renderBlockListDom(ir, listContainerEl, onBlockChange) {
+    if (!faithfulStudioOn() || !ir) return [];
+    const blocks = extractFaithfulBlocks(ir);
+    if (!listContainerEl) return blocks;
+    const html = blocks.map((b) => {
+      const kindLbl = b.kind === 'table' ? 'ছক' : 'অনুচ্ছেদ';
+      return `<div class="faithful-block-item" data-block-id="${b.id}" data-block-index="${b.index}">` +
+        `<label class="faithful-block-label">পাতা ${b.pageIndex + 1} • ব্লক ${b.index + 1} (${kindLbl})</label>` +
+        `<textarea class="faithful-block-input" data-block-id="${b.id}" data-block-index="${b.index}" rows="${Math.max(1, String(b.text || '').split('\n').length)}">${escFaithfulHtml(b.text)}</textarea>` +
+        `</div>`;
+    }).join('');
+    listContainerEl.innerHTML = html;
+    if (typeof listContainerEl.querySelectorAll === 'function') {
+      const inputs = Array.from(listContainerEl.querySelectorAll('.faithful-block-input'));
+      inputs.forEach((inp, i) => {
+        if (blocks[i]) inp.value = blocks[i].text;
+        if (typeof inp.addEventListener === 'function' && typeof onBlockChange === 'function') {
+          const handler = (ev) => {
+            const val = ev && ev.target && ev.target.value !== undefined ? ev.target.value : inp.value;
+            const idAttr = (typeof inp.getAttribute === 'function' && inp.getAttribute('data-block-id')) || (blocks[i] && blocks[i].id) || i;
+            onBlockChange(idAttr, val, blocks[i]);
+          };
+          inp.addEventListener('input', handler);
+          inp.addEventListener('change', handler);
+        }
+      });
+    }
+    return blocks;
+  }
+
+  // স্টুডিওর সক্রিয় হুবহু-মোড সেশন স্টেট (DOM ও হেডলেস টেস্ট উভয় পরিবেশে কাজ করে)
+  const _faithfulSession = {
+    ir: null,
+    masterDocx: null,
+    fileName: 'Document',
+    previewContainer: null,
+    blockListContainer: null,
+    inputText: null,
+    lastPreviewSource: null
+  };
+
+  async function renderFaithfulSessionPreview(opts) {
+    if (!faithfulStudioOn() || !_faithfulSession.ir) return null;
+    const o = opts || {};
+    const previewEl = o.previewContainer || _faithfulSession.previewContainer;
+    const D = getDocxBuilder();
+    if (!_faithfulSession.masterDocx && D && typeof D.build === 'function') {
+      _faithfulSession.masterDocx = await D.build(_faithfulSession.ir, o);
+    }
+    const P = getDocxPreviewEngine();
+    const canUseDocxPreview = P && typeof P.render === 'function' && global.__FZ_ON_DOCX_PREVIEW !== false && _faithfulSession.masterDocx;
+    if (canUseDocxPreview) {
+      try {
+        const res = await P.render(_faithfulSession.masterDocx, previewEl, o);
+        if (res && res.html) {
+          _faithfulSession.lastPreviewSource = 'docx-preview';
+          return { mode: 'docx-preview', html: res.html, pageCount: res.pageCount, pages: res.pages, masterDocx: _faithfulSession.masterDocx };
+        }
+      } catch (err) {
+        // FayzarDocxPreview ব্যর্থ হলে সহজ HTML ফলব্যাক
+      }
+    }
+    const fallbackHtml = renderSimpleFaithfulHtml(_faithfulSession.ir, previewEl);
+    _faithfulSession.lastPreviewSource = 'simple-html';
+    return { mode: 'simple-html', html: fallbackHtml, pageCount: (_faithfulSession.ir.pages || []).length, masterDocx: _faithfulSession.masterDocx };
+  }
+
+  async function loadFaithfulIntoStudio(payload, domOpts) {
+    if (!faithfulStudioOn()) return null;
+    const data = payload || (getBridgeEngine() ? getBridgeEngine().getTransferData() : null);
+    if (!data || (!data.ir && !data.faithfulIr)) return null;
+    const dOpts = domOpts || {};
+    const rawIr = data.ir || data.faithfulIr;
+    _faithfulSession.ir = JSON.parse(JSON.stringify(rawIr));
+    snapshotFaithfulIr(_faithfulSession.ir);
+    _faithfulSession.masterDocx = data.masterDocx || null;
+    _faithfulSession.fileName = data.fileName || 'Converted_Document';
+    if (dOpts.previewContainer) _faithfulSession.previewContainer = dOpts.previewContainer;
+    if (dOpts.blockListContainer) _faithfulSession.blockListContainer = dOpts.blockListContainer;
+    if (dOpts.inputText) _faithfulSession.inputText = dOpts.inputText;
+
+    const blocks = renderBlockListDom(_faithfulSession.ir, _faithfulSession.blockListContainer, (blockId, newVal) => {
+      updateFaithfulStudioBlock(blockId, newVal);
+    });
+    if (_faithfulSession.inputText) {
+      _faithfulSession.inputText.value = data.text || blocks.map((b) => b.text).join('\n\n');
+    }
+    const prevRes = await renderFaithfulSessionPreview(dOpts);
+    return {
+      ir: _faithfulSession.ir,
+      masterDocx: _faithfulSession.masterDocx,
+      blocks,
+      preview: prevRes
+    };
+  }
+
+  async function updateFaithfulStudioBlock(target, newText, opts) {
+    if (!faithfulStudioOn() || !_faithfulSession.ir) return null;
+    updateFaithfulBlockText(_faithfulSession.ir, target, newText);
+    const blocks = extractFaithfulBlocks(_faithfulSession.ir);
+    if (_faithfulSession.inputText) {
+      _faithfulSession.inputText.value = blocks.map((b) => b.text).join('\n\n');
+    }
+    if (_faithfulSession.blockListContainer && typeof _faithfulSession.blockListContainer.querySelectorAll === 'function') {
+      const inputs = Array.from(_faithfulSession.blockListContainer.querySelectorAll('.faithful-block-input'));
+      inputs.forEach((inp, idx) => {
+        if (blocks[idx] && inp.value !== blocks[idx].text) inp.value = blocks[idx].text;
+      });
+    }
+    const D = getDocxBuilder();
+    if (D && typeof D.build === 'function') {
+      _faithfulSession.masterDocx = await D.build(_faithfulSession.ir, opts || {});
+    }
+    const preview = await renderFaithfulSessionPreview(opts);
+    return {
+      ir: _faithfulSession.ir,
+      masterDocx: _faithfulSession.masterDocx,
+      blocks,
+      preview
+    };
+  }
+
+  async function rebuildAndExportFaithful(format, font, extraOpts) {
+    if (!faithfulStudioOn() || !_faithfulSession.ir) return null;
+    // বামের ব্লক-ইনপুটে কোনো অসংরক্ষিত পরিবর্তন থাকলে সিঙ্ক করা
+    if (_faithfulSession.blockListContainer && typeof _faithfulSession.blockListContainer.querySelectorAll === 'function') {
+      const inputs = Array.from(_faithfulSession.blockListContainer.querySelectorAll('.faithful-block-input'));
+      const curBlocks = extractFaithfulBlocks(_faithfulSession.ir);
+      inputs.forEach((inp, idx) => {
+        if (curBlocks[idx] && inp.value !== undefined && inp.value !== curBlocks[idx].text) {
+          updateFaithfulBlockText(_faithfulSession.ir, curBlocks[idx].id, inp.value);
+        }
+      });
+    }
+    const D = getDocxBuilder();
+    if (!D || typeof D.build !== 'function') throw new Error('FayzarFaithfulDocx লোড হয়নি');
+    const masterDocx = await D.build(_faithfulSession.ir, Object.assign({ fileName: _faithfulSession.fileName }, extraOpts || {}));
+    _faithfulSession.masterDocx = masterDocx;
+    const X = getExportEngine();
+    const fmt = format || 'docx-unicode';
+    const exportFmt = fmt === 'doc' ? 'doc' : ((fmt === 'docx-bijoy' || (fmt === 'docx' && font === 'bijoy')) ? 'docx-bijoy' : (fmt === 'txt' ? 'txt' : 'docx-unicode'));
+    const textOut = extractFaithfulBlocks(_faithfulSession.ir).map((b) => b.text).join('\n\n');
+    if (X && typeof X.produce === 'function') {
+      const res = await X.produce(textOut, Object.assign({}, extraOpts || {}, {
+        format: exportFmt,
+        font: font || 'unicode',
+        fileName: _faithfulSession.fileName || 'Document',
+        masterDocx
+      }));
+      return Object.assign({}, res, { masterDocx, ir: _faithfulSession.ir });
+    }
+    return { blob: masterDocx, format: exportFmt, masterDocx, ir: _faithfulSession.ir };
+  }
+
+  const FayzarStudioFaithful = {
+    isEnabled: faithfulStudioOn,
+    snapshotIr: snapshotFaithfulIr,
+    extractBlocks: extractFaithfulBlocks,
+    updateBlockText: updateFaithfulBlockText,
+    renderSimpleHtml: renderSimpleFaithfulHtml,
+    renderBlockList: renderBlockListDom,
+    loadFromBridge: loadFaithfulIntoStudio,
+    updateBlock: updateFaithfulStudioBlock,
+    renderPreview: renderFaithfulSessionPreview,
+    rebuildAndExport: rebuildAndExportFaithful,
+    getState() { return _faithfulSession; }
+  };
+
+  global.FayzarStudioFaithful = FayzarStudioFaithful;
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = FayzarStudioFaithful;
+  }
+})(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
+
+if (typeof document === 'undefined') globalThis.document = { addEventListener() {}, getElementById() { return null; }, querySelectorAll() { return []; } };
 document.addEventListener('DOMContentLoaded', () => {
   // Elements
   const inputText = document.getElementById('input-text');
@@ -416,7 +793,47 @@ document.addEventListener('DOMContentLoaded', () => {
     return FX ? FX.stripTags(t) : String(t).replace(/[ \t]*\\?\[\\?\[\s*FIG\s*:[^\]\n]*\\?\]\\?\]/gi, '');
   }
 
+  function faithfulStudioOnDom() {
+    return typeof FayzarStudioFaithful !== 'undefined' && FayzarStudioFaithful.isEnabled();
+  }
+
+  function ensureFaithfulBlockListContainer() {
+    if (typeof document === 'undefined') return null;
+    let el = document.getElementById('faithful-block-list');
+    if (!el && inputText && inputText.parentElement && typeof document.createElement === 'function') {
+      el = document.createElement('div');
+      el.id = 'faithful-block-list';
+      el.className = 'faithful-block-list';
+      if (typeof inputText.parentElement.insertBefore === 'function') {
+        inputText.parentElement.insertBefore(el, inputText);
+      } else if (typeof inputText.parentElement.appendChild === 'function') {
+        inputText.parentElement.appendChild(el);
+      }
+    }
+    return el;
+  }
+
   async function updatePreview() {
+    if (faithfulStudioOnDom() && studioState.faithfulIr) {
+      const sess = FayzarStudioFaithful.getState();
+      sess.ir = studioState.faithfulIr;
+      if (studioState.faithfulMasterDocx) sess.masterDocx = studioState.faithfulMasterDocx;
+      sess.previewContainer = previewContainer;
+      sess.inputText = inputText;
+      const prevRes = await FayzarStudioFaithful.renderPreview({ previewContainer });
+      if (prevRes && prevRes.masterDocx) studioState.faithfulMasterDocx = prevRes.masterDocx;
+      if (detectedBadge) {
+        detectedBadge.textContent = 'হুবহু-মোড (Faithful)';
+        detectedBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+      }
+      applyEditModeState();
+      updateRulerMargin(studioState.marginClass);
+      updateStatusBar();
+      updateWordDocTitle();
+      HistoryManager.snapshot();
+      AutoSave.markDirty();
+      return;
+    }
     const raw = withoutFigTags(inputText.value.trim());
     if (!raw) {
       previewContainer.innerHTML = `<div class="text-center py-20 text-slate-400 font-medium"><i class="fas fa-file-word text-5xl mb-3 block text-blue-500/50"></i>বামপাশের বক্সে কোনো প্রশ্নপত্র বা দলিল পেস্ট করুন অথবা উপরের <b>ইনসার্ট ও টেমপ্লেট</b> থেকে নির্বাচন করুন।</div>`;
@@ -589,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = sheets.length || 1;
 
     if (statTotalPages) statTotalPages.textContent = totalPages;
+    if (faithfulStudioOnDom() && studioState.faithfulIr && statTotalPages) statTotalPages.textContent = previewContainer.querySelectorAll('.fz-page, .paper-sheet').length || 1;
     if (statCurrentPage) statCurrentPage.textContent = '১';
 
     if (statWordCount) {
@@ -1134,6 +1552,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Multi-Format Download Suite (Word 2003 .doc / Modern .docx / PDF in Bijoy & Unicode)
   async function downloadDocument(format, font) {
+    if (faithfulStudioOnDom() && studioState.faithfulIr) {
+      try {
+        const sess = FayzarStudioFaithful.getState();
+        sess.ir = studioState.faithfulIr;
+        sess.fileName = studioState.faithfulFileName || 'Document';
+        sess.blockListContainer = ensureFaithfulBlockListContainer();
+        const res = await FayzarStudioFaithful.rebuildAndExport(format, font, layoutOptions());
+        studioState.faithfulMasterDocx = res.masterDocx;
+        try { await finishDownload(res.blob, format, font); } catch (_) {}
+        return res;
+      } catch (err) {
+        console.error('Faithful Download error:', err);
+        showToast('ডাউনলোডে ত্রুটি: ' + err.message, 'error');
+        return null;
+      }
+    }
     const rawWithTags = inputText.value.trim();
     const raw = withoutFigTags(rawWithTags);
     if (raw !== rawWithTags) {
@@ -1549,6 +1983,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Converter Bridge Integration ──────────────────────────────────────
   function loadTransferredDocument(payload) {
+    if (faithfulStudioOnDom()) {
+      const f3Ir = payload && (payload.ir || payload.faithfulIr) ? (payload.ir || payload.faithfulIr) : null;
+      if (f3Ir) {
+        const listEl = ensureFaithfulBlockListContainer();
+        if (listEl && listEl.classList) listEl.classList.remove('hidden');
+        studioState.faithfulIr = JSON.parse(JSON.stringify(f3Ir));
+        FayzarStudioFaithful.snapshotIr(studioState.faithfulIr);
+        studioState.faithfulMasterDocx = payload.masterDocx || null;
+        studioState.faithfulFileName = payload.fileName || 'Converted_Document';
+        const sess = FayzarStudioFaithful.getState();
+        sess.ir = studioState.faithfulIr;
+        sess.masterDocx = studioState.faithfulMasterDocx;
+        sess.fileName = studioState.faithfulFileName;
+        sess.previewContainer = previewContainer;
+        sess.blockListContainer = listEl;
+        sess.inputText = inputText;
+        const blocks = FayzarStudioFaithful.renderBlockList(studioState.faithfulIr, listEl, (blockId, newVal) => {
+          FayzarStudioFaithful.updateBlock(blockId, newVal, { previewContainer }).then((res) => {
+            if (res && res.masterDocx) studioState.faithfulMasterDocx = res.masterDocx;
+            AutoSave.markDirty();
+            HistoryManager.snapshot();
+          });
+        });
+        payload = Object.assign({}, payload, { text: payload.text || blocks.map((b) => b.text).join('\n\n') });
+      } else {
+        studioState.faithfulIr = null;
+        studioState.faithfulMasterDocx = null;
+        const listEl = typeof document !== 'undefined' ? document.getElementById('faithful-block-list') : null;
+        if (listEl && listEl.classList) listEl.classList.add('hidden');
+      }
+    }
     if (!payload || !payload.text) return;
     if (inputText) {
       inputText.value = payload.text;

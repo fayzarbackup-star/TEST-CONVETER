@@ -186,6 +186,9 @@
     return s !== '0' && s !== 'false' && s !== 'none' && s !== 'off';
   }
 
+  const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+    || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+
   /** JSZip ইনস্ট্যান্স খুঁজে বের করা (ব্রাউজার এবং Node উভয় পরিবেশে) */
   function resolveJSZip(opts) {
     if (opts && opts.JSZip) return opts.JSZip;
@@ -198,6 +201,17 @@
           const z = require(p);
           if (z) return z;
         } catch (_) { /* পরের পাথ চেষ্টা */ }
+      }
+    }
+    if (faithfulStudioOn()) {
+      const fb = (global && global.FayzarFaithfulDocx && global.FayzarFaithfulDocx.MiniJSZip)
+        || (typeof window !== 'undefined' && window.FayzarFaithfulDocx && window.FayzarFaithfulDocx.MiniJSZip);
+      if (fb) return fb;
+      if (typeof require === 'function') {
+        try {
+          const d = require('./faithful/faithful-docx-builder.js');
+          if (d && d.MiniJSZip) return d.MiniJSZip;
+        } catch (_) {}
       }
     }
     throw new Error('JSZip পাওয়া যায়নি (js/jszip.min.js লোড করুন বা opts.JSZip দিন)।');

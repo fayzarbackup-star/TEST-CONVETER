@@ -48,9 +48,14 @@
       const studioFit = o.studioFit !== undefined ? !!o.studioFit : !o.masterDocx;
 
       // ১) মাস্টার .docx — Part-17.5: হুবহু-লেআউট মোড নিজের মাস্টার দেয় (opt.masterDocx); না দিলে টেমপ্লেট-পথ
+      const faithfulStudioOn = !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+        || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
       let master;
       if (o.masterDocx) {
         master = o.masterDocx;
+        steps.push('master-docx:faithful');
+      } else if (faithfulStudioOn && o.ir && pick('FayzarFaithfulDocx') && typeof pick('FayzarFaithfulDocx').build === 'function') {
+        master = await pick('FayzarFaithfulDocx').build(o.ir, o);
         steps.push('master-docx:faithful');
       } else {
         const Pipeline = pick('FayzarPipeline');

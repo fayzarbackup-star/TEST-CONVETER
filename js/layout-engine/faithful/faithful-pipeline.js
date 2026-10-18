@@ -460,15 +460,49 @@
     return ir;
   }
 
+  const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+    || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+
+  async function sendToStudio(irOrResult, opts, targetIframe) {
+    if (!faithfulStudioOn()) return false;
+    const o = opts || {};
+    const B = pick('ConverterStudioBridge');
+    const D = pick('FayzarFaithfulDocx');
+    if (!B || typeof B.sendToStudio !== 'function') return false;
+    const isResultObj = irOrResult && typeof irOrResult === 'object' && irOrResult.ir && Array.isArray(irOrResult.ir.pages);
+    const ir = isResultObj ? irOrResult.ir : (irOrResult && Array.isArray(irOrResult.pages) ? irOrResult : o.ir);
+    if (!ir) return false;
+    let masterDocx = (isResultObj && (irOrResult.masterDocx || irOrResult.blob)) || o.masterDocx || null;
+    if (!masterDocx && D && typeof D.build === 'function') {
+      masterDocx = await D.build(ir, o);
+    }
+    const blocks = (D && typeof D.extractBlocks === 'function') ? D.extractBlocks(ir) : [];
+    const text = o.text || blocks.map((b) => b.text).join('\n\n');
+    return B.sendToStudio(Object.assign({}, o, { text, ir, masterDocx, mode: 'faithful' }), targetIframe || null);
+  }
+
+  async function produceWithFaithfulStudio(ir, format, opts, master, X) {
+    const base = (format === 'docx-unicode' || !X)
+      ? { blob: master, format: 'docx-unicode', steps: ['faithful-master'] }
+      : await X.produce('', Object.assign({ format, masterDocx: master }, opts || {}));
+    const out = Object.assign({}, base, { ir, masterDocx: master });
+    if (opts && opts.sendToStudio) await sendToStudio(out, opts, opts.targetIframe || null);
+    return out;
+  }
+
   /** নকশা → ফাইল (format: 'doc' | 'docx-bijoy' | 'docx-unicode') */
   async function produce(ir, format, opts) {
     const D = pick('FayzarFaithfulDocx'), X = pick('FayzarExport');
     const master = await D.build(ir);
+    if (faithfulStudioOn()) return produceWithFaithfulStudio(ir, format, opts, master, X);
     if (format === 'docx-unicode' || !X) return { blob: master, format: 'docx-unicode', steps: ['faithful-master'] };
     return X.produce('', Object.assign({ format, masterDocx: master }, opts || {}));
   }
 
   const FayzarFaithful = { MEASURE_DPI, capture, layout, produce, measureImage, splitFromNeighbor, isPageRangeOn, parsePageRange, filterQueueByRange };
+  Object.defineProperties(FayzarFaithful, {
+    sendToStudio: { value: sendToStudio, enumerable: false }
+  });
   global.FayzarFaithful = FayzarFaithful;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithful;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

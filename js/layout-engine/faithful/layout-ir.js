@@ -28,6 +28,9 @@
   const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
   // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
   const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
+  // WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সুইচ (__FZ_ON_FAITHFUL_STUDIO)
+  const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+    || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -2428,8 +2431,133 @@
     decideBold(pages);
     syncLabelColumns(pages);
     syncTableFonts(pages);
+    if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
+
+  /**
+   * WORK_PLAN F3: স্টুডিওতে লেখা সম্পাদনার আগে প্রতিটি IR আইটেমের মূল লেখা/লাইন কাঠামোর স্ন্যাপশট সংরক্ষণ,
+   * যাতে পরবর্তীতে কেবল লেখা বদলালেও অবস্থান, ফাঁক ও আকারের সব XML অপরিবর্তিত থাকে।
+   */
+  function snapshotIrLayout(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((page) => {
+      (page.bands || []).forEach((band) => {
+        (band.cells || []).forEach((cell) => {
+          (cell.items || []).forEach((it) => {
+            if (!it || typeof it !== 'object' || it._fzLayoutSnap) return;
+            it._fzLayoutSnap = {
+              text: it.text != null ? String(it.text) : '',
+              lines: Array.isArray(it.lines) ? it.lines.slice() : null,
+              tabLines: Array.isArray(it.tabLines) ? it.tabLines.slice() : null,
+              rows: Array.isArray(it.rows)
+                ? it.rows.map((r) => (Array.isArray(r) ? r.map((c) => (c && typeof c === 'object' ? Object.assign({}, c) : c)) : r))
+                : null
+            };
+          });
+        });
+      });
+    });
+    return ir;
+  }
+
+  function itemEditableText(it) {
+    if (!it) return '';
+    if (it.kind === 'table') {
+      return (it.rows || []).map((r) => (r || []).map((c) => {
+        if (c && typeof c === 'object' && !Array.isArray(c)) {
+          return String(c.text != null ? c.text : (c.value != null ? c.value : ''));
+        }
+        return String(c == null ? '' : c);
+      }).join('\t')).join('\n');
+    }
+    if (Array.isArray(it.tabLines) && it.tabLines.length) return it.tabLines.join('\n');
+    if (Array.isArray(it.lines) && it.lines.length) return it.lines.join('\n');
+    return String(it.text == null ? '' : it.text);
+  }
+
+  function extractBlocks(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return [];
+    snapshotIrLayout(ir);
+    const blocks = [];
+    let idx = 0;
+    ir.pages.forEach((page, pi) => {
+      (page.bands || []).forEach((band, bi) => {
+        (band.cells || []).forEach((cell, ci) => {
+          (cell.items || []).forEach((it, ii) => {
+            if (!it || it.kind === 'figure') return;
+            blocks.push({
+              id: `p${pi}-b${bi}-c${ci}-i${ii}`,
+              index: idx++,
+              pageIndex: pi,
+              bandIndex: bi,
+              cellIndex: ci,
+              itemIndex: ii,
+              kind: it.kind || 'para',
+              type: it.type || (it.kind === 'table' ? 'table' : 'body'),
+              text: itemEditableText(it),
+              rect: it.rect ? Object.assign({}, it.rect) : null,
+              fontPt: it.fontPt || 12,
+              align: it.align || 'l',
+              bold: !!it.bold
+            });
+          });
+        });
+      });
+    });
+    return blocks;
+  }
+
+  function updateBlockText(ir, target, newText) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    snapshotIrLayout(ir);
+    let idx = 0;
+    const isNumTarget = typeof target === 'number' || (typeof target === 'string' && /^\d+$/.test(target.trim()));
+    const targetIdx = isNumTarget ? Number(target) : -1;
+    const targetId = typeof target === 'string' && !isNumTarget ? target.trim() : (target && typeof target === 'object' && target.id ? String(target.id) : null);
+
+    for (let pi = 0; pi < ir.pages.length; pi++) {
+      const bands = ir.pages[pi].bands || [];
+      for (let bi = 0; bi < bands.length; bi++) {
+        const cells = bands[bi].cells || [];
+        for (let ci = 0; ci < cells.length; ci++) {
+          const items = cells[ci].items || [];
+          for (let ii = 0; ii < items.length; ii++) {
+            const it = items[ii];
+            if (!it || it.kind === 'figure') continue;
+            const curId = `p${pi}-b${bi}-c${ci}-i${ii}`;
+            const curIdx = idx++;
+            const coordMatch = target && typeof target === 'object'
+              && target.pageIndex === pi && target.bandIndex === bi && target.cellIndex === ci && target.itemIndex === ii;
+            const indexObjMatch = target && typeof target === 'object' && typeof target.index === 'number' && target.index === curIdx;
+            if (curIdx === targetIdx || curId === targetId || coordMatch || indexObjMatch) {
+              if (it.kind === 'table') {
+                const rowLines = Array.isArray(newText) ? newText : String(newText == null ? '' : newText).split('\n');
+                it.rows = (it.rows || []).map((row, rIdx) => {
+                  const cols = Array.isArray(rowLines[rIdx]) ? rowLines[rIdx] : (rowLines[rIdx] !== undefined ? String(rowLines[rIdx]).split('\t') : []);
+                  return row.map((cellVal, cIdx) => {
+                    const nextVal = cols[cIdx] !== undefined ? cols[cIdx] : (cellVal && typeof cellVal === 'object' ? cellVal.text : cellVal);
+                    if (cellVal && typeof cellVal === 'object' && !Array.isArray(cellVal)) {
+                      return Object.assign({}, cellVal, { text: String(nextVal == null ? '' : nextVal) });
+                    }
+                    return String(nextVal == null ? '' : nextVal);
+                  });
+                });
+              } else {
+                const str = String(newText == null ? '' : newText);
+                it.text = str;
+                if (Array.isArray(it.tabLines) && it.tabLines.length) it.tabLines = str.split('\n');
+                if (Array.isArray(it.lines)) it.lines = str.split('\n');
+              }
+              return ir;
+            }
+          }
+        }
+      }
+    }
+    return ir;
+  }
+
 
   /**
    * সিভি (মালিকের স্ক্রিনশট): একই পাতায় বারবার আসা লেবেল-কলাম (একই x, একই লাইন-সংখ্যা, লাইন-অক্ষত, একই হেলানো/শ্রেণি) —
@@ -2561,6 +2689,11 @@
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
     mathLineExtraPt: { value: mathLineExtraPt, enumerable: false }
+  });
+  Object.defineProperties(FayzarLayoutIR, {
+    snapshotIrLayout: { value: snapshotIrLayout, enumerable: false },
+    extractBlocks: { value: extractBlocks, enumerable: false },
+    updateBlockText: { value: updateBlockText, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;

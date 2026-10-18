@@ -26,6 +26,409 @@
   );
   // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
   const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
+  // WORK_PLAN F3 (FAITHFUL #১৭): হুবহু-মোড → স্টুডিও সুইচ (__FZ_ON_FAITHFUL_STUDIO)
+  const faithfulStudioOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)
+    || !!(typeof process !== 'undefined' && process.env && process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FAITHFUL_STUDIO'));
+
+  /**
+   * WORK_PLAN F3: স্টুডিওতে লেখা সম্পাদনার আগে প্রতিটি IR আইটেমের মূল লেখা/লাইন কাঠামোর স্ন্যাপশট সংরক্ষণ,
+   * যাতে কেবল লেখা বদলালেও অবস্থান, ফাঁক ও আকারের সব XML অপরিবর্তিত থাকে।
+   */
+  function snapshotIrLayout(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((page) => {
+      (page.bands || []).forEach((band) => {
+        (band.cells || []).forEach((cell) => {
+          (cell.items || []).forEach((it) => {
+            if (!it || typeof it !== 'object' || it._fzLayoutSnap) return;
+            it._fzLayoutSnap = {
+              text: it.text != null ? String(it.text) : '',
+              lines: Array.isArray(it.lines) ? it.lines.slice() : null,
+              tabLines: Array.isArray(it.tabLines) ? it.tabLines.slice() : null,
+              rows: Array.isArray(it.rows)
+                ? it.rows.map((r) => (Array.isArray(r) ? r.map((c) => (c && typeof c === 'object' ? Object.assign({}, c) : c)) : r))
+                : null
+            };
+          });
+        });
+      });
+    });
+    return ir;
+  }
+
+  function layoutItem(it) {
+    if (!faithfulStudioOn() || !it || !it._fzLayoutSnap) return it;
+    const s = it._fzLayoutSnap;
+    const copy = Object.assign({}, it, {
+      text: s.text,
+      lines: s.lines ? s.lines.slice() : s.lines,
+      tabLines: s.tabLines ? s.tabLines.slice() : s.tabLines
+    });
+    if (s.rows) copy.rows = s.rows.map((r) => (Array.isArray(r) ? r.slice() : r));
+    return copy;
+  }
+
+  function syncEditedTextFields(item) {
+    if (!faithfulStudioOn() || !item || !item._fzLayoutSnap) return item;
+    const s = item._fzLayoutSnap;
+    const curText = item.text != null ? String(item.text) : '';
+    const textChanged = curText !== s.text;
+    const linesSame = Array.isArray(item.lines) && Array.isArray(s.lines)
+      && item.lines.length === s.lines.length && item.lines.every((v, i) => v === s.lines[i]);
+    const tabLinesSame = Array.isArray(item.tabLines) && Array.isArray(s.tabLines)
+      && item.tabLines.length === s.tabLines.length && item.tabLines.every((v, i) => v === s.tabLines[i]);
+    const out = Object.assign({}, item);
+    if (textChanged && linesSame) {
+      out.lines = curText.split('\n');
+    } else if (!textChanged && Array.isArray(item.lines) && (!s.lines || !linesSame)) {
+      out.text = item.lines.join('\n');
+    }
+    if (textChanged && tabLinesSame && Array.isArray(item.tabLines)) {
+      out.tabLines = curText.split('\n');
+    } else if (!textChanged && Array.isArray(item.tabLines) && (!s.tabLines || !tabLinesSame)) {
+      out.text = item.tabLines.join('\n');
+    }
+    return out;
+  }
+
+  function isTableEdited(item) {
+    if (!item || !item._fzLayoutSnap || !Array.isArray(item.rows) || !Array.isArray(item._fzLayoutSnap.rows)) return false;
+    const a = item.rows, b = item._fzLayoutSnap.rows;
+    if (a.length !== b.length) return true;
+    for (let r = 0; r < a.length; r++) {
+      if (!Array.isArray(a[r]) || !Array.isArray(b[r]) || a[r].length !== b[r].length) return true;
+      for (let c = 0; c < a[r].length; c++) {
+        const va = a[r][c] && typeof a[r][c] === 'object' ? a[r][c].text : a[r][c];
+        const vb = b[r][c] && typeof b[r][c] === 'object' ? b[r][c].text : b[r][c];
+        if (String(va == null ? '' : va) !== String(vb == null ? '' : vb)) return true;
+      }
+    }
+    return false;
+  }
+
+  function renderEditedTableXml(item, extraBeforePt, ctx) {
+    const snapRows = item._fzLayoutSnap.rows;
+    const curRows = item.rows;
+    const tokenRows = snapRows.map((r, ri) => r.map((c, ci) => {
+      const origStr = c && typeof c === 'object' ? String(c.text || '') : String(c == null ? '' : c);
+      return origStr;
+    }));
+    const baseItem = Object.assign({}, item, { rows: tokenRows, _fzLayoutSnap: null });
+    let xml = tableXml(baseItem, extraBeforePt, ctx);
+    for (let ri = 0; ri < snapRows.length; ri++) {
+      for (let ci = 0; ci < (snapRows[ri] || []).length; ci++) {
+        const origCell = snapRows[ri][ci];
+        const newCell = curRows[ri] && curRows[ri][ci] !== undefined ? curRows[ri][ci] : origCell;
+        const origStr = origCell && typeof origCell === 'object' ? String(origCell.text || '') : String(origCell == null ? '' : origCell);
+        const newStr = newCell && typeof newCell === 'object' ? String(newCell.text || '') : String(newCell == null ? '' : newCell);
+        if (origStr !== newStr && origStr) {
+          xml = xml.replace(`>${esc(origStr)}</w:t>`, `>${esc(newStr)}</w:t>`);
+        }
+      }
+    }
+    return xml;
+  }
+
+  function extractBlocks(ir) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return [];
+    const IR = pick('FayzarLayoutIR');
+    if (IR && typeof IR.extractBlocks === 'function') return IR.extractBlocks(ir);
+    snapshotIrLayout(ir);
+    const blocks = [];
+    let idx = 0;
+    ir.pages.forEach((page, pi) => {
+      (page.bands || []).forEach((band, bi) => {
+        (band.cells || []).forEach((cell, ci) => {
+          (cell.items || []).forEach((it, ii) => {
+            if (!it || it.kind === 'figure') return;
+            const text = it.kind === 'table'
+              ? (it.rows || []).map((r) => (r || []).map((c) => (c && typeof c === 'object' ? String(c.text || '') : String(c == null ? '' : c))).join('\t')).join('\n')
+              : (Array.isArray(it.tabLines) && it.tabLines.length ? it.tabLines.join('\n') : (Array.isArray(it.lines) && it.lines.length ? it.lines.join('\n') : String(it.text || '')));
+            blocks.push({
+              id: `p${pi}-b${bi}-c${ci}-i${ii}`,
+              index: idx++,
+              pageIndex: pi,
+              bandIndex: bi,
+              cellIndex: ci,
+              itemIndex: ii,
+              kind: it.kind || 'para',
+              type: it.type || (it.kind === 'table' ? 'table' : 'body'),
+              text,
+              rect: it.rect ? Object.assign({}, it.rect) : null,
+              fontPt: it.fontPt || 12,
+              align: it.align || 'l',
+              bold: !!it.bold
+            });
+          });
+        });
+      });
+    });
+    return blocks;
+  }
+
+  function updateBlockText(ir, target, newText) {
+    if (!faithfulStudioOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    const IR = pick('FayzarLayoutIR');
+    if (IR && typeof IR.updateBlockText === 'function') return IR.updateBlockText(ir, target, newText);
+    snapshotIrLayout(ir);
+    let idx = 0;
+    const isNumTarget = typeof target === 'number' || (typeof target === 'string' && /^\d+$/.test(target.trim()));
+    const targetIdx = isNumTarget ? Number(target) : -1;
+    const targetId = typeof target === 'string' && !isNumTarget ? target.trim() : (target && typeof target === 'object' && target.id ? String(target.id) : null);
+    for (let pi = 0; pi < ir.pages.length; pi++) {
+      const bands = ir.pages[pi].bands || [];
+      for (let bi = 0; bi < bands.length; bi++) {
+        const cells = bands[bi].cells || [];
+        for (let ci = 0; ci < cells.length; ci++) {
+          const items = cells[ci].items || [];
+          for (let ii = 0; ii < items.length; ii++) {
+            const it = items[ii];
+            if (!it || it.kind === 'figure') continue;
+            const curId = `p${pi}-b${bi}-c${ci}-i${ii}`;
+            const curIdx = idx++;
+            const coordMatch = target && typeof target === 'object'
+              && target.pageIndex === pi && target.bandIndex === bi && target.cellIndex === ci && target.itemIndex === ii;
+            const indexObjMatch = target && typeof target === 'object' && typeof target.index === 'number' && target.index === curIdx;
+            if (curIdx === targetIdx || curId === targetId || coordMatch || indexObjMatch) {
+              if (it.kind === 'table') {
+                const rowLines = Array.isArray(newText) ? newText : String(newText == null ? '' : newText).split('\n');
+                it.rows = (it.rows || []).map((row, rIdx) => {
+                  const cols = Array.isArray(rowLines[rIdx]) ? rowLines[rIdx] : (rowLines[rIdx] !== undefined ? String(rowLines[rIdx]).split('\t') : []);
+                  return row.map((cellVal, cIdx) => {
+                    const nextVal = cols[cIdx] !== undefined ? cols[cIdx] : (cellVal && typeof cellVal === 'object' ? cellVal.text : cellVal);
+                    if (cellVal && typeof cellVal === 'object' && !Array.isArray(cellVal)) {
+                      return Object.assign({}, cellVal, { text: String(nextVal == null ? '' : nextVal) });
+                    }
+                    return String(nextVal == null ? '' : nextVal);
+                  });
+                });
+              } else {
+                const str = String(newText == null ? '' : newText);
+                it.text = str;
+                if (Array.isArray(it.tabLines) && it.tabLines.length) it.tabLines = str.split('\n');
+                if (Array.isArray(it.lines)) it.lines = str.split('\n');
+              }
+              return ir;
+            }
+          }
+        }
+      }
+    }
+    return ir;
+  }
+
+  // বাহ্যিক নির্ভরতা ছাড়া অফলাইন/Node পরিবেশে .docx ZIP তৈরি ও পড়ার হালকা JSZip বিকল্প
+  const CRC_TABLE = (() => {
+    const t = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[i] = c >>> 0;
+    }
+    return t;
+  })();
+  function crc32Bytes(u8) {
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  function strToU8(str) {
+    if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(String(str));
+    if (typeof Buffer !== 'undefined') return new Uint8Array(Buffer.from(String(str), 'utf8'));
+    const s = unescape(encodeURIComponent(String(str)));
+    const u8 = new Uint8Array(s.length);
+    for (let i = 0; i < s.length; i++) u8[i] = s.charCodeAt(i);
+    return u8;
+  }
+  function u8ToStr(u8) {
+    if (typeof TextDecoder !== 'undefined') return new TextDecoder('utf-8').decode(u8);
+    if (typeof Buffer !== 'undefined') return Buffer.from(u8).toString('utf8');
+    let s = '';
+    for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+    return decodeURIComponent(escape(s));
+  }
+  function b64ToU8(b64) {
+    const clean = String(b64 || '').replace(/^data:[^;]+;base64,/i, '').replace(/[^A-Za-z0-9+/=]/g, '');
+    if (typeof Buffer !== 'undefined') return new Uint8Array(Buffer.from(clean, 'base64'));
+    const bin = atob(clean);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8;
+  }
+  function u8ToB64(u8) {
+    if (typeof Buffer !== 'undefined') return Buffer.from(u8).toString('base64');
+    let bin = '';
+    for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
+    return btoa(bin);
+  }
+  class MiniJSZip {
+    constructor() { this.files = {}; }
+    file(name, data, opts) {
+      const cleanName = String(name || '').replace(/^\/+/, '');
+      if (arguments.length === 1) return this.files[cleanName] || null;
+      let bytes;
+      if (opts && opts.base64) bytes = b64ToU8(data);
+      else if (data instanceof Uint8Array) bytes = new Uint8Array(data);
+      else if (typeof ArrayBuffer !== 'undefined' && data instanceof ArrayBuffer) bytes = new Uint8Array(data);
+      else if (typeof Buffer !== 'undefined' && Buffer.isBuffer(data)) bytes = new Uint8Array(data);
+      else bytes = strToU8(data == null ? '' : String(data));
+      this.files[cleanName] = {
+        name: cleanName,
+        _data: bytes,
+        async(type) {
+          const t = String(type || 'string').toLowerCase();
+          if (t === 'string' || t === 'text') return Promise.resolve(u8ToStr(bytes));
+          if (t === 'base64') return Promise.resolve(u8ToB64(bytes));
+          if (t === 'uint8array') return Promise.resolve(new Uint8Array(bytes));
+          if (t === 'arraybuffer') return Promise.resolve(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+          if (t === 'nodebuffer' && typeof Buffer !== 'undefined') return Promise.resolve(Buffer.from(bytes));
+          return Promise.resolve(bytes);
+        }
+      };
+      return this;
+    }
+    async generateAsync(opts) {
+      const o = opts || {};
+      const entries = Object.keys(this.files).map((k) => {
+        const f = this.files[k];
+        const nameBytes = strToU8(f.name);
+        const dataBytes = f._data;
+        const crc = crc32Bytes(dataBytes);
+        return { nameBytes, dataBytes, crc };
+      });
+      let localSize = 0, cdSize = 0;
+      entries.forEach((e) => {
+        e.offset = localSize;
+        localSize += 30 + e.nameBytes.length + e.dataBytes.length;
+        cdSize += 46 + e.nameBytes.length;
+      });
+      const total = localSize + cdSize + 22;
+      const out = new Uint8Array(total);
+      const dv = new DataView(out.buffer);
+      let p = 0;
+      entries.forEach((e) => {
+        dv.setUint32(p, 0x04034b50, true);
+        dv.setUint16(p + 4, 20, true);
+        dv.setUint16(p + 6, 0x0800, true);
+        dv.setUint16(p + 8, 0, true);
+        dv.setUint16(p + 10, 0, true);
+        dv.setUint16(p + 12, 0, true);
+        dv.setUint32(p + 14, e.crc, true);
+        dv.setUint32(p + 18, e.dataBytes.length, true);
+        dv.setUint32(p + 22, e.dataBytes.length, true);
+        dv.setUint16(p + 26, e.nameBytes.length, true);
+        dv.setUint16(p + 28, 0, true);
+        out.set(e.nameBytes, p + 30);
+        out.set(e.dataBytes, p + 30 + e.nameBytes.length);
+        p += 30 + e.nameBytes.length + e.dataBytes.length;
+      });
+      const cdStart = p;
+      entries.forEach((e) => {
+        dv.setUint32(p, 0x02014b50, true);
+        dv.setUint16(p + 4, 20, true);
+        dv.setUint16(p + 6, 20, true);
+        dv.setUint16(p + 8, 0x0800, true);
+        dv.setUint16(p + 10, 0, true);
+        dv.setUint16(p + 12, 0, true);
+        dv.setUint16(p + 14, 0, true);
+        dv.setUint32(p + 16, e.crc, true);
+        dv.setUint32(p + 20, e.dataBytes.length, true);
+        dv.setUint32(p + 24, e.dataBytes.length, true);
+        dv.setUint16(p + 28, e.nameBytes.length, true);
+        dv.setUint16(p + 30, 0, true);
+        dv.setUint16(p + 32, 0, true);
+        dv.setUint16(p + 34, 0, true);
+        dv.setUint16(p + 36, 0, true);
+        dv.setUint32(p + 38, 0, true);
+        dv.setUint32(p + 42, e.offset, true);
+        out.set(e.nameBytes, p + 46);
+        p += 46 + e.nameBytes.length;
+      });
+      dv.setUint32(p, 0x06054b50, true);
+      dv.setUint16(p + 4, 0, true);
+      dv.setUint16(p + 6, 0, true);
+      dv.setUint16(p + 8, entries.length, true);
+      dv.setUint16(p + 10, entries.length, true);
+      dv.setUint32(p + 12, cdSize, true);
+      dv.setUint32(p + 16, cdStart, true);
+      dv.setUint16(p + 20, 0, true);
+      const t = String(o.type || (typeof Blob !== 'undefined' ? 'blob' : 'uint8array')).toLowerCase();
+      if (t === 'blob' && typeof Blob !== 'undefined') {
+        const blob = new Blob([out], { type: o.mimeType || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+        Object.defineProperty(blob, '_u8', { value: out, enumerable: false });
+        return blob;
+      }
+      if (t === 'base64') return u8ToB64(out);
+      if (t === 'arraybuffer') return out.buffer;
+      if (t === 'nodebuffer' && typeof Buffer !== 'undefined') return Buffer.from(out);
+      return out;
+    }
+    static async loadAsync(input) {
+      let u8;
+      if (!input) throw new Error('খালি ইনপুট');
+      if (input._u8 instanceof Uint8Array) u8 = input._u8;
+      else if (input instanceof Uint8Array) u8 = input;
+      else if (typeof ArrayBuffer !== 'undefined' && input instanceof ArrayBuffer) u8 = new Uint8Array(input);
+      else if (typeof Buffer !== 'undefined' && Buffer.isBuffer(input)) u8 = new Uint8Array(input);
+      else if (typeof Blob !== 'undefined' && input instanceof Blob && typeof input.arrayBuffer === 'function') {
+        u8 = new Uint8Array(await input.arrayBuffer());
+      } else if (typeof input === 'string') {
+        u8 = b64ToU8(input);
+      } else if (typeof input === 'object' && ArrayBuffer.isView(input)) {
+        u8 = new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+      } else {
+        throw new Error('অসমর্থিত ZIP ইনপুট');
+      }
+      const zip = new MiniJSZip();
+      const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+      let eocdPos = -1;
+      for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) {
+        if (dv.getUint32(i, true) === 0x06054b50) { eocdPos = i; break; }
+      }
+      if (eocdPos >= 0) {
+        const count = dv.getUint16(eocdPos + 10, true);
+        let cdPos = dv.getUint32(eocdPos + 16, true);
+        for (let i = 0; i < count && cdPos + 46 <= u8.length; i++) {
+          if (dv.getUint32(cdPos, true) !== 0x02014b50) break;
+          const method = dv.getUint16(cdPos + 10, true);
+          const compSize = dv.getUint32(cdPos + 20, true);
+          const nameLen = dv.getUint16(cdPos + 28, true);
+          const extraLen = dv.getUint16(cdPos + 30, true);
+          const commentLen = dv.getUint16(cdPos + 32, true);
+          const localOff = dv.getUint32(cdPos + 42, true);
+          const name = u8ToStr(u8.subarray(cdPos + 46, cdPos + 46 + nameLen));
+          const lNameLen = dv.getUint16(localOff + 26, true);
+          const lExtraLen = dv.getUint16(localOff + 28, true);
+          const dataStart = localOff + 30 + lNameLen + lExtraLen;
+          const compBytes = u8.subarray(dataStart, dataStart + compSize);
+          let dataBytes = compBytes;
+          if (method === 8 && typeof require === 'function') {
+            try { dataBytes = new Uint8Array(require('zlib').inflateRawSync(compBytes)); } catch (_) {}
+          }
+          if (!name.endsWith('/')) zip.file(name, dataBytes);
+          cdPos += 46 + nameLen + extraLen + commentLen;
+        }
+        return zip;
+      }
+      let pos = 0;
+      while (pos + 30 <= u8.length && dv.getUint32(pos, true) === 0x04034b50) {
+        const method = dv.getUint16(pos + 8, true);
+        const compSize = dv.getUint32(pos + 18, true);
+        const nameLen = dv.getUint16(pos + 26, true);
+        const extraLen = dv.getUint16(pos + 28, true);
+        const name = u8ToStr(u8.subarray(pos + 30, pos + 30 + nameLen));
+        const dataStart = pos + 30 + nameLen + extraLen;
+        const compBytes = u8.subarray(dataStart, dataStart + compSize);
+        let dataBytes = compBytes;
+        if (method === 8 && typeof require === 'function') {
+          try { dataBytes = new Uint8Array(require('zlib').inflateRawSync(compBytes)); } catch (_) {}
+        }
+        if (!name.endsWith('/')) zip.file(name, dataBytes);
+        pos = dataStart + compSize;
+      }
+      return zip;
+    }
+  }
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -478,6 +881,7 @@
 
   // a03 (২০২৬-১০-১২): নিচের-দাগ (layout-ir applyHorizontalRules) — লেখার নিচ থেকে মূলের দূরত্বে (Word-সীমা ≤৩১pt)
   const textH = (it) => {
+    if (faithfulStudioOn()) it = layoutItem(it);
     let n = (it.tabLines || (it.keepLines ? it.lines : null) || it.lines || []).length || 1;
     if (mathHOn() && n === 1 && !it.tabLines && (!it.lines || !it.lines.length) && String(it.text || '').includes('\n')) {
       n = String(it.text).split('\n').length;
@@ -490,6 +894,7 @@
   const ruleExtra = (it) => (it.ruleBelow ? ruleSpace(it) + it.ruleBelow.sz / 8 : 0);
 
   function itemH(it) {
+    if (faithfulStudioOn()) it = layoutItem(it);
     if (formKitOn()) {
       if (it.kind === 'box_row' || it.type === 'box_row' || Array.isArray(it.boxes) || it.boxCount > 0) return (it.heightPt || 18) + 2;
       if (it.kind === 'photo_box' || it.type === 'photo_box' || it.photoBox) return (it.heightPt || (it.rect && it.rect.h) || 105) + 4;
@@ -527,6 +932,7 @@
   // লাইনের লেখা অনুযায়ী: মাত্রার ওপরের চিহ্ন (ি ী ৈ ৌ ঁ রেফ) থাকলে কালি-শুরু ≈০.১১×ফন্ট, না থাকলে মাত্রা-রেখা ≈০.৩৩×ফন্ট
   // (মাপা: ১৮/১২ ফরমের ২৩০ লাইন; a12-এ চিহ্নহীন লাইন সব ৩pt নিচে ছিল); শুধু লাতিন ≈০.২২ (অনুমান)
   const inkOff = (it) => {
+    if (faithfulStudioOn()) it = layoutItem(it);
     if (it.kind !== 'para') return 0;
     const fs = it.fontPt || 12;
     const ls = (it.tabLines && it.tabLines.length) ? it.tabLines : (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n'));
@@ -730,6 +1136,7 @@
   }
 
   function pPr(item, extraBeforePt, sectPrXml) {
+    if (faithfulStudioOn()) item = layoutItem(item);
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
     const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     const before = useEnter || (mathHOn() && item.pageBreakBefore) ? 0 : tw(totalBefore);
@@ -792,6 +1199,7 @@
   }
 
   function paraXml(item, extraBeforePt, ctx) {
+    if (faithfulStudioOn()) item = syncEditedTextFields(item);
     if (item.kind === 'figure') {
       const img = item.image;
       if (!img || !img.dataUrl) return `<w:p>${pPr(Object.assign({}, item, { align: 'l' }), extraBeforePt)}</w:p>`;
@@ -1146,6 +1554,7 @@
       if (exPt > 0 && exPt < curFs * 0.92) {
         capHalf = Math.min(capHalf, Math.max(4, Math.floor((exPt / 0.92) * 2)));
       }
+      if (faithfulStudioOn() && item._fzLayoutSnap) { const li = layoutItem(item); rawText = (li.tabLines && li.tabLines.length) ? li.tabLines.join('\n') : (li.lines && li.lines.length ? li.lines.join(li.keepLines && li.lines.length > 1 ? '\n' : ' ') : String(li.text || '')); }
       const s = String(rawText || '');
       const hasFill = /([._\-…·─━═])\1{3,}/.test(s) && !/^[─━═=_]{6,}$/.test(s.replace(/\s+/g, ''));
       if (hasFill || hasLeadTab) {
@@ -1246,6 +1655,7 @@
   }
 
   function tableXml(item, extraBeforePt, ctx) {
+    if (faithfulStudioOn() && isTableEdited(item)) return renderEditedTableXml(item, extraBeforePt, ctx);
     // B2: পাশাপাশি ছোট ছোট বাক্স (মাঝে ফাঁকসহ) — প্রতিটি বাক্সের নিজস্ব ৪-পাশের বর্ডার এবং মাঝের ফাঁকা ঘর বর্ডারহীন
     if (tableGridOn() && Array.isArray(item.smallBoxesPt) && item.smallBoxesPt.length >= 2 && item.rows && item.rows.length === 1 && item.rows[0].length === item.smallBoxesPt.length) {
       const sbs = item.smallBoxesPt;
@@ -1885,6 +2295,7 @@
 
   /** নকশা → document.xml-এর body এবং মিডিয়া */
   function bodyXml(ir, opts) {
+    if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
     try {
@@ -1962,6 +2373,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
+    if (faithfulStudioOn() && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -1984,6 +2396,12 @@
     mathKindOf: { value: mathKindOf, enumerable: false },
     mathLineExtraPt: { value: mathLineExtraPt, enumerable: false },
     mathExtraH: { value: mathExtraH, enumerable: false }
+  });
+  Object.defineProperties(FayzarFaithfulDocx, {
+    snapshotIrLayout: { value: snapshotIrLayout, enumerable: false },
+    extractBlocks: { value: extractBlocks, enumerable: false },
+    updateBlockText: { value: updateBlockText, enumerable: false },
+    MiniJSZip: { value: MiniJSZip, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;
