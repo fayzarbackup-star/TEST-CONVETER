@@ -88,6 +88,39 @@
     return {};
   }
 
+  // গ্লোবাল বা require থেকে লেআউট মডিউল লোড করার সহায়ক ফাংশন (E3 লেআউটসমূহের জন্য)
+  function getLayoutModule(globalName, relPath) {
+    const root = getGlobalRoot();
+    if (root && root[globalName]) return root[globalName];
+    if (typeof window !== 'undefined' && window[globalName]) return window[globalName];
+    if (typeof global !== 'undefined' && global[globalName]) return global[globalName];
+    if (relPath && typeof require === 'function') {
+      try {
+        return require(relPath);
+      } catch (e) {}
+    }
+    return null;
+  }
+
+  // ইনপুট স্ট্রিং বা পাইপলাইন অবজেক্ট থেকে মূল টেক্সট ও অপশন বের করার সহায়ক ফাংশন
+  function unpackParseArgs(input, options) {
+    if (typeof input === 'object' && input !== null) {
+      const rawText = String(input.rawMarkdown ?? input.rawText ?? input.text ?? input.bodyMarkdown ?? '');
+      const callOpts = Object.assign(
+        {},
+        input.settings || {},
+        input.options || {},
+        input.frontmatter ? { __frontmatter: input.frontmatter } : {},
+        typeof options === 'object' && options !== null ? options : {}
+      );
+      return { rawText, callOpts };
+    }
+    return {
+      rawText: String(input == null ? '' : input),
+      callOpts: typeof options === 'object' && options !== null ? options : {}
+    };
+  }
+
   // ডিফল্ট সেটিংসের গভীর অনুলিপি (Deep Copy) তৈরি ও ফ্রন্টম্যাটার ওভাররাইড প্রয়োগ
   function buildEffectiveSettings(defaultSettings, frontmatter) {
     const base = defaultSettings || {};
@@ -327,6 +360,29 @@
       }
     }
     return 'bengali-general-doc';
+  }
+
+  // PROTTOYON-এর উপ-লেআউট নির্বাচন ('certificate-landscape' বনাম 'testimonial-cert')
+  function selectProttoyonSubLayout(frontmatter, text) {
+    const fm = normalizeFrontmatter(frontmatter, text);
+    const CT = getLayoutModule('FayzarCertificateLayout', './certificate-layout.js');
+    if (CT && typeof CT.wants === 'function' && CT.wants(text || '', fm)) {
+      return 'certificate-landscape';
+    }
+    if (/^landscape$/i.test(String(fm.page_orientation || fm.orientation || '').trim())) {
+      return 'certificate-landscape';
+    }
+    return 'testimonial-cert';
+  }
+
+  // CV_RESUME-এর উপ-লেআউট নির্বাচন ('cv-english' বনাম 'cv-bangla')
+  function selectCvSubLayout(frontmatter, text) {
+    const fm = normalizeFrontmatter(frontmatter, text);
+    const EN = getLayoutModule('FayzarEnCvLayout', './en-cv-layout.js');
+    if (EN && typeof EN.wants === 'function' && EN.wants(text || '', { __frontmatter: fm })) {
+      return 'cv-english';
+    }
+    return 'cv-bangla';
   }
 
   // subLayout অনুযায়ী গ্লোবাল লেআউট মডিউল (FayzarCashMemoLayout বা FayzarReceiptLayout) খুঁজে বের করা
@@ -614,7 +670,7 @@
     }
   };
 
-  // archetype-map.js-এর ARCHETYPE_TO_DOCTYPE-এর সকল আর্কিটাইপের জন্য রেজিস্ট্রি এন্ট্রিসমূহ
+  // archetype-map.js-এর ARCHETYPE_TO_DOCTYPE এবং E3 লেআউটসমূহের জন্য রেজিস্ট্রি এন্ট্রিসমূহ
   const ARCHETYPE_REGISTRY_ENTRIES = [
     {
       id: 'EXAM_COMBINED',
@@ -820,8 +876,23 @@
         frontmatterFields: ['doc_type', 'paper', 'fontSizePt'],
         instructionsBn: 'বরাবর, বিষয়, মহোদয় ও নিবেদক কাঠামোতে দাপ্তরিক বা সরকারি আবেদনপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'GOVT_APP_DEFAULT'
+      fixtures: ['app-correction.input.md', 'app-holding.input.md', 'app-job.input.md'],
+      sampleTemplateId: 'GOVT_APP_DEFAULT',
+      parse(input) {
+        const { rawText } = unpackParseArgs(input);
+        const AL = getLayoutModule('FayzarApplicationLayout', './application-layout.js');
+        if (AL && typeof AL.parse === 'function') return AL.parse(rawText);
+        return null;
+      },
+      renderHtml(model, options, h) {
+        const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
+        const passH = typeof options === 'string' ? undefined : h;
+        const AL = getLayoutModule('FayzarApplicationLayout', './application-layout.js');
+        if (AL && model && model.kind === 'GOVT_APP_LAYOUT' && typeof AL.renderHtml === 'function') {
+          return AL.renderHtml(model, passOpts, passH);
+        }
+        return null;
+      }
     },
     {
       id: 'STAMP_DEED',
@@ -859,9 +930,9 @@
     {
       id: 'PROTTOYON',
       archetypes: ['testimonial_cert'],
-      aliases: ['testimonial_cert', 'TESTIMONIAL_CERT', 'TESTIMONIAL', 'CERTIFICATE', 'PROTTAYAN'],
-      subLayouts: ['testimonial-cert'],
-      labelBn: 'প্রত্যয়নপত্র / প্রশংসাপত্র',
+      aliases: ['testimonial_cert', 'TESTIMONIAL_CERT', 'TESTIMONIAL', 'CERTIFICATE', 'CERT', 'PROTTAYAN'],
+      subLayouts: ['testimonial-cert', 'certificate-landscape'],
+      labelBn: 'প্রত্যয়নপত্র / প্রশংসাপত্র / সনদ',
       labelEn: 'Testimonial / Certificate',
       category: 'certificate',
       isNonExam: true,
@@ -877,17 +948,49 @@
       },
       allowedOverrides: ALLOWED_OVERRIDES.slice(),
       whenApplicable: {
-        frontmatterTypes: ['PROTTOYON', 'testimonial_cert'],
+        frontmatterTypes: ['PROTTOYON', 'testimonial_cert', 'CERTIFICATE'],
         factsRule: null,
-        heuristics: []
+        heuristics: [],
+        selectSubLayout: selectProttoyonSubLayout
       },
       promptFragment: {
         sectorHint: 'PROTTOYON',
-        frontmatterFields: ['doc_type', 'paper', 'orientation'],
+        frontmatterFields: ['doc_type', 'paper', 'orientation', 'page_orientation'],
         instructionsBn: 'প্রতিষ্ঠানের শিরোনাম, প্রত্যয়ন বয়ান এবং প্রদানকারীর স্বাক্ষরসহ প্রত্যয়নপত্র বা প্রশংসাপত্র।'
       },
-      fixtures: [],
-      sampleTemplateId: 'PROTTOYON_DEFAULT'
+      fixtures: [
+        'prottoyon-school.input.md',
+        'prottoyon-up.input.md',
+        'cert-landscape.input.md',
+        'cert-stub.input.md'
+      ],
+      sampleTemplateId: 'PROTTOYON_DEFAULT',
+      selectSubLayout: selectProttoyonSubLayout,
+      parse(input, options) {
+        const { rawText, callOpts } = unpackParseArgs(input, options);
+        const CT = getLayoutModule('FayzarCertificateLayout', './certificate-layout.js');
+        if (CT && typeof CT.wants === 'function' && CT.wants(rawText, callOpts.__frontmatter)) {
+          return CT.parse(rawText);
+        }
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && typeof LL.parse === 'function') {
+          return LL.parse(rawText, 'prottoyon');
+        }
+        return null;
+      },
+      renderHtml(model, options, h) {
+        const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
+        const passH = typeof options === 'string' ? undefined : h;
+        const CT = getLayoutModule('FayzarCertificateLayout', './certificate-layout.js');
+        if (CT && model && model.kind === 'CERT_LAYOUT' && typeof CT.renderHtml === 'function') {
+          return CT.renderHtml(model, passOpts, passH);
+        }
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && model && model.kind === 'LETTER_LAYOUT' && typeof LL.renderHtml === 'function') {
+          return LL.renderHtml(model, passOpts, passH);
+        }
+        return null;
+      }
     },
     {
       id: 'OFFICE_PAD',
@@ -919,8 +1022,23 @@
         frontmatterFields: ['doc_type', 'paper', 'fontSizePt'],
         instructionsBn: 'প্রতিষ্ঠানের হেডার ব্যানার, সূত্র/স্মারক নং, তারিখ ও মূল বার্তাসহ অফিস প্যাড।'
       },
-      fixtures: [],
-      sampleTemplateId: 'OFFICE_PAD_DEFAULT'
+      fixtures: ['pad-notice.input.md', 'pad-school-app.input.md'],
+      sampleTemplateId: 'OFFICE_PAD_DEFAULT',
+      parse(input) {
+        const { rawText } = unpackParseArgs(input);
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && typeof LL.parse === 'function') return LL.parse(rawText, 'pad');
+        return null;
+      },
+      renderHtml(model, options, h) {
+        const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
+        const passH = typeof options === 'string' ? undefined : h;
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && model && model.kind === 'LETTER_LAYOUT' && typeof LL.renderHtml === 'function') {
+          return LL.renderHtml(model, passOpts, passH);
+        }
+        return null;
+      }
     },
     {
       id: 'OFFICIAL_NOTICE',
@@ -953,7 +1071,87 @@
         instructionsBn: 'স্মারক নং, তারিখ, নোটিশ/বিজ্ঞপ্তি শিরোনাম, মূল বক্তব্য এবং স্বাক্ষর ব্লক।'
       },
       fixtures: [],
-      sampleTemplateId: 'OFFICIAL_NOTICE_DEFAULT'
+      sampleTemplateId: 'OFFICIAL_NOTICE_DEFAULT',
+      parse(input) {
+        const { rawText } = unpackParseArgs(input);
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && typeof LL.parse === 'function') return LL.parse(rawText, 'pad');
+        return null;
+      },
+      renderHtml(model, options, h) {
+        const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
+        const passH = typeof options === 'string' ? undefined : h;
+        const LL = getLayoutModule('FayzarLetterLayout', './letter-layout.js');
+        if (LL && model && model.kind === 'LETTER_LAYOUT' && typeof LL.renderHtml === 'function') {
+          return LL.renderHtml(model, passOpts, passH);
+        }
+        return null;
+      }
+    },
+    {
+      id: 'CV_RESUME',
+      archetypes: ['cv_resume'],
+      aliases: ['CV', 'RESUME', 'BIODATA', 'BIO_DATA', 'CURRICULUM_VITAE', 'cv_resume'],
+      subLayouts: ['cv-bangla', 'cv-english'],
+      labelBn: 'জীবনবৃত্তান্ত / সিভি / বায়োডাটা',
+      labelEn: 'CV / Resume / Biodata',
+      category: 'personal',
+      isNonExam: true,
+      defaultSettings: {
+        paper: 'A4',
+        orientation: 'portrait',
+        columns: 1,
+        booklet: false,
+        copies: 1,
+        fontSizePt: 12,
+        lineSpacing: 1.3,
+        marginsTwips: { top: 1440, bottom: 720, left: 1440, right: 720 }
+      },
+      allowedOverrides: ALLOWED_OVERRIDES.slice(),
+      whenApplicable: {
+        frontmatterTypes: ['CV_RESUME', 'CV', 'RESUME', 'BIODATA'],
+        factsRule: null,
+        heuristics: [],
+        selectSubLayout: selectCvSubLayout
+      },
+      promptFragment: {
+        sectorHint: 'CV_RESUME',
+        frontmatterFields: ['doc_type', 'template', 'paper'],
+        instructionsBn: 'ব্যক্তিগত তথ্য, শিক্ষাগত যোগ্যতা (টেবিল), অভিজ্ঞতা ও স্বাক্ষরসহ বাংলা বা ইংরেজি জীবনবৃত্তান্ত।'
+      },
+      fixtures: [
+        'cv-basic.input.md',
+        'cv-biodata.input.md',
+        'cv-english.input.md',
+        'cv-long.input.md'
+      ],
+      sampleTemplateId: 'CV_RESUME_DEFAULT',
+      selectSubLayout: selectCvSubLayout,
+      parse(input, options) {
+        const { rawText, callOpts } = unpackParseArgs(input, options);
+        const EN = getLayoutModule('FayzarEnCvLayout', './en-cv-layout.js');
+        if (EN && typeof EN.wants === 'function' && EN.wants(rawText, callOpts)) {
+          return EN.parse(rawText);
+        }
+        const CL = getLayoutModule('FayzarCvLayout', './cv-layout.js');
+        if (CL && typeof CL.isBangla === 'function' && CL.isBangla(rawText)) {
+          return CL.parse(rawText);
+        }
+        return null;
+      },
+      renderHtml(model, options, h) {
+        const passOpts = typeof options === 'string' ? (typeof h === 'object' ? h : undefined) : options;
+        const passH = typeof options === 'string' ? undefined : h;
+        const EN = getLayoutModule('FayzarEnCvLayout', './en-cv-layout.js');
+        if (EN && model && model.kind === 'EN_CV_LAYOUT' && typeof EN.renderHtml === 'function') {
+          return EN.renderHtml(model, passOpts, passH);
+        }
+        const CL = getLayoutModule('FayzarCvLayout', './cv-layout.js');
+        if (CL && model && model.kind === 'CV_LAYOUT' && typeof CL.renderHtml === 'function') {
+          return CL.renderHtml(model, passOpts, passH);
+        }
+        return null;
+      }
     },
     {
       id: 'SALARY_SLIP',
@@ -1247,7 +1445,7 @@
     }
   };
 
-  // ডিফল্ট CASH_MEMO এন্ট্রি এবং ARCHETYPE_TO_DOCTYPE-এর সকল এন্ট্রি নিবন্ধন
+  // ডিফল্ট CASH_MEMO এন্ট্রি এবং ARCHETYPE_TO_DOCTYPE ও E3 এন্ট্রি নিবন্ধন
   FayzarLayoutRegistry.register(CASH_MEMO_ENTRY);
   for (let i = 0; i < ARCHETYPE_REGISTRY_ENTRIES.length; i++) {
     FayzarLayoutRegistry.register(ARCHETYPE_REGISTRY_ENTRIES[i]);

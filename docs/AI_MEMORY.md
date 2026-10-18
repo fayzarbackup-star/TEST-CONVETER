@@ -23,6 +23,7 @@
 - **GitHub Repo**: `https://github.com/fayzarbackup-star/TEST-CONVETER/tree/arena/01a0f18b-test-conveter`
 
 ## 3. Recently Implemented Features (DO NOT OVERWRITE)
+0. **2026-10-18 রাত শেষ — ৭-ট্যাব পদ্ধতি**: ব্যবহারকারী ৭টি Gemini ট্যাব দিলেন; কাজ অ্যাকাউন্ট-ভিত্তিক (`gemini-round.mjs --acct`), ট্যাব-ক্রম বদলায়। v5: E3 রেজিস্ট্রি ও F2 docx-প্রিভিউ-রেন্ডারার বসানো; F1 স্টুডিও মাস্টার-পথ সুইচে (মাস্টারে ২টি ফাইল ১→২ পাতা — PAGEFIT Gemini-তে); C/D/B/G বান্ডেল নতুন ট্যাবে। নিয়ম: কোড Gemini, Claude শুধু সমন্বয়।
 0. **2026-10-18 গভীর রাত — v3 push + v4 পাঠানো**: v3 GitHub main (db6108e)। v4 একই অ্যাকাউন্ট/একই ধরনের কাজে: A2→REGISTRY_E2, A3→ROWCHECK, A1→REBREAK। bridge-এ debugger দিয়ে ফাইল-জোড়া ও আসল Send-ক্লিক; নতুন `tools/gemini-round.mjs` (send/watch/list, rounds.json)। শিক্ষা: Gemini প্রিভিউতে ফাইলনাম ছাঁটে ⇒ নামের প্রথম অংশে চেনা; ব্যর্থ মনে হলেও আগে চ্যাট দেখে তবেই আবার পাঠানো।
 0. **2026-10-18 রাত — Gemini v3 রাউন্ড**: A1_MATHH→fayzarbackup1, A2_REGISTRY→2, A3_OTSU→4 (Task+Argon)। bridge fetch দিয়ে তিন জিপ নামানো (`--name` আসলে ফিল্টার — ভুল নামে "No files")। বসানো সুইচ-গেটেড: রেজিস্ট্রি ১৬ আর্কিটাইপ (`__FZ_ON_REGISTRY`), Otsu বাকি ফাংশনে + `mask.thr`, MATHH ফাঁক-কমানো। টেস্ট ১৯৫৪/০। ব্যাকআপ scratch/backups/v3_apply_20261018। bridge FETCH_FILES-এ `[role=button]` + debug যোগ। Claude in Chrome গ্রুপ বারবার ভাঙে → উত্তর আনায় bridge।
 1. **Cloudflare Proxy Failover**: `fayzar-ocr-proxy/index.js` manages key rotation, masking, rate-limiting, and error handling for Gemini API.

@@ -445,6 +445,17 @@
 
         case 'GOVT_APP': {
           // Part-18.9: নতুন আবেদন-লেআউট (দোকানের নমুনা) — প্রিভিউ ও ডাউনলোড একই মডেল থেকে
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে পার্স
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve('GOVT_APP', options && options.__frontmatter, text) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get('GOVT_APP') : null);
+            if (entry && typeof entry.parse === 'function') {
+              const parsed = entry.parse(text, options);
+              if (parsed) return parsed;
+            }
+          }
           const AL = this._getApplicationLayout();
           if (AL) return AL.parse(text);
           const aEngine = this._getApplicationEngine();
@@ -478,7 +489,22 @@
           break;
         }
 
+        case 'CV':
         case 'CV_RESUME': {
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে পার্স
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            this._getEnCvLayout();
+            this._getCvLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, text) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.parse === 'function') {
+              const parsed = entry.parse(text, options);
+              if (parsed) return parsed;
+            }
+          }
+          if (docType === 'CV') break;
           const EN = this._getEnCvLayout();   // T2 দল ৫: ইংরেজি সিভি-ছাঁচ (তালা, বা তালা ছাড়া ইংরেজি-প্রধান সিভি)
           if (EN && EN.wants(text, options)) return EN.parse(text);
           // Part-19.1: বাংলা জীবনবৃত্তান্ত — দোকানের ছাঁচ; বাকিটা পুরোনো ইঞ্জিনে (ফেলব্যাক)
@@ -510,7 +536,22 @@
         }
 
         case 'OFFICE_PAD':
+        case 'OFFICIAL_NOTICE':
         case 'PROTTOYON': {
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে পার্স
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            this._getLetterLayout();
+            if (docType === 'PROTTOYON') this._getCertificateLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, text) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.parse === 'function') {
+              const parsed = entry.parse(text, options);
+              if (parsed) return parsed;
+            }
+          }
+          if (docType === 'OFFICIAL_NOTICE') break;
           // Part-19.2: ল্যান্ডস্কেপ/মুড়িসহ সনদ আলাদা মডিউলে
           const CT = docType === 'PROTTOYON' ? this._getCertificateLayout() : null;
           if (CT && CT.wants(text, options.__frontmatter)) return CT.parse(text);
@@ -563,6 +604,16 @@
         }
 
         case 'GOVT_APP': {
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে HTML রেন্ডার
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve('GOVT_APP', options && options.__frontmatter, rawText) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get('GOVT_APP') : null);
+            if (entry && typeof entry.renderHtml === 'function' && parsedData && parsedData.kind === 'GOVT_APP_LAYOUT') {
+              return entry.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+            }
+          }
           const AL = this._getApplicationLayout();
           if (AL && parsedData && parsedData.kind === 'GOVT_APP_LAYOUT') {
             return AL.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
@@ -598,7 +649,21 @@
           break;
         }
 
+        case 'CV':
         case 'CV_RESUME': {
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে HTML রেন্ডার
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            this._getEnCvLayout();
+            this._getCvLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, rawText) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.renderHtml === 'function' && parsedData && (parsedData.kind === 'EN_CV_LAYOUT' || parsedData.kind === 'CV_LAYOUT')) {
+              return entry.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+            }
+          }
+          if (docType === 'CV') break;
           const EN = this._getEnCvLayout();
           if (EN && parsedData && parsedData.kind === 'EN_CV_LAYOUT') return EN.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
           const CL = this._getCvLayout();
@@ -634,7 +699,21 @@
         }
 
         case 'OFFICE_PAD':
+        case 'OFFICIAL_NOTICE':
         case 'PROTTOYON': {
+          // A2_REGISTRY_E3: __FZ_ON_REGISTRY সুইচ চালু থাকলে রেজিস্ট্রির মাধ্যমে HTML রেন্ডার
+          if (this._isRegistryOn()) {
+            this._getApplicationLayout();
+            this._getLetterLayout();
+            if (docType === 'PROTTOYON') this._getCertificateLayout();
+            const reg = this._getLayoutRegistry();
+            const resolved = reg && typeof reg.resolve === 'function' ? reg.resolve(docType, options && options.__frontmatter, rawText) : null;
+            const entry = (resolved && resolved.entry) || (reg && typeof reg.get === 'function' ? reg.get(docType) : null);
+            if (entry && typeof entry.renderHtml === 'function' && parsedData && (parsedData.kind === 'CERT_LAYOUT' || parsedData.kind === 'LETTER_LAYOUT')) {
+              return entry.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });
+            }
+          }
+          if (docType === 'OFFICIAL_NOTICE') break;
           const CT = this._getCertificateLayout();
           if (CT && parsedData && parsedData.kind === 'CERT_LAYOUT') {
             return CT.renderHtml(parsedData, options, { esc: (s) => this._escapeHtml(s) });

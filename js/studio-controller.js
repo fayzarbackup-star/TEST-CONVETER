@@ -1180,6 +1180,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       let blob;
+      // WORK_PLAN F1: বিজয় .doc / বিজয় .docx একক মাস্টার-পথে (মাস্টার .docx → বিজয় → Word 2003 .doc, চিত্রসহ) —
+      // কনভার্টার-পাতার প্রমাণিত পথ; RTF-পথের EQ-ফিল্ড Word-এ এডিটে অক্ষর বদলায় (x → ξ)। ইউনিকোড .doc আগের পথে।
+      const masterFmt = format === 'doc' ? (font === 'bijoy' ? 'doc' : null) : (font === 'bijoy' ? 'docx-bijoy' : null);
+      if (masterFmt && studioMasterOn() && typeof FayzarExport !== 'undefined') {
+        let figStore;
+        if (typeof StudioFigurePipeline !== 'undefined' && StudioFigurePipeline.hasMarkers(raw)) {
+          figStore = StudioFigurePipeline.collectStore(editedData || currentParsedData, studioState.figures);
+        }
+        const res = await FayzarExport.produce(raw, Object.assign({}, options, { format: masterFmt, docType: docType, figures: figStore }));
+        blob = res.blob;
+        await finishDownload(blob, format, font);
+        return;
+      }
       if (typeof FayzarPipeline !== 'undefined' && typeof FayzarPipeline.process === 'function') {
         const result = await FayzarPipeline.process(raw, {
           ...options,
@@ -1213,6 +1226,21 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('চিত্র যুক্ত করা যায়নি — ফাইলটি ছবি ছাড়া ডাউনলোড হলো (' + (figErr && figErr.message ? figErr.message : figErr) + ')', 'warning');
       }
 
+      await finishDownload(blob, format, font);
+    } catch (err) {
+      console.error('Download error:', err);
+      showToast('ডাউনলোডে ত্রুটি: ' + err.message, 'error');
+    }
+  }
+
+  // F1: মাস্টার-পথ চালু? window.__FZ_ON_STUDIO_MASTER (পরীক্ষা) / __FZ_OFF_STUDIO_MASTER (বন্ধ)
+  function studioMasterOn() {
+    if (window.__FZ_OFF_STUDIO_MASTER) return false;
+    return !!window.__FZ_ON_STUDIO_MASTER;
+  }
+
+  async function finishDownload(blob, format, font) {
+    {
       const ext = format === 'docx' ? 'docx' : 'doc';
       const fontSuffix = font === 'bijoy' ? 'Bijoy' : 'Unicode';
       // Auto-generate meaningful filename
@@ -1234,9 +1262,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       showToast(`${ext.toUpperCase()} ডাউনলোড সম্পন্ন!`, 'success');
-    } catch (err) {
-      console.error('Download error:', err);
-      showToast('ডাউনলোডে ত্রুটি: ' + err.message, 'error');
     }
   }
 
