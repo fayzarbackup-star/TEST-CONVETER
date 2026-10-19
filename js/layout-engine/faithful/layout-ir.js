@@ -42,6 +42,88 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WRAPFIT'))
     ))
   );
+  // A07_TABLECOL_v1 সুইচ: শুধু globalThis.__FZ_ON_TABLECOL বা window.__FZ_ON_TABLECOL বা FZ_ON=TABLECOL সত্য হলে সক্রিয়
+  const tableColOn = () => !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_TABLECOL || (globalThis.window && globalThis.window.__FZ_ON_TABLECOL))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_TABLECOL) ||
+    (typeof global !== 'undefined' && global.__FZ_ON_TABLECOL) ||
+    (typeof process !== 'undefined' && process.env && (
+      process.env.__FZ_ON_TABLECOL === '1' ||
+      process.env.__FZ_ON_TABLECOL === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('TABLECOL'))
+    ))
+  );
+  // A04_PAGES_v1: বহু-কলাম রেজিস্টার ছক ও প্রবাহী অনুচ্ছেদে পাতা-উপচানো রোধের সুইচ (__FZ_ON_PAGES4 / FZ_ON=PAGES4)
+  const pages4On = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_PAGES4) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_PAGES4 || (globalThis.window && globalThis.window.__FZ_ON_PAGES4))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_PAGES4) ||
+    (global && global.__FZ_ON_PAGES4) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_PAGES4 === '1' ||
+      process.env.__FZ_ON_PAGES4 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('PAGES4'))
+    ))
+  );
+  // A19_EXTRALINES_v1: মূলের তুলনায় Word-এ বাড়তি লাইন ও উল্লম্ব সরণ রোধের সুইচ (__FZ_ON_EXTRALINES / FZ_ON=EXTRALINES)
+  const extraLinesOn = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_EXTRALINES) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_EXTRALINES || (globalThis.window && globalThis.window.__FZ_ON_EXTRALINES))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_EXTRALINES) ||
+    (global && global.__FZ_ON_EXTRALINES) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_EXTRALINES === '1' ||
+      process.env.__FZ_ON_EXTRALINES === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('EXTRALINES'))
+    ))
+  );
+  // A10_LINES_v1: মূলের লাইন-ভাঙা, লাইন-দূরত্ব ও অবস্থান অক্ষত রাখার সুইচ (__FZ_ON_A10LINES / FZ_ON=A10LINES)
+  const a10LinesOn = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_A10LINES) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A10LINES || (globalThis.window && globalThis.window.__FZ_ON_A10LINES))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A10LINES) ||
+    (global && (global.__FZ_ON_A10LINES || (global.window && global.window.__FZ_ON_A10LINES))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A10LINES === '1' ||
+      process.env.__FZ_ON_A10LINES === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A10LINES'))
+    ))
+  );
+  function partialHeaderRowHeights(rows, rawRules, top, bot) {
+    if (!Array.isArray(rawRules) || !rows || rows.length < 12 || !(bot > top)) return null;
+    const H0 = [];
+    rawRules.slice().sort((a, b) => a - b).forEach((y) => {
+      if (y >= top - 4 && y <= bot + 4 && (!H0.length || y - H0[H0.length - 1] > 3)) H0.push(y);
+    });
+    const K = H0.length - 1, spanH = bot - top;
+    if (K < 3 || K > 6 || rows.length < K * 3) return null;
+    if (H0[K] - top >= spanH * 0.75 || bot - H0[K] < spanH * 0.25) return null;
+    const B = [];
+    for (let b = 0; b < K; b++) B.push(H0[b + 1] - H0[b]);
+    let tallBandIdx = 0;
+    for (let b = 1; b < K; b++) if (B[b] > B[tallBandIdx]) tallBandIdx = b;
+    if (B[tallBandIdx] < 80) return null;
+    let descIdx = 0, maxLen = 0;
+    for (let ri = 0; ri <= Math.min(K, rows.length - 1); ri++) {
+      const len = (rows[ri] || []).reduce((a, c) => a + String(c || '').trim().length, 0);
+      if (len > maxLen) { maxLen = len; descIdx = ri; }
+    }
+    if (maxLen < 100) return null;
+    const afterBands = K - 1 - tallBandIdx;
+    const bodyStart = descIdx + 1 + afterBands;
+    const nBody = rows.length - bodyStart;
+    if (nBody < 5) return null;
+    const h = rows.map(() => 0);
+    for (let i = 0; i < Math.min(descIdx, tallBandIdx); i++) h[i] = B[i];
+    if (descIdx > tallBandIdx) {
+      const subH = Math.min(28, B[0] || 25);
+      for (let i = tallBandIdx; i < descIdx; i++) h[i] = subH;
+      h[descIdx] = Math.max(40, B[tallBandIdx] - subH * (descIdx - tallBandIdx));
+    } else {
+      h[descIdx] = B[tallBandIdx];
+    }
+    for (let m = 0; m < afterBands; m++) h[descIdx + 1 + m] = B[tallBandIdx + 1 + m];
+    const bodyEach = (bot - H0[K]) / nBody;
+    for (let i = bodyStart; i < rows.length; i++) h[i] = bodyEach;
+    return h;
+  }
 
   const NAMED_HEX = {
     gray: 'F2F2F2', grey: 'F2F2F2', lightgray: 'F2F2F2', lightgrey: 'F2F2F2',
@@ -386,6 +468,11 @@
     if (!m || m.empty || !m.hasGrid || !m.rectPt || !Array.isArray(m.hRulesPt) || rows.length < 2) return null;   // ২০২৬-১০-১৩: ২ সারিও (a12: শিরোনাম-সারি ২৯, পরেরটি ১৪pt)
     const H = [];
     m.hRulesPt.slice().sort((a, c) => a - c).forEach((y) => { if (!H.length || y - H[H.length - 1] > 3) H.push(y); });
+    // A04_PAGES_v1: রেজিস্টার ছকে কেবল উপরের শিরোনাম-ব্যান্ডগুলোর আড়া-রেখা মাপা থাকলে এবং নিচের বডি-অংশ দাগহীন থাকলে শিরোনাম ও বডি-সারির প্রকৃত উচ্চতা বণ্টন
+    if (pages4On() && !(opts && opts.bandsOnly)) {
+      const ph = partialHeaderRowHeights(rows, H, m.rectPt.y, m.rectPt.y + m.rectPt.h);
+      if (ph) return ph;
+    }
     // ২০২৬-১০-১৪ (a19): ছকের ওপরে/নিচে দাগহীন সারি (মূলে "১। পরীক্ষার নাম" বাক্সের বাইরে; শেষ দাগের নিচে "৯।"-এর লাইন) — সেই
     // লেখা-লাইন কোনো ভাগে পড়ত না ⇒ সব সারি এক ভাগ সরে যেত। মাপা আয়তের কিনারা তখন ভাগ-সীমা
     if (!globalThis.__FZ_OFF_RECTEDGE && H.length >= 2 && Array.isArray(m.textLinesPt)) {
@@ -959,6 +1046,43 @@
       // a07: খাড়া দাগে k কলাম, বেশিরভাগ (≥৬০%) সারিও ≤k ঘরের, কিছু সারিতে Gemini শেষ কলামের লেখা ভেঙে বাড়তি ঘর দেয়
       // ("(ক) AML … | হ্যাঁ/না") ⇒ বাড়তি ঘর শেষ ঘরে জোড়া (নইলে কলাম-সংখ্যা ভুল, মাপা প্রস্থ বসে না)
       // a19: ক্রমিক-কলামের ধারাবাহিক লাইন আগে জোড়া (নিচের নিয়ম আগে চললে মাপা ১ খাড়া দাগ দেখে বিবরণ+মান এক ঘরে জুড়ত)
+      // ২০২৬-১০-১৯ (A07_TABLECOL_v1): রেখাহীন ডান-সারিবদ্ধ লেখা পুরো ছকের কলাম বাড়াবে না — ঘরের ভেতরে ডান-ট্যাব
+      if (tableColOn() && !(extraLinesOn() && !folded && foldSerialRows(rows))) {
+        const R = m && (m.rectPt || base.rect);
+        const inVR = m && Array.isArray(m.vRulesPt) && R ? m.vRulesPt.filter((v) => v.x > R.x + 6 && v.x < R.x + R.w - 6 && (v.cov == null || v.cov >= 0.25)) : null;
+        let k = inVR ? inVR.length + 1 : 0;
+        if (!k && rows.length >= 3) {
+          const lens = rows.map((r) => r.filter((c) => c && String(c).trim()).length);
+          const maxL = Math.max(...lens);
+          const countMax = lens.filter((l) => l === maxL).length;
+          if (countMax < rows.length * 0.4) {
+            const shorter = lens.filter((l) => l < maxL);
+            if (shorter.length >= rows.length * 0.6) k = Math.max(...shorter);
+          }
+        }
+        if (k >= 2 && rows.some((r) => r.length > k)) {
+          rows = rows.map((r) => {
+            if (r.length > k) {
+              const main = r.slice(0, k - 1);
+              const colA = String(r[k - 1] || '');
+              const colB = String(r[k] || '');
+              let extra;
+              if (colA && colB && colA.includes('\n') && colB.includes('\n')) {
+                const lnsA = colA.split('\n'), lnsB = colB.split('\n');
+                if (lnsA.length === lnsB.length) {
+                  extra = lnsA.map((l, i) => l + '\t' + (lnsB[i] || '')).join('\n');
+                } else {
+                  extra = r.slice(k - 1).filter((c) => c && String(c).trim()).join('\t');
+                }
+              } else {
+                extra = r.slice(k - 1).filter((c) => c && String(c).trim()).join('\t');
+              }
+              return main.concat(extra);
+            }
+            return r;
+          });
+        }
+      }
       const serialFolded = !folded && foldSerialRows(rows);
       if (serialFolded) rows = serialFolded;
       if (!folded && !serialFolded && m && !m.empty && m.hasGrid !== false && Array.isArray(m.vRulesPt) && rows.length >= 3) {
@@ -988,6 +1112,18 @@
       }
       const merged = mergeLineRows(rows, m);
       if (merged) rows = merged;
+      // A04_PAGES_v1: ১ম সারির গ্রুপ-শিরোনামের পাশে জোড়াবিহীন দীর্ঘ কলাম-বিবরণী থাকলে এবং ২য় সারির (বিবরণী-সারি) সংশ্লিষ্ট ঘর ফাঁকা থাকলে তা ২য় সারিতে স্থানান্তর
+      if (pages4On() && rows.length >= 10 && rows[0] && rows[1]) {
+        const r1Len = rows[1].reduce((a, c) => a + String(c || '').trim().length, 0);
+        if (r1Len >= 150) {
+          rows = rows.map((r) => r.slice());
+          for (let k = 0; k < rows[0].length; k++) {
+            const c0 = String(rows[0][k] || '').trim(), c1 = String(rows[1][k] || '').trim();
+            const nextFilled = k + 1 < rows[0].length && String(rows[0][k + 1] || '').trim().length > 0;
+            if (c0.length > 20 && nextFilled && !c1) { rows[1][k] = rows[0][k]; rows[0][k] = ''; }
+          }
+        }
+      }
       // কাজ ৪ (a02 "সম্পর্ক" কলাম, FZ_ON=BOXPOS): ডিফল্টে বন্ধ যাতে a02 ও a03-এ gridSpan বা অবস্থান না ভাঙে
       if (!globalThis.__FZ_OFF_BOXPOS && globalThis.__FZ_ON_BOXPOS) {
         rows = rows.map((r) => r.map((c) => {
@@ -1010,6 +1146,34 @@
       if (m && !m.empty && m.cellInkPt) cellFontSrc = m.cellInkPt / tblInkRatio;
       // প্রস্থ-ভিত্তিক (থাকলে, ১.৫ গুণের ভেতরে) অগ্রাধিকার
       if (m && !m.empty && m.cellWidthFontPt && (!cellFontSrc || (m.cellWidthFontPt / cellFontSrc < 1.5 && cellFontSrc / m.cellWidthFontPt < 1.5))) cellFontSrc = m.cellWidthFontPt;
+      // ২০২৬-১০-১৯ (A07_TABLECOL_v1): মাপা রেখা ও কালি থেকে ঘরের লাইন-পিচ ও ফন্ট-আকার নির্ধারণ
+      let tblLinePitch = 0;
+      if (tableColOn() && m && !m.empty && !(extraLinesOn() && (serialFolded || m.hasGrid === false))) {
+        if (Array.isArray(m.hRulesPt) && m.hRulesPt.length >= 2) {
+          const H = m.hRulesPt.slice().sort((a, c) => a - c);
+          const pitches = [];
+          for (let ri = 0; ri < Math.min(rows.length, H.length - 1); ri++) {
+            const rH = H[ri + 1] - H[ri];
+            const nL = Math.max(...rows[ri].map((c) => String(c || '').split('\n').length));
+            if (nL >= 2 && rH > 0) pitches.push(rH / nL);
+          }
+          if (pitches.length) {
+            pitches.sort((a, c) => a - c);
+            tblLinePitch = r1(pitches[Math.floor(pitches.length / 2)]);
+          } else if (H.length >= 2) {
+            const d = H.slice(1).map((y, k) => y - H[k]).filter((v) => v >= 8);
+            if (d.length) tblLinePitch = r1(d[0]);
+          }
+        }
+        if (m.cellInkPt) {
+          const inkFs = m.cellInkPt / 0.85;
+          if (inkFs > cellFontSrc) cellFontSrc = inkFs;
+        }
+        if (tblLinePitch > 0) {
+          const pitchFs = tblLinePitch / 1.35;
+          if (pitchFs > cellFontSrc) cellFontSrc = pitchFs;
+        }
+      }
       // কাজ ২ (a17 p6, FZ_OFF=DOTFONT): অনুচ্ছেদ-ভরা (≥৮০ অক্ষর) বিন্দু-সারিওয়ালা ফরম-ছকে সারি-ব্যান্ডের বিন্দুহীন লেখার কালি-উচ্চতা থেকে ঘরের আসল ফন্ট উদ্ধার
       const hasLongDotCell = /([._…·])\1{4,}/.test(tblText) && rows.some((r) => r.some((c) => String(c || '').replace(/\s+/g, '').length >= 80));
       if (!globalThis.__FZ_OFF_DOTFONT && m && !m.empty && m.hasGrid && hasLongDotCell) {
@@ -1034,7 +1198,10 @@
         // a07 পাতা ৪ (কাত স্ক্যান): লেখা-লাইন সারির অর্ধেকেরও কম মাপা ⇒ কালি-মাপ অবিশ্বস্ত (৮.৬ ⇒ আসল ~১১); এক-লাইন সারির
         // উচ্চতা থেকে নিম্নসীমা: (সারি − ১pt) ÷ ১.২৫ (Word-এ Sutonny-র আসল লাইন-দূরত্ব; a07: ২-লাইনের সারি ৩৩.৬ ⇒ দূরত্ব ~১৬)
         const tlN = Array.isArray(m.textLinesPt) ? m.textLinesPt.length : 0;
-        if (!globalThis.__FZ_OFF_FONT && d.length >= 4 && tlN < rows.length / 2) { const floor = (d[Math.floor(d.length * 0.2)] - 1) / 1.25; if (floor > cellFontSrc) cellFontSrc = floor; }
+        const skipFloorP4 = pages4On() && (m.hRulesPt.length < rows.length * 0.6 || (rows[0] && rows[0].length >= 10));
+        if (skipFloorP4 && tblLinePitch > 0 && m.hRulesPt.length < rows.length * 0.6) { tblLinePitch = 0; if (m.cellInkPt) cellFontSrc = m.cellInkPt / tblInkRatio; }
+        const textRowN = a10LinesOn() ? Math.max(1, rows.filter((r) => r.some((c) => c && String(c).trim())).length) : rows.length;
+        if (!globalThis.__FZ_OFF_FONT && !skipFloorP4 && d.length >= 4 && tlN < textRowN / 2) { const floor = (d[Math.floor(d.length * 0.2)] - 1) / 1.25; if (floor > cellFontSrc) cellFontSrc = floor; }
       }
       // Part-17.8: মাপা কলাম-প্রস্থের অনুপাত (কলাম-ফাঁকের সংখ্যা = কলাম − ১ হলে)
       let colFractions = null, fillW2 = false;
@@ -1279,7 +1446,7 @@
           }
         }
       }
-      const tbl = Object.assign(base, { lastRowSpan, rowBand, noVRules, fullVRule, fillW2: !globalThis.__FZ_OFF_FILLW2 && fillW2, headVAlign, headShade: m && !m.empty && /^[0-9A-F]{6}$/i.test(m.headShade || '') ? m.headShade : null, kind: 'table', rows, borderless: !!(m && !m.empty && m.hasGrid === false), cellFontSrc, colFractions, colAligns, cellAligns,
+      const tbl = Object.assign(base, { lastRowSpan, rowBand, noVRules, fullVRule, fillW2: !globalThis.__FZ_OFF_FILLW2 && fillW2, headVAlign, headShade: m && !m.empty && /^[0-9A-F]{6}$/i.test(m.headShade || '') ? m.headShade : null, kind: 'table', rows, borderless: !!(m && !m.empty && m.hasGrid === false), cellFontSrc, lineSpacingPt: (tableColOn() && tblLinePitch) ? tblLinePitch : 0, colFractions, colAligns, cellAligns,
         colGapPt: m && !m.empty && m.colGapMinPt ? m.colGapMinPt : 0,
         // f1: ভাঁজ-করা ফরম-ছকে সারির উচ্চতা লাইন-সংখ্যার অনুপাতে (রেডিও-সারি ৫ লাইন, বাকিরা ১)
         rowWeights: folded && !rbh ? rows.map((r) => Math.max(1, ...r.map((c) => (c && !c.startsWith(BOX_MARK) ? c.split('\n').length : 1)))) : null,
@@ -1341,6 +1508,8 @@
         || hasPartialRuleSpansB2
         || !m || (!Array.isArray(m.textInkXPt) && !Array.isArray(m.textLinesPt))
       );
+      const preGfRows = a10LinesOn() && Array.isArray(rows) ? rows.map((r) => r.slice()) : null;
+      const preGfRbh = a10LinesOn() && Array.isArray(rbh) && rbh.length === rows.length ? rbh.slice() : null;
       if (fzOn('GRIDFIRST') && !folded && !skipGridFirstB2) {
         let GF = global.FayzarGridFirst;
         if (!GF && typeof require === 'function') { try { GF = global.FayzarGridFirst = require('./grid-first.js'); } catch (e) { GF = null; } }
@@ -1348,6 +1517,15 @@
           try { const x = new XMLHttpRequest(); x.open('GET', 'js/layout-engine/faithful/grid-first.js', false); x.send(null); if (x.status >= 200 && x.status < 300 && x.responseText) { (0, eval)(x.responseText); GF = global.FayzarGridFirst; } } catch (e) { GF = null; }
         }
         if (GF && typeof GF.applyGridFirst === 'function') GF.applyGridFirst(tbl, m, pageInfo);
+      }
+      // A10_LINES_v1: মাপা আড়া-রেখার ভাগের চেয়ে grid-first শেষে ফাঁকা সারি কমিয়ে ফেললে (যেমন a10 পাতা ২ ছক ১: ৫ সারি ⇒ ৪ সারি) মূলের ফাঁকা সারি ও উচ্চতা পুনরুদ্ধার
+      if (preGfRows && preGfRbh && Array.isArray(tbl.rows) && tbl.rows.length < preGfRows.length
+        && preGfRows.slice(tbl.rows.length - 1).every((r) => !r.some((c) => c && String(c).trim()))) {
+        tbl.rows = preGfRows;
+        tbl.rowHeightsPt = preGfRbh;
+        if (Array.isArray(tbl.gridSpans)) { while (tbl.gridSpans.length < preGfRows.length) tbl.gridSpans.push(null); }
+        if (Array.isArray(tbl.vRuleBands)) { while (tbl.vRuleBands.length < preGfRows.length) tbl.vRuleBands.push(tbl.vRuleBands[tbl.vRuleBands.length - 1] || null); }
+        if (Array.isArray(tbl.vMerges)) { while (tbl.vMerges.length < preGfRows.length) tbl.vMerges.push(null); }
       }
       if (tableGridOn()) {
         const R = (m && m.rectPt) || rect || { x: 54, y: 100, w: tbl.widthPt || 450, h: tbl.heightPt || 120 };
@@ -1515,7 +1693,9 @@
       }
     }
     // Part-17.8: লাইনের ভেতরের চওড়া ফাঁক ⇒ ট্যাব (মাপা x-অবস্থানে)
-    let tabs = align !== 'c' && m && !m.empty ? tabify(b.lines || [], m.lineSegs) : null;
+    // A04_PAGES_v1: দুপাশে-সমান (justify) দীর্ঘ গদ্য অনুচ্ছেদে শব্দের ফাঁককে ট্যাব-কলাম ধরা রোধ
+    const isJustProseP4 = pages4On() && align === 'j' && bl.length >= 2 && (bl.reduce((a, l) => a + l.length, 0) / bl.length) >= 45 && !bl.some((l) => /[:：]|\.{4,}|─{4,}|_{4,}/.test(l));
+    let tabs = align !== 'c' && !isJustProseP4 && m && !m.empty ? tabify(b.lines || [], m.lineSegs) : null;
     if (formKitOn() && !tabs) {
       if (b.type === 'option_row' || (b.lines && b.lines.some((l) => (String(l).match(MCQ_TEST_RE) || []).length >= 2))) {
         tabs = tabifyMcqOptions(b.lines || [b.text || ''], m && m.lineSegs, rect);
@@ -1537,7 +1717,13 @@
     // ২০২৬-১০-১৩: দুপাশে-সমান অনুচ্ছেদে মাপা লাইন-সংখ্যা = Gemini-র লাইন (≥৩) ⇒ লাইন-ভাঙা মূলের মতো রাখা, দুপাশে সমান থাকে
     // (keepJust — builder "both"; Word নিজে মোড়ালে a13-এ ৫ লাইন ৪ হয়ে শেষ লাইন ভুল জায়গায়)
     let keepJust = false;
-    if (!keepLines && !tabs && align === 'j' && bl.length >= 3 && m && !m.empty && m.lines && m.lines.length === bl.length) keepLines = keepJust = true;
+    if (!keepLines && !tabs && align === 'j' && bl.length >= (a10LinesOn() ? 2 : 3) && m && !m.empty && m.lines && m.lines.length === bl.length) keepLines = keepJust = true;
+    // A10_LINES_v1: স্ক্যানে পরপর লাইন উল্লম্বভাবে ছুঁয়ে যাওয়ায় m.lines কম হলেও Gemini-র পূর্ণ-প্রস্থের (≥৪৫ অক্ষর) বহু-লাইনের অনুচ্ছেদে মূলের লাইন-ভাঙা অক্ষত রাখা
+    if (a10LinesOn() && !keepLines && !tabs && bl.length >= 2 && m && !m.empty && m.lines && m.lines.length < bl.length && bl.slice(0, -1).every((l) => l.replace(/\*+/g, '').length >= 45)) {
+      if (b.align === 'j') align = 'j';
+      keepLines = true;
+      if (align === 'j') keepJust = true;
+    }
     // a11 (প্রস্থ-নির্ণয় width-ratio.mjs): অন্য কারণে লাইন-অক্ষত দুপাশে-সমান অনুচ্ছেদ builder-এ "বাঁয়ে" ⇒ মূলে কিনারা-ছোঁয়া লাইন
     // আমাদের ৫–১৫% ছোট। মাপা লাইন = Gemini-র লাইন আর শেষটি বাদে সব লাইন প্রায় পূর্ণ-প্রস্থ (≥৯২%) ⇒ "both" (Word br-এ শেষ হওয়া লাইনও ছড়ায়)
     if (!keepJust && !globalThis.__FZ_OFF_KJ && keepLines && !tabs && align === 'j' && bl.length >= 2 && m && !m.empty && m.lines && m.lines.length === bl.length) {
@@ -1555,7 +1741,7 @@
       kind: 'para', text: noBox(b.text || ''), lines: (ul ? ul : b.lines || []).map(noBox), keepLines, keepJust, fs: b.fs,
       tabLines: tabs ? tabs.lines.map(noBox) : null, tabStopsSrc: tabs ? tabs.stops : null,
       italic: !!b.italic, underline: ul ? false : !!b.underline || !!(m && m.underline),
-      bold: !!b.bold || b.type === 'title' || b.type === 'heading', align,
+      bold: (a10LinesOn() && /\*\*[^*]+\*\*/.test(b.text || '') && String(b.text || '').replace(/\*\*[^*]+\*\*/g, '').replace(/\s+/g, '').length > 5 && !/^(title|heading|header)$/.test(b.type || '')) ? false : (!!b.bold || b.type === 'title' || b.type === 'heading'), align,
       firstIndentPt: m && m.firstIndentPt && Math.abs(m.firstIndentPt) >= 4 ? m.firstIndentPt : 0,
       lineSpacingPt: m && m.pitchPt ? m.pitchPt : 0
     });
@@ -1591,6 +1777,8 @@
       // a03 (২০২৬-১০-১২): Gemini পূরণ-সারি ("নাম : ........") জুড়ে দিলে, অথচ মূলে ফাঁকা ঘর ⇒ প্রস্থ-অনুমান ৩–৫pt (ফন্ট ৯.৫-এ আটকে
       // লাইনগুলো খুদে)। পূরণ-সারির লেখায় প্রস্থ উচ্চতার ৬০%-এর কম হলে উচ্চতা-অনুমান
       if (wEst && wEst < hEst * 0.6 && /([._\-…·─])\1{5,}/.test(it.text || (it.lines || []).join(' '))) return hEst;
+      // A04_PAGES_v1: ২-লাইনের অনুচ্ছেদে কেবল শেষের ছোট লাইনটি মাপা আয়তে এলে প্রস্থ-ভিত্তিক খুদে ফন্ট-অনুমান (১–৫pt) উপেক্ষা করা
+      if (pages4On() && wEst && wEst < hEst * 0.6 && String(it.text || (it.lines || []).join(' ')).replace(/\s+/g, ' ').length >= 90) return hEst;
       // ২০২৬-১০-১৪ (a17 p9/p10, মালিকের Word-যাচাই): পূরণ-সারির প্রস্থ Gemini-র আন্দাজি বিন্দু-সংখ্যায় (⟦.×60⟧) বাঁধা ⇒ এক ফরমে
       // "পরীক্ষার নাম" ১৭.৫, "কেন্দ্রের নাম" ৯.৫ (মূলে সমান)। উচ্চতা থেকে >২০% দূরে ⇒ উচ্চতা-অনুমান। বন্ধ: FZ_OFF=FILLW
       if (!globalThis.__FZ_OFF_FILLW && wEst && Math.abs(wEst - hEst) > hEst * 0.2 && /([._\-…·─])\1{5,}/.test(it.text || (it.lines || []).join(' '))) return hEst;
@@ -1659,7 +1847,8 @@
       if (it.kind === 'para') {
         // মাপা লাইন Gemini-র লাইনের তুলনায় অনেক কম ⇒ লাইন আলাদা হয়নি (কাত/ঘন ছাপা) ⇒ মাপ অবিশ্বাস্য, মূল-লেখার আকার
         const textLines = (it.lines && it.lines.length) || 1;
-        const reliable = it.m && it.m.lineInkPt && bodyInk && !(textLines >= 2 && it.m.lines.length < textLines * 0.6);
+        const mergedInk = a10LinesOn() && textLines >= 2 && it.m && it.m.lines && it.m.lines.length < textLines && (!it.m.widthFontPt || it.m.lineInkPt > (bodyInk || 30) * 1.35);
+        const reliable = it.m && it.m.lineInkPt && bodyInk && !(textLines >= 2 && it.m.lines.length < textLines * 0.6) && !mergedInk;
         let ratio = reliable ? estOf(it) / bodyInk : (FS_CLASS[it.fs] || 12) / 12;
         // শিরোনাম-জাতীয় ছাড়া সাধারণ লেখা মূল-লেখার কাছাকাছি (মাপের গোলমাল সীমিত)
         if (!/^(title|heading|header)$/.test(it.type)) ratio = clamp(ratio, 0.7, 1.3);
@@ -1673,14 +1862,24 @@
         // অতি-ছোট লেখা ("১।", "র") — অক্ষর-শ্রেণির অনুমানও অনিশ্চিত ⇒ ছোট করা নয়
         const avgLen = (it.text || '').replace(/\s+/g, ' ').length / textLines;
         if (ratio < 1 && avgLen < 5 && it.type !== 'page_number') ratio = 1;
+        // A04_PAGES_v1: বহু-লাইনের গদ্য অনুচ্ছেদে কেবল শেষের ছোট লাইনটি মাপা আয়তে পড়লে মূল-লেখার আকার ও পূর্ণ আয়ত পুনরুদ্ধার
+        if (pages4On() && textLines === 1 && it.rect && it.rect.h < 18 && String(it.text || '').replace(/\s+/g, ' ').length >= 95 && it.rect.w < (C.x1 - C.x0) * scale * 0.75 && (!it.m || !it.m.widthFontPt || it.m.widthFontPt <= 7)) {
+          ratio = 1;
+          const pitchEst = bodyFont * 1.15;
+          it.rect = { x: left, y: r1(Math.max(top, it.rect.y - pitchEst)), w: r1((C.x1 - C.x0) * scale), h: r1(it.rect.h + pitchEst) };
+          it.keepLines = false;
+          if (it.m && Array.isArray(it.m.lines) && it.m.lines.length === 1) it._tailLines = 2;
+        } else if (pages4On() && textLines === 1 && it.keepLines && it.rect && it.rect.h >= bodyFont * 1.6 && String(it.text || '').replace(/\s+/g, ' ').length >= 90) {
+          it.keepLines = false;
+        }
         // অনুপাত এখন ক্যালিব্রেটেড ⇒ মূল-লেখার ±১০%-এ হলে ঠিক মূল-লেখার আকার
         // a09: ±১০% সহনশীলতায় ১০.৮ ⇒ ১২ হতো (প্রস্থ +১০%, লাইন মুড়ে পাতা উপচাত) ⇒ ±৫%
         it.fontPt = Math.abs(ratio - 1) <= 0.1 ? bodyFont : clamp(Math.round(bodyFont * ratio * 2) / 2, 6, 60);
         // Part-17.9: মোটা/হেলানো — কালির রেখা-পুরুত্ব (ফন্ট-অনুপাতে) পুরো ফাইলের সাধারণ লেখার সাথে তুলনা; Gemini-র কথা শুধু মাপ না থাকলে
-        if (it.m && it.m.lineInkPt > 0) it.diag = { inkPt: r1(it.m.lineInkPt), estPt: r1(estOf(it)), wPt: it.m.widthFontPt ? r1(it.m.widthFontPt) : null, ratio: inkRatioFor(it.text), lines: it.m.lines.length,
+        if (it.m && it.m.lineInkPt > 0) it.diag = { inkPt: r1(it.m.lineInkPt), estPt: r1(estOf(it)), wPt: it.m.widthFontPt ? r1(it.m.widthFontPt) : null, ratio: inkRatioFor(it.text), lines: it._tailLines || it.m.lines.length,
           sl: it.m.slant || 0, slQ: it.m.slantGain ? Math.round(it.m.slantGain * 1000) / 1000 : null, sH: Math.round((it.m.strokeHPt || 0) * 100) / 100, sV: Math.round((it.m.strokeVPt || 0) * 100) / 100, dens: Math.round((it.m.inkDensity || 0) * 1000) / 1000 };
         // মোটা কিনা পরে পুরো ফাইল মিলিয়ে (build-এর শেষে) — চূড়ান্ত ফন্টের অনুপাতে রেখা-পুরুত্ব
-        if (it.m && it.m.strokePt > 0 && it.m.lineInkPt > 0) it._stroke = it.m.strokePt * scale;
+        if (it.m && it.m.strokePt > 0 && it.m.lineInkPt > 0 && !(a10LinesOn() && textLines >= 2 && it.m.lines && it.m.lines.length < textLines)) it._stroke = it.m.strokePt * scale;
         if (it.m && it.m.slant >= 0.1) it.italic = true;
         if (!reliable) it.lineSpacingPt = 0;
         // লাইন-দূরত্ব ফন্টের ১.৬ গুণের বেশি ⇒ মাপ অবিশ্বাস্য (দুই লাইন জোড়া পড়েছে) — Word-এর স্বাভাবিক দূরত্ব
@@ -1688,8 +1887,22 @@
         // (a13: ১১pt লেখা ১৯pt দূরত্বে ৫ লাইন — ফেলে দিলে অনুচ্ছেদ ২৫pt খাটো, নিচের সব ওপরে)
         const sameN = it.m && it.m.lines && it.lines && it.lines.length >= 2 && it.m.lines.length === it.lines.length;
         const maxLsMul = mathHOn() && it.hasEquation ? (sameN ? 2.8 : 2.2) : (sameN ? 2.2 : 1.6);
-        if (it.lineSpacingPt > it.fontPt * maxLsMul) it.lineSpacingPt = 0;
-        it.lineSpacingPt = r1((it.lineSpacingPt || 0) * scale);
+        // EXTRALINES: উৎস-স্থানাঙ্কে মাপা lineSpacingPt-কে স্কেল করার আগেই স্কেলকৃত fontPt-এর সাথে তুলনা করলে
+        // স্কেল < ১ পাতায় (যেমন a19-এ scale=0.56, pitchPt=28.8pt -> 16.1pt বনাম 12.5*2.2=27.5pt) সঠিক লাইন-দূরত্ব ০ হয়ে যেত
+        if (extraLinesOn() || a10LinesOn()) {
+          it.lineSpacingPt = r1((it.lineSpacingPt || 0) * scale);
+          if (it.lineSpacingPt > it.fontPt * maxLsMul) it.lineSpacingPt = 0;
+          if (a10LinesOn()) {
+            const nLn = (it.tabLines && it.tabLines.length) || textLines;
+            if (!it.lineSpacingPt && nLn >= 2 && it.rect && it.rect.h > 0) {
+              const estPitch = r1(Math.max(it.fontPt * 1.15, (it.rect.h - it.fontPt * 1.02) / (nLn - 1)));
+              if (estPitch <= it.fontPt * 1.8) it.lineSpacingPt = estPitch;
+            }
+          }
+        } else {
+          if (it.lineSpacingPt > it.fontPt * maxLsMul) it.lineSpacingPt = 0;
+          it.lineSpacingPt = r1((it.lineSpacingPt || 0) * scale);
+        }
         it.firstIndentPt = r1((it.firstIndentPt || 0) * scale);
         if (mathHOn() && it.hasEquation) {
           const rawML = (it.tabLines && it.tabLines.length ? it.tabLines : (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n')));
@@ -1722,7 +1935,8 @@
           if (cells.length && filledN / cells.length <= 0.3 && rowH >= bodyFont * 1.4) {
             const floor = Math.round(Math.min(bodyFont * 0.85, rowH * 0.6) * 2) / 2;
             if (floor > it.fontPt) it.fontPt = floor;
-            if (it.rowHeightsPt && it.rowHeightsPt[0] >= bodyFont * 2.2) it.headFontPt = bodyFont;
+            const h0Pt = a10LinesOn() ? (it.rowHeightsPt && it.rowHeightsPt[0] || 0) * scale : (it.rowHeightsPt && it.rowHeightsPt[0] || 0);
+            if (it.rowHeightsPt && h0Pt >= bodyFont * 2.2 && !(a10LinesOn() && it.rows[0] && it.rows[0].some((c) => String(c || '').includes('\n') || String(c || '').length > 18))) it.headFontPt = bodyFont;
           }
         }
         // শুধু ১–২ সারির ক্ষুদে ছকে (f1-এর বহু-সারির ছকে বড় ফন্ট ⇒ পাতা উপচাল, ৫৯→২২)
@@ -1739,8 +1953,62 @@
           }
         }
       }
-      if (it.kind === 'figure' || it.kind === 'table') { it.widthPt = it.rect ? r1(it.rect.w) : 0; it.heightPt = it.rect ? r1(it.rect.h) : 0; }
+      if (pages4On() && it.kind === 'table' && it.rows && it.rows.length >= 15) {
+        const nC = Math.max(...it.rows.map((r) => r.length));
+        if (nC >= 10) {
+          if (it.fontPt > 8) it.fontPt = 8;
+          if (Array.isArray(it.colFractions) && it.colFractions.length === nC) {
+            const f = it.colFractions.slice();
+            let chg = false;
+            for (let k = 0; k < nC; k++) {
+              if (f[k] < 0.042) {
+                const j = f.indexOf(Math.max(...f)), d = 0.042 - f[k];
+                if (j !== k && f[j] - d >= 0.08) { f[j] -= d; f[k] += d; chg = true; }
+              }
+            }
+            if (chg) it.colFractions = f;
+          }
+        }
+      }
+      if (it.kind === 'figure' || it.kind === 'table') {
+        it.widthPt = it.rect ? r1(it.rect.w) : 0;
+        it.heightPt = it.rect ? r1(it.rect.h) : 0;
+        if (a10LinesOn() && it.kind === 'table' && Array.isArray(it.rowHeightsPt) && scale !== 1) {
+          const ex = it.rowHeightsPt.exact;
+          it.rowHeightsPt = it.rowHeightsPt.map((h) => r1(h * scale));
+          if (ex) it.rowHeightsPt.exact = true;
+        }
+      }
+      delete it._tailLines;
       delete it.m;
+    }
+    // EXTRALINES: একই ব্লক থেকে ফাঁকে ভাগ হওয়া ছোট বর্ডারলেস ছকগুলোর (যেমন a19-এর ১০। কেন্দ্র সচিবের স্বাক্ষর/সিলমোহর, splitPart 0..2)
+    // কলাম-অনুপাত, ফন্ট ও প্রস্থের সমতা রক্ষা যাতে প্রথম অংশের নিচে পরের অংশগুলো বাঁয়ে সরে বা ভিন্ন ফন্টে না ভাঙে
+    if (extraLinesOn()) {
+      const spGroups = new Map();
+      for (const it of items) {
+        if (it.kind === 'table' && it.splitPart != null && it.borderless && Array.isArray(it.box)) {
+          const key = it.box.join(',');
+          if (!spGroups.has(key)) spGroups.set(key, []);
+          spGroups.get(key).push(it);
+        }
+      }
+      for (const grp of spGroups.values()) {
+        if (grp.length < 2) continue;
+        const head = grp.find((x) => x.splitPart === 0) || grp[0];
+        const maxF = Math.max(...grp.map((x) => x.fontPt || 0));
+        const nC = head.colFractions ? head.colFractions.length : 2;
+        const padW = nC * 10.8 + 20;
+        const canExpand = head.rect && (head.rect.w + padW <= (C.x1 - C.x0) * scale);
+        const newW = canExpand ? r1(head.rect.w + padW) : head.widthPt;
+        const col0W = head.colFractions && head.rect ? head.colFractions[0] * head.rect.w : 0;
+        const baseFr = (canExpand && col0W > 0 && newW > col0W) ? [col0W / newW, 1 - col0W / newW] : (head.colFractions ? head.colFractions.slice() : null);
+        grp.forEach((x) => {
+          if (maxF > 0) x.fontPt = maxF;
+          if (canExpand && x.rect) { x.rect.w = newW; x.widthPt = newW; }
+          if (baseFr && x.colFractions && x.colFractions.length === baseFr.length) x.colFractions = baseFr.slice();
+        });
+      }
     }
     const contentRight = left + (C.x1 - C.x0) * scale;
     const margins = {
@@ -1865,6 +2133,10 @@
             out.centerShiftPt = r1(clamp((it.rect.x + it.rect.w / 2) - (cx0 + cx1) / 2, -slack, slack));
           }
           if (it.kind === 'para' && it.align === 'r') out.rightIndentPt = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+          if (a10LinesOn() && it.kind === 'para' && it.align === 'j' && out.keepLines && out.keepJust && it.rect && it.rect.w > 0) {
+            const jr = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+            if (jr >= 2 && jr <= (cx1 - cx0) * 0.25) out.justRightPt = jr;
+          }
           // Part-17.8: ট্যাব-অবস্থান ঘর/স্তম্ভের বাম কিনারা থেকে (Word-নিয়ম; ইনডেন্ট থেকে নয়)
           if (it.tabStopsAbs) {
             out.tabStops = it.tabStopsAbs.map((x) => (formKitOn() && x && typeof x === 'object' ? Object.assign({}, x, { pos: r1(x.pos - cx0) }) : r1(x - cx0)))
@@ -2023,7 +2295,7 @@
   function alignTabStops(page) {
     const nTab = (l) => (l.match(/\t/g) || []).length;
     // এক ট্যাবের item: প্রথম লাইনে ঠিক একটি ট্যাব, বাকি লাইনে ≤১ (ঠিকানার পরের লাইন ট্যাবহীন হতে পারে)
-    const oneTab = (it) => it.kind === 'para' && it.tabLines && it.tabStops && it.tabStops.length === 1 && (!formKitOn() || typeof it.tabStops[0] === 'number') && nTab(it.tabLines[0]) === 1 && it.tabLines.every((l) => nTab(l) <= 1);
+    const oneTab = (it) => it.kind === 'para' && it.tabLines && it.tabStops && it.tabStops.length === 1 && (!formKitOn() || typeof it.tabStops[0] === 'number') && nTab(it.tabLines[0]) === 1 && it.tabLines.every((l) => nTab(l) <= 1) && !(a10LinesOn() && ((it.firstIndentPt || 0) < -4 || /^\s*\*{0,2}[০-৯\d]{1,3}[।.)]\*{0,2}\s*\t/.test(String(it.tabLines[0] || ''))));
     // ≥৩ লাইনের item-এ অর্ধেক বা বেশি লাইনে ট্যাব ⇒ ট্যাবহীন "লেবেল : মান" লাইনেও কোলনে ট্যাব (শিক্ষাগত যোগ্যতার তালিকা)
     const fillTabs = (it) => {
       const L = it.tabLines;
@@ -2696,6 +2968,7 @@
       const tx = String(it.text || '').replace(/[\s*]/g, ''), fillN = (tx.match(/([._\-…·─])\1{5,}/g) || []).join('').length;
       const short = !globalThis.__FZ_OFF_SHORTB && (tx.replace(/[ঁ-ঃ়া-্ৗ]/g, '').length <= 3 || fillN >= tx.length * 0.4);
       if (ref && !short && !/\*\*/.test(it.text || '')) it.bold = v >= ref * 1.13;
+      else if (a10LinesOn() && ref && it.bold && v < ref * 1.13 && !/^(title|heading|header)$/.test(it.type || '') && tx.replace(/[ঁ-ঃ়া-্ৗ]/g, '').length > 10) it.bold = false;
       delete it._stroke;
     });
   }

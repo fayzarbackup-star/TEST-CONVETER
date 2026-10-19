@@ -1,10 +1,11 @@
-# হ্যান্ডঅফ — ২০২৬-১০-১৯ (রাত ~২টা) — ব্যবহারকারী: আজ বন্ধ, কাল সকালে শুরু; পিসি হ্যাং ⇒ একসাথে ২টির বেশি ট্যাব নয়
-- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md। bridge পোর্ট 18765 (`/tabs`, `/navigate-tab`, `/click-send?tabId=`)। send এখন Task-চিপ নিজে যাচাই করে (না হলে পাঠায় না); তবু ✗ এলে `/click-send?tabId=<id>` + rounds.json-এ হাতে যোগ।
-- **চলছে/বাকি জিপ:** u/2 A01_WRAP_v1 (a01 লাইন-ভাঙা, সুইচ WRAPFIT), u/3 A14_BOXSPLIT_v1 (মাঝপথে থেমে থাকতে পারে — জিপ না এলে নতুন চ্যাটে আবার পাঠাও), u/0 Q_ASIS_SCORE_v11, u/1 A07_TABLECOL_v1 (ট্যাব বন্ধ — চ্যাট খুলে জিপ আছে কি না দেখো)। বান্ডেল scratch/bundles/*_bundle.zip।
-- **বসানো বাকি:** inbox\A1_F1_PAGEFIT_FIX_v6.zip (যাচাই হয়েছে: docx-to-doc-engine-এ পরিবর্তন শুধু studioFit-এ; বসাও → f1-pagefit + run-all → push)।
-- আজ push: 9e0f1cd (F3+ASIS v10), 1806145 (rowcheck), f795853 (D_E2E, নুক্তা-টেস্ট ঠিক), 22da90f (F2 wire)। run-all 2403/0।
-- **নমুনা:** scratch\samples\asis (১৭টি); `$env:ASIS_DIR=(Resolve-Path scratch\samples\asis).Path`। manifest-এ n1–n4 যোগ; ক্যাপচার ব্যর্থ (OCR-প্রক্সি "সাময়িক ব্যস্ত") ⇒ `--ids n1,n2 --capture` আবার।
-- **স্কোর আগে→এখন:** scratch\asis-before-2026-10-19.json + HANDOFF-এর আগের রিপোর্ট। a01/a03/a18-এর ফোল্ডারে এখন FONTPICK-চালু আউটপুট ⇒ কাল আগে `--ids a01,a03,a18` (সুইচ ছাড়া) আবার।
-- **সুইচ-সুইপ (scratch\switch-sweep.ps1, ফল switch-sweep.txt):** OTSU ±০, FORMKIT ±০, FONTPICK খারাপ (a01 −১০, a03 −৭) ⇒ বন্ধ থাকবে। PGBORDER, TABLEGRID, ROWCHECK বাকি: `-Switches PGBORDER,TABLEGRID,ROWCHECK`।
-- asis-score চালানোর আগে লুকানো WINWORD থাকলে বন্ধ করো (EBUSY দেয়)।
+# হ্যান্ডঅফ — ২০২৬-১০-১৯ (দুপুর) — একসাথে ২টির বেশি ট্যাব নয় (পিসি হ্যাং)
+- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md। bridge পোর্ট 18765। জিপ "খোলা যায়নি" বললে: `/navigate-tab?tabId=<id>&url=https://gemini.google.com/u/N/app` → `/switch-mode?tabId=<id>&mode=Argon` → `send --acct N --file ... --force`।
+- **লক্ষ্য:** আগে গঠন নির্ভুল + সম্পাদনায় ফরম্যাট না ভাঙা, তারপর স্কোর ১০০-র কাছে।
+- **push হলো:** A07 TABLECOL, A04 PAGES4, A19 EXTRALINES, A10 A10LINES, Q_ASIS_SCORE_v11 (সব সুইচ বন্ধ)। run-all 2487/0। ব্যাকআপ scratch\backup-a10, backup-a19।
+- **পরের কাজ (স্কোর মাপা, একটি একটি করে):** `FZ_ON=<SW> --ids <id>` দিয়ে আগে/পরে — TABLECOL→a07, PAGES4→a04, EXTRALINES→a19, A10LINES→a10, WRAPFIT→a01। ভালো হলে ডিফল্ট-চালুর প্রস্তাব ব্যবহারকারীকে।
+- a04-এর মূল PDF 261_ATC_8.pdf ব্যবহারকারীর কাছ থেকে লাগবে।
+- **বাকি জিপ:** A14_BOXSPLIT_v1.zip (Downloads) যাচাই করে বসাও; inbox\A1_F1_PAGEFIT_FIX_v6.zip বসাও → f1-pagefit + run-all → push।
+- **নমুনা:** scratch\samples\asis; `$env:ASIS_DIR=(Resolve-Path scratch\samples\asis).Path`। n1–n4 ক্যাপচার বাকি (`--ids n1,n2 --capture`)। a01/a03/a18 আবার মাপো (সুইচ ছাড়া)।
+- সুইচ-সুইপ বাকি: `scratch\switch-sweep.ps1 -Switches PGBORDER,TABLEGRID,ROWCHECK`। FONTPICK ক্ষতিকর ⇒ বন্ধ।
+- asis-score চালানোর আগে লুকানো WINWORD বন্ধ করো (EBUSY)।
 - বাকি সিদ্ধান্ত (ব্যবহারকারী): ক্যাশমেমো ৯/১০pt; পুরোনো ফোল্ডার মোছা; OCR-প্রক্সি deploy; সুইচ ডিফল্ট-চালু।
