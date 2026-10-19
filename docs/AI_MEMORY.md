@@ -604,3 +604,12 @@
 - A10 rebase প্রথম চ্যাটে "জিপ খোলা যায়নি" ⇒ u/2-এ navigate-tab নতুন চ্যাট + Argon + send --force; ~৪৫ মিনিটে উত্তর।
 - যাচাই: তিন faithful ফাইলে আগের সব __FZ_ON_* সুইচ অক্ষত (হারানো ০)। ব্যাকআপ scratch\backup-a10, backup-a19।
 - টেস্ট: a10-lines 7/0; run-all 2487/0। চার সুইচের স্কোর-প্রভাব এখনো মাপা হয়নি।
+- ১০-১৯ বিকেল: হুবহু স্কোর আবার মাপা (a14,a02,a01,a09) — গতরাতের সমান; a01 বেসলাইন 79.3→72.6 রিগ্রেশন। a17 পাতা-১-এ ৫৫ লাইনের মাত্র ৮টি আসে (বড় বাগ)। ঘাটতি মূলত pos ও rules অংশে। A14/F1_FIX জিপ এখনো বসানো হয়নি।
+
+## ২০২৬-১০-১৯ সন্ধ্যা — চার Gemini প্যাচ একসাথে বসানো
+- A17_P1LOSS (P1LOSS), A01_REGRESS (A01FIX), A05_DRIFT (P2DRIFT), A02_RULES (RULEFIX)। চারটিই একই ৩ faithful ফাইল বদলায়; git নেই বলে tools/merge3.mjs (৩-পথ মার্জ, ভিত্তি scratch\backup-a17) দিয়ে মেলানো।
+- সংঘর্ষ: line-fit fit()-এর শুরু ও export লাইন (চার সুইচ হাতে একত্র); builder planPage গ্রিড (A17-এর if/else-এর else-শাখায় A05/A02 হাতে বসানো), বক্সের lead লাইন।
+- Gemini টেস্ট samples/… পথ খোঁজে → qa/golden-data/asis/… করা হলো। টেস্ট 7+21+7+7 পাস; run-all 2529/0।
+- স্কোর: a01 72.6→96.7 (A01FIX), a02 84→90.4 (RULEFIX, লেআউট 65→94)। a17/a05 মূল PDF নেই → মাপা যায়নি।
+- Arena (arena.ai/agent) পরীক্ষা: arena-bridge-extension (পোর্ট 18766) + tools/arena_send.mjs; ফাইল তোলা কাজ করে, কিন্তু auto-mode classifier বারবার "Data Exfiltration" বলে আটকায় → ব্যবহারকারী হাতে পাঠালেন।
+- agent_manager send-এ `--acct` নেই (সব ট্যাব 0-তে যেত); ঠিক রূপ: `send --tab T --task ID --prompt .. --file ..`।
