@@ -6,7 +6,8 @@
  */
 (function (global) {
   'use strict';
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX'];
+  // ১০-২১: VSPACE যোগ (a07 +৪.২, a16 +৪.২), BOXSPLIT যোগ (a14 ছবি +৬.৪) — কেউ কমেনি
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT'];
   DEFAULT_ON.forEach((k) => {
     if (!global['__FZ_OFF_' + k]) global['__FZ_ON_' + k] = true;
   });
