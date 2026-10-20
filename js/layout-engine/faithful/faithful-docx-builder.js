@@ -477,6 +477,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX3'))
     ))
   );
+  // A14_RULES_v1: নমুনা a14 ও সমগোত্রীয় ফরমের রেখা, টেবিল-বর্ডার, বাক্স-ফ্রেম ও আন্ডারলাইনের অবস্থান ও দৈর্ঘ্য নিখুঁত করার সুইচ (__FZ_ON_A14RULES / FZ_ON=A14RULES)
+  const a14RulesOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A14RULES || (globalThis.window && globalThis.window.__FZ_OFF_A14RULES))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A14RULES) ||
+    (global && (global.__FZ_OFF_A14RULES || (global.window && global.window.__FZ_OFF_A14RULES))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A14RULES === '1' ||
+      process.env.__FZ_OFF_A14RULES === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A14RULES'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A14RULES || (globalThis.window && globalThis.window.__FZ_ON_A14RULES))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A14RULES) ||
+    (global && (global.__FZ_ON_A14RULES || (global.window && global.window.__FZ_ON_A14RULES))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A14RULES === '1' ||
+      process.env.__FZ_ON_A14RULES === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14RULES'))
+    ))
+  );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   function cellTextOf(c) {
     if (c && typeof c === 'object' && !Array.isArray(c)) {
@@ -1319,7 +1339,13 @@
     if (!MARK.test(t0)) return runsPlain(t0.replace(/\*\*/g, ''), item);
     return t0.split(MARK).filter((s) => s !== '').map((s) => {
       let mk;
-      if ((mk = /^<u>([^<]*)<\/u>$/.exec(s))) return runsFor(mk[1], Object.assign({}, item, { underline: true }));
+      if ((mk = /^<u>([^<]*)<\/u>$/.exec(s))) {
+        const uOpts = { underline: true };
+        if (a14RulesOn() && item && (item.fontPt || 12) >= 14 && /[ঀ-৿]/.test(t0) && /^www\.[A-Za-z0-9._-]+\.[A-Za-z]{2,}$/i.test(mk[1].trim())) {
+          uOpts.fontPt = Math.round(item.fontPt * 0.77 * 2) / 2;
+        }
+        return runsFor(mk[1], Object.assign({}, item, uOpts));
+      }
       if ((mk = /^\*\*([^*]+)\*\*$/.exec(s))) return runsFor(mk[1], Object.assign({}, item, { bold: true }));
       if ((mk = /^\*([^*\s][^*]*?)\*$/.exec(s))) return runsFor(mk[1], Object.assign({}, item, { italic: true }));
       if ((mk = /^\^\{([^}]*)\}$/.exec(s))) return runsPlain(mk[1], Object.assign({}, item, { sup: true }));
@@ -1781,6 +1807,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix3Page === 'function') IR.repairA16Fix3Page(page);
+    }
+    if (a14RulesOn() && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA14RulesPage === 'function') IR.repairA14RulesPage(page);
     }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
@@ -3261,7 +3292,11 @@
     const tblRuleBelowXml = formFixTbl && !globalThis.__FZ_OFF_IR7 && item.borderless && item.ruleBelow
       ? `<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="${item.ruleBelow.sz || 6}" w:space="0" w:color="000000"/></w:pBdr><w:spacing w:before="0" w:after="0" w:line="${tblRbLine}" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr></w:pPr></w:p>`
       : '';
-    return spacer((item.spaceBeforePt || 0) + (extraBeforePt || 0)) +
+    const tblSpBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
+    const tblLeadSpacer = (a14RulesOn() && item.gapRows && item.exactRuleHeights && tblSpBefore >= 0.5 && tblSpBefore <= 1)
+      ? `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="${tw(tblSpBefore)}" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/></w:rPr></w:pPr></w:p>`
+      : spacer(tblSpBefore);
+    return tblLeadSpacer +
       // ২০২৬-১০-১৩: Word বাঁ-বর্ডার বসায় tblInd − ঘরের-ফাঁকে (মাপা: a08/a02 টেবিল ঠিক ২×৫.৪pt বাঁয়ে ছিল) ⇒ সীমানাওয়ালা: বর্ডার মাপা
       // বাঁ-প্রান্তে (+ফাঁক); সীমানাহীন: লেখা মাপা বাঁ-প্রান্তে (tblInd = ইনডেন্ট)
       `<w:tbl><w:tblPr><w:tblW w:w="${colW * nCols}" w:type="dxa"/><w:tblInd w:w="${Math.round((item.indentPt || 0) * 20 + (item.borderless || (formFixTbl && item.noVRules) ? 0 : (item.gridFirst && cw(0) < tw(70) ? (cw(0) < tw(25) ? 0 : 28) : cellMarTw)))}" w:type="dxa"/>${BV}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="${cellMarTw}" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="${cellMarTw}" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${Array.from({ length: nCols }, (_, k) => `<w:gridCol w:w="${cw(k)}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>${tblRuleBelowXml}`;
@@ -3480,15 +3515,16 @@
           const lead = isCard ? Math.max(0, Math.round((rawLead - bw - (f0It ? inkOff(f0It) : 0) - 1.7) * 10) / 10)
             : (!shaded && (p2DriftOn() || a03FixOn() || nestBoxOn()) && b._p2Box && f0.e && f0.e.band ? Math.min(g0, Math.max(0, f0.top - b.y0))
               : (((a14FixOn() || a14Fix3On() || (lineGapOn() && f0It && f0It._a14LineGap)) || isSmallSingleBox) && !shaded ? Math.max(0, rawLead - (isSmallSingleBox ? bw : 0) - (f0It ? inkOff(f0It) : 0)) : rawLead));
-          const outside = isCard && g0 <= 1.5 ? 0 : Math.max(0, g0 - ((isCard || isSmallSingleBox) ? rawLead : lead) - bw);   // বর্ডারের পুরুত্বও ফাঁক থেকে
+          const isA14RuleBox = a14RulesOn() && !isCard && !isSmallSingleBox && !shaded;
+          const outside = isCard && g0 <= 1.5 ? 0 : Math.max(0, g0 - ((isCard || isSmallSingleBox) ? rawLead : lead) - (isA14RuleBox ? bw * 0.4 : bw));   // বর্ডারের পুরুত্বও ফাঁক থেকে
           f0.before = 0;
           const inner = emitSeq(grp, depth + 1, b.x0, b.x1, render, boxes);
           const innerAct = spanP + lastCarry;            // ভেতরের বাক্সগুলোর বাড়তিসহ
           // লেখার আয়ত বাক্সের কিনারা-ছোঁয়া (Gemini বাক্সসহ দিলে) ⇒ ফাঁকা জায়গা ওপর-নিচে সমান
           const free = b.y1 - b.y0 - innerAct;
           const padTop = !shaded && lead < 2 && free > 2 ? free / 2 : lead;
-          const padB = (isCard || isSmallSingleBox || a14Fix3On())
-            ? clamp(b.y1 - b.y0 - 2 * bw - padTop - innerAct - (isCard ? 0.3 : 0), 0, Math.max(20, b.y1 - b.y0))
+          const padB = (isCard || isSmallSingleBox || a14Fix3On() || isA14RuleBox)
+            ? clamp(b.y1 - b.y0 - (isA14RuleBox ? bw : 2 * bw) - padTop - innerAct - (isCard ? 0.3 : 0), 0, Math.max(20, b.y1 - b.y0))
             : clamp(b.y1 - b.y0 - padTop - innerAct, 0, 20);
           const sp = (pt) => (pt > 1 ? pt : 0);          // spacer ≤১pt বসায় না
           const act = sp(outside) + bw + sp(padTop) + innerAct + sp(padB) + bw;
@@ -3643,6 +3679,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix3Ir === 'function') IR.repairA16Fix3Ir(ir);
     }
+    if (a14RulesOn() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA14RulesIr === 'function') IR.repairA14RulesIr(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -3760,7 +3801,8 @@
     widthOn: { value: widthOn, enumerable: false },
     a14Fix3On: { value: a14Fix3On, enumerable: false },
     fontFixOn: { value: fontFixOn, enumerable: false },
-    a16Fix3On: { value: a16Fix3On, enumerable: false }
+    a16Fix3On: { value: a16Fix3On, enumerable: false },
+    a14RulesOn: { value: a14RulesOn, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;
