@@ -356,6 +356,24 @@
     }
     return false;
   }
+  // WIDTH_v1: হুবহু মোডে লাইনের প্রস্থ ও ডান-প্রান্ত (dx1) মূলের সাথে মেলানোর সুইচ (__FZ_ON_WIDTH / FZ_ON=WIDTH)
+  function isWidthOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_WIDTH || (globalThis.window && globalThis.window.__FZ_OFF_WIDTH))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_WIDTH)) return false;
+    if (global && Boolean(global.__FZ_OFF_WIDTH || (global.window && global.window.__FZ_OFF_WIDTH))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_WIDTH === '1' || process.env.__FZ_OFF_WIDTH === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('WIDTH')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_WIDTH || (globalThis.window && globalThis.window.__FZ_ON_WIDTH))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_WIDTH)) return true;
+    if (global && Boolean(global.__FZ_ON_WIDTH || (global.window && global.window.__FZ_ON_WIDTH))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_WIDTH === '1' || process.env.__FZ_ON_WIDTH === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WIDTH')) return true;
+    }
+    return false;
+  }
   function defaultWrapMeasure(s) {
     const str = String(s || '');
     const fills = (str.match(FILL_G) || []).join('');
@@ -394,7 +412,7 @@
   function sideIndent(it) {
     if (it.align === 'c' && it.centerShiftPt != null) return Math.abs(it.centerShiftPt) >= 2 ? 2 * Math.abs(it.centerShiftPt) : 0;
     if (it.align === 'r' && it.rightIndentPt != null) return it.rightIndentPt >= 2 ? it.rightIndentPt : 0;
-    const jr = (isA10LinesOn() || isA10FixOn() || isP2DriftOn() || isA03FixOn() || (isNestBoxOn() && it._inNestBoxPage) || isA14FixOn() || isA19FixOn() || isA16FixOn() || (isLineGapOn() && it && it._a14LineGap)) && it.align === 'j' && it.justRightPt >= 2 ? it.justRightPt : 0;
+    const jr = (isA10LinesOn() || isA10FixOn() || isP2DriftOn() || isA03FixOn() || (isNestBoxOn() && it._inNestBoxPage) || isA14FixOn() || isA19FixOn() || isA16FixOn() || isWidthOn() || (isLineGapOn() && it && it._a14LineGap)) && it.align === 'j' && it.justRightPt >= 2 ? it.justRightPt : 0;
     return (it.indentPt || 0) + Math.abs(it.firstIndentPt || 0) + jr;
   }
 
@@ -716,9 +734,9 @@
         if (totAvail > 40 && totW > totAvail && !FILL.test(t)) ratio = Math.max(ratio, totW / totAvail);
         return;
       }
-      const hangOff = (isA10LinesOn() || isA10FixOn() || isIndentOn()) && k > 0 && !nTab && (it.firstIndentPt || 0) < 0 ? -(it.firstIndentPt || 0) : 0;
+      const hangOff = (isA10LinesOn() || isA10FixOn() || isIndentOn() || isWidthOn()) && k > 0 && !nTab && (it.firstIndentPt || 0) < 0 ? -(it.firstIndentPt || 0) : 0;
       const indOff = (isIndentOn() && nTab > 0) ? 0 : (it.indentPt || 0);
-      const avail = cellW * SAFE - indOff - (nTab ? stops[nTab - 1] : hangOff);
+      const avail = (isWidthOn() ? cellW : cellW * SAFE) - indOff - (nTab ? stops[nTab - 1] : hangOff);
       const w = lineWidthPt(parts[nTab], it, measure);
       if (avail > 20 && w > avail && !(isIndentOn() && w <= (cellW - indOff - (nTab ? stops[nTab - 1] : hangOff)) + 1.5)) ratio = Math.max(ratio, w / avail);
     });
@@ -826,7 +844,7 @@
         if (need > avail) ratio = Math.max(ratio, need / avail);
       }
     });
-    if (((isA07FixOn() || isVSpaceOn()) && it._a07MultiLinePitch) || (isA19FixOn() && it._a19FixedTbl) || (isLineGapOn() && it._a14FixedTbl)) return null;
+    if (((isA07FixOn() || isVSpaceOn() || isWidthOn()) && it._a07MultiLinePitch) || (isA19FixOn() && it._a19FixedTbl) || (isLineGapOn() && it._a14FixedTbl)) return null;
     const fontFrom = it.fontPt;
     if (ratio > 1) {
       it.fontPt = Math.max((isLineGapOn() && it._lineGapFixed) ? Math.ceil(fontFrom * MIN_SCALE * 2) / 2 : 1, Math.floor(it.fontPt * Math.max(MIN_SCALE, 1 / ratio) * 2) / 2);
@@ -877,7 +895,7 @@
 
   /** একটি অংশ আঁটানো; বদল হলে { needPt, availPt, fontFrom } ফেরত, নইলে null */
   function fitItem(it, cellW, measure) {
-    const a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn(), a16On = isA16FixOn(), indOn = isIndentOn();
+    const wdOn = isWidthOn(), a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn() || wdOn, a16On = isA16FixOn() || wdOn, indOn = isIndentOn();
     if ((a07On && it && it._a07FixedSig) || (a16On && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
     if ((wfOn || p4On || a14On || a19On || a11On || indOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (a11On && it && it.kind === 'para' && !it.tabLines && (it.lines || []).length === 1 && FILL.test((it.lines && it.lines[0]) || it.text || '')) return null;
@@ -922,14 +940,15 @@
     if (L.every((l) => /^([─━═=_\-.…·])\1{5,}$/.test(String(l).replace(/\s+/g, '')))) return null;   // রেখা-লাইন: builder-এর leader-ট্যাব
     const bsItem = boxSplitOn();
     const full = cellW * SAFE;
-    const multiFi = ((a01On || a14On || bsItem) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0 && FILL.test(L.join(' ')))
-      || ((a19On || indOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0);
+    const multiFi = ((a01On || a14On || bsItem || wdOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0 && FILL.test(L.join(' ')))
+      || ((a19On || indOn || wdOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0);
     const fillFull = bsItem && it.rect && it.rect.w > 40 ? Math.min(full, (it.indentPt || 0) + it.rect.w * SAFE) : full;
     const lineAvailOf = (idx) => {
       if (bsItem) return (idx > 0 && (it.firstIndentPt || 0) > 0) ? (fillFull - (it.indentPt || 0)) : (fillFull - sideIndent(it));
-      if (!(a14On || a19On || a11On || indOn)) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
+      if (!(a14On || a19On || a11On || indOn || wdOn)) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
       const fi = it.firstIndentPt || 0;
-      const lineInd = (it.indentPt || 0) + (idx === 0 ? Math.max(0, fi) : Math.max(0, -fi));
+      const jr = (wdOn && it.align === 'j' && it.justRightPt >= 2) ? it.justRightPt : 0;
+      const lineInd = (it.indentPt || 0) + (idx === 0 ? Math.max(0, fi) : Math.max(0, -fi)) + jr;
       return full - lineInd;
     };
     const availPt = (multiFi && !bsItem) ? full - (it.indentPt || 0) : full - sideIndent(it);
@@ -967,7 +986,7 @@
         origW && need < origW * 0.9 && need > 0) {
       const scale = Math.min(1.3, origW / need, availPt / need);
       const rawF = Math.floor(it.fontPt * scale * 2) / 2;
-      const f = (isVSpaceOn() && it.rect && it.rect.h > 0) ? Math.min(rawF, Math.floor((it.rect.h + 0.5) * 2) / 2) : rawF;
+      const f = ((isVSpaceOn() || wdOn) && it.rect && it.rect.h > 0) ? Math.min(rawF, Math.floor((it.rect.h + 0.5) * 2) / 2) : rawF;
       if (f > it.fontPt) {
         it.fontPt = f;
         it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, grow: true };
@@ -981,15 +1000,16 @@
       const wPtSmaller = !!(it.diag && it.diag.wPt && it.diag.wPt < it.fontPt - 0.15);
       const wordRiskNeed = need + (!FILL.test(L[0]) ? karCnt * it.fontPt * 0.08 : 0);
       if (need <= full && (wordRiskNeed > availPt || (need > availPt * 0.95 && (wPtSmaller || karCnt >= 10)))) {
+        const keepStructInd = wdOn && (it.indentPt || 0) >= 18 && it.rect && it.rect.w <= cellW - (it.indentPt || 0) + 2;
         const roomW = Math.max(0, full * 0.95 - need);
         if (it.align === 'c' && it.centerShiftPt != null) it.centerShiftPt = Math.sign(it.centerShiftPt) * Math.min(Math.abs(it.centerShiftPt), roomW / 2);
         else if (it.align === 'r' && it.rightIndentPt != null) it.rightIndentPt = Math.min(it.rightIndentPt, roomW);
-        else {
+        else if (!keepStructInd) {
           const fi = Math.abs(it.firstIndentPt || 0);
           if (fi > roomW) it.firstIndentPt = 0;
           it.indentPt = Math.max(0, Math.min(it.indentPt || 0, roomW - Math.abs(it.firstIndentPt || 0)));
         }
-        if (!it.charSpacingPt) it.charSpacingPt = -0.15;
+        if (!it.charSpacingPt && !keepStructInd) it.charSpacingPt = -0.15;
         if (need > (full - sideIndent(it)) * 0.96 || wordRiskNeed > full) {
           if (!it.lineSpacingPt) it.lineSpacingPt = Math.round(fontFrom * 1.15 * 10) / 10;
           it.fontPt = Math.max(1, it.fontPt - 0.5);
@@ -1013,7 +1033,7 @@
         return it.fit;
       }
     }
-    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indOn) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + ((a19On || indOn) ? 1.5 : 0));
+    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indOn || wdOn) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + (wdOn ? 11.5 : ((a19On || indOn) ? 1.5 : 0)));
     if (need <= availPt || allLinesFitA14) {
       if (!fillsCut) return null;
       it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, fillsCut };
@@ -1102,7 +1122,7 @@
 
   /** A07_SCORE_v1: পূর্ব-নির্মিত বা সরাসরি লোড করা IR-এও ছকের সারি/কলাম, ফন্ট, লাইন-পিচ ও স্বাক্ষর-গ্রিড পুনরুদ্ধার */
   function repairA07Page(page) {
-    if (!(isA07FixOn() || isVSpaceOn()) || !page || !Array.isArray(page.bands) || page._a07Repaired) return page;
+    if (!(isA07FixOn() || isVSpaceOn() || isWidthOn()) || !page || !Array.isArray(page.bands) || page._a07Repaired) return page;
     let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
     if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
     if (IR && typeof IR.repairA07Page === 'function') return IR.repairA07Page(page);
@@ -1110,7 +1130,7 @@
   }
 
   function repairA07Ir(ir) {
-    if (!(isA07FixOn() || isVSpaceOn()) || !ir || !Array.isArray(ir.pages)) return ir;
+    if (!(isA07FixOn() || isVSpaceOn() || isWidthOn()) || !ir || !Array.isArray(ir.pages)) return ir;
     ir.pages.forEach((p) => repairA07Page(p));
     return ir;
   }
@@ -1236,7 +1256,7 @@
   }
 
   function repairVSpacePage(page) {
-    if (!isVSpaceOn() || !page || !Array.isArray(page.bands)) return page;
+    if (!(isVSpaceOn() || isWidthOn()) || !page || !Array.isArray(page.bands)) return page;
     let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
     if ((!IR || typeof IR.repairVSpacePage !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
     if (IR && typeof IR.repairVSpacePage === 'function') return IR.repairVSpacePage(page);
@@ -1244,7 +1264,7 @@
   }
 
   function repairVSpaceIr(ir) {
-    if (!isVSpaceOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    if (!(isVSpaceOn() || isWidthOn()) || !ir || !Array.isArray(ir.pages)) return ir;
     ir.pages.forEach((p) => repairVSpacePage(p));
     return ir;
   }
@@ -1263,9 +1283,23 @@
     return ir;
   }
 
+  function repairWidthPage(page) {
+    if (!isWidthOn() || !page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairWidthPage !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairWidthPage === 'function') return IR.repairWidthPage(page);
+    return page;
+  }
+
+  function repairWidthIr(ir) {
+    if (!isWidthOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => repairWidthPage(p));
+    return ir;
+  }
+
   function fit(ir, measure, opts) {
-    const a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
-      p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
+    const wdOn = isWidthOn(), a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
+      p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
     if (a10On) repairA10Ir(ir);
     if (isA10FixOn()) repairA10FixIr(ir);
     if (p1On || a17On) repairP1LossIr(ir);
@@ -1289,9 +1323,10 @@
     if (vsOn) repairVSpaceIr(ir);
     const indOn = isIndentOn();
     if (indOn) repairIndentIr(ir);
+    if (wdOn) repairWidthIr(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -1379,6 +1414,9 @@
     if (indOn && ir && Array.isArray(ir.pages)) {
       repairIndentIr(ir);
     }
+    if (wdOn && ir && Array.isArray(ir.pages)) {
+      repairWidthIr(ir);
+    }
     return n;
     } finally {
       _activeFitFont = prevFont;
@@ -1386,7 +1424,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
