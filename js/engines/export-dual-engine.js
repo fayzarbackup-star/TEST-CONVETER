@@ -982,7 +982,8 @@
       const geometry = AL.geometry(model, { isBijoy: isBijoy || options.targetFont === 'bijoy' });
       const body = AL.renderDocx(model, { runs: (t, st) => this.renderDocxRuns(t, options, st), isBijoy, geometry });
       if (options.returnInnerXml) return { bodyXml: body, sectPr: AL.docxSectPr(geometry) };
-      return await this._packageDocx(body + AL.docxSectPr(geometry), fontName);
+      // WORK_PLAN F1: শেষ ফাইল বিজয় হলে মাস্টারের ডিফল্ট ফন্টও SutonnyMJ (খালি লাইন ও অনুচ্ছেদ-চিহ্নের উচ্চতা ঠিক রাখতে)
+      return await this._packageDocx(body + AL.docxSectPr(geometry), options.targetFont === 'bijoy' ? 'SutonnyMJ' : fontName);
     },
 
     /** আবেদনপত্র → Word 2003 RTF (নতুন লেআউট) */

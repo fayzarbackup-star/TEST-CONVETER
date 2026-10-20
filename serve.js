@@ -168,8 +168,9 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log(`🌐 URL: ${url}`);
   console.log(`📂 ডিরেক্টরি: ${PUBLIC_DIR}`);
   console.log(`=======================================================`);
+  if (process.env.FZ_NO_OPEN) return; // স্ক্রিপ্ট/QA থেকে চালালে ব্রাউজার খুলবে না
   console.log(`ব্রাউজারে স্বয়ংক্রিয়ভাবে খোলা হচ্ছে...`);
-  
+
   const startCmd = process.platform === 'win32' ? `start "" "${url}"` :
                    process.platform === 'darwin' ? `open "${url}"` : `xdg-open "${url}"`;
   exec(startCmd);

@@ -20,6 +20,36 @@
   'use strict';
   // [প্যাক-১১ গেট-ফাংশন] GRIDFIRST, FORMFIX, PLEADER ডিফল্ট-চালু; যেকোনো সুইচ বা নিয়ম window.__FZ_OFF_<নাম> (FZ_OFF=<নাম>) দিয়ে বন্ধযোগ্য।
   const fzOn = (k) => !(typeof globalThis !== 'undefined' ? globalThis['__FZ_OFF_' + k] : global['__FZ_OFF_' + k]);
+  // TABLE_MERGE_v1 সুইচ: শুধু __FZ_ON_TBLMERGE বা FZ_ON=TBLMERGE সত্য হলে সক্রিয় (বন্ধ: __FZ_OFF_TBLMERGE)
+  const tblMergeOn = () => !(
+    (typeof globalThis !== "undefined" && (globalThis.__FZ_OFF_TBLMERGE || (globalThis.window && globalThis.window.__FZ_OFF_TBLMERGE))) ||
+    (typeof window !== "undefined" && window.__FZ_OFF_TBLMERGE) ||
+    (typeof global !== "undefined" && global && (global.__FZ_OFF_TBLMERGE || (global.window && global.window.__FZ_OFF_TBLMERGE))) ||
+    (typeof process !== "undefined" && process && process.env && (
+      process.env.__FZ_OFF_TBLMERGE === "1" ||
+      process.env.__FZ_OFF_TBLMERGE === "true" ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(",").map((s) => s.trim()).includes("TBLMERGE"))
+    ))
+  ) && !!(
+    (typeof globalThis !== "undefined" && (globalThis.__FZ_ON_TBLMERGE || (globalThis.window && globalThis.window.__FZ_ON_TBLMERGE))) ||
+    (typeof window !== "undefined" && window.__FZ_ON_TBLMERGE) ||
+    (typeof global !== "undefined" && global && (global.__FZ_ON_TBLMERGE || (global.window && global.window.__FZ_ON_TBLMERGE))) ||
+    (typeof process !== "undefined" && process && process.env && (
+      process.env.__FZ_ON_TBLMERGE === "1" ||
+      process.env.__FZ_ON_TBLMERGE === "true" ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(",").map((s) => s.trim()).includes("TBLMERGE"))
+    ))
+  );
+  const rotTextOn = () => !(typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_ROTTEXT) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_ROTTEXT || (globalThis.window && globalThis.window.__FZ_ON_ROTTEXT))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_ROTTEXT) ||
+    (global && (global.__FZ_ON_ROTTEXT || (global.window && global.window.__FZ_ON_ROTTEXT))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_ROTTEXT === '1' ||
+      process.env.__FZ_ON_ROTTEXT === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('ROTTEXT'))
+    ))
+  );
 
   const SERIAL = /^\s*\(?[০-৯0-9]{1,2}\s*[।.)]?\s*$/;
   const BOX_MARK = '\u0001box:';
@@ -63,7 +93,7 @@
 
     // [Rule GF1: FZ_OFF=GRIDFIRST / FZ_OFF=GF1] ৩+ সারির ছকে শিরোনামের পরের সব সারি ফাঁকা হলে (যেমন a10) অথবা ধূসর শিরোনামের ছোট ছকে (যেমন a02 পরিবার-ছক) গ্রিড-প্রথম পুনর্গঠন বাদ।
     if (!globalThis.__FZ_OFF_GF1 && rows.length >= 3 && rows.slice(1).every((r) => !r.some((c) => c && String(c).trim()))) return null;
-    if (!globalThis.__FZ_OFF_GF1 && m.headShade && rows.length <= 4) return null;
+    if (!globalThis.__FZ_OFF_GF1 && !tblMergeOn() && m.headShade && rows.length <= 4) return null;
     // হালকা রেখার ফরম (যেমন f1: ২৮ সারি অথচ রেখা-ভাগ ৪টি, খাড়া দাগ ০টি) ⇒ অসম্পূর্ণ জাল, পুরোনো পথে ফেরা
     const nonEmptyRows = rows.filter((r) => r.some((c) => c && String(c).trim())).length;
     if (rows.length >= 6 && H.length - 1 < nonEmptyRows * 0.18) return null;
@@ -460,6 +490,7 @@
       const totW = (tbl.rect && tbl.rect.w) || 500;
       const fs0 = tbl.headFontPt || tbl.cellFontSrc || 10;
       const headOver = rows[0].some((c, k) => {
+        if (rotTextOn() && ((c && typeof c === 'object' && c.rot) || (tbl.cellRots && tbl.cellRots[0] && tbl.cellRots[0][k]))) return false;
         const cw = totW * (colFractions[k] || 1 / nCols) - (totW * (colFractions[k] || 1 / nCols) < 55 ? 2.8 : 10.8);
         return baseLen(c) >= 18 && baseLen(c) * fs0 * 0.52 > cw;
       });
@@ -500,7 +531,7 @@
     return grid;
   }
 
-  const FayzarGridFirst = { applyGridFirst, extractGrid, refinePartialGridRows, refineHeaderSplitTable, computeSerialColumnVMerges, trimFillToWidth };
+  const FayzarGridFirst = { applyGridFirst, extractGrid, refinePartialGridRows, refineHeaderSplitTable, computeSerialColumnVMerges, trimFillToWidth, tblMergeOn };
   global.FayzarGridFirst = FayzarGridFirst;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarGridFirst;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

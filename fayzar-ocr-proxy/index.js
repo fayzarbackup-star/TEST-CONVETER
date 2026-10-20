@@ -421,7 +421,9 @@ export default {
         }
       }
 
-      const isLargeStream = declaredBytes > thresholdBytes || getReqHeader(request, 'X-Fayzar-Stream') === '1';
+      // FIX_RETRY_BODY (2026-10-20): raw মোডে বড় বডিও একবার বাফার করা হয় — স্ট্রিম একবারই পড়া যায়,
+      // তাই আগে প্রথম চেষ্টা (যেমন HKG-তে LOCATION) ব্যর্থ হলে বাকি সব ফেইলওভার খালি বডি ("disturbed") পাঠাত।
+      const isLargeStream = !raw && (declaredBytes > thresholdBytes || getReqHeader(request, 'X-Fayzar-Stream') === '1');
 
       let body = null, rawBuf = null;
       if (isLargeStream) {
@@ -430,7 +432,9 @@ export default {
           return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
         }
       } else if (raw) {
-        rawBuf = peekedSmallBytes ? peekedSmallBytes.buffer : await request.arrayBuffer();
+        rawBuf = peekedSmallBytes ? peekedSmallBytes.buffer
+          : streamBodyOverride ? await new Response(streamBodyOverride).arrayBuffer()
+          : await request.arrayBuffer();
         if (!rawBuf || !rawBuf.byteLength) return json({ error: 'payload অনুপস্থিত' }, 400, env, request);
       } else {
         try {

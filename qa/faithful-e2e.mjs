@@ -4,18 +4,24 @@ import fs from 'node:fs';
 import path from 'node:path';
 import puppeteer from 'puppeteer';
 
-const [spec, outArg] = process.argv.slice(2);
+// ব্যাচ: node qa/faithful-e2e.mjs --jobs <jobs.json>  ([{ spec, out }], এক ব্রাউজারে সব; প্রতি কাজের শেষে "JOB ok|fail <out>")
 const RECAP = process.argv.includes('--recapture');
-const [PDF, range] = spec.split('::');
-const [from, to] = (range || '').split('-').map(Number);
-const OUT = path.resolve(outArg);
-fs.mkdirSync(OUT, { recursive: true });
-const capPath = path.join(OUT, 'capture.json');
-const cached = !RECAP && fs.existsSync(capPath) ? fs.readFileSync(capPath, 'utf8') : null;
+const BATCH = process.argv[2] === '--jobs';
+const JOBS = BATCH ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8')) : [{ spec: process.argv[2], out: process.argv[3] }];
+// FZ_E2E_FMTS=docx-unicode — শুধু এই ফরম্যাট (স্কোর-রানে বিজয়/.doc লাগে না)
+const FMTS = (process.env.FZ_E2E_FMTS || 'docx-unicode,docx-bijoy,doc').split(',').filter(Boolean);
 
 const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'], protocolTimeout: 30 * 60 * 1000 });
 try {
-  const page = await browser.newPage();
+ for (const { spec, out: outArg } of JOBS) {
+ const [PDF, range] = spec.split('::');
+ const [from, to] = (range || '').split('-').map(Number);
+ const OUT = path.resolve(outArg);
+ fs.mkdirSync(OUT, { recursive: true });
+ const capPath = path.join(OUT, 'capture.json');
+ const cached = !RECAP && fs.existsSync(capPath) ? fs.readFileSync(capPath, 'utf8') : null;
+ const page = await browser.newPage();
+ try {
   page.setDefaultTimeout(30 * 60 * 1000);
   const logs = [];
   page.on('pageerror', (e) => logs.push('PAGEERROR ' + e.message));
@@ -27,9 +33,11 @@ try {
   // FZ_ON=INK — পরীক্ষাধীন নিয়ম চালু (window.__FZ_ON_*)
   const ons = (process.env.FZ_ON || '').split(',').filter(Boolean);
   if (ons.length) await page.evaluateOnNewDocument((l) => { l.forEach((k) => { window['__FZ_ON_' + k] = true; }); }, ons);
+  const tGo = Date.now();
   await page.goto('http://localhost:3008/index.html', { waitUntil: 'load', timeout: 120000 });
+  const gotoSec = (Date.now() - tGo) / 1000, tEval = Date.now();
   // ব্যর্থ হলেও ব্রাউজার-লগ (প্রক্সি-স্ট্যাটাস ইত্যাদি) দেখাও
-  const r = await page.evaluate(async (b64, name, from, to, cached) => {
+  const r = await page.evaluate(async (b64, name, from, to, cached, fmts) => {
     const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     const type = /\.jpe?g$/i.test(name) ? 'image/jpeg' : /\.png$/i.test(name) ? 'image/png' : 'application/pdf';
     await window.FayzarAiOcrEngine.handleFiles([new File([u], name, { type })]);
@@ -46,13 +54,13 @@ try {
     const tLay = (performance.now() - t1) / 1000;
     const enc = async (b) => { const a = new Uint8Array(await b.arrayBuffer()); let s = ''; for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); };
     const files = {};
-    for (const fmt of ['docx-unicode', 'docx-bijoy', 'doc']) {
+    for (const fmt of fmts) {
       try { const res = await window.FayzarFaithful.produce(ir, fmt); files[fmt] = await enc(res.blob); }
       catch (e) { files[fmt] = 'ERR ' + (e && e.stack || e); }
     }
     const irLite = JSON.parse(JSON.stringify(ir, (k, v) => (k === 'image' ? (v ? { pxW: v.pxW, pxH: v.pxH } : v) : v)));
     return { cap: JSON.stringify({ text: cap.text, blocks: cap.blocks, pages: cap.pages, auditNote: cap.auditNote, issues: cap.issues, continuations: cap.continuations, repairs: cap.repairs, verify: cap.verify, tableRepairs: cap.tableRepairs, tableVerify: cap.tableVerify }), lastM, tCap, tLay, ir: irLite, files, pages: q.length, verified: !!(cap.verify || cap.tableVerify), verify: cap.verify, tableVerify: cap.tableVerify };
-  }, fs.readFileSync(PDF).toString('base64'), path.basename(PDF), from || 1, to || 0, cached)
+  }, fs.readFileSync(PDF).toString('base64'), path.basename(PDF), from || 1, to || 0, cached, FMTS)
     .catch((e) => { console.log(logs.slice(-12).join('\n')); throw e; });
   // যাচাই-ধাপ এই রানে নতুন চলেছে (ক্যাশে repairs ছিল না) ⇒ ক্যাপচারে মেরামতসহ লেখা, পরের রানে Gemini লাগবে না
   if (!cached || r.verified) fs.writeFileSync(capPath, r.cap);
@@ -65,6 +73,12 @@ try {
     fs.writeFileSync(path.join(OUT, fmt === 'doc' ? 'faithful_Word2003.doc' : `faithful_${fmt}.docx`), Buffer.from(b64, 'base64'));
   }
   const bands = r.ir.pages.reduce((a, p) => a + p.bands.length, 0), grids = r.ir.pages.reduce((a, p) => a + p.bands.filter((b) => b.kind === 'grid').length, 0);
-  console.log(JSON.stringify({ pages: r.pages, captureSec: Math.round(r.tCap), cachedCapture: !!cached, layoutSec: Math.round(r.tLay), irPages: r.ir.pages.length, bands, grids, warnings: r.ir.warnings.length }));
+  console.log(JSON.stringify({ pages: r.pages, gotoSec, evalSec: (Date.now() - tEval) / 1000, captureSec: Math.round(r.tCap), cachedCapture: !!cached, layoutSec: Math.round(r.tLay), irPages: r.ir.pages.length, bands, grids, warnings: r.ir.warnings.length }));
   if (logs.length) console.log(logs.slice(-12).join('\n'));
+  if (BATCH) console.log(`JOB ok ${OUT}`);
+ } catch (e) {
+  if (!BATCH) throw e;
+  console.log(`JOB fail ${OUT} ${String(e && e.message || e).replace(/\s+/g, ' ').slice(0, 200)}`);
+ } finally { await page.close().catch(() => {}); }
+ }
 } finally { await browser.close(); }

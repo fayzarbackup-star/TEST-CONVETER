@@ -45,7 +45,8 @@
       const steps = [];
       // WORK_PLAN F1: স্টুডিও/টেমপ্লেট পথে (যেখানে বাইরের masterDocx নেই) এক-পাতা ফিট ও টেবিলের আসল মার্জিন/উচ্চতা সক্রিয়;
       // studioFit: false দিলে আগের আচরণ অবিকল থাকে (গেট যাচাই)।
-      const studioFit = o.studioFit !== undefined ? !!o.studioFit : !o.masterDocx;
+      const isExamDoc = /^EXAM(?:_|$)/i.test(String(o.docType || ''));
+      const studioFit = o.studioFit !== undefined ? !!o.studioFit : (!o.masterDocx && !isExamDoc);
 
       // ১) মাস্টার .docx — Part-17.5: হুবহু-লেআউট মোড নিজের মাস্টার দেয় (opt.masterDocx); না দিলে টেমপ্লেট-পথ
       const faithfulStudioOn = !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FAITHFUL_STUDIO : global.__FZ_ON_FAITHFUL_STUDIO)

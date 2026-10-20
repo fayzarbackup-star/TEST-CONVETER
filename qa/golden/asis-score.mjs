@@ -3,7 +3,11 @@
 // চালানো: node qa/golden/asis-score.mjs [--ids f1,f2] [--capture] [--save-baseline] [--kill-stale-word]
 //   --capture : ক্যাপচার না থাকলে Gemini-তে নেওয়া (খরচ)। না দিলে শুধু ক্যাশ-থাকা নমুনা। 3008 না চললে নিজে serve.js চালাবে।
 // সারাংশ ≤৩০ লাইন; বিস্তারিত: asis/<id>/image-score.json, মোট: qa/golden-data/score-asis.json
+//   --tag X  : আলাদা ফোল্ডারে রান (qa/golden-data/runs/X/<id>, capture.json কপি) — fixture বদলায় না; মোট: runs/X/score.json
+//   --force  : docx-ছাপ এক হলেও Word/স্কোর আবার (ডিফল্টে ছাপ এক হলে আগের স্কোর নেওয়া হয়)
+//   --measure: --tag রানেও Word-মাপ out.raw.json (fixture-রানে সবসময়; table-rows/plan-jumps/wrapfit-টেস্ট পড়ে; স্কোরে লাগে না, ধীর)
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import net from 'node:net';
 import path from 'node:path';
@@ -192,18 +196,33 @@ export async function ensureServer(port = 3008) {
     cwd: ROOT,
     stdio: 'ignore',
     windowsHide: true,
+    detached: true,
+    env: { ...process.env, FZ_NO_OPEN: '1' },
   });
-  const stop = () => {
-    if (srv && !srv.killed) {
-      try { srv.kill(); } catch {}
-    }
-  };
-  process.once('exit', stop);
+  // সার্ভার চালু থাকে, পরের রান একই সার্ভার ব্যবহার করে (বারবার চালু/বন্ধ নয়)
+  srv.unref();
+  const stop = () => {};
   for (let i = 0; i < 100; i++) {
     if ((await isPortOpen(port, '127.0.0.1')) || srv.exitCode !== null) break;
     await new Promise((r) => setTimeout(r, 100));
   }
   return stop;
+}
+
+// docx-ছাপ: word/*.xml + media (docProps-এর সময়-তারিখ বাদ) + স্কোরিং-স্ক্রিপ্ট — এক হলে Word-PDF/স্কোর আবার লাগে না
+export async function docxFingerprint(docxPath) {
+  const { default: JSZip } = await import('jszip');
+  const zip = await JSZip.loadAsync(fs.readFileSync(docxPath));
+  const h = crypto.createHash('sha1');
+  for (const n of Object.keys(zip.files).filter((n) => !n.startsWith('docProps/')).sort()) {
+    if (zip.files[n].dir) continue;
+    h.update(n); h.update(await zip.files[n].async('nodebuffer'));
+  }
+  for (const s of ['qa/golden/word-pdf-batch.ps1', 'qa/golden/image-score.mjs', 'qa/golden/layout-score.mjs']) {
+    const p = path.join(ROOT, s);
+    if (fs.existsSync(p)) h.update(fs.readFileSync(p));
+  }
+  return h.digest('hex');
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -213,29 +232,79 @@ if (isMain) {
   const IDS = opt('--ids') ? new Set(opt('--ids').split(',')) : null;
   const CAPTURE = argv.includes('--capture');
   const KILL_STALE_WORD = argv.includes('--kill-stale-word');
+  const FORCE = argv.includes('--force');
+  const TAG = opt('--tag');
+  const RUN = TAG ? path.join(ROOT, 'qa/golden-data/runs', TAG) : AD;
   const read = (f) => JSON.parse(fs.readFileSync(f, 'utf8').replace(/^\uFEFF/, ''));
 
   handleStaleWord({ kill: KILL_STALE_WORD });
 
   const man = read(path.join(AD, 'manifest.json')).filter((e) => !IDS || IDS.has(e.id));
-  const rows = [], all = {};
+  const MEASURE = argv.includes('--measure') || !TAG; // fixture-রানে মাপ লাগে (wrapfit ইত্যাদি টেস্ট out.raw.json পড়ে)
+  const rowOf = {}, all = {}, lays = {}, pending = [];
+  let reused = 0;
   const stopServer = await ensureServer(3008);
   try {
+    // ধাপ ১: এক ব্রাউজারে সব docx (ক্যাশ-ক্যাপচার থেকে; আগে প্রতি ফাইলে নতুন ব্রাউজার); docx-ছাপ এক হলে আগের স্কোর
+    const jobs = [];
     for (const e of man) {
-      const od = path.join(AD, e.id), pdf = findSourcePdf(e.src);
+      const rows = { push: (r) => { rowOf[e.id] = r; } };
+      const od = path.join(RUN, e.id), pdf = findSourcePdf(e.src);
+      if (TAG) {
+        fs.mkdirSync(od, { recursive: true });
+        const fixCap = path.join(AD, e.id, 'capture.json');
+        if (!fs.existsSync(path.join(od, 'capture.json')) && fs.existsSync(fixCap)) fs.copyFileSync(fixCap, path.join(od, 'capture.json'));
+      }
       const locked = checkOutputFilesWritable(od);
       if (locked) { rows.push(formatLockedMessage(e.id, locked)); continue; }
       if (!pdf) { rows.push(`${e.id} — উৎস নেই: ${e.src}`); continue; }
       if (!fs.existsSync(path.join(od, 'capture.json')) && !CAPTURE) { rows.push(`${e.id} — ক্যাপচার নেই (--capture)`); continue; }
       const spec = e.range ? `${pdf}::${e.range}` : pdf;
-      const e2e = spawnSync(process.execPath, [path.join(ROOT, 'qa/faithful-e2e.mjs'), spec, od], { encoding: 'utf8', timeout: 40 * 60 * 1000 });
       const docx = path.join(od, 'faithful_docx-unicode.docx');
-      if (e2e.status !== 0 || !fs.existsSync(docx)) { rows.push(`${e.id} — e2e ব্যর্থ: ${pickErrorLine(e2e.stderr, e2e.stdout, e2e.status)}`.slice(0, 160)); continue; }
+      if (fs.existsSync(docx)) fs.unlinkSync(docx); // ব্যর্থ কাজে পুরোনো docx যেন স্কোর না হয়
+      jobs.push({ e, od, spec, docx });
+    }
+    if (jobs.length) {
+      const jp = path.join(RUN, `e2e-jobs-${process.pid}.json`);
+      fs.mkdirSync(RUN, { recursive: true });
+      fs.writeFileSync(jp, JSON.stringify(jobs.map((j) => ({ spec: j.spec, out: j.od }))));
+      const e2e = spawnSync(process.execPath, [path.join(ROOT, 'qa/faithful-e2e.mjs'), '--jobs', jp], { encoding: 'utf8', timeout: (10 + jobs.length * 40) * 60 * 1000, maxBuffer: 64 * 1024 * 1024, env: { ...process.env, FZ_E2E_FMTS: process.env.FZ_E2E_FMTS || (TAG ? 'docx-unicode' : '') } }); // fixture-রানে সব ফরম্যাট (টেস্ট পড়ে)
+      fs.unlinkSync(jp);
+      const fails = Object.fromEntries((e2e.stdout || '').split('\n').filter((l) => l.startsWith('JOB fail ')).map((l) => { const m = l.slice(9); const j = jobs.find((x) => m.startsWith(path.resolve(x.od))); return [j ? j.e.id : '?', m]; }));
+      if (e2e.status !== 0) console.log(`e2e-ব্যাচ থেমেছে: ${pickErrorLine(e2e.stderr, e2e.stdout, e2e.status)}`.slice(0, 160));
+      jobs.forEach((j) => { j.fail = fails[j.e.id]; });
+    }
+    for (const { e, od, spec, docx, fail } of jobs) {
+      const rows = { push: (r) => { rowOf[e.id] = r; } };
+      if (!fs.existsSync(docx)) { rows.push(`${e.id} — e2e ব্যর্থ: ${fail || 'docx নেই'}`.slice(0, 160)); continue; }
       const outPdf = path.join(od, 'out.pdf');
-      const ms = spawnSync('powershell', ['-NoProfile', '-File', path.join(ROOT, 'qa/golden/measure-doc.ps1'), docx, path.join(od, 'out.raw.json'), outPdf], { encoding: 'utf8', timeout: 20 * 60 * 1000 }); // a04 (৮ পাতা, ১৭ কলাম) Word-এ ~১০ মিনিট
-      if (ms.status !== 0 || !fs.existsSync(outPdf)) { rows.push(`${e.id} — Word-PDF ব্যর্থ`); continue; }
+      const sj = path.join(od, 'image-score.json'), lj = path.join(od, 'layout-score.json'), fpPath = path.join(od, 'fp.txt');
+      const fp = await docxFingerprint(docx);
+      if (!FORCE && fs.existsSync(fpPath) && fs.readFileSync(fpPath, 'utf8') === fp && fs.existsSync(sj) && fs.existsSync(lj)) {
+        const m = read(sj), lay = read(lj).score;
+        all[e.id] = m; lays[e.id] = lay; reused++;
+        rows.push(`${e.id.padEnd(6)} ${String(m.score ?? '–').padStart(5)} | লেআউট ${String(lay).padStart(5)} | পাতা ${m.pages?.out ?? '?'}/${m.pages?.truth ?? '?'} | (অপরিবর্তিত) ${e.kind || ''}`);
+        continue;
+      }
+      if (fs.existsSync(fpPath)) fs.unlinkSync(fpPath);
+      if (fs.existsSync(outPdf)) fs.unlinkSync(outPdf);
+      pending.push({ e, od, spec, docx, outPdf, sj, lj, fpPath, fp });
+    }
+    // ধাপ ২: এক Word-এ সব PDF (আগে প্রতি ফাইলে Word চালু/বন্ধ + মাপ ≈ ১-১.৫ মিনিট; মাপ এখন --measure দিলে)
+    if (pending.length) {
+      const jobsPath = path.join(RUN, `word-jobs-${process.pid}.json`);
+      fs.mkdirSync(RUN, { recursive: true });
+      fs.writeFileSync(jobsPath, JSON.stringify(pending.map((p) => ({ docx: p.docx, pdf: p.outPdf, raw: MEASURE ? path.join(p.od, 'out.raw.json') : '' }))));
+      const wb = spawnSync('powershell', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', path.join(ROOT, 'qa/golden/word-pdf-batch.ps1'), jobsPath], { encoding: 'utf8', timeout: (10 + pending.length * 12) * 60 * 1000 }); // a04 মাপসহ ~১০ মিনিট
+      fs.unlinkSync(jobsPath);
+      const errs = (wb.stdout || '').split('\n').filter((l) => l.startsWith('err'));
+      if (errs.length) console.log(errs.slice(0, 5).map((l) => l.slice(0, 160)).join('\n'));
+    }
+    // ধাপ ৩: স্কোর
+    for (const { e, od, spec, outPdf, sj, lj, fpPath, fp } of pending) {
+      const rows = { push: (r) => { rowOf[e.id] = r; } };
+      if (!fs.existsSync(outPdf)) { rows.push(`${e.id} — Word-PDF ব্যর্থ`); continue; }
       // মূল PDF-এর পাতা-পরিসর: image-score পুরো PDF নেয়, তাই range থাকলে ছোট নমুনাতেই রাখা ভালো
-      const sj = path.join(od, 'image-score.json');
       if (fs.existsSync(sj)) fs.unlinkSync(sj);
       // Word সদ্য-লেখা PDF কখনো ধরে রাখে ⇒ ব্যর্থ হলে একবার ৩ সেকেন্ড পরে আবার
       let is;
@@ -249,8 +318,9 @@ if (isMain) {
       all[e.id] = m;
       // ২০২৬-১০-১২: লেআউট-স্কোর (মূল লক্ষ্য) — বিস্তারিত/ব্যাচ: asis-layout.mjs
       const ls = spawnSync(process.execPath, [path.join(ROOT, 'qa/golden/layout-score.mjs'), spec, outPdf, od], { encoding: 'utf8', timeout: 10 * 60 * 1000 });
-      const lj = path.join(od, 'layout-score.json');
       const lay = ls.status === 0 && fs.existsSync(lj) ? read(lj).score : '–';
+      lays[e.id] = lay;
+      if (lay !== '–') fs.writeFileSync(fpPath, fp);
       rows.push(`${e.id.padEnd(6)} ${String(m.score ?? '–').padStart(5)} | লেআউট ${String(lay).padStart(5)} | পাতা ${m.pages?.out ?? '?'}/${m.pages?.truth ?? '?'} | ${e.kind || ''}`);
     }
   } finally {
@@ -259,16 +329,16 @@ if (isMain) {
 
   const ids = Object.keys(all);
   const score = ids.length ? +(ids.reduce((a, k) => a + (+all[k].score || 0), 0) / ids.length).toFixed(1) : 0;
-  const sumPath = path.join(ROOT, 'qa/golden-data/score-asis.json');
-  fs.writeFileSync(sumPath, JSON.stringify({ at: new Date().toISOString(), total: { n: ids.length, score }, ids: Object.fromEntries(ids.map((k) => [k, all[k].score])) }, null, 1));
+  const sumPath = TAG ? path.join(RUN, 'score.json') : path.join(ROOT, 'qa/golden-data/score-asis.json');
+  fs.writeFileSync(sumPath, JSON.stringify({ at: new Date().toISOString(), fzOn: process.env.FZ_ON || '', total: { n: ids.length, score }, ids: Object.fromEntries(ids.map((k) => [k, all[k].score])), layout: lays }, null, 1));
   const basePath = path.join(ROOT, 'qa/golden-data/baseline-asis.json'), regress = [];
   let base = null;
-  if (argv.includes('--save-baseline')) fs.writeFileSync(basePath, fs.readFileSync(sumPath));
+  if (argv.includes('--save-baseline') && !TAG) fs.writeFileSync(basePath, fs.readFileSync(sumPath));
   else if (fs.existsSync(basePath)) {
     const b = read(basePath); base = b.total.score;
     for (const k of ids) if (b.ids[k] != null && all[k].score < b.ids[k] - 1) regress.push(`${k} ${b.ids[k]}→${all[k].score}`);
   }
-  rows.slice(0, 26).forEach((r) => console.log(r));
-  console.log(`মোট ${ids.length}টি | গড় ছবি-স্কোর ${score}${base != null ? ` (ভিত্তি ${base})` : ''}`);
+  man.map((e) => rowOf[e.id]).filter(Boolean).slice(0, 26).forEach((r) => console.log(r));
+  console.log(`মোট ${ids.length}টি | গড় ছবি-স্কোর ${score}${base != null ? ` (ভিত্তি ${base})` : ''}${reused ? ` | অপরিবর্তিত (Word বাদ) ${reused}টি` : ''}`);
   if (regress.length) { console.log('REGRESSION: ' + regress.join(', ')); process.exitCode = 2; }
 }

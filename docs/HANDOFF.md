@@ -1,10 +1,11 @@
-# হ্যান্ডঅফ — ২০২৬-১০-১৯ (সন্ধ্যা) — একসাথে ২টির বেশি ট্যাব নয় (পিসি হ্যাং)
-- **আগে পড়ো:** docs/GEMINI_TAB_WORKFLOW.md। bridge পোর্ট 18765। নতুন চ্যাট: `/navigate-tab?tabId=<id>&url=https://gemini.google.com/u/N/app` → `/switch-mode?tabId=<id>&mode=Argon` → `node tools/agent_manager.mjs send --tab T --task <ID> --prompt "সংযুক্ত জিপের PROMPT.md অনুযায়ী কাজ করুন।" --file <zip>` (`--acct` নেই!)। u/2-তে Task বোতাম নেই।
-- **লক্ষ্য:** গঠন নির্ভুল + সম্পাদনায় ফরম্যাট না ভাঙা, তারপর স্কোর ১০০-র কাছে।
-- **বসানো (সব সুইচ বন্ধ):** P1LOSS(a17), A01FIX(a01), P2DRIFT(a05), RULEFIX(a02) — tools/merge3.mjs দিয়ে মেলানো; run-all 2529/0। ব্যাকআপ: scratch\backup-a17 (চারটির আগের মূল), scratch\backup-pre-merge (A17-পরের)।
-- **স্কোর:** a01 72.6→**96.7** (A01FIX), a02 84→**90.4** (RULEFIX)। a17 (db122fdf….pdf), a05 (278_TR-13.pdf), a04 (261_ATC_8.pdf) মূল PDF নেই → ব্যবহারকারীর কাছে চাও, তারপর `FZ_ON=<SW> --ids <id>`।
-- **সিদ্ধান্ত বাকি (ব্যবহারকারী):** A01FIX ও RULEFIX ডিফল্ট-চালু? (আগে ২–৩টি ভালো ফাইলে রিগ্রেশন নেই যাচাই: a09, a14)। আগের সুইচ TABLECOL/PAGES4/EXTRALINES/A10LINES/WRAPFIT মাপা বাকি।
-- **Arena:** arena-bridge-extension (Chrome-এ লোড করা, পোর্ট 18766, সার্ভার `node arena-bridge-extension/bridge_server.mjs`) + `node tools/arena_send.mjs status|probe|send|read`। auto-mode classifier আপলোড/পাঠানো আটকায় → bypass মোড বা হাতে পাঠানো। Arena-তে A05 কাজ চলছে (ব্যবহারকারী পাঠিয়েছেন) — উত্তর এলে Gemini-র P2DRIFT-এর সাথে তুলনা।
-- **বাকি জিপ:** A14_BOXSPLIT_v1.zip (Downloads), inbox\A1_F1_PAGEFIT_FIX_v6.zip — merge3 দিয়ে বসাও → টেস্ট → push।
-- **নমুনা:** scratch\samples\asis; `$env:ASIS_DIR=(Resolve-Path scratch\samples\asis).Path`। Gemini টেস্টে `samples/` পথ → `qa/golden-data/asis/` করতে হয়।
-- asis-score চালানোর আগে লুকানো WINWORD বন্ধ করো (EBUSY)। পুরোনো সিদ্ধান্ত: ক্যাশমেমো ৯/১০pt; পুরোনো ফোল্ডার মোছা; OCR-প্রক্সি deploy।
+# হ্যান্ডঅফ — ২০২৬-১০-২০ (রাত ~২১:৩০)
+- **OCR প্রক্সি (অন্য সেশন, deploy `45575dec`, rollback `9eebdefd`):** বড় বডি বাফার করে HKG-ফেইলওভার ঠিক; যাচাই: `node qa/proxy-log.mjs`-এ HKG সারি সফল কিনা।
+- **অবস্থা:** run-all **2588/0**। সব FIX সুইচ ডিফল্ট-বন্ধ, push হয়নি। **গৃহীত (A/B-তে উন্নতি, কেউ কমেনি): WRAPFIT, NESTBOX, TBLMERGE, A03FIX, A16FIX** (ভিত্তি-গড় ৮৮.৬)।
+- **বাতিল/বন্ধ:** TABLECOL (a07 −৫৮, a14 −৩৮), PAGES4, A11FIX_v2 (a03 সারলেও a13 −৬৪.৮; a01-এর লাভ WRAPFIT-ই দেয়), LINEGAP_v3 (৩য় চেষ্টা, উন্নতি নেই, a14 ছবি −৭.৩), A10FIX/A19FIX (অন্য ফাইল কমায়), A14FIX। নিরপেক্ষ: EXTRALINES, ROTTEXT, SERIALHANG। মিশ্র: A10LINES (a14 +৩/ছবি +৬.৬, a13 −২)। PAGEFIT = studioFit, হুবহু-মোডে প্রযোজ্য নয়।
+- **মাপার নিয়ম:** `node qa/golden/asis-ab.mjs --on <SW> --base WRAPFIT,NESTBOX,TBLMERGE,A03FIX,A16FIX --ids a01,a03,a07,a13,a14[,a16,a09]`; exit 2 = কোনো ফাইল খারাপ (crash নয়)। **একবারে একটিই ভারী রান; দুই সেশন একসাথে চালাবে না** (Word পরস্পর বন্ধ করে)।
+- **Gemini:** কোনো কাজ চলছে না। ট্যাব খোলা: u/7, u/5, u/3 (bridge-ট্যাব 0/1/2)। পাঠানো: `agent_manager.mjs bundle --files <ফাইল আলাদা করে, ফোল্ডার নয়>` → `Start-Process chrome https://gemini.google.com/u/N/app` → `agent_manager send --tab T --task ID --prompt "সংযুক্ত জিপের PROMPT.md অনুযায়ী কাজ করুন।" --file <zip> --force` একবারই → `read --tab T`-এ জিপ-নাম দেখে যাচাই।
+- **নজর:** scratchpad-এর watch3.ps1-ধাঁচ (ট্যাব পালা করে `fetch --tab T --name ID`, শুধু চাওয়া নামের zip-এ থামে)। gemini-round watch নিজে-পাঠানো কাজ দেখে না। Gemini পাতায় exec-script Trusted Types-এ আটকায়; স্ক্রিনশট = Chrome সামনে এনে স্ক্রিন-কপি।
+- **বসানো:** zip Downloads-রুটে কপি → `powershell -File scratch\apply_reply.ps1 <ID>` → সুইচ-হারানো যাচাই (backup বনাম এখন FZ_ON_* তালিকা) + `tools/merge-lost-decls.mjs` → টেস্ট → asis-ab।
+- **পরের কাজ:** (১) A14_BOXSPLIT_v2 rebase-বান্ডেল; (২) asis-report/asis-causes দিয়ে গৃহীত-ভিত্তিতে সবচেয়ে বড় ভুলের ধরন বের করে নতুন Gemini কাজ (a14 এখনো সবচেয়ে কম ৬৮)।
+- **সিদ্ধান্ত বাকি (ব্যবহারকারী):** গৃহীত ৫ সুইচ ডিফল্ট-চালু হবে কিনা; push কখন; A10LINES চালু হবে কিনা; a04/a05/a10/a11/a17/a19-এর মূল PDF নেই।
+- নমুনা: scratch\samples\asis; ফলাফল-ফাইল scratch\ab_*.txt।

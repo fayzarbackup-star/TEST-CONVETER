@@ -82,6 +82,7 @@
 | চিত্র রিভিউ / স্টুডিওতে পাঠানো | `js/figure-review-ui.js`, `js/engines/figure-transfer-store.js` | `FayzarFigureReview`, `FayzarFigureTransfer.put/take` |
 | হুবহু-লেআউট (ক্যাপচার → IR → docx) | `js/layout-engine/faithful/*` | `FayzarFaithful` (`splitFromNeighbor`), `FayzarLayoutIR`, `FayzarPageGeometry` (`detectFrame`), `FayzarFaithfulDocx`; লাইন-আঁটানো (পূরণ-সারি → ইনডেন্ট → ফন্ট) `line-fit.js` `FayzarLineFit` |
 | হুবহু: ফরম-ছক/সংখ্যা-বাক্স, পাতা-সেটআপ, কোলন-সারি, কালো ব্যান্ড | `layout-ir.js` `foldBoxRows`, `unifyMargins`, `alignTabStops`, `snapFonts`; `page-geometry.js` `darkBandMask`; builder `boxRowXml` | স্কোর: `qa/golden/asis-score.mjs` (২০ ফরম), `faithful-score.mjs` (১৫ সোনালি) |
+| হুবহু দ্রুত-চক্র: ভুলের-ধরন রিপোর্ট / সুইচ A/B / আলাদা-ফোল্ডার রান | `qa/golden/asis-report.mjs [--tag X]`, `asis-ab.mjs --on SW [--base SW] [--ids]`, `asis-score.mjs --tag X [--force] [--measure]` (runs/X; docx-ছাপ এক হলে Word বাদ, `docxFingerprint`; এক Word: `word-pdf-batch.ps1`; এক ব্রাউজার: `faithful-e2e.mjs --jobs`) | fixture বদলায় না |
 
 ### সাইট/UI
 | কাজ | ফাইল | ফাংশন / নাম |

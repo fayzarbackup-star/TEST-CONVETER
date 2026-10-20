@@ -199,7 +199,7 @@ export function pageLayout(ma, mb, w, h, px, la = ma, lb = mb, opts = {}) {
     const dy = (b.y0 - a.y0) / px, d0 = Math.abs(b.x0 - a.x0) / px, d1 = Math.abs(b.x1 - a.x1) / px;
     const ha = (a.y1 - a.y0 + 1) / px, hb = (b.y1 - b.y0 + 1) / px;
     pos += ramp(Math.abs(dy), 2, 10); ext += (ramp(d0, 2, 20) + ramp(d1, 2, 20)) / 2; hgt += 1 - Math.abs(ha - hb) / Math.max(ha, hb);
-    rows.push({ y: Math.round(a.y0 / px), dy: Math.round(dy), dx0: Math.round((b.x0 - a.x0) / px), dx1: Math.round((b.x1 - a.x1) / px), h: Math.round(ha), hOurs: Math.round(hb) });
+    rows.push({ y: Math.round(a.y0 / px), dy: Math.round(dy), dx0: Math.round((b.x0 - a.x0) / px), dx1: Math.round((b.x1 - a.x1) / px), h: Math.round(ha), hOurs: Math.round(hb), x0: Math.round(a.x0 / px), w: Math.round((a.x1 - a.x0) / px), wOurs: Math.round((b.x1 - b.x0) / px) });
   }
   const nr = ra.h.length + ra.v.length + rb.h.length + rb.v.length;
   let rul;

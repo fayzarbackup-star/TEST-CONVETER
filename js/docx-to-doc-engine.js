@@ -235,6 +235,7 @@
         docMath: 'eqfield',    // 9i: 'eqfield' (ডিফল্ট — ক্লিন ফিল্ড: separator/ক্যাশ নেই) | 'cached' (৯f: ক্যাশ-সহ) | 'plain' (ফিল্ড ছাড়া)
         optimizeForQuestionPaper: true,
         includeImages: true,
+        studioFit: false,      // WORK_PLAN F1: স্টুডিও/টেমপ্লেট এক-পাতা ফিট গেট (ডিফল্ট বন্ধ — কনভার্টার পেজ অপরিবর্তিত)
         onProgress: (percent, msg) => {}
       }, options);
 
@@ -758,10 +759,19 @@
           const leftTwips = parseInt(pgMar.getAttribute("w:left") || pgMar.getAttribute("left"), 10);
           const rightTwips = parseInt(pgMar.getAttribute("w:right") || pgMar.getAttribute("right"), 10);
 
-          if (topTwips) marginTop = (topTwips / 1440).toFixed(2) + "in";
-          if (bottomTwips) marginBottom = (bottomTwips / 1440).toFixed(2) + "in";
-          if (leftTwips) marginLeft = (leftTwips / 1440).toFixed(2) + "in";
-          if (rightTwips) marginRight = (rightTwips / 1440).toFixed(2) + "in";
+          // WORK_PLAN F1: studioFit চালু থাকলে 540 twips = 0.375in নিখুঁত রাখা (0.38in-এ রাউন্ড হয়ে নিচের মার্জিন না বাড়ে)
+          const fmtIn = (tw) => {
+            if (opts && opts.studioFit) {
+              const v2 = (tw / 1440).toFixed(2);
+              const v3 = (tw / 1440).toFixed(3);
+              return v3.endsWith('0') ? v2 + "in" : v3 + "in";
+            }
+            return (tw / 1440).toFixed(2) + "in";
+          };
+          if (topTwips) marginTop = fmtIn(topTwips);
+          if (bottomTwips) marginBottom = fmtIn(bottomTwips);
+          if (leftTwips) marginLeft = fmtIn(leftTwips);
+          if (rightTwips) marginRight = fmtIn(rightTwips);
         } else if (selectedMargin && MARGIN_MAP[selectedMargin]) {
           marginTop = MARGIN_MAP[selectedMargin].top;
           marginRight = MARGIN_MAP[selectedMargin].right;
@@ -918,8 +928,17 @@
       let textContent = "";
       let inheritedStyle = null;
 
+      let pPrFontSizePt = null;
       const pPr = pNode.querySelector("pPr");
       if (pPr) {
+        if (opts && opts.studioFit) {
+          const pRPr = Array.from(pPr.childNodes || []).find((c) => c.nodeType === 1 && (c.localName || c.nodeName).split(':').pop() === 'rPr');
+          const pSz = pRPr ? pRPr.querySelector("sz, szCs") : null;
+          if (pSz) {
+            const hp = parseInt(pSz.getAttribute("w:val") || pSz.getAttribute("val"), 10);
+            if (hp > 0) pPrFontSizePt = hp / 2;
+          }
+        }
         const pStyleNode = pPr.querySelector("pStyle");
         if (pStyleNode) {
           const sId = pStyleNode.getAttribute("w:val") || pStyleNode.getAttribute("val");
@@ -1041,6 +1060,7 @@
       }
 
       let runsHtml = [];
+      let runFontSizes = [];
       const childNodes = pNode.childNodes;
       let inField = false;
       let fieldCode = "";
@@ -1121,6 +1141,7 @@
           const rData = this._parseRun(child, inheritedStyle, styleResolver, mediaMap, opts);
           runsHtml.push(rData.html);
           textContent += rData.text;
+          if (rData.fontSizePt && (rData.text || child.querySelector("t, rPr"))) runFontSizes.push(rData.fontSizePt);
           runCount++;
         } else if (childName === 'hyperlink') {
           const rList = child.querySelectorAll("r");
@@ -1220,9 +1241,20 @@
         }
       }
 
-      // If empty paragraph, keep spacing
+      // WORK_PLAN F1: স্টুডিও-ফিটে খালি প্যারাগ্রাফ ও ছোট ফন্টের (<১২pt) প্যারাগ্রাফে নিজস্ব ফন্ট-মাপ/ফ্যামিলি বসানো —
+      // নইলে p.MsoNormal-এর ১২pt Times New Roman অনুচ্ছেদ-চিহ্ন (¶) ও ট্যাব-স্প্যান লাইনের উচ্চতা বাড়িয়ে দেয়।
+      const effPFontSizePt = pPrFontSizePt || (runFontSizes.length > 0 ? Math.max(...runFontSizes) : ((inheritedStyle && inheritedStyle.fontSizePt) || styleResolver.docDefaults.fontSizePt || 12));
+      const defPFont = opts && opts.direction === 'all_unicode' ? 'Nikosh' : (opts && opts.preserveSutonny ? 'SutonnyMJ' : 'Times New Roman');
+      const hasBdrOrSect = !!(pPr && (pPr.querySelector("pBdr") || pPr.querySelector("sectPr")));
       if (runsHtml.length === 0) {
-        runsHtml.push('&nbsp;');
+        if (opts && opts.studioFit && !hasBdrOrSect) {
+          pStyles.push(`font-size:${effPFontSizePt}pt`, `mso-bidi-font-size:${effPFontSizePt}pt`, `font-family:'${defPFont}',Arial,sans-serif`, `mso-ascii-font-family:'${defPFont}'`, `mso-hansi-font-family:'${defPFont}'`, `mso-bidi-font-family:'${defPFont}'`);
+          runsHtml.push(`<span style="font-size:${effPFontSizePt}pt;mso-bidi-font-size:${effPFontSizePt}pt;mso-font-size:${effPFontSizePt}pt;font-family:'${defPFont}',Arial,sans-serif;mso-ascii-font-family:'${defPFont}';mso-hansi-font-family:'${defPFont}';mso-bidi-font-family:'${defPFont}'">&nbsp;</span>`);
+        } else {
+          runsHtml.push('&nbsp;');
+        }
+      } else if (opts && opts.studioFit && effPFontSizePt > 0 && effPFontSizePt < 12) {
+        pStyles.push(`font-size:${effPFontSizePt}pt`, `mso-bidi-font-size:${effPFontSizePt}pt`, `mso-ascii-font-family:'${defPFont}'`, `mso-hansi-font-family:'${defPFont}'`);
       }
 
       const styleAttr = pStyles.length > 0 ? ` style="${pStyles.join(';')}"` : '';
@@ -1415,7 +1447,8 @@
         }
         return {
           html: splitHtml,
-          text: textContent
+          text: textContent,
+          fontSizePt: fontSizePt
         };
       }
 
@@ -1448,7 +1481,8 @@
 
       return {
         html: html,
-        text: textContent
+        text: textContent,
+        fontSizePt: fontSizePt
       };
     }
 
@@ -1497,18 +1531,22 @@
       const tj = attr(tjEl, 'val');
       const alignAttr = tj === 'center' ? ' align="center"' : (tj === 'right' || tj === 'end' ? ' align="right"' : '');
 
-      // Part-17.7: opts.honorCellMargins (শুধু হুবহু-মোড) — টেবিলের নিজের tblCellMar-ই ঘরের প্যাডিং (Word-এর হুবহু);
-      // অন্যথায় আগের 3.5pt 5.5pt (চালু প্রশ্নপত্রের .doc অপরিবর্তিত)
+      // Part-17.7 + WORK_PLAN F1: opts.honorCellMargins বা opts.studioFit — টেবিলের নিজের tblCellMar-ই ঘরের প্যাডিং;
+      // অন্যথায় আগের 3.5pt 5.5pt (কনভার্টার পেজের ডিফল্ট .doc অপরিবর্তিত)
+      const useCellMar = !!(opts && (opts.honorCellMargins || opts.studioFit));
       let cellPad = 'padding:3.5pt 5.5pt';
-      const cmEl = tblPr && opts && opts.honorCellMargins ? kid(tblPr, 'tblCellMar') : null;
+      let tblPadAlt = '0in 5.4pt 0in 5.4pt';
+      const cmEl = tblPr && useCellMar ? kid(tblPr, 'tblCellMar') : null;
       if (cmEl) {
         const mv = (names, d) => { for (const n of names) { const e = kid(cmEl, n); if (e) return (parseInt(attr(e, 'w') || '0', 10) / 20); } return d; };
-        cellPad = `padding:${mv(['top'], 0).toFixed(1)}pt ${mv(['right', 'end'], 5.4).toFixed(1)}pt ${mv(['bottom'], 0).toFixed(1)}pt ${mv(['left', 'start'], 5.4).toFixed(1)}pt`;
+        const padSpec = `${mv(['top'], 0).toFixed(1)}pt ${mv(['right', 'end'], 5.4).toFixed(1)}pt ${mv(['bottom'], 0).toFixed(1)}pt ${mv(['left', 'start'], 5.4).toFixed(1)}pt`;
+        cellPad = `padding:${padSpec}`;
+        if (opts && opts.studioFit) tblPadAlt = padSpec;
       }
 
       const tblStyles = [
         'border-collapse:collapse', 'mso-table-layout-alt:fixed', 'border:none', 'mso-border-alt:none',
-        'mso-padding-alt:0in 5.4pt 0in 5.4pt', widthCss
+        `mso-padding-alt:${tblPadAlt}`, widthCss
       ];
       if (tj === 'center') tblStyles.push('margin-left:auto', 'margin-right:auto');
 
@@ -1549,7 +1587,7 @@
           const bLeft = side(['left', 'start'], c.col === 0 ? T.left : T.insideV);
           const bRight = side(['right', 'end'], c.col + c.gs >= totalCols ? T.right : T.insideV);
           // Part-17.8: হুবহু-মোডে ঘরের নিজের vAlign (মাঝে/নিচে); অন্যথায় আগের মতো ওপরে
-          const vaEl = opts && opts.honorCellMargins && pr ? kid(pr, 'vAlign') : null;
+          const vaEl = useCellMar && pr ? kid(pr, 'vAlign') : null;
           const va = vaEl ? attr(vaEl, 'val') : null;
           const tcStyles = [cellPad, 'vertical-align:' + (va === 'center' ? 'middle' : (va === 'bottom' ? 'bottom' : 'top'))];
           for (const [nm, v] of [['top', bTop], ['bottom', bBottom], ['left', bLeft], ['right', bRight]]) {
@@ -1588,13 +1626,18 @@
           const span = (c.gs > 1 ? ' colspan="' + c.gs + '"' : '') + (c.rowspan > 1 ? ' rowspan="' + c.rowspan + '"' : '');
           cellsHtml.push('<td' + span + ' style="' + tcStyles.join(';') + '">' + inner.join('') + '</td>');
         });
-        // Part-17.9: হুবহু-মোডে সারির উচ্চতা (w:trHeight) ⇒ Word-HTML height + mso-height-rule (Word নিজে এভাবেই লেখে)
+        // Part-17.9 + WORK_PLAN F1: হুবহু-মোড ও স্টুডিও-ফিটে সারির উচ্চতা (w:trHeight) ⇒ Word-HTML height + mso-height-rule
         let trStyle = '';
-        if (opts && opts.honorCellMargins) {
+        if (useCellMar) {
           const trPr = kid(rows[r], 'trPr');
           const th = trPr ? kid(trPr, 'trHeight') : null;
-          const hv = th ? parseInt(attr(th, 'val') || '0', 10) : 0;
-          if (hv > 0) trStyle = ` style="height:${(hv / 20).toFixed(1)}pt;mso-height-rule:${attr(th, 'hRule') === 'exact' ? 'exactly' : 'at-least'}"`;
+          const rawHv = th ? parseInt(attr(th, 'val') || '0', 10) : 0;
+          const hv = Math.abs(rawHv);
+          const isExact = rawHv < 0 || (th && attr(th, 'hRule') === 'exact');
+          if (hv > 0) {
+            const hPt = (opts && opts.studioFit && hv % 2 !== 0) ? (hv / 20).toFixed(2) : (hv / 20).toFixed(1);
+            trStyle = ` style="height:${hPt}pt;mso-height-rule:${isExact ? 'exactly' : 'at-least'}"`;
+          }
         }
         rowsHtml.push('<tr' + trStyle + '>' + cellsHtml.join('') + '</tr>');
       });
@@ -1621,11 +1664,19 @@
              (page.colSep ? '\tmso-column-separator:solid;\n' : ''))
           : '';
 
+        let hdrMar = '.5in';
+        let ftrMar = '.5in';
+        if (opts && opts.studioFit) {
+          const mt = parseFloat(page.marginTop);
+          const mb = parseFloat(page.marginBottom);
+          if (Number.isFinite(mt) && mt < 0.5) hdrMar = page.marginTop;
+          if (Number.isFinite(mb) && mb < 0.5) ftrMar = page.marginBottom;
+        }
         pageStylesCss += ` @page Section${secIndex}
 \t{size:${page.width} ${page.height};
 \tmargin:${page.marginTop} ${page.marginRight} ${page.marginBottom} ${page.marginLeft};
-\tmso-header-margin:.5in;
-\tmso-footer-margin:.5in;
+\tmso-header-margin:${hdrMar};
+\tmso-footer-margin:${ftrMar};
 ${page.pageBorderCss || ''}${colsCss}${parsedBody.headerHtml ? '\tmso-header:h1;\n' : ''}${parsedBody.footerHtml ? '\tmso-footer:f1;\n' : ''}\tmso-paper-source:0;}
  div.Section${secIndex}
 \t{page:Section${secIndex};}\n`;

@@ -1544,9 +1544,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       activeBridgeJobId = jobId;
 
       const userDirective = (elements.customDirectiveInput ? elements.customDirectiveInput.value : (document.getElementById('ai-custom-directive-input')?.value || '')).trim();
+      const baseGemPrompt = getGeminiCapturePrompt(GEMINI_PROMPT);
       const bridgePrompt = (userDirective)
-        ? `${GEMINI_PROMPT}\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`
-        : GEMINI_PROMPT;
+        ? `${baseGemPrompt}\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`
+        : baseGemPrompt;
 
       try {
         await fetch(`${FIREBASE_BRIDGE_URL}/requests/${jobId}.json`, {
@@ -1780,6 +1781,25 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     if (typeof global !== 'undefined' && global.__FZ_ON_CHUNK) return true;
     if (typeof globalThis !== 'undefined' && globalThis.__FZ_ON_CHUNK) return true;
     return false;
+  }
+
+  /** ROTTEXT_v1: ঘোরানো (খাড়া) লেখার ঘর চিহ্নিতকরণ সুইচ (__FZ_ON_ROTTEXT / FZ_ON=ROTTEXT) */
+  function isRotTextSwitchEnabled() {
+    if (typeof globalThis !== 'undefined' && globalThis.__FZ_OFF_ROTTEXT) return false;
+    if (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_ROTTEXT || (globalThis.window && globalThis.window.__FZ_ON_ROTTEXT))) return true;
+    if (typeof window !== 'undefined' && window.__FZ_ON_ROTTEXT) return true;
+    if (typeof global !== 'undefined' && global && (global.__FZ_ON_ROTTEXT || (global.window && global.window.__FZ_ON_ROTTEXT))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_ROTTEXT === '1' || process.env.__FZ_ON_ROTTEXT === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('ROTTEXT')) return true;
+    }
+    return false;
+  }
+
+  function getGeminiCapturePrompt(basePrompt) {
+    const p = basePrompt || GEMINI_PROMPT;
+    if (!isRotTextSwitchEnabled()) return p;
+    return p + '\n    - ROTATED VERTICAL TABLE CELLS (ঘোরানো/খাড়া লেখার ঘর): If a table cell (especially a narrow, tall header cell) contains text rotated 90° vertically (reading bottom-to-top), prefix that cell\'s text with `⟦rot⟧` (e.g., `| ⟦rot⟧গড় বেতনের ... |`).';
   }
 
   /** হুবহু-মোড (faithful) সক্রিয় কি না — হুবহু-মোড অপরিবর্তিত থাকবে */
@@ -2425,9 +2445,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       const jobId = 'job_' + Date.now();
 
       const userDirective = (elements.customDirectiveInput ? elements.customDirectiveInput.value : (document.getElementById('ai-custom-directive-input')?.value || '')).trim();
+      const baseGemPrompt = getGeminiCapturePrompt(GEMINI_PROMPT);
       const bridgePrompt = (userDirective)
-        ? `${GEMINI_PROMPT}\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`
-        : GEMINI_PROMPT;
+        ? `${baseGemPrompt}\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`
+        : baseGemPrompt;
 
       await fetch(`${FIREBASE_BRIDGE_URL}/requests/${jobId}.json`, {
         method: 'PUT',
@@ -2875,7 +2896,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
       : mediaParts;
 
     const userDirective = (elements && elements.customDirectiveInput ? elements.customDirectiveInput.value : (document.getElementById('ai-custom-directive-input')?.value || '')).trim();
-    let activePrompt = customPrompt || GEMINI_PROMPT;
+    let activePrompt = customPrompt || getGeminiCapturePrompt(GEMINI_PROMPT);
     if (userDirective && !customPrompt) {
       activePrompt += `\n\n### CRITICAL USER SCOPE DIRECTIVE (HIGHEST PRIORITY):\n"${userDirective}"\nFollow the above user directive strictly over any other extraction rule. Only extract what the user requested!`;
     }
@@ -5295,6 +5316,8 @@ ${bodyContentXml}
     formatChunkProgress,
     estimateBase64Bytes,
     processWithChunking,
+    isRotTextSwitchEnabled,
+    getGeminiCapturePrompt,
     state
   };
 
