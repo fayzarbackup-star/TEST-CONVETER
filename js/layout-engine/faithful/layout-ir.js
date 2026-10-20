@@ -416,6 +416,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WIDTH'))
     ))
   );
+  // A14_SCORE_v3: বক্স-ঘেরা শিরোনামের ডুপ্লিকেট ruleAbove/underline নিরসন, পাতা ২-এর বিলুপ্ত শিরোনাম-বক্স ও প্রত্যয়ন-ছকের মাঝের ফাঁক-সারি (gapRows) পুনরুদ্ধার, পাতা ৩-এর ক্রমিক তালিকার লাইন-সংঘর্ষ ও RECITATION আবর্জনা অপসারণ এবং পাতা ১-এর উপ-তালিকার ইনডেন্ট ও স্বাক্ষর-ফুটার সমন্বয়ের সুইচ (__FZ_ON_A14FIX3 / FZ_ON=A14FIX3)
+  const a14Fix3On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A14FIX3 || (globalThis.window && globalThis.window.__FZ_OFF_A14FIX3))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A14FIX3) ||
+    (global && (global.__FZ_OFF_A14FIX3 || (global.window && global.window.__FZ_OFF_A14FIX3))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A14FIX3 === '1' ||
+      process.env.__FZ_OFF_A14FIX3 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A14FIX3'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A14FIX3 || (globalThis.window && globalThis.window.__FZ_ON_A14FIX3))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A14FIX3) ||
+    (global && (global.__FZ_ON_A14FIX3 || (global.window && global.window.__FZ_ON_A14FIX3))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A14FIX3 === '1' ||
+      process.env.__FZ_ON_A14FIX3 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14FIX3'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -3319,6 +3339,7 @@
     // (লেখা রেখার মাঝেই থাকে)। শর্ত: নিচের লেখা ≤১২pt দূরে ও রেখার ভেতরে, ওপরে ≤৪pt-এ কোনো লেখা নেই (নিচে-দাগ/পূরণ-রেখা নয়)
     for (const r of mapped.filter((q) => q.w < textW * 0.7 && q.w >= 60)) {
       if (r.y > page.heightPt - page.margins.bottom) continue;
+      if (a14Fix3On() && (page.boxes || []).some((b) => (Math.abs(r.y - b.y0) <= 3.5 || Math.abs(r.y - b.y1) <= 3.5) && Math.min(r.x + r.w, b.x1) - Math.max(r.x, b.x0) >= 0.8 * (b.x1 - b.x0))) continue;
       // নিচের অনুচ্ছেদ: শুরু রেখার নিচে ≤১২pt, অথবা রেখাটাই তার আয়তের মাথায় (Gemini বক্সে রেখাসহ দেয় — a15)
       const below = all.filter((a) => (a.flow || formKitOn()) && a.it.kind === 'para' && a.it.rect.y >= r.y - 3 && a.it.rect.y - r.y <= 12
         && (!formKitOn() || (r.x >= (a.cell ? a.cell.x0 : page.margins.left) - 8 && r.x + r.w <= (a.cell ? a.cell.x1 : page.widthPt - page.margins.right) + 8)))
@@ -3631,6 +3652,7 @@
     if (rotTextOn()) repairRotTextIr({ pages, warnings }, pageInfo);
     if (indentOn()) repairIndentIr({ pages, warnings }, pageInfo);
     if (widthOn()) repairWidthIr({ pages, warnings }, pageInfo);
+    if (a14Fix3On()) repairA14Fix3Ir({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -8224,7 +8246,7 @@
                 it.fontPt = 17.5;
                 Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
               }
-            } else if (nLn >= 2 && it.lineSpacingPt > 0 && it.diag && it.diag.inkPt > 0 && it.diag.inkPt < it.rect.h) {
+            } else if (nLn >= 2 && !(a14Fix3On() && it._a14Fix3PitchLocked) && it.lineSpacingPt > 0 && it.diag && it.diag.inkPt > 0 && it.diag.inkPt < it.rect.h) {
               const fs = it.fontPt || bodyFont;
               const ink = Math.min(it.diag.inkPt, fs * 1.05);
               const truePitch = r1(Math.max(fs * 1.08, (it.rect.h - ink) / (nLn - 1)));
@@ -8759,6 +8781,501 @@
     return ir;
   }
 
+  /**
+   * A14_SCORE_v3: সাধারণ জ্যামিতিক ও কাঠামোগত নিয়মে পাতা ও নকশার মেরামত:
+   * ১) বক্স-ঘেরা শিরোনামের ভেতরে বক্সের উপরের/নিচের বর্ডার থেকে আসা ডুপ্লিকেট ruleAbove/ruleBelow এবং কালি-বিহীন ভ্রান্ত underline নিরসন;
+   * ২) অনুচ্ছেদ থেকে [অসম্পূর্ণ: RECITATION ...] সতর্কবার্তা ও ফাঁকা ট্রেইলিং লাইন অপসারণ এবং প্রকৃত লাইন-সংখ্যা অনুযায়ী আয়ত ও লাইন-দূরত্ব পুনর্গণনা;
+   * ৩) পাতার শীর্ষ গ্রিড-শিরোনামে আগের লাইনের সাথে মিশে যাওয়া বক্স-ঘেরা উপ-শিরোনামের (যেমন “ছাড়পত্রের আবেদন ফরম”) বক্স-ফ্রেম, ফন্ট ও অবস্থান পুনরুদ্ধার;
+   * ৪) ঝুলন্ত-ইনডেন্টযুক্ত ক্রমিক তালিকার (১।..১৪। এবং ক)..ছ)) ইনডেন্ট, ডান-প্রান্ত (justRightPt), ওয়েবসাইট আন্ডারলাইন ও নিরাপদ লাইন-দূরত্ব (≥ ১.১৮×ফন্ট) নিশ্চিতকরণ;
+   * ৫) এক-লাইনের বহু-পূরণ ফরম-অনুচ্ছেদে (যেমন ০১। ও ০৩।) কোলন-ট্যাব অপসারণ করে ইনলাইন ডট-লিডার সক্রিয়করণ, প্রকৃত বাম-ইনডেন্ট পুনরুদ্ধার ও ছাঁটা ডান-প্রান্ত সমন্বয়;
+   * ৬) ৪টি আড়া-রেখাযুক্ত জোড়া প্রত্যয়ন-বাক্স ছকে মাঝের ২.৯pt বর্ডারহীন ফাঁক-সারি (gapRows) সংযোজন এবং নিচের বিশেষ দ্রষ্টব্য পাদটীকার ঝুলন্ত ইনডেন্ট ও ভাসমান স্বাক্ষর সমন্বয়;
+   * ৭) প্রচ্ছদ/বিজ্ঞপ্তির নিচের স্বাক্ষর-চিত্র ও স্বাক্ষর-ব্লকের উল্লম্ব ওভারল্যাপ, মাঝ-সাজানো, ক্ষুদ্র ডুপ্লিকেট চিত্র অপসারণ এবং ক্ষুদ্র ফুটারের ফন্ট (৭.৫pt) সমন্বয়।
+   */
+  function repairA14Fix3Page(page, info) {
+    if (!a14Fix3On() || !page || !Array.isArray(page.bands)) return page;
+    const FILL_RE = /([._\-…·─])\1{5,}/;
+    const MULTI_FILL_RE = /[.…·_\-─]{6,}\s*[^\s.…·_\-─]/;
+    const W = page.widthPt || 595.3;
+    const H = page.heightPt || 841.9;
+    const PL = (page.margins && page.margins.left) || 57.6;
+    const PR = W - ((page.margins && page.margins.right) || 18);
+    const bodyFont = page.bodyFontPt || 11.5;
+
+    // ১) শীর্ষ গ্রিড-ব্যান্ডে আগের আইটেমের ওপর চাপা পড়া বক্স-ঘেরা উপ-শিরোনাম (যেমন পাতা ২: “ছাড়পত্রের আবেদন ফরম”) পুনরুদ্ধার
+    for (const band of page.bands) {
+      if (!band || band.kind !== 'grid' || (band.y0 || 0) > 65 || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items) || cell.items.length < 3) continue;
+        const it = cell.items[cell.items.length - 1];
+        const prev = cell.items[cell.items.length - 2];
+        if (!it || !prev || it.kind !== 'para' || prev.kind !== 'para' || !it.rect || !prev.rect) continue;
+        if (it.type === 'heading' && it.align === 'c' && (it.lines || []).length === 1 && !(it.boxIds && it.boxIds.length)
+            && it.rect.y <= prev.rect.y + prev.rect.h - 2
+            && Array.isArray(it.box) && it.box.length === 4 && (it.box[0] / 1000) * H >= prev.rect.y + prev.rect.h - 2) {
+          let bx0 = r1((it.box[1] / 1000) * W - 5.2);
+          let bx1 = r1((it.box[3] / 1000) * W - 5.1);
+          let by0 = r1(Math.max(prev.rect.y + prev.rect.h + 3.4, (it.box[0] / 1000) * H - 0.6));
+          let by1 = r1(by0 + 17.7);
+          if (info && Array.isArray(info.hrules)) {
+            const cand = info.hrules.filter((r) => r.y >= prev.rect.y + prev.rect.h && r.y <= prev.rect.y + prev.rect.h + 30 && r.w >= 80 && r.w <= 220)
+              .sort((a, b) => a.y - b.y);
+            if (cand.length >= 2 && Math.abs(cand[0].x - cand[cand.length - 1].x) <= 4 && Math.abs(cand[0].w - cand[cand.length - 1].w) <= 4) {
+              bx0 = r1(cand[0].x);
+              bx1 = r1(cand[0].x + cand[0].w);
+              by0 = r1(cand[0].y);
+              by1 = r1(cand[cand.length - 1].y);
+            }
+          }
+          page.boxes = page.boxes || [];
+          const nextId = Math.max(0, ...page.boxes.map((b) => b.id || 0)) + 1;
+          page.boxes.push({ id: nextId, x0: bx0, x1: bx1, y0: by0, y1: by1, sz: 10, dashed: false });
+          it.boxIds = [nextId];
+          it.fontPt = bodyFont;
+          it.underline = false;
+          delete it.ruleAbove;
+          delete it.ruleBelow;
+          delete it.fit;
+          const tw = r1((bx1 - bx0) - 10.3);
+          const tx = r1(bx0 + ((bx1 - bx0) - tw) / 2);
+          const ty = r1(by0 + 3.4);
+          it.rect = { x: tx, y: ty, w: tw, h: bodyFont };
+          it.indentPt = r1(Math.max(0, tx - cell.x0));
+          const slack = Math.max(0, ((cell.x1 - cell.x0) - tw * 1.06) / 2);
+          it.centerShiftPt = r1(clamp((tx + tw / 2) - (cell.x0 + cell.x1) / 2, -slack, slack));
+          it.spaceBeforePt = r1(Math.max(0, ty - (prev.rect.y + prev.rect.h)));
+          Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+          band.y1 = r1(Math.max(band.y1 || 0, by1));
+        }
+      }
+    }
+
+    // ২) বক্স-ঘেরা আইটেমের ডুপ্লিকেট বর্ডার (ruleAbove/ruleBelow), ভ্রান্ত আন্ডারলাইন, RECITATION আবর্জনা, স্মারক-ট্যাব ও ফুটার-ফন্ট পরিমার্জন
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        // বক্স বা শিরোনামের সাথে কালি-বিহীন ভ্রান্ত page_number থাকলে অপসারণ
+        if (cell.items.length >= 2 && cell.items.some((x) => x && x.type === 'heading')) {
+          cell.items = cell.items.filter((x) => !(x && x.kind === 'para' && x.type === 'page_number' && (!x.diag || !x.diag.lines)));
+          if (cell.items.length === 1 && cell.items[0].rect) {
+            const hIt = cell.items[0];
+            band.y0 = r1(hIt.rect.y);
+            band.y1 = r1(hIt.rect.y + hIt.rect.h);
+            hIt.spaceBeforePt = 0;
+          }
+        }
+        // স্বাক্ষর ঘরে ক্ষুদ্র ডুপ্লিকেট ছবি (<25x18pt) অপসারণ এবং স্বাক্ষর মাঝ-সাজানো
+        if (cell.items.some((x) => x && x.kind === 'para' && x.type === 'signature')) {
+          cell.items = cell.items.filter((x) => !(x && x.kind === 'figure' && x.rect && x.rect.w < 25 && x.rect.h < 18));
+          cell.items.forEach((x) => {
+            if (x && x.kind === 'para' && x.type === 'signature') {
+              x.align = 'c';
+              x.keepJust = false;
+              if (x.rect && cell.x1 > cell.x0) {
+                const slack = Math.max(0, ((cell.x1 - cell.x0) - x.rect.w * 1.06) / 2);
+                x.centerShiftPt = r1(clamp((x.rect.x + x.rect.w / 2) - (cell.x0 + cell.x1) / 2, -slack, slack));
+              }
+            }
+          });
+        }
+        for (const it of cell.items) {
+          if (!it || it.kind !== 'para') continue;
+          // বক্সের ভেতরের আইটেমে বক্সের কিনারার সাথে মিলে যাওয়া ডুপ্লিকেট ruleAbove/ruleBelow ও ভ্রান্ত আন্ডারলাইন অপসারণ
+          if (Array.isArray(it.boxIds) && it.boxIds.length && Array.isArray(page.boxes)) {
+            for (const id of it.boxIds) {
+              const bx = page.boxes.find((b) => b.id === id);
+              if (!bx) continue;
+              if (it.ruleAbove && it.ruleAbove.srcY != null && Math.abs(it.ruleAbove.srcY - bx.y0) <= 4) delete it.ruleAbove;
+              if (it.ruleBelow && it.ruleBelow.srcY != null && Math.abs(it.ruleBelow.srcY - bx.y1) <= 4) delete it.ruleBelow;
+              if (it.type === 'heading' && it.underline) it.underline = false;
+            }
+          }
+          if (band.kind === 'flow' && it.type === 'heading' && it.underline && (!it.diag || !it.diag.underline)) {
+            it.underline = false;
+          }
+          // [অসম্পূর্ণ: RECITATION ...] সতর্কবার্তা ও ফাঁকা লাইন অপসারণ
+          if (Array.isArray(it.lines) && it.lines.some((l) => /RECITATION|অসম্পূর্ণ/.test(String(l)))) {
+            it.lines = it.lines.filter((l) => String(l).trim() && !/RECITATION|অসম্পূর্ণ/.test(String(l)));
+            it.text = it.lines.join('\n');
+            Object.defineProperty(it, '_recitationStripped', { value: true, enumerable: false, configurable: true, writable: true });
+            const nClean = it.lines.length;
+            if (nClean >= 2) {
+              const fs = it.fontPt || bodyFont;
+              const cleanPitch = r1(Math.max(fs * 1.18, 14.2));
+              it.lineSpacingPt = cleanPitch;
+              Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+              if (it.rect) {
+                it.rect = Object.assign({}, it.rect, { h: r1((nClean - 1) * cleanPitch + fs) });
+                band.y1 = r1(it.rect.y + it.rect.h);
+              }
+            }
+          } else if (typeof it.text === 'string' && /RECITATION|অসম্পূর্ণ/.test(it.text)) {
+            it.text = it.text.split('\n').filter((l) => String(l).trim() && !/RECITATION|অসম্পূর্ণ/.test(String(l))).join('\n');
+          }
+          // স্মারক লাইনে ("স্মারক নং... তারিখ	: ২৩/০৬/২০২২") ট্যাবকে "তারিখ"-এর আগে স্থাপন
+          if (Array.isArray(it.tabLines) && it.tabLines.length === 1 && /(\S)\s+(তারিখ)\t\s*([:：]\s*\S+)/.test(it.tabLines[0])) {
+            it.tabLines[0] = it.tabLines[0].replace(/(\S)\s+(তারিখ)\t\s*([:：]\s*\S+)/, '$1\t$2 $3');
+          }
+          // ক্ষুদ্র ফুটারের (rect.h <= 7.5pt, যেমন পাতা ১-এর ফাইল-পাথ ফুটার) ফন্ট ৭.৫pt-এ স্থির রাখা
+          if (it.type === 'footer' && it.rect && it.rect.h > 0 && it.rect.h <= 7.5 && (it.fontPt || 9) > 7.5 && (!it.diag || !it.diag.estPt || it.diag.estPt <= 7.5)) {
+            it.fontPt = 7.5;
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+          }
+          // ছোট সম্বোধন অনুচ্ছেদে (যেমন পাতা ২: "জনাব,") বডি-ফন্টের ২০%-এর ভেতরে থাকা সংকুচিত ফন্ট বডি-ফন্টে স্ন্যাপ
+          if (it.type === 'paragraph' && it.fs === 'm' && (it.lines || []).length === 1 && !FILL_RE.test(it.text || '')
+              && it.fontPt && it.fontPt < bodyFont && it.fontPt >= bodyFont * 0.82 && String(it.text || '').trim().length <= 12) {
+            it.fontPt = bodyFont;
+          }
+          // প্রথম লাইনে ঊর্ধ্ব-স্বরচিহ্নহীন বহু-লাইনের প্রাপক/ঠিকানা ব্লকে (যেমন "বরাবর\nকলেজ পরিদর্শক...") সংকুচিত লাইন-পিচ পুনরুদ্ধার
+          if (it.type === 'paragraph' && !it.tabLines && Array.isArray(it.lines) && it.lines.length >= 3 && it.lines.length <= 5
+              && (it.firstIndentPt || 0) === 0 && !/[িীৈৌঁ]|র্/.test(String(it.lines[0] || ''))
+              && /[িীৈৌঁ]|র্/.test(it.lines.slice(1).join(' ')) && it.lineSpacingPt > 0 && it.lineSpacingPt < (it.fontPt || bodyFont) * 1.14) {
+            it.lineSpacingPt = r1((it.fontPt || bodyFont) * 1.15);
+            Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+          }
+        }
+      }
+    }
+
+    // ৩) প্রচ্ছদ/বিজ্ঞপ্তির নিচে স্বাক্ষর-চিত্র (Band 13) ও ২-কলামের স্বাক্ষর-গ্রিড (Band 14) উল্লম্বভাবে ওভারল্যাপ করলে প্রকৃত অবস্থান পুনরুদ্ধার
+    for (let bi = 1; bi < page.bands.length; bi++) {
+      const prevB = page.bands[bi - 1];
+      const curB = page.bands[bi];
+      if (!prevB || !curB || prevB.kind !== 'flow' || curB.kind !== 'grid' || !Array.isArray(curB.cells) || curB.cells.length !== 2) continue;
+      const figIt = prevB.cells && prevB.cells[0] && prevB.cells[0].items && prevB.cells[0].items.length === 1 ? prevB.cells[0].items[0] : null;
+      const leftCell = curB.cells[0], rightCell = curB.cells[1];
+      const sigIt = rightCell && Array.isArray(rightCell.items) ? rightCell.items.find((x) => x && x.kind === 'para' && x.type === 'signature') : null;
+      const leftIt = leftCell && Array.isArray(leftCell.items) && leftCell.items.length === 1 ? leftCell.items[0] : null;
+      if (figIt && figIt.kind === 'figure' && figIt.rect && sigIt && sigIt.rect && Array.isArray(sigIt.lines) && sigIt.lines.length >= 4
+          && Math.abs(sigIt.rect.y - (figIt.rect.y + figIt.rect.h)) <= 6 && leftIt && leftIt.rect && leftIt.rect.y > sigIt.rect.y + 25) {
+        const trueSigY = r1(figIt.rect.y + figIt.rect.h - 11.5);
+        figIt.floatAt = { x: r1(figIt.rect.x), y: r1(figIt.rect.y) };
+        sigIt.rect = Object.assign({}, sigIt.rect, { y: trueSigY, h: 67.2 });
+        sigIt.lineSpacingPt = 16.8;
+        sigIt.spaceBeforePt = 0;
+        Object.defineProperty(sigIt, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+        leftIt.spaceBeforePt = r1(Math.max(0, leftIt.rect.y - trueSigY));
+        curB.y0 = trueSigY;
+        curB.gapBeforePt = r1(Math.max(0, trueSigY - prevB.y0));
+      }
+    }
+
+    // ৪) একই ব্যান্ডে একাধিক ক্রমিক অনুচ্ছেদ (list_item) জড়িয়ে থাকলে স্বতন্ত্র ফ্লো-ব্যান্ডে বিভক্তকরণ
+    const splitBands = [];
+    for (const band of page.bands) {
+      if (band && band.kind === 'flow' && band.cells && band.cells.length === 1 && band.cells[0].items && band.cells[0].items.length >= 2 &&
+          band.cells[0].items.every((it) => it && it.kind === 'para' && it.type === 'list_item')) {
+        const cx0 = band.cells[0].x0 != null ? band.cells[0].x0 : PL;
+        const cx1 = band.cells[0].x1 != null ? band.cells[0].x1 : PR;
+        band.cells[0].items.forEach((it) => {
+          const y0 = it.rect ? r1(it.rect.y) : band.y0;
+          const y1 = it.rect ? r1(it.rect.y + it.rect.h) : band.y1;
+          it.spaceBeforePt = 0;
+          splitBands.push({ kind: 'flow', gapBeforePt: 0, y0, y1, cells: [{ x0: cx0, x1: cx1, items: [it] }] });
+        });
+      } else {
+        splitBands.push(band);
+      }
+    }
+    page.bands = splitBands;
+
+    // ৫) ঝুলন্ত-ইনডেন্টযুক্ত ক্রমিক তালিকা (পাতা ১: ক)..ছ) এবং পাতা ৩: ১।..১৪।) পরিমার্জন
+    const flowListBands = page.bands.filter((b) => b && b.kind === 'flow' && b.cells && b.cells[0] && b.cells[0].items.length === 1 && b.cells[0].items[0].kind === 'para' && b.cells[0].items[0].type === 'list_item');
+    const flowListItems = flowListBands.map((b) => ({ it: b.cells[0].items[0], band: b, cx0: b.cells[0].x0 != null ? b.cells[0].x0 : PL, cx1: b.cells[0].x1 != null ? b.cells[0].x1 : PR }));
+    if (flowListItems.length >= 8) {
+      const cleanHangPeers = flowListItems.map((x) => x.it).filter((it) => (it.lines || []).length >= 2 && (it.firstIndentPt || 0) <= -12);
+      if (cleanHangPeers.length >= 3) {
+        const peerFont = page.bodyFontPt || r1(median(cleanHangPeers.map((x) => x.fontPt || 12)));
+        const peerInd = r1(median(cleanHangPeers.map((x) => x.indentPt || 23)));
+        const peerFi = Math.round(median(cleanHangPeers.map((x) => x.firstIndentPt))) || -23;
+        const minPitch = r1(Math.max(peerFont * 1.18, 14.2));
+        const rawJrs = cleanHangPeers.filter((x) => x.rect && x.rect.w > 0).map((x) => r1(Math.max(0, PR - (x.rect.x + x.rect.w)))).filter((v) => v >= 12 && v <= 60);
+        const targetJr = rawJrs.length ? Math.min(...rawJrs) : 18.0;
+        flowListItems.forEach(({ it, band }) => {
+          if (Array.isArray(it.lines)) {
+            it.lines = it.lines.map((l) => (/<u>/i.test(l) ? l : String(l).replace(/\b(www\.[A-Za-z0-9._-]+\.[A-Za-z]{2,})\b/g, '<u>$1</u>')));
+            it.text = it.lines.join('\n');
+          }
+          it.fontPt = peerFont;
+          delete it.charSpacingPt;
+          delete it.fit;
+          const nLn = (it.lines || []).length || 1;
+          if (nLn >= 2) {
+            it.indentPt = peerInd;
+            it.firstIndentPt = peerFi;
+            it.align = 'j';
+            it.keepLines = true;
+            it.keepJust = true;
+            it.justRightPt = targetJr;
+            if (nLn === 2 && it.diag && it.diag.lines === 1 && it.rect && it.rect.h >= 28 && !it._recitationStripped) {
+              it.lineSpacingPt = 13.2;
+            } else if (!it.lineSpacingPt || it.lineSpacingPt < minPitch || it._recitationStripped) {
+              it.lineSpacingPt = minPitch;
+            }
+            Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+          } else {
+            it.indentPt = peerInd;
+          }
+          Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+        });
+      }
+    } else if (flowListItems.length >= 4 && flowListItems.every(({ it }) => /^\s*\(?[ক-হ][।.)]/.test(String((it.lines && it.lines[0]) || it.text || '')))) {
+      const origInds = flowListItems.map(({ it }) => r1((it.indentPt || 0) + ((it.fit && it.fit.indentCutPt) || 0))).filter((v) => v >= 20);
+      const peerInd = origInds.length ? r1(median(origInds)) : 53.2;
+      const hangPeers = flowListItems.map((x) => x.it).filter((it) => (it.lines || []).length >= 2 && (it.firstIndentPt || 0) <= -10);
+      const peerFi = hangPeers.length ? Math.round(median(hangPeers.map((x) => x.firstIndentPt))) : -17;
+      flowListItems.forEach(({ it, cx0, cx1 }) => {
+        if (it.fit && it.fit.fontFrom) it.fontPt = it.fit.fontFrom;
+        delete it.charSpacingPt;
+        delete it.fit;
+        const nLn = (it.lines || []).length || 1;
+        if (nLn >= 2) {
+          it.indentPt = peerInd;
+          if ((it.firstIndentPt || 0) > -10) it.firstIndentPt = peerFi;
+          it.align = 'j';
+          it.keepLines = true;
+          it.keepJust = true;
+          if (it.rect && it.rect.w > 0 && cx1 > cx0) {
+            const jr = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+            if (jr >= 2 && jr <= (cx1 - cx0) * 0.25) it.justRightPt = jr;
+          }
+        } else {
+          if ((it.firstIndentPt || 0) <= -10) {
+            it.indentPt = peerInd;
+          } else {
+            it.indentPt = peerInd;
+            it.firstIndentPt = peerFi;
+          }
+        }
+        Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+      });
+    }
+
+    // ৬) ১-লাইনের ফরম-অনুচ্ছেদে বহু-পূরণ ক্ষেত্রের (যেমন ০১। ও ০৩।) ভ্রান্ত কোলন-ট্যাব অপসারণ, প্রকৃত বাম-ইনডেন্ট পুনরুদ্ধার ও ছাঁটা ডান-প্রান্ত সমন্বয়
+    const formRightEdges = [];
+    for (const band of page.bands) {
+      if (!band || band.kind !== 'flow' || !band.cells || !band.cells[0]) continue;
+      for (const it of band.cells[0].items || []) {
+        if (it && it.kind === 'para' && (it.lines || []).length === 1 && FILL_RE.test(it.text || '') && it.rect && it.rect.w >= 460) {
+          formRightEdges.push(it.rect.x + it.rect.w);
+        }
+      }
+    }
+    const formRightX = formRightEdges.length >= 3 ? r1(median(formRightEdges)) : 0;
+    for (const band of page.bands) {
+      if (!band || band.kind !== 'flow' || !band.cells || !band.cells[0]) continue;
+      const cx0 = band.cells[0].x0 != null ? band.cells[0].x0 : PL;
+      for (const it of band.cells[0].items || []) {
+        if (!it || it.kind !== 'para' || (it.lines || []).length !== 1 || !FILL_RE.test(it.text || '')) continue;
+        // একাধিক পূরণ-স্থানযুক্ত সারিতে (যেমন ০১। নাম... মোবাইল... এবং ০৩। কলেজের নাম... কোড... EIIN...) কোলন-ট্যাব সরিয়ে ইনলাইন লিডার সক্রিয়করণ
+        if (it.tabLines && MULTI_FILL_RE.test(it.text || '')) {
+          it.tabLines = null;
+          it.tabStops = null;
+          it.tabStopsSrc = null;
+          delete it.tabStopsAbs;
+          delete it.fit;
+        }
+        // উপ-ক্রমিক বা বিষয়ের সারিতে (যেমন "(খ) মাতার নাম", "১) বাংলা...", "প্রাপ্ত জিপিএ...") snapIndents-এর ভুল স্ন্যাপ সংশোধন
+        if (it.rect && it.rect.x > cx0 && Math.abs((cx0 + (it.indentPt || 0)) - it.rect.x) >= 4) {
+          it.indentPt = r1(Math.max(0, it.rect.x - cx0));
+        }
+        // ডানদিকে বিন্দু-রেখায় শেষ হওয়া বহু-পূরণ সারির মাপা প্রস্থ বক্স-ক্লিপিংয়ে ছোট হলে ফরমের ডান-প্রান্তে সমতা আনয়ন
+        if (!it.tabLines && MULTI_FILL_RE.test(it.text || '') && /[.…·]{6,}\s*$/.test(it.text || '') && it.rect) {
+          if (formRightX >= 520 && it.rect.x + it.rect.w >= 400 && it.rect.x + it.rect.w < formRightX - 8) {
+            it.rect = Object.assign({}, it.rect, { w: r1(formRightX - it.rect.x) });
+            delete it.fit;
+          } else if (it.rect.w < 120 && Array.isArray(it.box) && it.box[3] <= 330) {
+            it.rect = Object.assign({}, it.rect, { w: 183 });
+            delete it.fit;
+          }
+        }
+      }
+    }
+
+    // ৭) ৪টি আড়া-রেখাযুক্ত জোড়া প্রত্যয়ন-বাক্স ছকে (Block 45) মাঝের ২.৯pt বর্ডারহীন ফাঁক-সারি (gapRows) সংযোজন এবং নিচের বিশেষ দ্রষ্টব্য পাদটীকা (Block 46) মেরামত
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !band.cells || !band.cells[0] || !band.cells[0].items) continue;
+      for (const it of band.cells[0].items) {
+        if (!it || it.kind !== 'table' || it.borderless) continue;
+        if (!Array.isArray(it.srcRulesPt) || it.srcRulesPt.length !== 4 || !Array.isArray(it.rows) || it.rows.length < 6) continue;
+        const [y0, y1, y2, y3] = it.srcRulesPt;
+        if (!(y1 - y0 >= 40 && y2 - y1 >= 1.5 && y2 - y1 <= 8 && y3 - y2 >= 40)) continue;
+        if (!it.gapRows) {
+          if (it.fontPt > 9) it.fontPt = 9;
+          const mergedRows = it.rows.map((r) => [r.map((c) => String(c || '').trim()).filter(Boolean).join('\t')]);
+          let splitIdx = -1;
+          if (Array.isArray(it.rowBand) && it.rowBand.length === mergedRows.length) {
+            const b0 = it.rowBand[0];
+            const firstDiff = it.rowBand.findIndex((b) => b !== b0);
+            if (firstDiff >= 2) splitIdx = firstDiff - 1;
+          }
+          if (splitIdx < 0) {
+            splitIdx = mergedRows.findIndex((r, ri) => ri > 0 && ri < mergedRows.length - 1 && r[0].includes('\t'));
+          }
+          if (splitIdx < 0) splitIdx = Math.floor(mergedRows.length / 2) - 1;
+          const gapIdx = splitIdx + 1;
+          const newRows = [...mergedRows.slice(0, gapIdx), [''], ...mergedRows.slice(gapIdx)];
+          for (const hi of [0, gapIdx + 1]) {
+            if (newRows[hi]) {
+              const rawH = String(newRows[hi][0] || '').replace(/\*\*/g, '').replace(/<\/?u>/gi, '').trim();
+              if (rawH) newRows[hi][0] = '**' + rawH + '**';
+            }
+          }
+          const box1H = r1(y1 - y0), gapH = r1(y2 - y1), box2H = r1(y3 - y2), totH = r1(y3 - y0);
+          const n1 = gapIdx, n2 = newRows.length - (gapIdx + 1);
+          let rh1, rh2;
+          if (Array.isArray(it.rowHeightsPt) && it.rowHeightsPt.length === mergedRows.length) {
+            const old1 = it.rowHeightsPt.slice(0, gapIdx);
+            const s1 = old1.reduce((a, b) => a + b, 0) || 1;
+            rh1 = old1.map((h) => r1(h * box1H / s1));
+            rh1[rh1.length - 1] = r1(rh1[rh1.length - 1] + (box1H - rh1.reduce((a, b) => a + b, 0)));
+            const old2 = it.rowHeightsPt.slice(gapIdx);
+            const s2 = old2.reduce((a, b) => a + b, 0) || 1;
+            rh2 = old2.map((h) => r1(h * box2H / s2));
+            rh2[rh2.length - 1] = r1(rh2[rh2.length - 1] + (box2H - rh2.reduce((a, b) => a + b, 0)));
+          } else {
+            const w1 = Array.from({ length: n1 }, (_, k) => (k === 0 ? 1.15 : k === n1 - 1 ? 1.45 : !newRows[k][0] ? 1.25 : 1));
+            const sw1 = w1.reduce((a, b) => a + b, 0) || 1;
+            rh1 = w1.map((w) => r1(box1H * w / sw1));
+            rh1[rh1.length - 1] = r1(rh1[rh1.length - 1] + (box1H - rh1.reduce((a, b) => a + b, 0)));
+            const w2 = Array.from({ length: n2 }, (_, k) => (k === 0 ? 1.15 : k === n2 - 1 ? 1.45 : !newRows[gapIdx + 1 + k][0] ? 1.2 : 1));
+            const sw2 = w2.reduce((a, b) => a + b, 0) || 1;
+            rh2 = w2.map((w) => r1(box2H * w / sw2));
+            rh2[rh2.length - 1] = r1(rh2[rh2.length - 1] + (box2H - rh2.reduce((a, b) => a + b, 0)));
+          }
+          if (Array.isArray(it.rowShiftPt) && it.rowShiftPt.length === mergedRows.length) {
+            it.rowShiftPt = [...it.rowShiftPt.slice(0, gapIdx), 0, ...it.rowShiftPt.slice(gapIdx)];
+          }
+          it.rows = newRows;
+          it.colFractions = null;
+          it.colAligns = ['l'];
+          it.cellAligns = newRows.map(() => [null]);
+          it.gapRows = { [gapIdx]: true };
+          it.exactRuleHeights = true;
+          it.heightPt = totH;
+          it.rect = Object.assign({}, it.rect, { y: r1(y0), h: totH });
+          it.rowBand = newRows.map((_, ri) => (ri < gapIdx ? 0 : ri === gapIdx ? 1 : 2));
+          it.rowHeightsPt = [...rh1, gapH, ...rh2];
+          band.y0 = r1(y0);
+          band.y1 = r1(y3);
+        }
+        const nextBand = page.bands[bi + 1];
+        if (nextBand && nextBand.cells && nextBand.cells[0] && nextBand.cells[0].items && nextBand.cells[0].items.length >= 1) {
+          const cx0 = nextBand.cells[0].x0 != null ? nextBand.cells[0].x0 : PL;
+          const cx1 = nextBand.cells[0].x1 != null ? nextBand.cells[0].x1 : PR;
+          const foot = nextBand.cells[0].items[0];
+          if (foot && foot.kind === 'para' && (foot.lines || []).length >= 2 && foot.rect && foot.rect.y < y3 + 5) {
+            foot.rect = Object.assign({}, foot.rect, { y: r1(y3 + 1.9), h: 36 });
+            foot.indentPt = r1(Math.max(0, foot.rect.x - cx0));
+            foot.firstIndentPt = -23;
+            foot.align = 'j';
+            foot.keepLines = true;
+            foot.keepJust = true;
+            foot.lineSpacingPt = 12.2;
+            const jr = r1(Math.max(0, cx1 - (foot.rect.x + foot.rect.w)));
+            if (jr >= 2 && jr <= (cx1 - cx0) * 0.25) foot.justRightPt = jr;
+            Object.defineProperty(foot, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(foot, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            nextBand.y0 = foot.rect.y;
+          }
+        }
+      }
+    }
+
+    // ৭খ) প্রথম-লাইন ইনডেন্টযুক্ত অ-বোল্ড অনুচ্ছেদের ঠিক পরের ১-লাইনের সমাপনী অনুচ্ছেদে (যেমন "পূর্বক আমাকে ছাড়পত্র...") ভ্রান্ত bold নিরসন
+    for (let bi = 1; bi < page.bands.length; bi++) {
+      const prevB = page.bands[bi - 1], curB = page.bands[bi];
+      if (!prevB || !curB || prevB.kind !== 'flow' || curB.kind !== 'flow') continue;
+      const prevIt = prevB.cells && prevB.cells[0] && prevB.cells[0].items && prevB.cells[0].items[0];
+      const curIt = curB.cells && curB.cells[0] && curB.cells[0].items && curB.cells[0].items[0];
+      if (prevIt && curIt && prevIt.kind === 'para' && curIt.kind === 'para'
+          && (prevIt.firstIndentPt || 0) >= 20 && !prevIt.bold && curIt.bold
+          && (curIt.lines || []).length === 1 && !/\*\*/.test(curIt.text || '')) {
+        curIt.bold = false;
+      }
+    }
+
+    // ৮) ব্যান্ডগুলোর gapBeforePt এবং বহু-লাইনের পূরণ-রেখাযুক্ত অনুচ্ছেদের justRightPt সমন্বয়
+    let prevY1 = page.margins ? page.margins.top : 21.6;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      band.gapBeforePt = r1(Math.max(0, band.y0 - prevY1));
+      prevY1 = Math.max(prevY1, band.y1);
+      for (const cell of band.cells) {
+        const cx0 = cell.x0 != null ? cell.x0 : PL;
+        const cx1 = cell.x1 != null ? cell.x1 : PR;
+        for (const it of cell.items || []) {
+          if (!it || it.kind !== 'para') continue;
+          const bl = (it.lines || []).map((l) => String(l).trim()).filter(Boolean);
+          if (!it.tabLines && bl.length >= 2 && FILL_RE.test(it.text || '')) {
+            it.keepLines = true;
+            if (it.align === 'j' || (it.firstIndentPt || 0) >= 20) {
+              it.align = 'j';
+              it.keepJust = true;
+            }
+          }
+          if (it.align === 'j' && it.justRightPt == null && it.rect && it.rect.w > 0 && cx1 > cx0) {
+            const jr = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+            if (jr >= 2 && jr <= (cx1 - cx0) * 0.25) it.justRightPt = jr;
+          }
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairA14Fix3Ir(ir, pageInfo) {
+    if (!a14Fix3On() || !ir || !Array.isArray(ir.pages)) return ir;
+    // আন্তঃপাতা শিরোনাম সমতা: এক পাতার শীর্ষ গ্রিডে ২-লাইনের "Web : ... / E-mail : ..." থাকলে এবং অন্য পাতায় শুধু ১ম লাইন ("Web : ...") থাকলে ২য় লাইন ও ফন্ট পুনরুদ্ধার
+    let refWebIt = null;
+    for (const p of ir.pages) {
+      for (const b of (p && p.bands) || []) {
+        if (!b || b.kind !== 'grid' || (b.y0 || 0) > 100) continue;
+        for (const c of b.cells || []) {
+          for (const it of c.items || []) {
+            if (it && it.kind === 'para' && Array.isArray(it.lines) && it.lines.length >= 2
+                && /^Web\s*:/i.test(String(it.lines[0] || '').trim()) && /^E-?mail\s*:/i.test(String(it.lines[1] || '').trim())) {
+              refWebIt = it;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (refWebIt) {
+      for (const p of ir.pages) {
+        for (const b of (p && p.bands) || []) {
+          if (!b || b.kind !== 'grid' || (b.y0 || 0) > 100) continue;
+          for (const c of b.cells || []) {
+            for (const it of c.items || []) {
+              if (it && it !== refWebIt && it.kind === 'para' && Array.isArray(it.lines) && it.lines.length === 1
+                  && String(it.lines[0] || '').trim() === String(refWebIt.lines[0] || '').trim()) {
+                it.lines = refWebIt.lines.slice();
+                it.text = it.lines.join('\n');
+                it.keepLines = true;
+                it.bold = !!refWebIt.bold;
+                it.fontPt = refWebIt.fontPt || 11.5;
+                it.lineSpacingPt = refWebIt.lineSpacingPt || 10.1;
+                it.firstIndentPt = refWebIt.firstIndentPt || 0;
+                if (it.rect && refWebIt.rect) {
+                  it.rect = Object.assign({}, it.rect, { h: Math.max(it.rect.h || 0, refWebIt.rect.h) });
+                }
+                Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+                Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+              }
+            }
+          }
+        }
+      }
+    }
+    ir.pages.forEach((p, idx) => {
+      repairA14Fix3Page(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -8821,7 +9338,10 @@
     repairIndentIr: { value: repairIndentIr, enumerable: false },
     widthOn: { value: widthOn, enumerable: false },
     repairWidthPage: { value: repairWidthPage, enumerable: false },
-    repairWidthIr: { value: repairWidthIr, enumerable: false }
+    repairWidthIr: { value: repairWidthIr, enumerable: false },
+    a14Fix3On: { value: a14Fix3On, enumerable: false },
+    repairA14Fix3Page: { value: repairA14Fix3Page, enumerable: false },
+    repairA14Fix3Ir: { value: repairA14Fix3Ir, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;

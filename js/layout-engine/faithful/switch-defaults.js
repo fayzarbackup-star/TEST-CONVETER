@@ -9,7 +9,8 @@
   // ১০-২১: VSPACE যোগ (a07 +৪.২, a16 +৪.২), BOXSPLIT যোগ (a14 ছবি +৬.৪) — কেউ কমেনি
   // ১০-২১: SERIALHANG (v3) যোগ — ক্রমিক-অনুচ্ছেদে ট্যাব+ঝুলন্ত ইনডেন্ট; স্কোর নিরপেক্ষ (৬ ফাইল), a16 চোখে যাচাই ✓
   // ১০-২১: A07FIX2 যোগ (a07 +২.৩, a14 +২, কেউ কমেনি)
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2'];
+  // ১০-২১: A14FIX3 যোগ (a14 +৯.৩, a09 +১.১, কেউ কমেনি)
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3'];
   DEFAULT_ON.forEach((k) => {
     if (!global['__FZ_OFF_' + k]) global['__FZ_ON_' + k] = true;
   });
