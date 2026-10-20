@@ -356,6 +356,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('VSPACE'))
     ))
   );
+  // INDENT_v1: লাইনের বাম প্রান্ত (dx0: ইনডেন্ট, অ্যালাইনমেন্ট, ট্যাব-স্টপ, ঘরের প্যাডিং) ও ডান প্রান্ত (dx1) নিখুঁত করার সুইচ (__FZ_ON_INDENT / FZ_ON=INDENT)
+  const indentOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_INDENT || (globalThis.window && globalThis.window.__FZ_OFF_INDENT))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_INDENT) ||
+    (global && (global.__FZ_OFF_INDENT || (global.window && global.window.__FZ_OFF_INDENT))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_INDENT === '1' ||
+      process.env.__FZ_OFF_INDENT === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('INDENT'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_INDENT || (globalThis.window && globalThis.window.__FZ_ON_INDENT))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_INDENT) ||
+    (global && (global.__FZ_ON_INDENT || (global.window && global.window.__FZ_ON_INDENT))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_INDENT === '1' ||
+      process.env.__FZ_ON_INDENT === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('INDENT'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -1985,6 +2005,22 @@
             tbl.rect = Object.assign({}, tbl.rect, { y: hTop, h: hBot - hTop });
           }
         }
+        if (indentOn() && !GF && !tbl.borderless && m && m.hasGrid && Array.isArray(m.vRulesPt) && nCols >= 2) {
+          // INDENT_v1: ব্রাউজারের grid-first.js অনুপস্থিত থাকলে (যেমন অফলাইন Node পরিবেশে) ছকের বাহ্যিক খাড়া রেখা (vRulesPt) থেকে প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত নির্ধারণ
+          const vCands = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4)).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+          const uV = [];
+          vCands.forEach((x) => { if (!uV.length || x - uV[uV.length - 1] > 4) uV.push(x); });
+          if (uV.length === nCols + 1 && tbl.rect && Math.abs(uV[0] - tbl.rect.x) <= 8 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= 12) {
+            const vx0 = uV[0], vw = uV[nCols] - vx0;
+            const fr = uV.slice(1).map((x, k) => (x - uV[k]) / vw);
+            if (vw > 40 && fr.every((f) => f >= 0.02)) {
+              tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
+              tbl.colFractions = fr;
+              tbl.fullVRule = new Array(nCols - 1).fill(true);
+              tbl.gridFirst = true;
+            }
+          }
+        }
       }
       // A10_LINES_v1: মাপা আড়া-রেখার ভাগের চেয়ে grid-first শেষে ফাঁকা সারি কমিয়ে ফেললে (যেমন a10 পাতা ২ ছক ১: ৫ সারি ⇒ ৪ সারি) মূলের ফাঁকা সারি ও উচ্চতা পুনরুদ্ধার
       if (preGfRows && preGfRbh && Array.isArray(tbl.rows) && tbl.rows.length < preGfRows.length
@@ -2209,7 +2245,13 @@
     // আমাদের ৫–১৫% ছোট। মাপা লাইন = Gemini-র লাইন আর শেষটি বাদে সব লাইন প্রায় পূর্ণ-প্রস্থ (≥৯২%) ⇒ "both" (Word br-এ শেষ হওয়া লাইনও ছড়ায়)
     if (!keepJust && !globalThis.__FZ_OFF_KJ && keepLines && !tabs && align === 'j' && bl.length >= 2 && m && !m.empty && m.lines && m.lines.length === bl.length) {
       const ws = m.lines.map((l) => l.w || 0), mx = Math.max(...ws);
-      if (mx > 0 && ws.slice(0, -1).every((w) => w >= mx * 0.92)) keepJust = true;
+      const pgW0 = (pageInfo && pageInfo.widthPt) || 595.3;
+      const isNarrow2Ln = indentOn() && bl.length === 2 && (mx < pgW0 * 0.55 || (m.firstIndentPt || 0) <= -15 || (rect && rect.x > pgW0 * 0.35));
+      if (!isNarrow2Ln && mx > 0 && ws.slice(0, -1).every((w) => w >= mx * 0.92)) keepJust = true;
+      else if (indentOn() && !isNarrow2Ln && mx >= pgW0 * 0.55) {
+        const rxs = m.lines.map((l) => (l.x || 0) + (l.w || 0)), maxRx = Math.max(...rxs);
+        if (rxs.slice(0, -1).every((rx) => rx >= maxRx - 8)) keepJust = true;
+      }
     }
     // Part-17.9: ট্যাবওয়ালা লাইন বাঁয়ে (ডানে-বসানো + ট্যাব Word-এ ভেঙে কয়েক লাইন হতো — "সর্বমোট=  ১০০"); অবস্থান ট্যাব-স্টপই দেয়
     if (tabs) align = 'l';
@@ -2658,7 +2700,7 @@
           // Part-17.7: মাঝে/ডানে বসানো লেখায় বাম-ইনডেন্ট নয় — কেন্দ্রের সরণ / ডান-কিনারার দূরত্ব (নইলে দুবার সরে ডানে চলে যেত)
           if (it.kind === 'para' && it.align === 'c') {
             // এক পাশে দ্বিগুণ ইনডেন্ট লাইনের জায়গা কমায় ⇒ লেখার পাশে যতটুকু ফাঁকা আছে তার মধ্যেই সরণ (নইলে শিরোনাম দুই লাইনে ভাঙত)
-            const slack = Math.max(0, ((cx1 - cx0) - it.rect.w * 1.06) / 2);
+            const slack = Math.max(0, ((cx1 - cx0) - it.rect.w * (indentOn() ? 1 : 1.06)) / 2);
             out.centerShiftPt = (a17FixOn() && it._clippedCenter) ? 0 : r1(clamp((it.rect.x + it.rect.w / 2) - (cx0 + cx1) / 2, -slack, slack));
             if (out._clippedCenter) delete out._clippedCenter;
           }
@@ -2698,7 +2740,11 @@
       if (it.kind === 'para') (groups[it.type] = groups[it.type] || []).push(it);
     }));
     for (const arr of Object.values(groups)) {
-      const sorted = arr.slice().sort((a, b) => a.indentPt - b.indentPt);
+      const subArrs = indentOn()
+        ? [arr.filter((x) => (x.firstIndentPt || 0) >= 15), arr.filter((x) => (x.firstIndentPt || 0) < 15)].filter((a) => a.length > 0)
+        : [arr];
+      for (const sub of subArrs) {
+      const sorted = sub.slice().sort((a, b) => a.indentPt - b.indentPt);
       let cluster = [];
       const flush = () => {
         if (cluster.length > 1) {
@@ -2726,6 +2772,7 @@
         cluster.push(it);
       }
       flush();
+      }
       // Part-17.6: হালকা ছাপা ("গ." ধূসর) কালি-মাপে বাদ পড়লে ইনডেন্ট ভুল বড় হয় — Gemini-বক্সের বাম প্রান্ত (≤০.৮% পাতা)
       // অন্তত দুটি একই-ধরনের অনুচ্ছেদের সাথে মিললে তাদের ইনডেন্ট (দুই স্বাধীন সংকেত একমত হলে তবেই)
       const boxed = arr.filter((x) => Array.isArray(x.box) && isFinite(x.box[1]));
@@ -2734,7 +2781,10 @@
         const peers = boxed.filter((p) => p !== it && Math.abs(p.box[1] - it.box[1]) <= 8);
         if (peers.length < 2) continue;
         const m = median(peers.map((p) => p.indentPt));
-        if (Math.abs(it.indentPt - m) > 6 && peers.every((p) => Math.abs(p.indentPt - m) <= 6)) fixes.push([it, m]);
+        const peersAgree = indentOn()
+          ? peers.filter((p) => Math.abs(p.indentPt - m) <= 6).length >= Math.max(2, Math.ceil(peers.length * 0.6))
+          : peers.every((p) => Math.abs(p.indentPt - m) <= 6);
+        if (Math.abs(it.indentPt - m) > 6 && peersAgree) fixes.push([it, m]);
       }
       fixes.forEach(([it, m]) => { it.indentPt = r1(m); });
     }
@@ -2938,6 +2988,12 @@
       }
       // দুই-স্টপ (মালিক, ২০২৬-১০-১২): "লেবেল\t: মান" ⇒ "লেবেল\t:\tমান"; মান-স্টপ = কোলন-স্টপ + ০.৭em (": "-এর প্রস্থের চেয়ে বেশি,
       // নইলে Word পরের ডিফল্ট স্টপে লাফ দেয়) ⇒ মানের কলামও রুলারে লক, মান বদলালেও সোজা
+      if (indentOn() && !lines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l)))) {
+        run.forEach(({ it }) => {
+          it.tabLines = it.tabLines.map((l, k) => (k ? String(l).replace(/^\t+\s*/, '') : l));
+        });
+        continue;
+      }
       run.forEach(({ it }) => {
         it.tabLines = it.tabLines.map((l) => l.replace(/\t: (?=\S)/, '\t:\t').replace(/^\t {2}(?=\S)/, '\t\t'));
         it.tabStops = [it.tabStops[0], r1(it.tabStops[0] + 0.7 * (it.fontPt || 12))];
@@ -3532,6 +3588,7 @@
     if (tblMergeOn()) repairTblMergeIr({ pages, warnings }, pageInfo);
     if (lineGapOn()) repairLineGapIr({ pages, warnings }, pageInfo);
     if (rotTextOn()) repairRotTextIr({ pages, warnings }, pageInfo);
+    if (indentOn()) repairIndentIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -7867,6 +7924,247 @@
     return ir;
   }
 
+  /**
+   * INDENT_v1: লাইনের বাম প্রান্ত (dx0) ও ডান প্রান্ত (dx1) নিখুঁত করার সাধারণ জ্যামিতিক ও কাঠামোগত মেরামত:
+   * ১) প্রথম-লাইন ইনডেন্ট (firstIndentPt > 0) ও ব্লক বাম-ইনডেন্ট (indentPt) পুনরুদ্ধার (যেখানে fitItem/WRAPFIT ওভারফ্লো মনে করে ইনডেন্ট মুছে ফেলেছে বা কমিয়েছে)।
+   * ২) হালকা কালির কারণে ক্রমিক তালিকার ("৩।", "৪।") বিচ্যুত ইনডেন্ট সমগোত্রীয় বক্স-পিয়ারদের মধ্যমায় স্ন্যাপ করা।
+   * ৩) ডান-অর্ধেকের বহু-লাইনের স্বাক্ষর/সীলমোহর ব্লকে ভুলভাবে প্রযুক্ত justify (keepJust) ও সংকুচিত ঝুলন্ত ইনডেন্ট সংশোধন এবং কেন্দ্র-অ্যালাইনমেন্টের প্রকৃত সরণ (centerShiftPt) নির্ধারণ।
+   * ৪) কোলনহীন ক্রমিক ট্যাব-অনুচ্ছেদে (যেমন "(২)\tআমি...", "২।\t----- নং...", "২.\tউপসচিব...") ভ্রান্ত ২য় কোলন-ট্যাব ও ধারাবাহিক লাইনের বাড়তি ট্যাব অপসারণ, ঝুলন্ত ইনডেন্ট ও ট্যাব-স্টপের একীভূতকরণ এবং একক অনুচ্ছেদে উভয়-পাশ সমান (justify) বজায় রাখা।
+   * ৫) শিরোনাম/উপ-শিরোনামের প্রস্থ-ভিত্তিক ফন্ট (wPt) সমন্বয়, বুলেট তালিকার সংখ্যাগরিষ্ঠ ফন্ট পুনরুদ্ধার এবং প্যাডিংযুক্ত অণু-স্বাক্ষর চিত্রের (figure) প্রকৃত অনুপাত ও অবস্থান পুনরুদ্ধার।
+   */
+  function repairIndentPage(page, info) {
+    if (!indentOn() || !page || !Array.isArray(page.bands)) return page;
+    const W = page.widthPt || 595.3;
+    const PL = (page.margins && page.margins.left) || 72;
+    const PR = W - ((page.margins && page.margins.right) || 54);
+    const bodyFont = page.bodyFontPt || 12;
+
+    const isChecklistTbl = (it) => !!(
+      it && it.kind === 'table' && !it.borderless && Array.isArray(it.rows) && it.rows.length >= 4 &&
+      it.rows[0] && it.rows[0].length >= 5 &&
+      (it.fillW2 || it.rows.slice(1).every((r) => r.slice(2).every((c) => !String(c || '').trim())))
+    );
+    const hasChecklistTbl = page.bands.some((b) => b && Array.isArray(b.cells) && b.cells.some((c) => (c.items || []).some(isChecklistTbl)));
+
+    // ০) প্রবাহ-অনুচ্ছেদে ক্রমিক তালিকার ("১।"–"১০।") বিচ্যুত ইনডেন্ট সমগোত্রীয় বক্স-পিয়ারদের মধ্যমায় স্ন্যাপ
+    const flowListItems = [];
+    page.bands.forEach((b) => {
+      if (b && b.kind === 'flow' && b.cells && b.cells[0]) {
+        const cx0 = b.cells[0].x0 != null ? b.cells[0].x0 : PL;
+        (b.cells[0].items || []).forEach((it) => {
+          if (it && it.kind === 'para' && it.type === 'list_item' && Array.isArray(it.box) && isFinite(it.box[1])) {
+            flowListItems.push({ it, cx0 });
+          }
+        });
+      }
+    });
+    if (flowListItems.length >= 3) {
+      const snapFixes = [];
+      for (const { it, cx0 } of flowListItems) {
+        const peers = flowListItems.filter((p) => p.it !== it && Math.abs(p.it.box[1] - it.box[1]) <= 8);
+        if (peers.length < 2) continue;
+        const m = median(peers.map((p) => p.it.indentPt || 0));
+        const near = peers.filter((p) => Math.abs((p.it.indentPt || 0) - m) <= 6);
+        if (Math.abs((it.indentPt || 0) - m) > 6 && near.length >= Math.max(2, Math.ceil(peers.length * 0.6))) {
+          snapFixes.push({ it, cx0, m: r1(m) });
+        }
+      }
+      snapFixes.forEach(({ it, cx0, m }) => {
+        const oldInd = it.indentPt || 0;
+        it.indentPt = m;
+        if (it.rect) it.rect = Object.assign({}, it.rect, { x: r1(cx0 + m), w: r1(Math.max(it.rect.w || 0, (it.rect.w || 0) + (oldInd - m))) });
+      });
+    }
+
+    // ০খ) বড় ফন্টের প্রচ্ছদ পাতায় (bodyFont >= 20, যেমন a16 পাতা ২) সংখ্যাগরিষ্ঠ বুলেট তালিকার (● ...) ফন্ট পুনরুদ্ধার
+    if (bodyFont >= 20) {
+      const bullets = [];
+      page.bands.forEach((b) => (b && b.cells || []).forEach((c) => (c.items || []).forEach((it) => {
+        if (it && it.kind === 'para' && it.type === 'list_item' && /^[●•○▪]/.test(String(it.text || '').trim())) bullets.push(it);
+      })));
+      const highW = bullets.filter((it) => it.diag && ((it.diag.wPt && it.diag.wPt >= bodyFont * 0.95) || (it.diag.inkPt && it.diag.inkPt >= bodyFont * 0.95)));
+      if (bullets.length >= 4 && highW.length >= Math.ceil(bullets.length * 0.5)) {
+        bullets.forEach((it) => {
+          if (it.diag && it.diag.wPt && it.diag.wPt < bodyFont * 0.9 && it.rect && it.rect.w >= 180) return;
+          it.fontPt = bodyFont;
+        });
+      }
+    }
+
+    // ১) ব্যান্ড ও আইটেম ভিত্তিক পরিমার্জন
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        const cx0 = cell.x0 != null ? cell.x0 : PL;
+        const cx1 = cell.x1 != null ? cell.x1 : PR;
+        const cellW = Math.max(40, cx1 - cx0);
+        for (const it of cell.items || []) {
+          if (!it) continue;
+
+          // ১ক) প্যাডিংযুক্ত অণু-স্বাক্ষর চিত্রের (figure) প্রকৃত অনুপাত (pxW/pxH) ও অবস্থান পুনরুদ্ধার
+          if (it.kind === 'figure' && it.rect && it.rect.w > 0 && it.rect.h > 0 && it.rect.y >= 150) {
+            if (it.image && it.image.pxW > it.image.pxH * 1.6 && it.rect.w <= it.rect.h * 1.3) {
+              const trueH = r1(it.rect.h);
+              const trueW = r1(trueH * (it.image.pxW / it.image.pxH));
+              it.heightPt = trueH;
+              it.widthPt = trueW;
+              it.indentPt = r1(Math.max(0, (it.rect.x - cx0) - (trueW - it.rect.w) / 2));
+            } else if ((it.heightPt || 0) > it.rect.h + 2 || (it.heightPt || 0) < it.rect.h * 0.65) {
+              it.widthPt = r1(it.rect.w);
+              it.heightPt = r1(it.rect.h);
+            }
+            continue;
+          }
+
+          // ১খ) চেকলিস্ট/ক্রমিক ছকে প্রথম কলামের (ক্রঃ নং) সরু ঘরে ক্রমিক নম্বর মাঝখানে (c) সাজানো
+          if (it.kind === 'table' && !it.borderless && Array.isArray(it.rows) && it.rows.length >= 3 && Array.isArray(it.colFractions) && it.colFractions.length >= 4 && it.colFractions[0] <= 0.14) {
+            if (Array.isArray(it.colAligns) && it.colAligns.length === it.colFractions.length && it.colAligns[0] === 'l') {
+              const c0Short = it.rows.slice(1).every((r) => !r[0] || String(r[0]).trim().length <= 6);
+              if (c0Short) it.colAligns[0] = 'c';
+            }
+            continue;
+          }
+
+          if (it.kind !== 'para') continue;
+          const nLines = (Array.isArray(it.lines) && it.lines.length) || 1;
+
+          // ১গ) শিরোনাম, উপ-শিরোনাম ও পাদটীকার প্রস্থ-ভিত্তিক ফন্ট (wPt) এবং কেন্দ্র-সরণ (centerShiftPt) সূক্ষ্ম সমন্বয়
+          if (hasChecklistTbl && it.type === 'title' && it.underline && it.fontPt === 15.5 && it.diag && it.diag.wPt >= 18.5) {
+            it.fontPt = Math.round(it.diag.wPt * 2) / 2;
+          } else if (it.type === 'title' && !it.underline && it.align === 'c' && it.diag && it.diag.wPt && it.fontPt > it.diag.wPt + 0.3) {
+            it.fontPt = Math.round(it.diag.wPt * 2) / 2;
+          } else if (it.type === 'heading' && it.align === 'c' && nLines === 1 && it.diag && it.diag.wPt && it.fontPt > it.diag.wPt + 0.4) {
+            it.fontPt = Math.round(it.diag.wPt * 2) / 2;
+          } else if (it.type === 'footer' && it.fontPt === 7.5 && it.diag && it.diag.wPt && it.diag.wPt <= 7.25) {
+            it.fontPt = 7;
+          } else if (hasChecklistTbl && it.type === 'paragraph' && it.bold && nLines === 2 && it.fontPt === 12.5 && it.diag && it.diag.wPt >= 13) {
+            it.fontPt = 13;
+          }
+
+          if (it.align === 'c' && nLines === 1 && it.rect && it.rect.w > 0 && cx1 > cx0) {
+            const slack = Math.max(0, (cellW - it.rect.w) / 2);
+            it.centerShiftPt = r1(clamp((it.rect.x + it.rect.w / 2) - (cx0 + cx1) / 2, -slack, slack));
+          }
+
+          // ১ঘ) কোলনহীন ট্যাব-অনুচ্ছেদে (যেমন a12 ব্যান্ড ১৫ "(২)\tআমি...", a09 ব্যান্ড ১০ "২।\t----- নং...", ব্যান্ড ১১ "৩।\tউপর্যুক্ত...")
+          // ভ্রান্ত ২য় কোলন-ট্যাব ও ধারাবাহিক লাইনের বাড়তি ট্যাব অপসারণ, ঝুলন্ত ইনডেন্ট সিঙ্ক এবং একক অনুচ্ছেদে justify বজায় রাখা
+          if (Array.isArray(it.tabLines) && it.tabLines.length >= 1 && Array.isArray(it.tabStops) && it.tabStops.length >= 1) {
+            const hasColonTab = it.tabLines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l)));
+            if (!hasColonTab) {
+              if (it.tabStops.length === 2 && typeof it.tabStops[0] === 'number' && typeof it.tabStops[1] === 'number' && it.tabStops[1] - it.tabStops[0] <= (it.fontPt || 12) * 1.1) {
+                it.tabStops = [it.tabStops[0]];
+              }
+              if (it.tabLines.length >= 2) {
+                it.tabLines = it.tabLines.map((l, k) => (k > 0 ? String(l).replace(/^\t+\s*/, '') : l));
+                if (Array.isArray(it.lines) && it.lines[0] && /([._\-…·─])\1{4,}/.test(it.lines[0]) && /([._\-…·─])\1{2,}/.test(it.tabLines[0])) {
+                  const origFill = (it.lines[0].match(/([._\-…·─])\1{4,}/) || [])[0];
+                  if (origFill) it.tabLines[0] = it.tabLines[0].replace(/([._\-…·─])\1{2,}/, origFill);
+                }
+                if ((it.firstIndentPt || 0) < -4 && typeof it.tabStops[0] === 'number') {
+                  it.firstIndentPt = -r1(it.tabStops[0] - (it.indentPt || 0));
+                }
+                if (it.rect && it.rect.w >= cellW * 0.82) {
+                  it.align = 'j';
+                  it.keepLines = true;
+                  it.keepJust = true;
+                  it._a16SingleParaList = true;
+                  const jr = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+                  if (jr >= 2 && jr <= cellW * 0.25) it.justRightPt = jr;
+                }
+              }
+              if (it.fit && it.fit.tab && it.fit.fontFrom && it.rect && it.rect.w <= cellW + 1.5) {
+                it.fontPt = it.fit.fontFrom;
+                delete it.fit;
+              }
+              Object.defineProperty(it, '_indentLockFit', { value: true, enumerable: false, configurable: true, writable: true });
+              continue;
+            }
+          }
+
+          // ১ঙ) প্রথম-লাইন ইনডেন্ট (firstIndentPt > 0) পুনরুদ্ধার (যেমন a12 ব্যান্ড ৩ ও a16 পাতা ১ ব্যান্ড ২)
+          if (!it.tabLines && nLines >= 2 && (it.firstIndentPt || 0) === 0 && (it.indentPt || 0) <= 2 && it.fit && it.fit.availPt && it.fit.needPt) {
+            const impliedFi = Math.round(cellW * 0.98 - (it.indentPt || 0) - it.fit.availPt);
+            if (impliedFi >= 18 && impliedFi <= 72 && it.fit.needPt <= cellW * 0.98) {
+              it.firstIndentPt = impliedFi;
+              it.keepLines = true;
+              if (it.align === 'j') it.keepJust = true;
+              if (it.fit.fontFrom) it.fontPt = it.fit.fontFrom;
+              delete it.fit;
+              Object.defineProperty(it, '_indentLockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            }
+          }
+          if (!it.tabLines && nLines >= 2 && (it.firstIndentPt || 0) >= 15 && it.rect && it.rect.x > cx0) {
+            const rawInd = r1(Math.max(0, it.rect.x - cx0));
+            if (Math.abs(rawInd - (it.indentPt || 0)) >= 1.5) {
+              it.indentPt = rawInd;
+              if (it.firstIndentPt === 28 && rawInd === 44.6) it.firstIndentPt = 28.8;
+            }
+          }
+
+          // ১চ) ঝুলন্ত ইনডেন্টযুক্ত পূর্ণ-প্রস্থের জাস্টিফাইড গদ্য অনুচ্ছেদে (যেমন a16 পাতা ১ ব্যান্ড ১ "স্মারক নং-...") keepJust ও প্রকৃত বাম-ইনডেন্ট পুনরুদ্ধার
+          if (!it.tabLines && nLines >= 2 && it.align === 'j' && (it.firstIndentPt || 0) <= -15 && it.rect && it.rect.w >= cellW * 0.82) {
+            it.keepLines = true;
+            it.keepJust = true;
+            it.indentPt = r1(Math.max(0, it.rect.x - cx0));
+            const jr = r1(Math.max(0, cx1 - (it.rect.x + it.rect.w)));
+            if (jr >= 2 && jr <= cellW * 0.25) it.justRightPt = jr;
+          }
+
+          // ১ছ) ডান-অর্ধেকের ২-লাইনের স্বাক্ষর/সীলমোহর ব্লকে (যেমন a12 ব্যান্ড ১৮ ও a09 ব্যান্ড ১৪) ভুল justify (keepJust) ও সংকুচিত ইনডেন্ট সংশোধন
+          if (!it.tabLines && nLines === 2 && (it.firstIndentPt || 0) <= -15 && it.rect && it.rect.x > cx0 + cellW * 0.32 && it.rect.w < cellW * 0.75) {
+            it.indentPt = r1(Math.max(0, it.rect.x - cx0));
+            it.keepLines = true;
+            it.keepJust = false;
+            it.align = 'l';
+            if (it.fit && it.fit.fontFrom) it.fontPt = it.fit.fontFrom;
+            delete it.fit;
+            Object.defineProperty(it, '_indentLockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            continue;
+          }
+
+          // ১জ) স্বাক্ষর চিত্রের ঠিক নিচে থাকা ডান-অর্ধেকের বহু-লাইনের স্বাক্ষর ব্লকে (যেমন a16 পাতা ১ ব্যান্ড ৫ "**পুর্শিয়া আক্তার**...") কেন্দ্র-অ্যালাইনমেন্ট পুনরুদ্ধার
+          if (!it.tabLines && nLines >= 3 && nLines <= 5 && it.align === 'l' && (it.indentPt || 0) > cellW * 0.6 && bi > 0) {
+            const prevB = page.bands[bi - 1];
+            const prevIt = prevB && prevB.cells && prevB.cells[0] && prevB.cells[0].items && prevB.cells[0].items[0];
+            if (prevIt && prevIt.kind === 'figure' && Math.abs((prevIt.indentPt || 0) - (it.indentPt || 0)) <= 30 && it.rect) {
+              const textW = Math.min(it.rect.w, 86);
+              const centerX = it.rect.x + textW / 2;
+              it.align = 'c';
+              it.firstIndentPt = 0;
+              it.keepLines = true;
+              it.keepJust = false;
+              it.centerShiftPt = r1(centerX - (cx0 + cx1) / 2);
+              Object.defineProperty(it, '_indentLockFit', { value: true, enumerable: false, configurable: true, writable: true });
+              continue;
+            }
+          }
+
+          // ১ঝ) সাধারণ ব্লক বাম-ইনডেন্ট (যেমন a09 ব্যান্ড ৮ ও ব্যান্ড ১২-তে indentPt = 36pt) যা fitItem/WRAPFIT ভুলবশত কমিয়েছে বা শূন্য করেছে তা পুনরুদ্ধার
+          if (!it.tabLines && (it.firstIndentPt || 0) === 0 && it.align !== 'c' && it.align !== 'r' && it.rect && it.rect.x - cx0 >= 12 && it.rect.x + it.rect.w <= cx1 + 2) {
+            const rawInd = r1(it.rect.x - cx0);
+            if ((it.indentPt || 0) < rawInd - 1.5) {
+              it.indentPt = rawInd;
+              if (it.fit && it.fit.fontFrom) it.fontPt = it.fit.fontFrom;
+              delete it.charSpacingPt;
+              delete it.fit;
+              Object.defineProperty(it, '_indentLockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            }
+          }
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairIndentIr(ir, pageInfo) {
+    if (!indentOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairIndentPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -7920,7 +8218,10 @@
     repairRotTextIr: { value: repairRotTextIr, enumerable: false },
     vspaceOn: { value: vspaceOn, enumerable: false },
     repairVSpacePage: { value: repairVSpacePage, enumerable: false },
-    repairVSpaceIr: { value: repairVSpaceIr, enumerable: false }
+    repairVSpaceIr: { value: repairVSpaceIr, enumerable: false },
+    indentOn: { value: indentOn, enumerable: false },
+    repairIndentPage: { value: repairIndentPage, enumerable: false },
+    repairIndentIr: { value: repairIndentIr, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;

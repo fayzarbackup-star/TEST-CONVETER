@@ -6,6 +6,8 @@
  * ঝুলন্ত-ইনডেন্ট Word-এ নিজেই ট্যাব-স্টপ, তাই w:tabs-এ হাত নেই; আগে কোনো ছোট ট্যাব-স্টপ থাকলে অনুচ্ছেদ বাদ।
  * v2: বাঁধাধরা HANG_EM-এর বদলে মূলের মাপা x (সহোদর ট্যাব-স্টপ / IR / measures বা প্রাকৃতিক ক্রমিক+স্পেস প্রস্থ) থেকে ঝুলন্ত দূরত্ব নেওয়া হয়,
  * যাতে প্রথম লাইনের লেখার শুরু মূলের অবস্থানেই থাকে এবং লাইনের কার্যকর প্রস্থ কমে অতিরিক্ত লাইন না ভাঙে (a16 পাতা ৩ ও ৮)।
+ * v3: ট্যাব-স্টপ/ফিল-ডট/কোলন-লেবেলযুক্ত ফর্ম-লাইন বাদ, ফর্ম-লাইনের লিডার ট্যাব-স্টপ (যেমন a14 পাতা ২-এর pos=3898) সহোদর স্টপ হিসেবে
+ * সংগ্রহে রোধ এবং ঝুলন্ত ইনডেন্টে লাইন-সংখ্যা বাড়লে তা পরিহার (a14 পাতা ২ ও ৩-এর −১৫.৫ পতন নিরসন)।
  * কাজ শেষ document.xml-এর body-স্ট্রিংয়ে (builder শুধু ডাকে)।
  */
 (function (global) {
@@ -15,6 +17,7 @@
   const SER = /^(\s*)(\(?[০-৯0-9]{1,2}[।.)]|\([ক-হa-z]\)|[ক-হ][।.)])([  ]+)(?=\S)/;
   const SUB_SER = /^[ক-হa-z][।.)]$/;
   const HANG_EM = 2.0;      // একক-টেস্টের ডিফল্ট ফলব্যাক প্রস্থ (ফন্ট-আকারের গুণ) — যখন মাপা বা ছক-প্রসঙ্গ নেই
+  const MAX_HANG_TW = 720;  // ক্রমিক-ঝুলন্ত দূরত্বের সর্বোচ্চ সীমা (৩৬pt) — ফর্মের মাঝ/ডান ট্যাব-স্টপ (যেমন ৩৮৯৮ dxa) বর্জনে
   const IND_AFTER = /<w:(contextualSpacing|mirrorIndents|suppressOverlap|jc|textDirection|textAlignment|textboxTightWrap|outlineLvl|divId|cnfStyle|rPr|sectPr|pPrChange)[ >/]/;
 
   function isOn() {
@@ -43,6 +46,38 @@
     return Math.round(clean.length * sz * 0.45 * 20);
   }
 
+  // ফর্ম-লাইন শনাক্তকরণ: ফিল-ডট/ড্যাশ ("....", "___"), একই লাইনে একাধিক ক্রমিক ("১) বাংলা ২) ইংরেজী"), বা এক-লাইনের ফর্ম-লেবেল ("০৫। অধ্যয়নরত পাঠ্য বিষয় :")
+  function isFormLineTxt(fullTxt, rest0, hasBr) {
+    const s = String(fullTxt || '');
+    const r = String(rest0 || '');
+    if (/([._\-…·─━═])\1{2,}/.test(s)) return true;
+    if (/(?:^|\s)(?:\(?[০-৯0-9]{1,2}[।.)]|\([ক-হa-z]\)|[ক-হ]\))\s+\S/.test(r)) return true;
+    if (!hasBr && /^[^:।\n]{2,35}\s*:\s*(?:$|\(|[.…_─-])/.test(r.trim())) return true;
+    return false;
+  }
+
+  // ঝুলন্ত ইনডেন্ট (newLeft = start + h) বসালে অনুচ্ছেদের কোনো লাইনের সংখ্যা বাড়ে কি না তা যাচাই
+  function wrapsMoreLines(p, sm, sz, left, start, right, natHang, h, limTw) {
+    if (!(limTw > 0)) return false;
+    const newLeft = start + h;
+    const wPost = Math.max(200, limTw - newLeft - right);
+    const w1Pre = Math.max(200, limTw - start - right);
+    const w2Pre = Math.max(200, limTw - left - right);
+    const brSegs = p.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/, '').split(/<w:br(?:\s[^>]*)?\/>/)
+      .map((seg) => [...seg.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g)].map((m) => m[1]).join(''));
+    for (let i = 0; i < brSegs.length; i++) {
+      const txt = i === 0 ? brSegs[0].slice(sm[0].length) : brSegs[i];
+      const w = estTextTw(txt, sz);
+      if (w <= 0) continue;
+      const pre = i === 0
+        ? ((natHang + w <= w1Pre) ? 1 : 1 + Math.ceil((natHang + w - w1Pre) / w2Pre))
+        : Math.ceil(w / w2Pre);
+      const post = Math.ceil(w / wPost);
+      if (post > pre) return true;
+    }
+    return false;
+  }
+
   // IR বা measures অবজেক্ট থেকে পাতাভিত্তিক মাপা ক্রমিক-ইনডেন্ট (startTw -> textLeftTw) ও ছকের উপ-ক্রমিকের প্রস্থ নিষ্কাশন
   function extractDataHints(data) {
     const hints = { byStart: new Map(), tableHangTw: 0 };
@@ -55,18 +90,23 @@
         for (const b of pg.bands || []) {
           for (const c of b.cells || []) {
             for (const it of c.items || []) {
-              if (!it || it.kind !== 'para') continue;
+              if (!it || it.kind !== 'para' || it.align === 'c' || it.align === 'r') continue;
+              const rawTxt = String((it.lines && it.lines[0]) || it.text || '');
+              const sm = rawTxt.match(SER);
+              if (!sm || isFormLineTxt(it.text || rawTxt, rawTxt.slice(sm[0].length), Array.isArray(it.lines) && it.lines.length > 1)) continue;
               const startTw = Math.round((it.indentPt || 0) * 20);
-              if (Array.isArray(it.tabStops) && it.tabStops.length) {
-                const st0 = typeof it.tabStops[0] === 'object' ? it.tabStops[0].pos : it.tabStops[0];
-                const leftTw = Math.round((st0 || 0) * 20);
-                if (leftTw > startTw + 100 && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
-              } else if (Array.isArray(it.tabStopsSrc) && it.tabStopsSrc.length) {
+              if (Array.isArray(it.tabStops) && it.tabStops.length === 1) {
+                const st0 = it.tabStops[0];
+                if (st0 && typeof st0 === 'object' && st0.leader) continue;
+                const pos0 = typeof st0 === 'object' ? st0.pos : st0;
+                const leftTw = Math.round((pos0 || 0) * 20);
+                if (leftTw > startTw + 100 && leftTw <= startTw + MAX_HANG_TW && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
+              } else if (Array.isArray(it.tabStopsSrc) && it.tabStopsSrc.length === 1 && (!Array.isArray(it.tabStops) || it.tabStops.length <= 1)) {
                 const leftTw = Math.round((it.tabStopsSrc[0] - mL) * 20);
-                if (leftTw > startTw + 100 && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
-              } else if (it.firstIndentPt < -5) {
+                if (leftTw > startTw + 100 && leftTw <= startTw + MAX_HANG_TW && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
+              } else if (it.firstIndentPt < -5 && (!Array.isArray(it.tabStops) || !it.tabStops.length)) {
                 const leftTw = Math.round(((it.indentPt || 0) - it.firstIndentPt) * 20);
-                if (leftTw > startTw + 100 && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
+                if (leftTw > startTw + 100 && leftTw <= startTw + MAX_HANG_TW && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
               }
             }
           }
@@ -81,12 +121,15 @@
         const cb = blocks[k];
         if (!m) continue;
         if (!m.hasGrid && Array.isArray(m.lineSegs) && m.lineSegs[0] && m.lineSegs[0].length >= 2) {
+          const cbTxt = String((cb && cb.text) || '');
+          const sm = cbTxt.match(SER);
+          if (!sm || isFormLineTxt(cbTxt, cbTxt.slice(sm[0].length), cbTxt.includes('\n'))) continue;
           const s0 = m.lineSegs[0][0], s1 = m.lineSegs[0][1];
           const pgNum = (cb && cb.page) || 1;
           const mL = (meas.pageInfo && meas.pageInfo[pgNum - 1] && meas.pageInfo[pgNum - 1].margins && meas.pageInfo[pgNum - 1].margins.left) || 84;
           const startTw = Math.round((s0.x - mL) * 20);
           const leftTw = Math.round((s1.x - mL) * 20);
-          if (leftTw > startTw + 100 && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
+          if (startTw >= 0 && leftTw > startTw + 100 && leftTw <= startTw + MAX_HANG_TW && !hints.byStart.has(startTw)) hints.byStart.set(startTw, leftTw);
         } else if (m.hasGrid && Array.isArray(m.colEdgesPt) && m.colEdgesPt.length >= 3 && Array.isArray(m.textInkXPt) && Array.isArray(m.cellBox)) {
           const c1L = m.colEdgesPt[1], c1R = m.colEdgesPt[2];
           const blobs = m.textInkXPt.filter((r) => r[0] >= c1L + 2 && r[0] <= c1R - 2 && (r[2] - r[1]) >= 5);
@@ -114,8 +157,8 @@
     const pPrM = p.match(/<w:pPr>[\s\S]*?<\/w:pPr>/);
     const pPr = pPrM ? pPrM[0] : '';
     if (/w:hanging=|<w:numPr>|<w:jc w:val="(center|right|end)"/.test(pPr)) return p;
-    // পূরণ-সারি ("০১। নাম ⇥ : ⇥ ....") আগেই ট্যাবে সাজানো — ছোঁয়া নয় (a14 −২৮ এখান থেকে)
-    if (/<w:tab\/>/.test(p)) return p;
+    // পূরণ-সারি ("০১। নাম ⇥ : ⇥ ....") বা লিডার-ট্যাব আগেই ট্যাবে সাজানো — ছোঁয়া নয় (a14 −১৫.৫ এখান থেকে)
+    if (/<w:tab\/>|\bw:leader=/.test(p)) return p;
     // প্রথম w:t-তে ক্রমিক + স্পেস + লেখা থাকতে হবে
     const tM = p.match(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/);
     if (!tM) return p;
@@ -123,6 +166,9 @@
     if (/<w:tab\/>|<w:t[ >]/.test(before.replace(/<w:pPr>[\s\S]*?<\/w:pPr>/, '').replace(/<w:tabs>[\s\S]*?<\/w:tabs>/, ''))) return p;
     const sm = tM[1].match(SER);
     if (!sm) return p;
+    const rest0 = tM[1].slice(sm[0].length);
+    const fullTxt = [...p.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g)].map((m) => m[1]).join('');
+    if (isFormLineTxt(fullTxt, rest0, /<w:br[/> ]/.test(p))) return p;
     const sz = (p.match(/<w:sz w:val="(\d+)"/) || [0, 24])[1] / 2;
     const indTag = (pPr.match(/<w:ind [^>]*\/>/) || [''])[0];
     const left = attr(indTag, 'left') || attr(indTag, 'start');
@@ -132,8 +178,8 @@
     const natHang = prefixHangTw(sm, sz);
     const o = typeof opts === 'number' ? { hang: opts } : (opts || null);
     let hang;
-    if (o && o.textLeft > start) {
-      hang = o.textLeft - start;
+    if (o && o.textLeft > start && o.textLeft <= start + MAX_HANG_TW) {
+      hang = (rest0.length > 45 && o.textLeft - start > natHang) ? natHang : (o.textLeft - start);
     } else if (o && o.hang > 0) {
       hang = o.hang;
     } else if ((o && o.inTable) || SUB_SER.test(sm[2])) {
@@ -141,13 +187,16 @@
       hang = (o && o.tableHangTw > 0) ? Math.round(o.tableHangTw * (sz / 12.5)) : natHang;
     } else if (o && o.availTw > 0) {
       const defHang = Math.round(sz * HANG_EM * 20);
-      const rest0 = tM[1].slice(sm[0].length);
       hang = (start + defHang + right + estTextTw(rest0, sz) > o.availTw) ? natHang : defHang;
     } else {
       const defHang = Math.round(sz * HANG_EM * 20);
-      const rest0 = tM[1].slice(sm[0].length);
       // লম্বা এক-লাইনের অনুচ্ছেদে (যেমন >৪৫ অক্ষর) বাড়তি ট্যাব-ফাঁকে যেন লাইন না ভাঙে
       hang = rest0.length > 45 ? natHang : defHang;
+    }
+    const limTw = (o && o.availTw > 0) ? o.availTw : ((o && o.pageAvailTw > 0) ? o.pageAvailTw : 9746);
+    if (wrapsMoreLines(p, sm, sz, left, start, right, natHang, hang, limTw)) {
+      if (hang > natHang && !wrapsMoreLines(p, sm, sz, left, start, right, natHang, natHang, limTw)) hang = natHang;
+      else return p;
     }
     const newLeft = start + hang;
     // আগে-থাকা ট্যাব-স্টপ নতুন বাম-সীমার আগে পড়লে লেখা সেখানে আটকাবে ⇒ বাদ
@@ -178,15 +227,19 @@
       if (!tM) continue;
       const txt0 = tM[1].trim();
       if (!/^(\(?[০-৯0-9]{1,2}[।.)]|\([ক-হa-z]\)|[ক-হ][।.)])$/.test(txt0) || !/<w:tab\/>/.test(p)) continue;
+      // ফর্ম-লাইনের লিডার ট্যাব (যেমন a14 পাতা ২-এ "৬) ... ৭) ...") বা বহু-ট্যাব অনুচ্ছেদ সহোদর ক্রমিক-স্টপ নয়
+      if (/\bw:leader=/.test(p) || (p.match(/<w:tab\/>/g) || []).length > 1) continue;
+      const fullTxt = [...p.matchAll(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g)].map((x) => x[1]).join('');
+      if (isFormLineTxt(fullTxt, fullTxt.slice(tM[1].length), /<w:br[/> ]/.test(p))) continue;
       const pPr = (p.match(/<w:pPr>[\s\S]*?<\/w:pPr>/) || [''])[0];
       const indTag = (pPr.match(/<w:ind [^>]*\/>/) || [''])[0];
       const left = attr(indTag, 'left') || attr(indTag, 'start');
       const hang = attr(indTag, 'hanging');
       const first = attr(indTag, 'firstLine');
       const start = left - hang + first;
-      const tabM = pPr.match(/<w:tab w:val="left"[^>]*w:pos="(\d+)"/);
+      const tabM = pPr.match(/<w:tab w:val="left"(?![^>]*w:leader=)[^>]*w:pos="(\d+)"/);
       const textLeft = tabM ? +tabM[1] : (hang > 0 ? left : 0);
-      if (textLeft > start + 100 && !map.has(start)) map.set(start, textLeft);
+      if (textLeft > start + 100 && textLeft <= start + MAX_HANG_TW && !map.has(start)) map.set(start, textLeft);
     }
     return map;
   }
@@ -197,6 +250,18 @@
     const s = String(xml);
     const hints = extractDataHints(data);
     const sibStops = collectSiblingStops(s, hints);
+    // পাতার কার্যকর প্রস্থ (sectPr থেকে, না থাকলে ডিফল্ট ৯৭৪৬ dxa)
+    const sectRanges = [];
+    const sectRe = /<w:sectPr[\s\S]*?<\/w:sectPr>/g;
+    let sm0, prevEnd = 0;
+    while ((sm0 = sectRe.exec(s)) !== null) {
+      const sc = sm0[0];
+      const pw = attr(sc, 'w') || 11906;
+      const pl = attr(sc, 'left') || 1080;
+      const pr = attr(sc, 'right') || 1080;
+      sectRanges.push({ s: prevEnd, e: sm0.index + sm0[0].length, pageAvailTw: Math.max(2000, pw - pl - pr) });
+      prevEnd = sm0.index + sm0[0].length;
+    }
     // ছকের ভেতরের (<w:tc>) ও বাইরের অনুচ্ছেদ আলাদা প্রসঙ্গে প্রক্রিয়াকরণ
     const tcRanges = [];
     const tcRe = /<w:tc(?: [^>]*)?>[\s\S]*?<\/w:tc>/g;
@@ -205,10 +270,12 @@
       const wM = tm[0].match(/<w:tcW w:w="(\d+)"/);
       tcRanges.push({ s: tm.index, e: tm.index + tm[0].length, availTw: wM ? Math.max(200, +wM[1] - 216) : 0 });
     }
-    let tcIdx = 0;
+    let tcIdx = 0, scIdx = 0;
     const out = s.replace(/<w:p(?: [^>]*)?>[\s\S]*?<\/w:p>/g, (p, off) => {
       while (tcIdx < tcRanges.length && tcRanges[tcIdx].e <= off) tcIdx++;
+      while (scIdx < sectRanges.length && sectRanges[scIdx].e <= off) scIdx++;
       const inTc = tcIdx < tcRanges.length && off >= tcRanges[tcIdx].s && off < tcRanges[tcIdx].e ? tcRanges[tcIdx] : null;
+      const inSc = scIdx < sectRanges.length && off >= sectRanges[scIdx].s && off < sectRanges[scIdx].e ? sectRanges[scIdx] : null;
       const pPr = (p.match(/<w:pPr>[\s\S]*?<\/w:pPr>/) || [''])[0];
       const indTag = (pPr.match(/<w:ind [^>]*\/>/) || [''])[0];
       const start = (attr(indTag, 'left') || attr(indTag, 'start')) + attr(indTag, 'firstLine');
@@ -224,6 +291,7 @@
       const q = fixPara(p, {
         inTable: !!inTc,
         availTw: inTc ? inTc.availTw : 0,
+        pageAvailTw: inSc ? inSc.pageAvailTw : 0,
         textLeft,
         tableHangTw: hints.tableHangTw
       });

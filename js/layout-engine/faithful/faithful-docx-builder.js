@@ -357,6 +357,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('BOXSPLIT'))
     ))
   );
+  // INDENT_v1: লাইনের বাম প্রান্ত (dx0: ইনডেন্ট, অ্যালাইনমেন্ট, ট্যাব-স্টপ, ঘরের প্যাডিং) ও ডান প্রান্ত (dx1) নিখুঁত করার সুইচ (__FZ_ON_INDENT / FZ_ON=INDENT)
+  const indentOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_INDENT || (globalThis.window && globalThis.window.__FZ_OFF_INDENT))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_INDENT) ||
+    (global && (global.__FZ_OFF_INDENT || (global.window && global.window.__FZ_OFF_INDENT))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_INDENT === '1' ||
+      process.env.__FZ_OFF_INDENT === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('INDENT'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_INDENT || (globalThis.window && globalThis.window.__FZ_ON_INDENT))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_INDENT) ||
+    (global && (global.__FZ_ON_INDENT || (global.window && global.window.__FZ_ON_INDENT))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_INDENT === '1' ||
+      process.env.__FZ_ON_INDENT === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('INDENT'))
+    ))
+  );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   function cellTextOf(c) {
     if (c && typeof c === 'object' && !Array.isArray(c)) {
@@ -1939,7 +1959,7 @@
     if (item.align === 'c' && item.centerShiftPt != null) {
       // Part-17.7: মাঝে-বসানো — কেন্দ্র মূলের কেন্দ্রে (এক পাশে দ্বিগুণ ইনডেন্ট)
       const sh = item.centerShiftPt;
-      if (Math.abs(sh) >= 2) ind = sh > 0 ? `<w:ind w:left="${tw(sh * 2)}"/>` : `<w:ind w:right="${tw(-sh * 2)}"/>`;
+      if (Math.abs(sh) >= (indentOn() ? 0.5 : 2)) ind = sh > 0 ? `<w:ind w:left="${tw(sh * 2)}"/>` : `<w:ind w:right="${tw(-sh * 2)}"/>`;
     } else if (item.align === 'r' && item.rightIndentPt != null) {
       if (item.rightIndentPt >= 2) ind = `<w:ind w:right="${tw(item.rightIndentPt)}"/>`;
     } else if (item.indentPt || item.firstIndentPt || item.justRightPt >= 2) {
@@ -2279,15 +2299,17 @@
         const nFillSegs = segs.filter((x) => x.kind === "fill").length;
         const hasTailTxt = !!(tailTxt && tailTxt.trim().length > 0);
         const a01On = a01FixOn();
+        const indOnP = indentOn();
         const karLen = (s) => (String(s || "").replace(/\*\*|<[^>]+>/g, "").match(/[\u0982\u0983\u09be-\u09c0\u09c7\u09c8\u09cb\u09cc\u09d7]/g) || []).length;
-        const singleTrailFill = a01On && nFillSegs === 1 && !hasTailTxt && segs.length === 2 && segs[0].kind === "text" && item.align !== "r" && item.rect.w >= 350 && segs[1].val.length >= 15 && ((bLen(segs[0].val) * 0.48 + karLen(segs[0].val) * 0.16) * fsz0 <= item.rect.w - 36);
+        const singleTrailFill = (a01On || indOnP) && nFillSegs === 1 && !hasTailTxt && segs.length === 2 && segs[0].kind === "text" && item.align !== "r" && item.rect.w >= 350 && segs[1].val.length >= 15 && ((bLen(segs[0].val) * 0.48 + karLen(segs[0].val) * 0.16) * fsz0 <= item.rect.w - 36);
         if (nFillSegs >= 2 || hasTailTxt || singleTrailFill) {
         // WRAPFIT / A01FIX: পূরণ-স্থানের পরে লেখা থাকলে (যেমন a01 পাতা ১ "বৎসর যাবৎ চিনি। বিগত--- তারিখে...পরিবারের" ও পাতা ২ "জীবিত স্ত্রী/...কোন")
         // প্রস্থ-অনুমানে বাংলা স্বরচিহ্ন (া,ি,ী,ে,ৈ,ো,ৌ,ং,ঃ) ধরা, ডান মার্জিনের নিরাপত্তা-ছাড় (৮pt) রাখা এবং সংকুচিত পূরণ-দৈর্ঘ্য মানা
         const wfTail = (wrapFitOn() || a01On || (a11FixOn() && !item._a11SkipItem && !item._inNestBoxPage && !(Array.isArray(item.boxIds) && item.boxIds.length))) && hasTailTxt;
-        const segW = (s) => (wfTail || a01On) ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48;
-        const availLineW = ((wfTail || a01On) && ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
-        const totalW = wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - 8) : (a01On ? Math.max(40, Math.min(item.rect.w, availLineW) - 1) : item.rect.w - 1);
+        const shortTailInd = indOnP && hasTailTxt && bLen(tailTxt.trim()) <= 6;
+        const segW = (s) => (wfTail || a01On || indOnP) ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48;
+        const availLineW = ((wfTail || a01On || indOnP) && ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
+        const totalW = shortTailInd ? Math.max(40, Math.min(item.rect.w, availLineW) - 2) : (wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - 8) : ((a01On || indOnP) ? Math.max(40, Math.min(item.rect.w, availLineW) - 1) : item.rect.w - 1));
         const textW = segs.filter((x) => x.kind === "text").reduce((a, x) => a + segW(x.val), 0);
         const totalFillChars = segs.filter((x) => x.kind === "fill").reduce((a, x) => a + x.val.length, 0) || 1;
         const minRemW = wfTail ? 20 : 40;
@@ -2309,7 +2331,7 @@
             const cutLen = (a01On && wfTail && sg.val.length > 30 && (!item.fit || item.rect.w >= 468))
               ? Math.max(15, Math.floor(sg.val.length * (sg.val.length >= 50 ? 0.76 : 0.78)))
               : sg.val.length;
-            const fw = Math.max(minFillW, (wfTail && item.fit && item.fit.fillsCut) ? Math.min(propW, cutLen * fsz0 * 0.36) : propW);
+            const fw = Math.max(minFillW, (wfTail && !shortTailInd && item.fit && item.fit.fillsCut) ? Math.min(propW, cutLen * fsz0 * 0.36) : propW);
             curX += fw;
             const isLast = si === segs.length - 1 || (si === segs.length - 2 && !segs[si + 1].val.trim());
             const midStop = (!isLast && a01On && item._origRectW && nFillSegs === 2 && !hasTailTxt && segs[si + 1] && segs[si + 1].kind === "text")
@@ -2449,7 +2471,8 @@
         return `<w:p>${ppr}${bodyRuns}</w:p>`;
       }
     }
-    if (item.tabLines && item.tabStops && item.tabStops.length && item.tabLines.length > 1 && !(a16FixOn() && item._a16SingleParaList)) {
+    const singleParaTab = (a16FixOn() && item._a16SingleParaList) || (indentOn() && (item._a16SingleParaList || (item.align === 'j' && item.keepJust && item.tabStops && item.tabStops.length === 1 && !item.tabLines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l))))));
+    if (item.tabLines && item.tabStops && item.tabStops.length && item.tabLines.length > 1 && !singleParaTab) {
       const fi = item.firstIndentPt || 0;
       const rest = Object.assign({}, item, { spaceBeforePt: 0, firstIndentPt: 0, indentPt: (item.indentPt || 0) + (fi < 0 ? -fi : 0) });
       const last = item.tabLines.length - 1, noRule = (x) => Object.assign({}, x, { ruleBelow: null });
@@ -2522,8 +2545,13 @@
     }) : arr);
     const lines = fix(item.lines), tabLines = fix(item.tabLines);
     const same = (a, b) => !a || a.every((x, i) => x === b[i]);
-    if (same(item.lines, lines) && same(item.tabLines, tabLines)) return keepInternalProps(item, Object.assign({}, item, { _dotChecked: true }));
+    if (same(item.lines, lines) && same(item.tabLines, tabLines)) {
+      const cp = keepInternalProps(item, Object.assign({}, item, { _dotChecked: true }));
+      if (indentOn() && item._a16SingleParaList) cp._a16SingleParaList = true;
+      return cp;
+    }
     const out = keepInternalProps(item, Object.assign({}, item, { lines, tabLines, _dotChecked: true }));
+    if (indentOn() && item._a16SingleParaList) out._a16SingleParaList = true;
     if (lines && lines.length) out.text = lines.join('\n');
     return out;
   }
@@ -3455,6 +3483,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairVSpaceIr === 'function') IR.repairVSpaceIr(ir);
+    }
+    if (indentOn() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairIndentIr === 'function') IR.repairIndentIr(ir);
     }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
