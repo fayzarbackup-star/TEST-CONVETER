@@ -373,7 +373,7 @@
   );
   function keepInternalProps(src, dst) {
     if (!(vspaceOn() || widthOn() || a14Fix3On()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_a16SingleParaList', '_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped']) {
+    for (const k of ['_a16SingleParaList', '_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -2029,6 +2029,17 @@
       : (exactPt ? `w:line="${tw(exactPt)}" w:lineRule="exact"`
         : (item.lineSpacingPt && item.lineSpacingPt > fs * 1.3 && item.lineSpacingPt < fs * 3
           ? `w:line="${tw(item.lineSpacingPt)}" w:lineRule="atLeast"` : 'w:line="240" w:lineRule="auto"'));
+    if (widthOn() && item && item._origSigInd) {
+      item = Object.assign({}, item, {
+        align: 'j',
+        keepLines: true,
+        keepJust: true,
+        indentPt: item._origSigInd.indentPt,
+        firstIndentPt: item._origSigInd.firstIndentPt,
+        justRightPt: item._origSigInd.justRightPt,
+        centerShiftPt: null
+      });
+    }
     let ind = '';
     if (item.align === 'c' && item.centerShiftPt != null) {
       // Part-17.7: মাঝে-বসানো — কেন্দ্র মূলের কেন্দ্রে (এক পাশে দ্বিগুণ ইনডেন্ট)
@@ -2382,7 +2393,7 @@
         // প্রস্থ-অনুমানে বাংলা স্বরচিহ্ন (া,ি,ী,ে,ৈ,ো,ৌ,ং,ঃ) ধরা, ডান মার্জিনের নিরাপত্তা-ছাড় (৮pt) রাখা এবং সংকুচিত পূরণ-দৈর্ঘ্য মানা; WIDTH: ফাঁকা-অক্ষর ও হসন্তের সংকোচনও
         const wfTail = (wrapFitOn() || a01On || wdOn || (a11FixOn() && !item._a11SkipItem && !item._inNestBoxPage && !(Array.isArray(item.boxIds) && item.boxIds.length))) && hasTailTxt;
         const shortTailInd = indOnP && hasTailTxt && bLen(tailTxt.trim()) <= 6;
-        const segW = (s) => wdOn ? Math.max(bLen(s) * 0.35, bLen(s) * 0.48 + karLen(s) * 0.16 - spVirLen(s) * 0.14) * fsz0 : ((wfTail || a01On || indOnP) ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48);
+        const segW = (s) => (wdOn && (wfTail || item._origRectW)) ? Math.max(bLen(s) * 0.35, bLen(s) * 0.48 + karLen(s) * 0.16 - spVirLen(s) * 0.14) * fsz0 : ((wfTail || a01On || indOnP) ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48);
         const availLineW = ((wfTail || a01On || wdOn || indOnP) && ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
         const totalW = shortTailInd ? Math.max(40, Math.min(item.rect.w, availLineW) - 2) : (wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - (wdOn ? 4 : 8)) : ((a01On || wdOn || indOnP) ? Math.max(40, Math.min(item.rect.w, availLineW) - 1) : item.rect.w - 1));
         const textW = segs.filter((x) => x.kind === "text").reduce((a, x) => a + segW(x.val), 0);
@@ -2546,7 +2557,7 @@
         return `<w:p>${ppr}${bodyRuns}</w:p>`;
       }
     }
-    const singleParaTab = ((a16FixOn() || widthOn()) && item._a16SingleParaList) || (indentOn() && (item._a16SingleParaList || (item.align === 'j' && item.keepJust && item.tabStops && item.tabStops.length === 1 && !item.tabLines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l))))));
+    const singleParaTab = ((a16FixOn() || widthOn()) && item._a16SingleParaList) || ((indentOn() || widthOn()) && (item._a16SingleParaList || (item.align === 'j' && item.keepJust && item.tabStops && item.tabStops.length === 1 && !item.tabLines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l))))));
     if (item.tabLines && item.tabStops && item.tabStops.length && item.tabLines.length > 1 && !singleParaTab) {
       const fi = item.firstIndentPt || 0;
       const rest = Object.assign({}, item, { spaceBeforePt: 0, firstIndentPt: 0, indentPt: (item.indentPt || 0) + (fi < 0 ? -fi : 0) });
@@ -2596,7 +2607,7 @@
     const body = isTab
       ? item.tabLines.map((ln) => lineRuns(ln, false)).join('<w:r><w:br/></w:r>')
       : item.keepLines && item.lines && item.lines.length > 1
-      ? item.lines.map((ln) => runsFor(ln, (widthOn() && !item.charSpacingPt && String(ln || '').length >= 100) ? Object.assign({}, item, { charSpacingPt: -0.15 }) : item)).join('<w:r><w:br/></w:r>')
+      ? item.lines.map((ln, li) => runsFor(ln, (widthOn() && !item.charSpacingPt && (item.firstIndentPt || 0) >= 0 && li < item.lines.length - 1 && String(ln || '').length >= 100) ? Object.assign({}, item, { charSpacingPt: -0.15 }) : item)).join('<w:r><w:br/></w:r>')
       : runsFor(rawTxt, item);
     const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);

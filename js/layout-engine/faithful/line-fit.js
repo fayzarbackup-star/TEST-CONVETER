@@ -749,14 +749,15 @@
       const start = nTab ? stops[nTab - 1] : 0;
       const maxRight = boxSplitOn() && it.rect && it.rect.w > 40 ? Math.min(cellW * SAFE, (it.indentPt || 0) + it.rect.w * SAFE) : cellW * SAFE;
       const indOff0 = (isIndentOn() && nTab > 0) ? 0 : (it.indentPt || 0);
-      const avail = maxRight - indOff0 - start;
+      const avail0 = maxRight - indOff0 - start;
       const rest = mm[2], w = lineWidthPt(rest, it, measure);
-      if (w <= avail) return t;
       const fixed = lineWidthPt(rest.replace(FILL_G, ''), it, measure), fillW = w - fixed;
+      const avail = (isWidthOn() && it.tabLines.length >= 2 && TAIL_AFTER_FILL_RE.test(rest)) ? Math.min(avail0 * 0.93, avail0 - fixed * 0.06 - 10) : avail0;
+      if (w <= avail) return t;
       if (!(fillW > 0)) return t;
       const k = Math.max(0, (avail - fixed) / fillW);
       cut++;
-      return mm[1] + rest.replace(FILL_G, (run) => run[0].repeat(Math.max(3, Math.floor(run.length * k))));
+      return mm[1] + rest.replace(FILL_G, (run) => run[0].repeat(Math.max((isWidthOn() && run.length >= 5) ? 5 : 3, Math.floor(run.length * k))));
     });
     // a12 (২০২৬-১০-১২): পূরণ-সারি নয় এমন লম্বা লেখা (শেষ ট্যাবের পরে) না আঁটলে Word লাইন ভাঙত ⇒ +১৫pt, নিচের সব নামত।
     // পুরো অংশের ফন্ট সামান্য ছোট (≥৮৫%); লাইন-উচ্চতা আগের মতো (lineSpacingPt) — অবস্থান বদলায় না
@@ -772,7 +773,7 @@
       }
       const hangOff = (isA10LinesOn() || isA10FixOn() || isIndentOn() || isWidthOn()) && k > 0 && !nTab && (it.firstIndentPt || 0) < 0 ? -(it.firstIndentPt || 0) : 0;
       const indOff = (isIndentOn() && nTab > 0) ? 0 : (it.indentPt || 0);
-      const avail = (isWidthOn() ? cellW : cellW * SAFE) - indOff - (nTab ? stops[nTab - 1] : hangOff);
+      const avail = (isWidthOn() ? cellW * 0.99 : cellW * SAFE) - indOff - (nTab ? stops[nTab - 1] : hangOff);
       const w = lineWidthPt(parts[nTab], it, measure);
       if (avail > 20 && w > avail && !(isIndentOn() && w <= (cellW - indOff - (nTab ? stops[nTab - 1] : hangOff)) + 1.5)) ratio = Math.max(ratio, w / avail);
     });
@@ -933,7 +934,7 @@
   function fitItem(it, cellW, measure) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn() || wdOn, a16On = isA16FixOn() || wdOn, indOn = isIndentOn();
     if ((a07On && it && it._a07FixedSig) || ((a16On || isA14Fix3On()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
-    if ((wfOn || p4On || a14On || a19On || a11On || indOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || a14On || a19On || a11On || indOn || wdOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (a11On && it && it.kind === 'para' && !it.tabLines && (it.lines || []).length === 1 && FILL.test((it.lines && it.lines[0]) || it.text || '')) return null;
     // A04_PAGES_v1: গদ্য অনুচ্ছেদে ভুলবশত বসে যাওয়া ট্যাব-কলাম পরিষ্কার এবং বহু-লাইনের প্রবাহী অনুচ্ছেদে ১-লাইনের সংকোচন রোধ
     if (p4On && it && it.kind === 'para' && it.tabLines && it.tabLines.length >= 2 && (it.tabStops || []).length >= 3) {
@@ -981,7 +982,7 @@
     const fillFull = bsItem && it.rect && it.rect.w > 40 ? Math.min(full, (it.indentPt || 0) + it.rect.w * SAFE) : full;
     const lineAvailOf = (idx) => {
       if (bsItem) return (idx > 0 && (it.firstIndentPt || 0) > 0) ? (fillFull - (it.indentPt || 0)) : (fillFull - sideIndent(it));
-      if (!(a14On || a19On || a11On || indOn || wdOn)) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
+      if (!(a14On || a19On || a11On || indOn || (wdOn && (it.firstIndentPt || 0) >= 0))) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
       const fi = it.firstIndentPt || 0;
       const jr = (wdOn && it.align === 'j' && it.justRightPt >= 2) ? it.justRightPt : 0;
       const lineInd = (it.indentPt || 0) + (idx === 0 ? Math.max(0, fi) : Math.max(0, -fi)) + jr;
@@ -1069,7 +1070,7 @@
         return it.fit;
       }
     }
-    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indOn || wdOn) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + (wdOn ? 11.5 : ((a19On || indOn) ? 1.5 : 0)));
+    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indOn || (wdOn && (it.firstIndentPt || 0) >= 0)) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + (wdOn ? ((it.firstIndentPt || 0) > 0 ? 8.5 : 6.5) : ((a19On || indOn) ? 1.5 : 0)));
     if (need <= availPt || allLinesFitA14) {
       if (!fillsCut) return null;
       it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, fillsCut };
