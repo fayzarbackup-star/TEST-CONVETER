@@ -371,9 +371,29 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('WIDTH'))
     ))
   );
+  // FONT_v1: হুবহু-মোডে লাইন-উচ্চতা ও ফন্ট-আকার মূলের সাথে মেলানোর সুইচ (__FZ_ON_FONTFIX / FZ_ON=FONTFIX)
+  const fontFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_FONTFIX || (globalThis.window && globalThis.window.__FZ_OFF_FONTFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_FONTFIX) ||
+    (global && (global.__FZ_OFF_FONTFIX || (global.window && global.window.__FZ_OFF_FONTFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_FONTFIX === '1' ||
+      process.env.__FZ_OFF_FONTFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('FONTFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_FONTFIX || (globalThis.window && globalThis.window.__FZ_ON_FONTFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_FONTFIX) ||
+    (global && (global.__FZ_ON_FONTFIX || (global.window && global.window.__FZ_ON_FONTFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_FONTFIX === '1' ||
+      process.env.__FZ_ON_FONTFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('FONTFIX'))
+    ))
+  );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_a16SingleParaList', '_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_a16SingleParaList', '_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -435,6 +455,26 @@
       process.env.__FZ_ON_A14FIX3 === '1' ||
       process.env.__FZ_ON_A14FIX3 === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14FIX3'))
+    ))
+  );
+  // A16_SCORE_v3: নমুনা a16 ও সমগোত্রীয় চেকলিস্ট/স্মারক ফরমের অণু-স্বাক্ষর চিত্র, স্বাক্ষর-ব্লক, সূচিপত্র ও শিরোনাম সংশোধনের সুইচ (__FZ_ON_A16FIX3 / FZ_ON=A16FIX3)
+  const a16Fix3On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A16FIX3 || (globalThis.window && globalThis.window.__FZ_OFF_A16FIX3))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A16FIX3) ||
+    (global && (global.__FZ_OFF_A16FIX3 || (global.window && global.window.__FZ_OFF_A16FIX3))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A16FIX3 === '1' ||
+      process.env.__FZ_OFF_A16FIX3 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A16FIX3'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A16FIX3 || (globalThis.window && globalThis.window.__FZ_ON_A16FIX3))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A16FIX3) ||
+    (global && (global.__FZ_ON_A16FIX3 || (global.window && global.window.__FZ_ON_A16FIX3))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A16FIX3 === '1' ||
+      process.env.__FZ_ON_A16FIX3 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX3'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1725,16 +1765,22 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairRotTextPage === 'function') IR.repairRotTextPage(page);
     }
-    if ((vspaceOn() || widthOn()) && page && Array.isArray(page.bands)) {
+    if ((vspaceOn() || widthOn() || fontFixOn()) && page && Array.isArray(page.bands)) {
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (vspaceOn() && IR && typeof IR.repairVSpacePage === 'function') IR.repairVSpacePage(page);
       if (widthOn() && IR && typeof IR.repairWidthPage === 'function') IR.repairWidthPage(page);
+      if (fontFixOn() && IR && typeof IR.repairFontFixPage === 'function') IR.repairFontFixPage(page);
     }
     if (a14Fix3On() && page && Array.isArray(page.bands)) {
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA14Fix3Page === 'function') IR.repairA14Fix3Page(page);
+    }
+    if (a16Fix3On() && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix3Page === 'function') IR.repairA16Fix3Page(page);
     }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
@@ -2044,7 +2090,7 @@
     if (item.align === 'c' && item.centerShiftPt != null) {
       // Part-17.7: মাঝে-বসানো — কেন্দ্র মূলের কেন্দ্রে (এক পাশে দ্বিগুণ ইনডেন্ট)
       const sh = item.centerShiftPt;
-      if (Math.abs(sh) >= (indentOn() ? 0.5 : 2)) ind = sh > 0 ? `<w:ind w:left="${tw(sh * 2)}"/>` : `<w:ind w:right="${tw(-sh * 2)}"/>`;
+      if (Math.abs(sh) >= ((indentOn() || a16Fix3On()) ? 0.5 : 2)) ind = sh > 0 ? `<w:ind w:left="${tw(sh * 2)}"/>` : `<w:ind w:right="${tw(-sh * 2)}"/>`;
     } else if (item.align === 'r' && item.rightIndentPt != null) {
       if (item.rightIndentPt >= 2) ind = `<w:ind w:right="${tw(item.rightIndentPt)}"/>`;
     } else if (item.indentPt || item.firstIndentPt || item.justRightPt >= 2) {
@@ -2103,7 +2149,13 @@
       // ২০২৬-১০-১৪ (2.pdf লোগো): "ঠিক" লাইনে Word নিচে ডিফল্ট ফন্টের নিম্নাংশ রাখে ⇒ ছবির ওপর ~১৫% কাটা ("BRMS" হারাত)।
       // ছবির রান ও অনুচ্ছেদ-চিহ্নের ফন্ট খুদে (১pt) ⇒ নিম্নাংশ প্রায় শূন্য, পুরো ছবি লাইনে। বন্ধ: FZ_OFF=FIGCLIP
       const tiny = globalThis.__FZ_OFF_FIGCLIP || fa ? '' : '<w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr>';
-      const drawing = `<w:r>${tiny}<w:drawing>${open}<wp:docPr id="${1000 + id}" name="fig${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000 + id}" name="fig${id}.${ext}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdFimg${id}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(wPt)}" cy="${emu(hPt)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>${fa ? '</wp:anchor>' : '</wp:inline>'}</w:drawing></w:r>`;
+      let srcRectXml = '';
+      if (a16Fix3On() && item._a16WideSigCrop && img.pxW > 0 && img.pxH > 0 && (img.pxW / img.pxH) > (wPt / Math.max(1, hPt)) * 1.25) {
+        const keepW = Math.min(0.9, Math.max(0.3, (wPt / Math.max(1, hPt)) / (img.pxW / Math.max(1, img.pxH))));
+        const trimLR = Math.round(((1 - keepW) / 2) * 100000);
+        srcRectXml = `<a:srcRect l="${trimLR}" t="10000" r="${trimLR}" b="0"/>`;
+      }
+      const drawing = `<w:r>${tiny}<w:drawing>${open}<wp:docPr id="${1000 + id}" name="fig${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000 + id}" name="fig${id}.${ext}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdFimg${id}"/>${srcRectXml}<a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(wPt)}" cy="${emu(hPt)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>${fa ? '</wp:anchor>' : '</wp:inline>'}</w:drawing></w:r>`;
       // ২০২৬-১০-১২: "auto" লাইনে Word ছবির নিচে অনুচ্ছেদ-ফন্টের নিম্নাংশ যোগ করত (লোগোর পরে সব ~৯pt নিচে, a02/a13)।
       // উচ্চতা = ছবি + ২pt (planPage-এর itemH-এর সমান), "ঠিক" লাইন
       const figLinePt = (ruleFixOn() || vspaceOn() || (a07Fix2On() && item._a07FigLeadPt > 0)) ? hPt : hPt + 2;
@@ -2607,7 +2659,7 @@
     const body = isTab
       ? item.tabLines.map((ln) => lineRuns(ln, false)).join('<w:r><w:br/></w:r>')
       : item.keepLines && item.lines && item.lines.length > 1
-      ? item.lines.map((ln, li) => runsFor(ln, (widthOn() && !item.charSpacingPt && (item.firstIndentPt || 0) >= 0 && li < item.lines.length - 1 && String(ln || '').length >= 100) ? Object.assign({}, item, { charSpacingPt: -0.15 }) : item)).join('<w:r><w:br/></w:r>')
+      ? item.lines.map((ln, li) => runsFor(ln, (a16Fix3On() && item._a16EmailLineFontPt && /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(String(ln || '').trim())) ? Object.assign({}, item, { fontPt: item._a16EmailLineFontPt }) : (widthOn() && !item.charSpacingPt && (item.firstIndentPt || 0) >= 0 && li < item.lines.length - 1 && String(ln || '').length >= 100) ? Object.assign({}, item, { charSpacingPt: -0.15 }) : item)).join('<w:r><w:br/></w:r>')
       : runsFor(rawTxt, item);
     const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
@@ -3569,11 +3621,12 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairRotTextIr === 'function') IR.repairRotTextIr(ir);
     }
-    if ((vspaceOn() || widthOn()) && ir && Array.isArray(ir.pages)) {
+    if ((vspaceOn() || widthOn() || fontFixOn()) && ir && Array.isArray(ir.pages)) {
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (vspaceOn() && IR && typeof IR.repairVSpaceIr === 'function') IR.repairVSpaceIr(ir);
       if (widthOn() && IR && typeof IR.repairWidthIr === 'function') IR.repairWidthIr(ir);
+      if (fontFixOn() && IR && typeof IR.repairFontFixIr === 'function') IR.repairFontFixIr(ir);
     }
     if (indentOn() && ir && Array.isArray(ir.pages)) {
       let IR = pick('FayzarLayoutIR');
@@ -3584,6 +3637,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA14Fix3Ir === 'function') IR.repairA14Fix3Ir(ir);
+    }
+    if (a16Fix3On() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix3Ir === 'function') IR.repairA16Fix3Ir(ir);
     }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
@@ -3700,7 +3758,9 @@
     nestBoxOn: { value: nestBoxOn, enumerable: false },
     vspaceOn: { value: vspaceOn, enumerable: false },
     widthOn: { value: widthOn, enumerable: false },
-    a14Fix3On: { value: a14Fix3On, enumerable: false }
+    a14Fix3On: { value: a14Fix3On, enumerable: false },
+    fontFixOn: { value: fontFixOn, enumerable: false },
+    a16Fix3On: { value: a16Fix3On, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;

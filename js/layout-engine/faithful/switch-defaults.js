@@ -11,7 +11,8 @@
   // ১০-২১: A07FIX2 যোগ (a07 +২.৩, a14 +২, কেউ কমেনি)
   // ১০-২১: A14FIX3 যোগ (a14 +৯.৩, a09 +১.১, কেউ কমেনি)
   // ১০-২১: WIDTH (v2) যোগ (a13 +৩.৬, a09 +২.৩, a01 +১.৭, কেউ কমেনি)
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH'];
+  // ১০-২১: A16FIX3 যোগ (a16 +১.৫, বাকিরা অপরিবর্তিত)
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3'];
   DEFAULT_ON.forEach((k) => {
     if (!global['__FZ_OFF_' + k]) global['__FZ_ON_' + k] = true;
   });
