@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 
 // ডিফল্ট ৫টি সুইচ চালু করা
-require(path.join(ROOT, 'js/layout-engine/faithful/switch-defaults.js'));
+['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX'].forEach((k) => { globalThis['__FZ_ON_' + k] = true; }); // টেস্ট যে ভিত্তিতে লেখা — প্রোডাকশন-ডিফল্ট বদলালেও স্থির
 const IR = require(path.join(ROOT, 'js/layout-engine/faithful/layout-ir.js'));
 const LF = require(path.join(ROOT, 'js/layout-engine/faithful/line-fit.js'));
 const DB = require(path.join(ROOT, 'js/layout-engine/faithful/faithful-docx-builder.js'));

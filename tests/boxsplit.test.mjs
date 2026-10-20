@@ -25,7 +25,7 @@ const ROOT = path.resolve(__dirname, '..');
 globalThis.window = globalThis;
 
 // বর্তমান প্রোডাকশন বেসের ৫টি ডিফল্ট সুইচ (WRAPFIT, NESTBOX, TBLMERGE, A03FIX, A16FIX) লোড করা
-require(path.join(ROOT, 'js/layout-engine/faithful/switch-defaults.js'));
+['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX'].forEach((k) => { globalThis['__FZ_ON_' + k] = true; }); // টেস্ট যে ভিত্তিতে লেখা — প্রোডাকশন-ডিফল্ট বদলালেও স্থির
 
 const IR = require(path.join(ROOT, 'js/layout-engine/faithful/layout-ir.js'));
 const LF = require(path.join(ROOT, 'js/layout-engine/faithful/line-fit.js'));

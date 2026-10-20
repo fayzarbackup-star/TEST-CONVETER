@@ -217,6 +217,24 @@
     }
     return false;
   }
+  // A07_SCORE_v2: নমুনা a07 ও সমগোত্রীয় বহু-পাতার পদোন্নতি/প্রত্যয়ন ছক-ফরমের জ্যামিতিক ও কাঠামোগত মেরামতের সুইচ (__FZ_ON_A07FIX2 / FZ_ON=A07FIX2)
+  function isA07Fix2On() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A07FIX2 || (globalThis.window && globalThis.window.__FZ_OFF_A07FIX2))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A07FIX2)) return false;
+    if (global && Boolean(global.__FZ_OFF_A07FIX2 || (global.window && global.window.__FZ_OFF_A07FIX2))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A07FIX2 === '1' || process.env.__FZ_OFF_A07FIX2 === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A07FIX2')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A07FIX2 || (globalThis.window && globalThis.window.__FZ_ON_A07FIX2))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A07FIX2)) return true;
+    if (global && Boolean(global.__FZ_ON_A07FIX2 || (global.window && global.window.__FZ_ON_A07FIX2))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A07FIX2 === '1' || process.env.__FZ_ON_A07FIX2 === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A07FIX2')) return true;
+    }
+    return false;
+  }
   // A19_SCORE_v1: নমুনা a19 ও সমগোত্রীয় ফরমের উন্মুক্ত-পাশের ছক-বর্ডার, নির্দেশনা-বাক্স, বিভক্ত ক্রমিক ব্লক, বহু-লাইন ইনডেন্ট/পিচ ও জাস্টিফাইড ঘর মেরামতের সুইচ (__FZ_ON_A19FIX / FZ_ON=A19FIX)
   function isA19FixOn() {
     if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A19FIX || (globalThis.window && globalThis.window.__FZ_OFF_A19FIX))) return false;
@@ -844,7 +862,7 @@
         if (need > avail) ratio = Math.max(ratio, need / avail);
       }
     });
-    if (((isA07FixOn() || isVSpaceOn() || isWidthOn()) && it._a07MultiLinePitch) || (isA19FixOn() && it._a19FixedTbl) || (isLineGapOn() && it._a14FixedTbl)) return null;
+    if (((isA07FixOn() || isA07Fix2On() || isVSpaceOn() || isWidthOn()) && it._a07MultiLinePitch) || (isA19FixOn() && it._a19FixedTbl) || (isLineGapOn() && it._a14FixedTbl)) return null;
     const fontFrom = it.fontPt;
     if (ratio > 1) {
       it.fontPt = Math.max((isLineGapOn() && it._lineGapFixed) ? Math.ceil(fontFrom * MIN_SCALE * 2) / 2 : 1, Math.floor(it.fontPt * Math.max(MIN_SCALE, 1 / ratio) * 2) / 2);
@@ -1135,6 +1153,20 @@
     return ir;
   }
 
+  function repairA07Fix2Page(page) {
+    if (!isA07Fix2On() || !page || !Array.isArray(page.bands) || page._a07Fix2Repaired) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA07Fix2Page === 'function') return IR.repairA07Fix2Page(page);
+    return page;
+  }
+
+  function repairA07Fix2Ir(ir) {
+    if (!isA07Fix2On() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => repairA07Fix2Page(p));
+    return ir;
+  }
+
   function repairA19Page(page) {
     if (!isA19FixOn() || !page || !Array.isArray(page.bands)) return page;
     let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
@@ -1318,6 +1350,7 @@
     if (a16On) repairA16Ir(ir);
     if (a11On) repairA11Ir(ir);
     if (tmOn) repairTblMergeIr(ir); else restoreTblMergeIr(ir);
+    if (isA07Fix2On()) repairA07Fix2Ir(ir);
     if (isLineGapOn()) repairLineGapIr(ir);
     if (rotOn) repairRotTextIr(ir);
     if (vsOn) repairVSpaceIr(ir);
@@ -1424,7 +1457,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
