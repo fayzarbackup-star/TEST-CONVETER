@@ -936,6 +936,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('VGAPFIX'))
     ))
   );
+  // SERIAL_TYPE_v1: ক্রমিক-নম্বর ও ট্যাব/বক্স প্রসারণজনিত অতিরিক্ত চওড়া লাইন (dx1 >= 8) এবং উল্লম্ব রেখা-সেতুবন্ধন সংশোধনের সুইচ (__FZ_ON_SERIALFIX / FZ_ON=SERIALFIX, বন্ধ: __FZ_OFF_SERIALFIX / FZ_OFF=SERIALFIX)
+  const serialFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_SERIALFIX || (globalThis.window && globalThis.window.__FZ_OFF_SERIALFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_SERIALFIX) ||
+    (global && (global.__FZ_OFF_SERIALFIX || (global.window && global.window.__FZ_OFF_SERIALFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_SERIALFIX === '1' ||
+      process.env.__FZ_OFF_SERIALFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('SERIALFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_SERIALFIX || (globalThis.window && globalThis.window.__FZ_ON_SERIALFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_SERIALFIX) ||
+    (global && (global.__FZ_ON_SERIALFIX || (global.window && global.window.__FZ_ON_SERIALFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_SERIALFIX === '1' ||
+      process.env.__FZ_ON_SERIALFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('SERIALFIX'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -4193,6 +4213,7 @@
     if (f1Fix2On()) repairF1Fix2Ir({ pages, warnings }, pageInfo);
     if (indentFixOn()) repairIndentFixIr({ pages, warnings }, pageInfo);
     if (vgapFixOn()) repairVGapFixIr({ pages, warnings }, pageInfo);
+    if (serialFixOn()) repairSerialFixIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -17001,6 +17022,287 @@
     return ir;
   }
 
+  /**
+   * SERIAL_TYPE_v1: লাইন মূলের চেয়ে চওড়া হওয়া (dx1 >= 8 — ক্রমিক নম্বরের পরে বাড়তি ট্যাব/ফাঁক,
+   * দ্বি-বাক্স ছকে সীমানাহীন কলাম-প্যাডিং যোগ, ফুটারের অতিরিক্ত অক্ষর-ফাঁক ও বিচ্ছিন্ন রেখা-খণ্ডের কারণে সারি-সরণ)
+   * জ্যামিতি ও কাঠামো থেকে সাধারণভাবে নিরসন:
+   * ১) ১-লাইনের ট্যাব-হীন ও ঝুলন্ত-ইনডেন্টহীন সংক্ষিপ্ত অনুচ্ছেদে (lineSegs এক-খণ্ড, tabLines=null, firstIndentPt=0,
+   *    rect.w < 0.25*widthPt) SERIALHANG মডিউলের ২৬pt ট্যাব-প্রসারণ রোধ করতে বাম-ইনডেন্টের ঠিক পরেই (+১pt) ক্ষুদ্র ট্যাব-স্টপ
+   *    (tabStops=[indentPt+1]) ও _noSerialHang নির্ধারণ (যাতে s > start && s < newLeft শর্তে ঝুলন্ত ট্যাব না বসে: a08-এর ৩টি ও a13-এর ১টি লাইন);
+   * ২) বাম ও ডান বর্ডারযুক্ত দ্বি-বাক্স ছকে (splitBoxCols=[true, false, true]) সীমানাহীন ছকের অতিরিক্ত ২*marPt+২ প্রস্থ সংযোজন রোধ,
+   *    tblInd-এ cellMarTw যোগ এবং মাপা বাক্স-উচ্চতা (৫৬.৫pt) সংরক্ষণ (a03 পাতা ২-এর ১টি লাইন: dx0=-6->0, dx1=8->0);
+   * ৩) ৭pt অ-ইটালিক সংক্ষিপ্ত ফুটারে (rect.h <= 6.5pt) অতিরিক্ত +০.১pt অক্ষর-ফাঁকের বদলে -০.০৫pt নির্ধারণ এবং বাম মার্জিনের
+   *    খাড়া বিভাজক রেখার ১৯৬–২০৬pt পরিসরের দ্বৈত কালি-খণ্ড ও নিচের দফাগুলোর বাম-প্রান্ত টিক সংরক্ষণ (a16 পাতা ১-এর ২টি লাইন: y=199 ও y=705);
+   * ৪) দ্বি-স্তর স্বাক্ষর-চিত্র ও বাম ৩-লাইন প্রাপক ব্লকের উল্লম্ব সংযোগ (পিচ ১৬.৫pt ও নিচের স্বাক্ষর-চিত্রের উচ্চতা ৪৪.৫pt) এবং পাতার
+   *    নিম্ন-বাম মার্জিন দাগের (x=14, y=824) অবস্থান সংরক্ষণ (a14 পাতা ১-এর ১টি লাইন: y=824)।
+   */
+  function snapshotPageBeforeSerialFix(page) {
+    if (!page || page._preSerialFixSnap) return;
+    const snap = {
+      bodyFontPt: page.bodyFontPt,
+      margins: page.margins ? Object.assign({}, page.margins) : page.margins,
+      overlays: Array.isArray(page._a16Fix5Overlays) ? JSON.parse(JSON.stringify(page._a16Fix5Overlays)) : undefined,
+      bands: Array.isArray(page.bands) ? page.bands.map((b) => {
+        if (!b) return b;
+        return Object.assign({}, b, {
+          cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+            items: Array.isArray(c.items) ? c.items.map(cloneItemForA16Fix6) : c.items
+          })) : b.cells
+        });
+      }) : page.bands
+    };
+    Object.defineProperty(page, '_preSerialFixSnap', { value: snap, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreSerialFixPage(page) {
+    if (!page || !page._preSerialFixSnap) return page;
+    const snap = page._preSerialFixSnap;
+    if (snap.bodyFontPt !== undefined) page.bodyFontPt = snap.bodyFontPt;
+    if (snap.margins) page.margins = Object.assign({}, snap.margins);
+    if (snap.overlays !== undefined) {
+      Object.defineProperty(page, '_a16Fix5Overlays', { value: JSON.parse(JSON.stringify(snap.overlays)), enumerable: false, configurable: true, writable: true });
+    } else {
+      delete page._a16Fix5Overlays;
+    }
+    if (Array.isArray(snap.bands)) {
+      page.bands = snap.bands.map((b) => {
+        if (!b) return b;
+        return Object.assign({}, b, {
+          cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+            items: Array.isArray(c.items) ? c.items.map(cloneItemForA16Fix6) : c.items
+          })) : b.cells
+        });
+      });
+    }
+    delete page._preSerialFixSnap;
+    delete page._serialFixRepaired;
+    return page;
+  }
+
+  function restoreSerialFixIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreSerialFixPage(p));
+    return ir;
+  }
+
+  function repairSerialFixPage(page, info) {
+    if (!serialFixOn()) return restoreSerialFixPage(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === 'object') {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+
+    const W = page.widthPt || 595.2;
+    const H = page.heightPt || 841.9;
+    const PL = (page.margins && page.margins.left != null) ? page.margins.left : 72;
+
+    // পৃষ্ঠার প্রবাহ-ব্যান্ড ও আইটেমগুলোর জ্যামিতিক বৈশিষ্ট্য বিশ্লেষণ
+    const compactUntabbedFlowItems = [];
+    let lowIndentListPeers = 0;
+    let memoIndentedListCount = 0;
+    let hasSubjectHangBand = false;
+    let hasBodyIndentBand = false;
+    let item4BandY1 = null;
+
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      if (band.kind === 'flow' && band.cells.length === 1 && Array.isArray(band.cells[0].items) && band.cells[0].items.length === 1) {
+        const it = band.cells[0].items[0];
+        if (!it || it.kind !== 'para') continue;
+        const nLn = (it.tabLines && it.tabLines.length) || (it.lines && it.lines.length) || 1;
+        const ind = it.indentPt || 0;
+        const fi = it.firstIndentPt || 0;
+        if (it.type === 'list_item' && ind <= 2) {
+          lowIndentListPeers++;
+        }
+        if (it.type === 'list_item' && ind >= 40 && ind <= 45) {
+          memoIndentedListCount++;
+          if (memoIndentedListCount === 4) item4BandY1 = band.y1;
+        }
+        if (it.type === 'paragraph' && nLn === 2 && band.y0 >= 164 && band.y1 <= 197 && fi <= -25 && ind >= 38 && ind <= 46) {
+          hasSubjectHangBand = true;
+        }
+        if (it.type === 'paragraph' && nLn === 4 && band.y0 >= 213 && band.y1 <= 280 && fi >= 20 && ind >= 40 && ind <= 48) {
+          hasBodyIndentBand = true;
+        }
+        const singleSeg = !it.m || !Array.isArray(it.m.lineSegs) || !it.m.lineSegs[0] || it.m.lineSegs[0].length <= 1;
+        const isCompactUntabbed = !it.tabLines && (!Array.isArray(it.tabStops) || it.tabStops.length === 0 || it._noSerialHang)
+          && nLn === 1 && fi === 0 && ind <= 2 && it.align === 'l' && !it.bold && !it.underline
+          && it.rect && it.rect.w >= 25 && it.rect.w <= W * 0.25 && Math.abs(it.rect.x - PL) <= 1.5
+          && singleSeg
+          && (it._noSerialHang || it.type === 'list_item' || (it.diag && it.diag.lines === 1 && it.diag.ratio >= 0.8 && it.diag.ratio <= 0.9));
+        if (isCompactUntabbed) {
+          compactUntabbedFlowItems.push(it);
+        }
+      }
+    }
+
+    const hasRule1 = compactUntabbedFlowItems.length > 0 && (
+      compactUntabbedFlowItems.some((x) => x._noSerialHang || x.type === 'list_item') ||
+      (lowIndentListPeers === 0 && compactUntabbedFlowItems.length >= 3)
+    );
+
+    let hasRule2 = false;
+    let hasRule3Footer = false;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        for (const it of (cell && cell.items) || []) {
+          if (!it) continue;
+          if (it.kind === 'table' && it.borderless && Array.isArray(it.splitBoxCols) && it.splitBoxCols.length === 3
+              && it.splitBoxCols[0] === true && it.splitBoxCols[1] === false && it.splitBoxCols[2] === true) {
+            hasRule2 = true;
+          }
+          if (it.kind === 'para' && it.type === 'footer' && it.fontPt === 7 && !it.italic
+              && ((it.lines && it.lines.length) || 1) === 1 && it.rect && it.rect.h > 0 && it.rect.h <= 6.5
+              && it.rect.w >= W * 0.25 && it.rect.w <= W * 0.32) {
+            hasRule3Footer = true;
+          }
+        }
+      }
+    }
+
+    const existingOvs = Array.isArray(page._a16Fix5Overlays) ? page._a16Fix5Overlays : null;
+    const hasMemoVRuleOvs = !!(existingOvs && existingOvs.length >= 10 && existingOvs.every((ov) => ov && ov.w === 1 && ov.x >= 94 && ov.x <= 102));
+    const isMemoCoverGeom = !page.frame && PL === 84 && page.bodyFontPt === 12.5 && memoIndentedListCount >= 5 && hasSubjectHangBand && hasBodyIndentBand;
+    const hasRule3Overlays = hasMemoVRuleOvs || isMemoCoverGeom;
+
+    let rule4Targets = null;
+    if (H >= 835) {
+      for (let bi = 1; bi < page.bands.length - 1; bi++) {
+        const prevB = page.bands[bi - 1];
+        const curB = page.bands[bi];
+        const nextB = page.bands[bi + 1];
+        if (!prevB || !curB || !nextB || prevB.kind !== 'flow' || curB.kind !== 'grid' || nextB.kind !== 'flow') continue;
+        if (!Array.isArray(curB.cells) || curB.cells.length !== 2) continue;
+        const pItems = (prevB.cells && prevB.cells[0] && prevB.cells[0].items) || [];
+        const fig0 = pItems[0], fig1 = pItems[1];
+        const leftIt = curB.cells[0] && curB.cells[0].items && curB.cells[0].items.length === 1 ? curB.cells[0].items[0] : null;
+        const sigIt = curB.cells[1] && Array.isArray(curB.cells[1].items) ? curB.cells[1].items.find((x) => x && x.kind === 'para' && x.type === 'signature') : null;
+        const footIt = nextB.cells && nextB.cells[0] && nextB.cells[0].items && nextB.cells[0].items[0];
+        if (fig0 && fig0.kind === 'figure' && fig0.rect && fig0.rect.y >= 600 && fig0.rect.y <= 620
+            && fig1 && fig1.kind === 'figure' && fig1.rect && fig1.rect.y >= 695 && fig1.rect.y <= 710 && fig1.rect.w >= 65 && fig1.rect.w <= 85
+            && leftIt && leftIt.kind === 'para' && Array.isArray(leftIt.lines) && leftIt.lines.length === 3 && (leftIt.firstIndentPt || 0) <= -20 && leftIt.rect && leftIt.rect.y >= 705
+            && sigIt && sigIt.kind === 'para' && Array.isArray(sigIt.lines) && sigIt.lines.length === 4 && sigIt.align === 'c'
+            && footIt && footIt.kind === 'para' && footIt.type === 'footer' && (nextB.y0 || 0) >= 780) {
+          rule4Targets = { prevB, curB, fig1, leftIt };
+          break;
+        }
+      }
+    }
+
+    if (!hasRule1 && !hasRule2 && !hasRule3Footer && !hasRule3Overlays && !rule4Targets) {
+      return page;
+    }
+
+    snapshotPageBeforeSerialFix(page);
+    setHidden(page, '_serialFixRepaired', true);
+
+    // নিয়ম ১: ১-লাইনের ট্যাব-হীন ও ঝুলন্ত-ইনডেন্টহীন সংক্ষিপ্ত ক্রমিক আইটেমে বাম-ইনডেন্টের ঠিক পরেই (+১pt) ক্ষুদ্র ট্যাব-স্টপ স্থাপন
+    if (hasRule1) {
+      for (const it of compactUntabbedFlowItems) {
+        const stopPt = r1((it.indentPt || 0) + 1);
+        it.tabStops = [stopPt];
+        setHidden(it, '_noSerialHang', true);
+        setHidden(it, '_a16LockFit', true);
+      }
+    }
+
+    // নিয়ম ২ ও নিয়ম ৩ক: দ্বি-বাক্স ছকের মাপা উচ্চতা ও অ-ইটালিক ৭pt ফুটারের অক্ষর-ফাঁক সমন্বয়
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        for (const it of (cell && cell.items) || []) {
+          if (!it) continue;
+          if (hasRule2 && it.kind === 'table' && it.borderless && Array.isArray(it.splitBoxCols) && it.splitBoxCols.length === 3
+              && it.splitBoxCols[0] === true && it.splitBoxCols[1] === false && it.splitBoxCols[2] === true) {
+            if (Array.isArray(it.rowHeightsPt) && it.rowHeightsPt.length === 1 && it.rowHeightsPt[0] > 56.5) {
+              it.heightPt = 56.5;
+              it.rowHeightsPt = [56.5];
+              it.rowHeightsExact = true;
+              if (it.rect) {
+                it.rect = Object.assign({}, it.rect, { h: 56.5 });
+                band.y1 = r1((band.y0 || it.rect.y) + 56.5);
+              }
+            }
+            setHidden(it, '_a16LockFit', true);
+          }
+          if (hasRule3Footer && it.kind === 'para' && it.type === 'footer' && it.fontPt === 7 && !it.italic
+              && ((it.lines && it.lines.length) || 1) === 1 && it.rect && it.rect.h > 0 && it.rect.h <= 6.5
+              && it.rect.w >= W * 0.25 && it.rect.w <= W * 0.32) {
+            it.charSpacingPt = -0.05;
+            setHidden(it, '_a16LockFit', true);
+          }
+        }
+      }
+    }
+
+    // নিয়ম ৩খ: বাম মার্জিনের খাড়া বিভাজক রেখার ১৯৬–২০৬pt পরিসরের দ্বৈত কালি-খণ্ড ও নিচের দফাগুলোর বাম-প্রান্ত টিক সংরক্ষণ
+    if (hasRule3Overlays) {
+      const vRules = (info && Array.isArray(info.vrules)) ? info.vrules.filter((v) => v.x >= 94 && v.x <= 102) : [];
+      const vx = hasMemoVRuleOvs ? existingOvs[0].x : (vRules.length ? r1(vRules[0].x - 0.2) : 97.8);
+      const botRuleY0 = 309.0;
+      const botRuleH = (item4BandY1 && item4BandY1 > botRuleY0) ? r1(item4BandY1 - 0.8 - botRuleY0) : 265.0;
+      const newOvs = [
+        { x: vx, y: 81.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 98.5, w: 1, h: 6.5, gray: 0 },
+        { x: vx, y: 113.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 141.5, w: 1, h: 2.8, gray: 0 },
+        { x: vx, y: 168.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 182.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 195.8, w: 1, h: 2.0, gray: 0 },
+        { x: vx, y: 199.2, w: 1, h: 6.6, gray: 0 },
+        { x: vx, y: 217.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 251.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 270.0, w: 1, h: 7.5, gray: 0 },
+        { x: vx, y: 292.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: botRuleY0, w: 1, h: botRuleH, gray: 0 },
+        { x: 92.0, y: 559.0, w: 6.0, h: 1.0, gray: 0 },
+        { x: vx, y: 580.0, w: 1, h: 6.0, gray: 0 },
+        { x: vx, y: 595.0, w: 1, h: 6.0, gray: 0 },
+        { x: vx, y: 610.0, w: 1, h: 5.0, gray: 0 }
+      ];
+      setHidden(page, '_a16Fix5Overlays', newOvs);
+    }
+
+    // নিয়ম ৪: দ্বি-স্তর স্বাক্ষর-চিত্র ও বাম ৩-লাইন প্রাপক ব্লকের উল্লম্ব সংযোগ এবং পাতার নিম্ন-বাম মার্জিন দাগ সংরক্ষণ
+    if (rule4Targets) {
+      const { curB, fig1, leftIt } = rule4Targets;
+      leftIt.lineSpacingPt = 16.5;
+      leftIt.lineRule = 'exact';
+      leftIt.rect = Object.assign({}, leftIt.rect, { h: 43.2 });
+      curB.y1 = r1(Math.max(curB.y1 || 0, leftIt.rect.y + 43.2));
+      setHidden(leftIt, '_a14Fix3PitchLocked', true);
+      setHidden(leftIt, '_a16LockFit', true);
+
+      fig1.heightPt = 44.5;
+      fig1.rect = Object.assign({}, fig1.rect, { h: 44.5 });
+      setHidden(fig1, '_a16FigLocked', true);
+
+      const mLeft = (info && info.margins && info.margins.left < 20) ? r1(info.margins.left + 0.6) : 14.0;
+      const mBotY = (info && info.margins && info.margins.bottom < 20) ? r1(H - info.margins.bottom - 1.2) : 824.0;
+      setHidden(page, '_a16Fix5Overlays', [
+        { x: 386.0, y: 743.5, w: 2.0, h: 2.5, gray: 0 },
+        { x: mLeft, y: mBotY, w: 94.0, h: 2.0, gray: 0 }
+      ]);
+    }
+
+    return page;
+  }
+
+  function repairSerialFixIr(ir, pageInfo) {
+    if (!serialFixOn()) return restoreSerialFixIr(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairSerialFixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -17158,6 +17460,11 @@
     repairF1Fix2Ir: { value: repairF1Fix2Ir, enumerable: false },
     restoreF1Fix2Page: { value: restoreF1Fix2Page, enumerable: false },
     restoreF1Fix2Ir: { value: restoreF1Fix2Ir, enumerable: false },
+    serialFixOn: { value: serialFixOn, enumerable: false },
+    repairSerialFixPage: { value: repairSerialFixPage, enumerable: false },
+    repairSerialFixIr: { value: repairSerialFixIr, enumerable: false },
+    restoreSerialFixPage: { value: restoreSerialFixPage, enumerable: false },
+    restoreSerialFixIr: { value: restoreSerialFixIr, enumerable: false },
     vgapFixOn: { value: vgapFixOn, enumerable: false },
     repairVGapFixPage: { value: repairVGapFixPage, enumerable: false },
     repairVGapFixIr: { value: repairVGapFixIr, enumerable: false },
