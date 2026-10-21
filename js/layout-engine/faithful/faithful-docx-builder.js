@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || indentFixOn() || f1Fix2On() || serialFixOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_indentFixLineNbsp', '_origIndentFixCs', '_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_f1LightBorders', '_f1BoxOuterBorders', '_f1BoxBorderSz', '_f1LabelColFill', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || indentFixOn() || f1Fix2On() || serialFixOn() || missingFixOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_missingFixRephRaise', '_f1RadioUnderline', '_missingFixRowPitchPt', '_missingFixRowBeforePt', '_missingFixBaseY', '_indentFixLineNbsp', '_origIndentFixCs', '_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_f1LightBorders', '_f1BoxOuterBorders', '_f1BoxBorderSz', '_f1LabelColFill', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -957,6 +957,26 @@
       process.env.__FZ_ON_SERIALFIX === '1' ||
       process.env.__FZ_ON_SERIALFIX === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('SERIALFIX'))
+    ))
+  );
+  // MISSING_TYPE_v1: ৬টি নথির (f1, a16, a14, a13, a06, a07) ১৮টি লেখা হারানো/বাড়তি লাইন ত্রুটি নিরসনে জ্যামিতিক ও কাঠামোগত সংস্কারের সুইচ (__FZ_ON_MISSINGFIX / FZ_ON=MISSINGFIX, বন্ধ: __FZ_OFF_MISSINGFIX / FZ_OFF=MISSINGFIX)
+  const missingFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_MISSINGFIX || (globalThis.window && globalThis.window.__FZ_OFF_MISSINGFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_MISSINGFIX) ||
+    (global && (global.__FZ_OFF_MISSINGFIX || (global.window && global.window.__FZ_OFF_MISSINGFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_MISSINGFIX === '1' ||
+      process.env.__FZ_OFF_MISSINGFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('MISSINGFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_MISSINGFIX || (globalThis.window && globalThis.window.__FZ_ON_MISSINGFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_MISSINGFIX) ||
+    (global && (global.__FZ_ON_MISSINGFIX || (global.window && global.window.__FZ_ON_MISSINGFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_MISSINGFIX === '1' ||
+      process.env.__FZ_ON_MISSINGFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('MISSINGFIX'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1919,7 +1939,7 @@
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
     const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
     const cSp = (wrapFitOn() || a01FixOn() || a06FixOn() || a08FixOn() || indentFixOn() || serialFixOn()) && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
-    const posXml = (a14Fix4On() || a14Fix5On() || a03Fix3On() || a03Fix4On() || a08FixOn() || indentFixOn() || vgapFixOn()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
+    const posXml = (a14Fix4On() || a14Fix5On() || a03Fix3On() || a03Fix4On() || a08FixOn() || indentFixOn() || vgapFixOn() || missingFixOn()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
     const colored = (xml) => {
       let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
       if (cSp || posXml) x = x.replace(/<w:sz /g, `${cSp}${posXml}<w:sz `);
@@ -2486,6 +2506,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairSerialFixPage === 'function') IR.repairSerialFixPage(page);
+    }
+    if ((missingFixOn() || (page && page._preMissingFixSnap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairMissingFixPage === 'function') IR.repairMissingFixPage(page);
     }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
@@ -3161,7 +3186,7 @@
         const rephNarrowSub = (s) => {
           if (!a14Fix4On()) return 0;
           const cl = String(s || "").replace(/\*\*|<[^>]+>/g, "");
-          const rCnt = (cl.match(/র্/g) || []).length;
+          const rCnt = (cl.match(/\u09b0\u09cd/g) || []).length;
           const pCnt = (cl.match(/[()।.,;:\-]/g) || []).length;
           return rCnt * 0.34 + pCnt * 0.24;
         };
@@ -3278,6 +3303,12 @@
           return runsFor(mSer[1], Object.assign({}, boldIt, { fontPt: item._a13SerialFontPt })) + runsFor(mSer[2], boldIt);
         }
         return runsFor(p, boldIt);
+      }
+      if (missingFixOn() && idx === 0 && item._missingFixRephRaise) {
+        const mReph = /^(\s*[০-৯0-9]+[।.)]\s*)(\S*\u09b0\u09cd\S*)([\s\S]*)$/.exec(String(p || ''));
+        if (mReph) {
+          return runsFor(mReph[1], item) + runsFor(mReph[2], Object.assign({}, item, { _a14PosVal: item._missingFixRephRaise })) + (mReph[3] ? runsFor(mReph[3], item) : '');
+        }
       }
       return runsFor(p, item);
     };
@@ -3783,9 +3814,11 @@
       const a07RowLineXml = a16ThreeLineXml != null ? a16ThreeLineXml : ((a07FixOn() || a07Fix2On() || a07Fix3On() || a09FixOn() || a07Fix5On() || a07Fix6On() || vspaceOn() || a12FixOn()) && !tight
         ? (ri === 0 && item._a07HeadPitchPt && hasCellTxt
           ? ` w:line="${tw(item._a07HeadPitchPt)}" w:lineRule="exact"`
-          : (item._a07MultiLinePitch && Array.isArray(item.rowHeightsPt) && effA07NL >= 2 && rh.fitted && rh[ri] && (rh[ri].h - BA) / effA07NL > fsz * 1.15
-            ? ` w:line="${tw(Math.min(fsz * ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On()) ? 1.45 : 1.38), Math.floor(((rh[ri].h - BA) / effA07NL) * 20) / 20))}" w:lineRule="exact"`
-            : null))
+          : (missingFixOn() && item._missingFixRowPitchPt && item._missingFixRowPitchPt[ri] > 0 && effA07NL >= 2 && hasCellTxt
+            ? ` w:line="${tw(item._missingFixRowPitchPt[ri])}" w:lineRule="exact"`
+            : (item._a07MultiLinePitch && Array.isArray(item.rowHeightsPt) && effA07NL >= 2 && rh.fitted && rh[ri] && (rh[ri].h - BA) / effA07NL > fsz * 1.15
+              ? ` w:line="${tw(Math.min((missingFixOn() && typeof item._a07MultiLinePitch === 'number' && item._a07MultiLinePitch > 0) ? item._a07MultiLinePitch : (fsz * ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On()) ? 1.45 : 1.38)), Math.floor(((rh[ri].h - BA) / effA07NL) * 20) / 20))}" w:lineRule="exact"`
+              : null)))
         : null);
       const extraRowLineXml = a07RowLineXml != null ? a07RowLineXml : ((extraLinesOn() || a19FixOn()) && (item.rowHeightsLine || Array.isArray(item.rowHeightsPt)) && nL >= 2 && rh.fitted && rh[ri] && !tight && (rh[ri].h - BA) / nL > fsz * 1.15
         ? ` w:line="${tw(Math.min(fsz * (nL === 2 && /([._\-…·─])\1{5,}/.test(String(txt || '')) ? 1.95 : 1.42), (rh[ri].h - BA) / nL))}" w:lineRule="exact"`
@@ -3863,8 +3896,9 @@
         const digitBoxLineXml = isDigitBoxRf && !t ? ` w:line="${tw(Math.max(10, (item.boxRuleHeightPt || item.heightPt || 16) - 2))}" w:lineRule="exact"` : "";
         const f1LineXml = (f1Cm && f1Cm.linePt > 0) ? ` w:line="${tw(f1Cm.linePt)}" w:lineRule="exact"` : null;
         const tblLineXml = f1LineXml != null ? f1LineXml : ((tableColOn() && item.lineSpacingPt) ? ` w:line="${tw(item.lineSpacingPt)}" w:lineRule="exact"` : (!t && formFixOn ? digitBoxLineXml : radLineXml));
-        const befTw = (f1Cm && f1Cm.beforePt != null) ? (!li ? tw(f1Cm.beforePt) : 0) : (sh > 0 && !li ? tw(sh) : 0);
-        const aftTw = (f1Cm && f1Cm.beforePt != null) ? 0 : (sh < 0 && li === nL - 1 ? tw(-sh) : 0);
+        const mfRowBef = (missingFixOn() && item._missingFixRowBeforePt && item._missingFixRowBeforePt[ri] != null && hasCellTxt) ? item._missingFixRowBeforePt[ri] : null;
+        const befTw = (f1Cm && f1Cm.beforePt != null) ? (!li ? tw(f1Cm.beforePt) : 0) : (mfRowBef != null ? (!li ? tw(mfRowBef) : 0) : (sh > 0 && !li ? tw(sh) : 0));
+        const aftTw = (f1Cm && f1Cm.beforePt != null) || mfRowBef != null ? 0 : (sh < 0 && li === nL - 1 ? tw(-sh) : 0);
         const lineCellItem = (f1Fix2On() && f1Cm && f1Cm.lineCharSpacingPt && f1Cm.lineCharSpacingPt[li] != null)
           ? Object.assign({}, rowCellItem, { charSpacingPt: f1Cm.lineCharSpacingPt[li] })
           : rowCellItem;
@@ -3873,7 +3907,10 @@
           const tabPosTw = tw(item._f1RadioTextTabPt);
           const tabXml = `<w:tabs><w:tab w:val="left" w:pos="${tabPosTw}"/></w:tabs>`;
           const circleIt = Object.assign({}, lineCellItem, { fontPt: 12, bold: true, charSpacingPt: 0 });
-          const runs = runsFor('**○**', circleIt) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + (restTxt ? runsFor(restTxt, lineCellItem) : '');
+          const restIt = (missingFixOn() && (item._f1RadioUnderline || (f1Cm && f1Cm.radioUnderline)))
+            ? Object.assign({}, lineCellItem, { underline: true })
+            : lineCellItem;
+          const runs = runsFor('**○**', circleIt) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + (restTxt ? runsFor(restTxt, restIt) : '');
           return `<w:p><w:pPr>${pShd}${tabXml}<w:spacing w:before="${befTw}" w:after="${aftTw}"${tblLineXml}/>${radIndXml}<w:jc w:val="left"/><w:rPr><w:sz w:val="${pMarkSz}"/><w:szCs w:val="${pMarkSz}"/></w:rPr></w:pPr>${runs}</w:p>`;
         }
         const a18WordGapPt = a18FixOn() && item._a18CellWordGapPt && item._a18CellWordGapPt[ri + ':' + k] > 0 ? item._a18CellWordGapPt[ri + ':' + k] : 0;
@@ -4695,6 +4732,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairSerialFixIr === 'function') IR.repairSerialFixIr(ir);
     }
+    if ((missingFixOn() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preMissingFixSnap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairMissingFixIr === 'function') IR.repairMissingFixIr(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4733,7 +4775,7 @@
         return paraXml(keepInternalProps(e.it, Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before })), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
       }, ctx.boxes);
       if (!pageXml) pageXml = '<w:p/>';
-      if ((a16Fix5On() || a16Fix6On() || indentFixOn() || vgapFixOn() || serialFixOn()) && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
+      if ((a16Fix5On() || a16Fix6On() || indentFixOn() || vgapFixOn() || serialFixOn() || missingFixOn()) && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
         const ovRuns = page._a16Fix5Overlays.map((ov, ovi) => {
           const gVal = ov.gray != null ? ov.gray : 0;
           let mEntry = ctx.media.find((m) => m._a16Fix5Gray === gVal);
@@ -4793,7 +4835,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || indentFixOn() || f1Fix2On() || serialFixOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || indentFixOn() || f1Fix2On() || serialFixOn() || missingFixOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4897,6 +4939,7 @@
     a16Fix5On: { value: a16Fix5On, enumerable: false },
     a16Fix6On: { value: a16Fix6On, enumerable: false },
     vgapFixOn: { value: vgapFixOn, enumerable: false },
+    missingFixOn: { value: missingFixOn, enumerable: false },
     makeGrayPngBase64: { value: makeGrayPngBase64, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
