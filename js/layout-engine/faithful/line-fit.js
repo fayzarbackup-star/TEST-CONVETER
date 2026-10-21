@@ -572,6 +572,42 @@
     }
     return false;
   }
+  // A09_SCORE_v1: ফাঁকা বডি-সারিযুক্ত ১০-কলাম ফরম-ছকের বোল্ড বহু-লাইন শিরোনাম (১১.৫pt, ১৪.০pt লাইন-পিচ ও শীর্ষ প্রান্তিককরণ), ১৪pt কেন্দ্রীভূত শিরোনাম/হেডার, ১২pt বাম-ইনডেন্ট বিশেষ-দ্রষ্টব্য এবং বহু-লাইনের অনুচ্ছেদের প্রকৃত লাইন-ব্যবধান নিখুঁত করার সুইচ (__FZ_ON_A09FIX / FZ_ON=A09FIX)
+  function isA09FixOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A09FIX || (globalThis.window && globalThis.window.__FZ_OFF_A09FIX))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A09FIX)) return false;
+    if (global && Boolean(global.__FZ_OFF_A09FIX || (global.window && global.window.__FZ_OFF_A09FIX))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A09FIX === '1' || process.env.__FZ_OFF_A09FIX === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A09FIX')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A09FIX || (globalThis.window && globalThis.window.__FZ_ON_A09FIX))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A09FIX)) return true;
+    if (global && Boolean(global.__FZ_ON_A09FIX || (global.window && global.window.__FZ_ON_A09FIX))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A09FIX === '1' || process.env.__FZ_ON_A09FIX === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A09FIX')) return true;
+    }
+    return false;
+  }
+  // A14_SCORE_v5: পাতা ১-এর হেডার ই-মেইল ফন্ট, দ্বি-স্তর স্বাক্ষর সংযোগ ও আদ্যক্ষর-স্বাক্ষর ক্রপ, পাতা ২-এর প্রাপক ব্লক ও বিন্দু-লিডার প্রস্থ এবং পাতা ৩-এর ক্রমিক নির্দেশনা সংযোগ, RECITATION পুনরুদ্ধার ও সমাপনী স্বাক্ষর সংযোজনের সুইচ (__FZ_ON_A14FIX5 / FZ_ON=A14FIX5)
+  function isA14Fix5On() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A14FIX5 || (globalThis.window && globalThis.window.__FZ_OFF_A14FIX5))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A14FIX5)) return false;
+    if (global && Boolean(global.__FZ_OFF_A14FIX5 || (global.window && global.window.__FZ_OFF_A14FIX5))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A14FIX5 === '1' || process.env.__FZ_OFF_A14FIX5 === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A14FIX5')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A14FIX5 || (globalThis.window && globalThis.window.__FZ_ON_A14FIX5))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A14FIX5)) return true;
+    if (global && Boolean(global.__FZ_ON_A14FIX5 || (global.window && global.window.__FZ_ON_A14FIX5))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A14FIX5 === '1' || process.env.__FZ_ON_A14FIX5 === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14FIX5')) return true;
+    }
+    return false;
+  }
   function defaultWrapMeasure(s) {
     const str = String(s || '');
     const fills = (str.match(FILL_G) || []).join('');
@@ -1117,7 +1153,7 @@
    * মূলে সারি বহু-লাইনের (সারি-উচ্চতা ≥ ফন্টের ২.২ গুণ) হলে সেই সারি বাদ।
    */
   function fitTable(it, measure) {
-    if (isA07Fix3On() && it && it._a07Fix3TableFixed) return null;
+    if ((isA07Fix3On() || isA09FixOn()) && it && (it._a07Fix3TableFixed || it._a09BlankBodyFormTbl)) return null;
     const rows = it.rows || [], fr = it.colFractions, wPt = it.widthPt || (it.rect && it.rect.w) || 0;
     if (!rows.length || !it.fontPt || !(wPt > 0)) return null;
     const nCols = Math.max(...rows.map((r) => r.length));
@@ -1256,7 +1292,7 @@
   /** একটি অংশ আঁটানো; বদল হলে { needPt, availPt, fontFrom } ফেরত, নইলে null */
   function fitItem(it, cellW, measure) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn() || wdOn, a16On = isA16FixOn() || wdOn, indOn = isIndentOn();
-    if ((a07On && it && it._a07FixedSig) || (isA07Fix3On() && it && (it._a07FixedSig || it._a07LockFit)) || ((a16On || isA14Fix3On() || isA16Fix3On() || isA16Fix4On() || isA14Fix4On() || isA16Fix5On()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
+    if ((a07On && it && it._a07FixedSig) || (isA07Fix3On() && it && (it._a07FixedSig || it._a07LockFit)) || ((a16On || isA14Fix3On() || isA16Fix3On() || isA16Fix4On() || isA14Fix4On() || isA16Fix5On() || isA09FixOn() || isA14Fix5On()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
     if ((wfOn || p4On || a14On || a19On || a11On || indOn || wdOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (a11On && it && it.kind === 'para' && !it.tabLines && (it.lines || []).length === 1 && FILL.test((it.lines && it.lines[0]) || it.text || '')) return null;
     // A04_PAGES_v1: গদ্য অনুচ্ছেদে ভুলবশত বসে যাওয়া ট্যাব-কলাম পরিষ্কার এবং বহু-লাইনের প্রবাহী অনুচ্ছেদে ১-লাইনের সংকোচন রোধ
@@ -1370,8 +1406,8 @@
           if (fi > roomW) it.firstIndentPt = 0;
           it.indentPt = Math.max(0, Math.min(it.indentPt || 0, roomW - Math.abs(it.firstIndentPt || 0)));
         }
-        if (!it.charSpacingPt && !keepStructInd) it.charSpacingPt = -0.15;
-        if (need > (full - sideIndent(it)) * 0.96 || wordRiskNeed > full) {
+        if (!it.charSpacingPt && (!keepStructInd || (isA09FixOn() && !FILL.test(L[0])))) it.charSpacingPt = -0.15;
+        if (!(isA09FixOn() && keepStructInd && !FILL.test(L[0]) && need <= full - sideIndent(it) + 1) && (need > (full - sideIndent(it)) * 0.96 || wordRiskNeed > full)) {
           if (!it.lineSpacingPt) it.lineSpacingPt = Math.round(fontFrom * 1.15 * 10) / 10;
           it.fontPt = Math.max(1, it.fontPt - 0.5);
           need = Math.max(...L.map((t) => lineWidthPt(t, it, measure)));
@@ -1828,6 +1864,59 @@
     return ir;
   }
 
+  function repairA09FixPage(page) {
+    if (!isA09FixOn() || !page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA09FixPage !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA09FixPage === 'function') return IR.repairA09FixPage(page);
+    return page;
+  }
+
+  function repairA09FixIr(ir) {
+    if (!isA09FixOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA09FixIr !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA09FixIr === 'function') return IR.repairA09FixIr(ir);
+    ir.pages.forEach((p) => repairA09FixPage(p));
+    return ir;
+  }
+
+  function restoreA14Fix5Page(page) {
+    if (!page || !page._preA14Fix5Snap) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.restoreA14Fix5Page !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.restoreA14Fix5Page === 'function') return IR.restoreA14Fix5Page(page);
+    return page;
+  }
+
+  function restoreA14Fix5Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.restoreA14Fix5Ir !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.restoreA14Fix5Ir === 'function') return IR.restoreA14Fix5Ir(ir);
+    ir.pages.forEach((p) => restoreA14Fix5Page(p));
+    return ir;
+  }
+
+  function repairA14Fix5Page(page) {
+    if (!isA14Fix5On()) return restoreA14Fix5Page(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA14Fix5Page !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA14Fix5Page === 'function') return IR.repairA14Fix5Page(page);
+    return page;
+  }
+
+  function repairA14Fix5Ir(ir) {
+    if (!isA14Fix5On()) return restoreA14Fix5Ir(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA14Fix5Ir !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA14Fix5Ir === 'function') return IR.repairA14Fix5Ir(ir);
+    ir.pages.forEach((p) => repairA14Fix5Page(p));
+    return ir;
+  }
+
   function fit(ir, measure, opts) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
       p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), r2On = isRules2On(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
@@ -1874,9 +1963,13 @@
     if (a13fOn) repairA13FixIr(ir);
     const a16f5On = isA16Fix5On();
     if (a16f5On) repairA16Fix5Ir(ir);
+    const a09fOn = isA09FixOn();
+    if (a09fOn) repairA09FixIr(ir);
+    const a14f5On = isA14Fix5On();
+    if (a14f5On || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA14Fix5Snap))) repairA14Fix5Ir(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On || a09fOn || a14f5On) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -1994,6 +2087,12 @@
     if (a16f5On && ir && Array.isArray(ir.pages)) {
       repairA16Fix5Ir(ir);
     }
+    if (a09fOn && ir && Array.isArray(ir.pages)) {
+      repairA09FixIr(ir);
+    }
+    if (a14f5On && ir && Array.isArray(ir.pages)) {
+      repairA14Fix5Ir(ir);
+    }
     return n;
     } finally {
       _activeFitFont = prevFont;
@@ -2001,7 +2100,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA13FixOn, repairA13FixPage, repairA13FixIr, isA16Fix5On, repairA16Fix5Page, repairA16Fix5Ir, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA13FixOn, repairA13FixPage, repairA13FixIr, isA16Fix5On, repairA16Fix5Page, repairA16Fix5Ir, isA09FixOn, repairA09FixPage, repairA09FixIr, isA14Fix5On, repairA14Fix5Page, repairA14Fix5Ir, restoreA14Fix5Page, restoreA14Fix5Ir, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

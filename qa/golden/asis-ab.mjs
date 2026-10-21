@@ -4,6 +4,7 @@
 //   --base : ভিত্তিতেও যে সুইচ চালু থাকবে (যেমন আগে-গৃহীত সুইচ); --on : ভিত্তির উপরে যা পরীক্ষা হচ্ছে
 // ফল: পার্থক্য-টেবিল (≤৩০ লাইন), খারাপ হলে exitCode 2
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -13,7 +14,16 @@ const argv = process.argv.slice(2);
 const opt = (n) => { const i = argv.indexOf(n); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : ''; };
 const ON = opt('--on'), BASE = opt('--base'), IDS = opt('--ids');
 if (!ON) { console.log('--on <SWITCH[,..]> দিন'); process.exit(1); }
-const tagOf = (s) => (s ? s.replace(/[^A-Za-z0-9_]+/g, '+') : 'off');
+// লম্বা ট্যাগে Word-PDF পথ ২৬০ অক্ষর ছাড়ায় ⇒ ৮০-এর বেশি হলে ছোট নাম (S<সংখ্যা>_<হ্যাশ>); মানচিত্র runs/_tags.txt-এ
+const tagOf = (s) => {
+  const full = s ? s.replace(/[^A-Za-z0-9_]+/g, '+') : 'off';
+  if (full.length <= 80) return full;
+  const short = `S${full.split('+').length}_${crypto.createHash('md5').update(full).digest('hex').slice(0, 8)}`;
+  const map = path.join(ROOT, 'qa/golden-data/runs/_tags.txt');
+  const prev = fs.existsSync(map) ? fs.readFileSync(map, 'utf8') : '';
+  if (!prev.includes(short + ' ')) fs.appendFileSync(map, `${short} ${full}\n`);
+  return short;
+};
 const read = (f) => JSON.parse(fs.readFileSync(f, 'utf8').replace(/^﻿/, ''));
 
 function run(fzOn) {

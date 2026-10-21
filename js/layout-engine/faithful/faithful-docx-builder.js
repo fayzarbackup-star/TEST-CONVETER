@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_p2VRule', '_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_p2VRule', '_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -615,6 +615,46 @@
       process.env.__FZ_ON_A16FIX5 === '1' ||
       process.env.__FZ_ON_A16FIX5 === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX5'))
+    ))
+  );
+  // A09_SCORE_v1: ফাঁকা বডি-সারিযুক্ত ১০-কলাম ফরম-ছকের বোল্ড বহু-লাইন শিরোনাম (১১.৫pt, ১৪.০pt লাইন-পিচ ও শীর্ষ প্রান্তিককরণ), ১৪pt কেন্দ্রীভূত শিরোনাম/হেডার, ১২pt বাম-ইনডেন্ট বিশেষ-দ্রষ্টব্য এবং বহু-লাইনের অনুচ্ছেদের প্রকৃত লাইন-ব্যবধান নিখুঁত করার সুইচ (__FZ_ON_A09FIX / FZ_ON=A09FIX)
+  const a09FixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A09FIX || (globalThis.window && globalThis.window.__FZ_OFF_A09FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A09FIX) ||
+    (global && (global.__FZ_OFF_A09FIX || (global.window && global.window.__FZ_OFF_A09FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A09FIX === '1' ||
+      process.env.__FZ_OFF_A09FIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A09FIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A09FIX || (globalThis.window && globalThis.window.__FZ_ON_A09FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A09FIX) ||
+    (global && (global.__FZ_ON_A09FIX || (global.window && global.window.__FZ_ON_A09FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A09FIX === '1' ||
+      process.env.__FZ_ON_A09FIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A09FIX'))
+    ))
+  );
+  // A14_SCORE_v5: পাতা ১-এর হেডার ই-মেইল ফন্ট, দ্বি-স্তর স্বাক্ষর সংযোগ ও আদ্যক্ষর-স্বাক্ষর ক্রপ, পাতা ২-এর প্রাপক ব্লক ও বিন্দু-লিডার প্রস্থ এবং পাতা ৩-এর ক্রমিক নির্দেশনা সংযোগ, RECITATION পুনরুদ্ধার ও সমাপনী স্বাক্ষর সংযোজনের সুইচ (__FZ_ON_A14FIX5 / FZ_ON=A14FIX5)
+  const a14Fix5On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A14FIX5 || (globalThis.window && globalThis.window.__FZ_OFF_A14FIX5))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A14FIX5) ||
+    (global && (global.__FZ_OFF_A14FIX5 || (global.window && global.window.__FZ_OFF_A14FIX5))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A14FIX5 === '1' ||
+      process.env.__FZ_OFF_A14FIX5 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A14FIX5'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A14FIX5 || (globalThis.window && globalThis.window.__FZ_ON_A14FIX5))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A14FIX5) ||
+    (global && (global.__FZ_ON_A14FIX5 || (global.window && global.window.__FZ_ON_A14FIX5))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A14FIX5 === '1' ||
+      process.env.__FZ_ON_A14FIX5 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14FIX5'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1552,7 +1592,7 @@
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
     const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
     const cSp = (wrapFitOn() || a01FixOn()) && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
-    const posXml = a14Fix4On() && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
+    const posXml = (a14Fix4On() || a14Fix5On()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
     const colored = (xml) => {
       let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
       if (cSp || posXml) x = x.replace(/<w:sz /g, `${cSp}${posXml}<w:sz `);
@@ -2028,6 +2068,16 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix5Page === 'function') IR.repairA16Fix5Page(page);
     }
+    if (a09FixOn() && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA09FixPage === 'function') IR.repairA09FixPage(page);
+    }
+    if ((a14Fix5On() || (page && page._preA14Fix5Snap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA14Fix5Page === 'function') IR.repairA14Fix5Page(page);
+    }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
     let cur = page.margins.top;
@@ -2125,7 +2175,7 @@
           // a19: নিচের মার্জিনে ঢোকা ছবি (CamScanner লোগো) প্রবাহে পরের পাতায় যেত ⇒ সেটিও ভাসমান
           const inBottom = it.rect && it.rect.y + it.rect.h > page.heightPt - page.margins.bottom - 1;
           if (it.kind === 'figure' && it.rect && (!!it.floatAt || (pb != null && it.rect.y < pb - 4) || inBottom) && ((it.image && it.image.dataUrl) || a14FixOn() || a14Fix3On() || (lineGapOn() && page._a14LineGap))) {
-            els.push({ it: Object.assign({}, it, { floatAt: { x: it.rect.x, y: it.rect.y } }), before: 0, h: 1 });
+            els.push({ it: keepInternalProps(it, Object.assign({}, it, { floatAt: { x: it.rect.x, y: it.rect.y } })), before: 0, h: 1 });
             cur += 1;
             return;
           }
@@ -2321,7 +2371,7 @@
       : (exactPt ? `w:line="${tw(exactPt)}" w:lineRule="exact"`
         : (item.lineSpacingPt && item.lineSpacingPt > fs * 1.3 && item.lineSpacingPt < fs * 3
           ? `w:line="${tw(item.lineSpacingPt)}" w:lineRule="atLeast"` : 'w:line="240" w:lineRule="auto"'));
-    if (widthOn() && item && item._origSigInd) {
+    if ((widthOn() || a09FixOn()) && item && item._origSigInd) {
       item = Object.assign({}, item, {
         align: 'j',
         keepLines: true,
@@ -2393,7 +2443,7 @@
       // a14: ভাসমান ছবি (planPage floatAt) — পাতা-সাপেক্ষ মূলের অবস্থানে, লেখা ঠেলে না (wrapNone)
       const fa = item.floatAt;
       const open = fa
-        ? `<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${251658240 + id}" behindDoc="${a14Fix4On() ? '1' : '0'}" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${emu(fa.x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${emu(fa.y)}</wp:posOffset></wp:positionV><wp:extent cx="${emu(wPt)}" cy="${emu(hPt)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/>`
+        ? `<wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${251658240 + id}" behindDoc="${(a14Fix4On() || a14Fix5On()) ? '1' : '0'}" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${emu(fa.x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${emu(fa.y)}</wp:posOffset></wp:positionV><wp:extent cx="${emu(wPt)}" cy="${emu(hPt)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/>`
         : `<wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${emu(wPt)}" cy="${emu(hPt)}"/>`;
       // ২০২৬-১০-১৪ (2.pdf লোগো): "ঠিক" লাইনে Word নিচে ডিফল্ট ফন্টের নিম্নাংশ রাখে ⇒ ছবির ওপর ~১৫% কাটা ("BRMS" হারাত)।
       // ছবির রান ও অনুচ্ছেদ-চিহ্নের ফন্ট খুদে (১pt) ⇒ নিম্নাংশ প্রায় শূন্য, পুরো ছবি লাইনে। বন্ধ: FZ_OFF=FIGCLIP
@@ -2403,6 +2453,8 @@
         const keepW = Math.min(0.9, Math.max(0.3, (wPt / Math.max(1, hPt)) / (img.pxW / Math.max(1, img.pxH))));
         const trimLR = Math.round(((1 - keepW) / 2) * 100000);
         srcRectXml = `<a:srcRect l="${trimLR}" t="10000" r="${trimLR}" b="0"/>`;
+      } else if (a14Fix5On() && item._a14CropTop > 0) {
+        srcRectXml = `<a:srcRect l="0" t="${item._a14CropTop}" r="0" b="0"/>`;
       }
       const drawing = `<w:r>${tiny}<w:drawing>${open}<wp:docPr id="${1000 + id}" name="fig${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000 + id}" name="fig${id}.${ext}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdFimg${id}"/>${srcRectXml}<a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(wPt)}" cy="${emu(hPt)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>${fa ? '</wp:anchor>' : '</wp:inline>'}</w:drawing></w:r>`;
       // ২০২৬-১০-১২: "auto" লাইনে Word ছবির নিচে অনুচ্ছেদ-ফন্টের নিম্নাংশ যোগ করত (লোগোর পরে সব ~৯pt নিচে, a02/a13)।
@@ -2704,8 +2756,9 @@
         };
         const segW = (s) => (wdOn && (wfTail || item._origRectW)) ? Math.max(bLen(s) * (a14Fix4On() ? 0.28 : 0.35), bLen(s) * 0.48 + karLen(s) * 0.16 - spVirLen(s) * 0.14 - rephNarrowSub(s)) * fsz0 : ((wfTail || a01On || indFill) ? (bLen(s) * 0.48 + karLen(s) * 0.16) * fsz0 : bLen(s) * fsz0 * 0.48);
         const availLineW = ((wfTail || a01On || wdOn || indFill) && ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
-        const safeNoWrapTail = a14Fix4On() && wfTail && item.rect.w <= availLineW - 12;
-        const totalW = shortTailInd ? Math.max(40, Math.min(item.rect.w, availLineW) - 2) : (safeNoWrapTail ? Math.max(40, item.rect.w - 1) : (wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - (wdOn ? 4 : 8)) : ((a01On || wdOn || indFill) ? Math.max(40, Math.min(item.rect.w, availLineW) - 1) : item.rect.w - 1)));
+        const safeNoWrapTail = (a14Fix4On() || a14Fix5On()) && wfTail && item.rect.w <= availLineW - 12;
+        const padSub = (a14Fix5On() && !hasTailTxt && item.rect.w <= availLineW - 4) ? -1.5 : 1;
+        const totalW = shortTailInd ? Math.max(40, Math.min(item.rect.w, availLineW) - 2) : (safeNoWrapTail ? Math.max(40, item.rect.w - 1) : (wfTail ? Math.max(40, Math.min(item.rect.w, availLineW) - (wdOn ? 4 : 8)) : ((a01On || wdOn || indFill) ? Math.max(40, Math.min(item.rect.w, availLineW) - padSub) : item.rect.w - 1)));
         const textW = segs.filter((x) => x.kind === "text").reduce((a, x) => a + segW(x.val), 0);
         const totalFillChars = segs.filter((x) => x.kind === "fill").reduce((a, x) => a + x.val.length, 0) || 1;
         const minRemW = wfTail ? 20 : 40;
@@ -2753,7 +2806,8 @@
     const dm =!item.tabLines && !(item.keepLines && item.lines && item.lines.length > 1) && (!item.align || item.align === 'l' || item.align === 'j' || item.align === 'r')
       && item.rect && item.rect.w > 40 && /^(.*?\S)\s*[.…·]{6,}$/.exec(flat);
     if (dm && !/[.…·]{6,}/.test(dm[1])) {
-      const pos = (item.indentPt || 0) + item.rect.w - 1;
+      const availDmW = (ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : item.rect.w;
+      const pos = (item.indentPt || 0) + item.rect.w - ((a14Fix5On() && item.rect.w <= availDmW - 4) ? -1.5 : 1);
       let ppr = pPr(Object.assign({}, item, { align: 'l' }), extraBeforePt)
         .replace('<w:pPr>', `<w:pPr><w:tabs><w:tab w:val="right" w:leader="dot" w:pos="${tw(pos)}"/></w:tabs>`);
       if ((formFixP || pleaderOn) && !globalThis.__FZ_OFF_FB2) {
@@ -2771,6 +2825,8 @@
     // ২০২৬-১০-১৩: ট্যাব-লাইনের শেষের বিন্দু-সারি ("নাম\t: ......") ⇒ মাপা ডান-প্রান্ত পর্যন্ত মোটা dot-leader (Gemini বিন্দু কম গোনে —
     // f2-এ লাইন ৮০pt ছোট)। শুধু যখন প্রতিটি ট্যাবের আগের লেখা (অনুমান ০.৫em/অক্ষর, বেশি ধরা) নিজের স্টপের আগেই শেষ —
     // নইলে ট্যাব লিডার-স্টপে লাফিয়ে লাইন ভাঙে (f2 ২ পাতা হয়েছিল)
+    const availTabW = (ctx && ctx.availW > 0) ? Math.max(40, ctx.availW - (item.indentPt || 0) - (item.rightIndentPt || 0)) : (item.rect ? item.rect.w : 0);
+    // A14FIX5-এর লিডার +২.৫pt নিয়ম বাদ — a13-এর কোলন-তালিকা −০.৮ করত
     const lpos = item.rect && item.rect.w > 40 ? (item.indentPt || 0) + item.rect.w - 1 : 0;
     // বিন্দুর আগের শুধু ফাঁকা-অক্ষর বাদ (ট্যাব নয় — "\t:\t......"-এর শেষ ট্যাব রাখতে হয়, নইলে লিডার-ট্যাব পরের বাঁ-স্টপে থামে, a06)
     const DOTS = /[ \u00a0]*[.…·]{6,}\s*$/;
@@ -2934,10 +2990,44 @@
       : item.keepLines && item.lines && item.lines.length > 1
       ? item.lines.map((ln, li) => {
           let lnIt = (a16Fix3On() && item._a16EmailLineFontPt && /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(String(ln || '').trim())) ? Object.assign({}, item, { fontPt: item._a16EmailLineFontPt }) : (widthOn() && !item.charSpacingPt && (item.firstIndentPt || 0) >= 0 && li < item.lines.length - 1 && String(ln || '').length >= 100) ? Object.assign({}, item, { charSpacingPt: -0.15 }) : item;
-          if (a14Fix4On() && li === item.lines.length - 1 && (item._a14LastLineFontPt || item._a14LastLineRaise)) {
+          if (a14Fix5On() && li === 0 && item._a14FirstLineFontPt) {
+            lnIt = Object.assign({}, lnIt, { fontPt: item._a14FirstLineFontPt });
+          }
+          if ((a14Fix4On() || a14Fix5On()) && li === item.lines.length - 1 && (item._a14LastLineFontPt || item._a14LastLineRaise)) {
             lnIt = Object.assign({}, lnIt);
             if (item._a14LastLineFontPt) lnIt.fontPt = item._a14LastLineFontPt;
             if (item._a14LastLineRaise) lnIt._a14PosVal = item._a14LastLineRaise;
+          }
+          if (a14Fix5On()) {
+            const sLn = String(ln || '');
+            if (li === 0 && item._a14SlashBridgeDrop && sLn.includes('/')) {
+              const slIdx = sLn.indexOf('/');
+              return runsFor(sLn.slice(0, slIdx), lnIt) +
+                runsFor('/', Object.assign({}, lnIt, { fontPt: (lnIt.fontPt || 12) + 2, _a14PosVal: item._a14SlashBridgeDrop })) +
+                runsFor(sLn.slice(slIdx + 1), lnIt);
+            }
+            if (li === 0 && item._a14FirstLineSubDrop) {
+              const mSub = /^(.*?\s)(\S*ূ\S*)(\s*.*)$/.exec(sLn);
+              if (mSub) {
+                return runsFor(mSub[1], lnIt) +
+                  runsFor(mSub[2], Object.assign({}, lnIt, { _a14PosVal: item._a14FirstLineSubDrop })) +
+                  (mSub[3] ? runsFor(mSub[3], lnIt) : '');
+              }
+            }
+            if (li === item.lines.length - 1 && item._a14LastLineSubRaise) {
+              const mHead = /^(\S+\s+\S+)(\s+[\s\S]+)$/.exec(sLn);
+              if (mHead) {
+                return runsFor(mHead[1], Object.assign({}, lnIt, { _a14PosVal: item._a14LastLineSubRaise })) +
+                  runsFor(mHead[2], lnIt);
+              }
+            }
+            if (li === item.lines.length - 1 && item._a14LastLineTailDrop) {
+              const mTail = /^([\s\S]+?\s)(\S+\s+\S+\s+\S+\s+\S+)$/.exec(sLn);
+              if (mTail) {
+                return runsFor(mTail[1], lnIt) +
+                  runsFor(mTail[2], Object.assign({}, lnIt, { _a14PosVal: item._a14LastLineTailDrop }));
+              }
+            }
           }
           return runsFor(ln, lnIt);
         }).join('<w:r><w:br/></w:r>')
@@ -3208,8 +3298,8 @@
             italic: cMeta && cMeta.italic != null ? !!cMeta.italic : baseCellIt.italic
           })
         : baseCellIt;
-      if ((tableGridOn() || a16Fix4On()) && ri === 0) {
-        const hBold = !!(item.headBold || (item.headCellBold && item.headCellBold[k]) || (cMeta && cMeta.bold));
+      if ((tableGridOn() || a16Fix4On() || a09FixOn()) && ri === 0) {
+        const hBold = !!(item.headBold || (a09FixOn() && item.bold) || (item.headCellBold && item.headCellBold[k]) || (cMeta && cMeta.bold));
         const hUl = !!(item.headUnderline || (item.headCellUnderline && item.headCellUnderline[k]) || (cMeta && cMeta.underline));
         if (hBold || hUl) {
           rowCellItem = Object.assign({}, rowCellItem, {
@@ -3246,7 +3336,7 @@
       const a16ThreeLineXml = a16FixOn() && !tight && item._a16ChecklistTbl && item._a16UnitH && nL === 1 && hasCellTxt && !/<table\b/i.test(String(txt || '')) && curRowH >= item._a16UnitH * 2.75 && curRowH <= item._a16UnitH * 3.25
         ? ` w:line="${tw(Math.min(fsz * 1.15, (curRowH - BA - 0.5) / 3))}" w:lineRule="exact"`
         : null;
-      const a07RowLineXml = a16ThreeLineXml != null ? a16ThreeLineXml : ((a07FixOn() || a07Fix2On() || a07Fix3On() || vspaceOn()) && !tight
+      const a07RowLineXml = a16ThreeLineXml != null ? a16ThreeLineXml : ((a07FixOn() || a07Fix2On() || a07Fix3On() || a09FixOn() || vspaceOn()) && !tight
         ? (ri === 0 && item._a07HeadPitchPt && hasCellTxt
           ? ` w:line="${tw(item._a07HeadPitchPt)}" w:lineRule="exact"`
           : (item._a07MultiLinePitch && Array.isArray(item.rowHeightsPt) && nL >= 2 && rh.fitted && rh[ri] && (rh[ri].h - BA) / nL > fsz * 1.15
@@ -3988,6 +4078,16 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix5Ir === 'function') IR.repairA16Fix5Ir(ir);
     }
+    if (a09FixOn() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA09FixIr === 'function') IR.repairA09FixIr(ir);
+    }
+    if ((a14Fix5On() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA14Fix5Snap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA14Fix5Ir === 'function') IR.repairA14Fix5Ir(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4023,7 +4123,7 @@
           });
           return gridXml(L === PL && R === PR ? band : shiftBand(band, L, R), ctx);
         }
-        return paraXml(Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before }), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
+        return paraXml(keepInternalProps(e.it, Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before })), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
       }, ctx.boxes);
       if (!pageXml) pageXml = '<w:p/>';
       if (a16Fix5On() && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
@@ -4086,7 +4186,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4157,6 +4257,8 @@
     a07Fix3On: { value: a07Fix3On, enumerable: false },
     a14Fix4On: { value: a14Fix4On, enumerable: false },
     a13FixOn: { value: a13FixOn, enumerable: false },
+    a09FixOn: { value: a09FixOn, enumerable: false },
+    a14Fix5On: { value: a14Fix5On, enumerable: false },
     widthOn: { value: widthOn, enumerable: false },
     a14Fix3On: { value: a14Fix3On, enumerable: false },
     fontFixOn: { value: fontFixOn, enumerable: false },
