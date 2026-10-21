@@ -756,6 +756,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A06FIX'))
     ))
   );
+  // A03_SCORE_v4: A03FIX3-এর উপকারী অংশ (পূর্ণ-প্রস্থ কালো ব্যানার, অবাঞ্ছিত বোল্ড অপসারণ, চেকবক্স ও মাস-বছর বাক্স, বাম-সাজানো চেকবক্স অনুচ্ছেদ, দিন-মাস-বছর ছকের পূর্ণ গ্রিড ও gridSpan, খাড়া বিভাজক রেখা) রেখে উল্লম্ব ড্রিফট নিরসন সুইচ (__FZ_ON_A03FIX4 / FZ_ON=A03FIX4)
+  const a03Fix4On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A03FIX4 || (globalThis.window && globalThis.window.__FZ_OFF_A03FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A03FIX4) ||
+    (global && (global.__FZ_OFF_A03FIX4 || (global.window && global.window.__FZ_OFF_A03FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A03FIX4 === '1' ||
+      process.env.__FZ_OFF_A03FIX4 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A03FIX4'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A03FIX4 || (globalThis.window && globalThis.window.__FZ_ON_A03FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A03FIX4) ||
+    (global && (global.__FZ_ON_A03FIX4 || (global.window && global.window.__FZ_ON_A03FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A03FIX4 === '1' ||
+      process.env.__FZ_ON_A03FIX4 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A03FIX4'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -4004,6 +4024,7 @@
     if (a03Fix3On()) repairA03Fix3Ir({ pages, warnings }, pageInfo);
     if (a02FixOn()) repairA02FixIr({ pages, warnings }, pageInfo);
     if (a06FixOn()) repairA06FixIr({ pages, warnings }, pageInfo);
+    if (a03Fix4On()) repairA03Fix4Ir({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -12599,7 +12620,7 @@
   const A03FIX3_NON_ENUM_KEYS = [
     ...A14FIX5_NON_ENUM_KEYS,
     "_p2VRule", "_a03BoxRuns", "_a03MonthYearBoxes", "_a03BoxSz", "_a03BoxNbsp",
-    "_a03OrigInkOff", "_a03FullVRule", "_padBottomPt", "_a03Fix3Repaired"
+    "_a03OrigInkOff", "_a03FullVRule", "_padBottomPt", "_a03Fix3Repaired", "_a03Fix4Repaired"
   ];
 
   function cloneItemForA03Fix3(it) {
@@ -13718,6 +13739,423 @@
     return ir;
   }
 
+  /**
+   * A03_SCORE_v4: A03FIX3-এর ড্রিফট-সৃষ্টিকারী অংশ (_padBottomPt, a03P2VExtra, splitBoxCols tblInd, সারি-উচ্চতা সংকোচন ও অপ্রয়োজনীয় y-সরণ)
+   * বাদ দিয়ে কেবল উপকারী অংশগুলো (পূর্ণ-প্রস্থ কালো ব্যানার, অবাঞ্ছিত বোল্ড অপসারণ, বাম-সাজানো চেকবক্স ও মাস-বছর বাক্স,
+   * দিন-মাস-বছর ছকের ৮-কলাম পূর্ণ গ্রিড ও gridSpan এবং খাড়া বিভাজক রেখা) সংরক্ষণ ও পাতা ১-এর +১pt সরণ নিরসন।
+   */
+  function snapshotPageBeforeA03Fix4(page) {
+    if (!page || page._preA03Fix4Snap) return;
+    const snap = {
+      margins: page.margins ? Object.assign({}, page.margins) : page.margins,
+      bodyFontPt: page.bodyFontPt,
+      boxes: Array.isArray(page.boxes) ? page.boxes.map((bx) => {
+        if (!bx) return bx;
+        const bxCopy = Object.assign({}, bx);
+        if (bx._p2Box !== undefined) {
+          Object.defineProperty(bxCopy, "_p2Box", { value: bx._p2Box, enumerable: false, configurable: true, writable: true });
+        }
+        return bxCopy;
+      }) : page.boxes,
+      bands: Array.isArray(page.bands) ? page.bands.map(cloneBandForA03Fix3) : page.bands
+    };
+    Object.defineProperty(page, "_preA03Fix4Snap", { value: snap, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreA03Fix4Page(page) {
+    if (!page || !page._preA03Fix4Snap) return page;
+    const snap = page._preA03Fix4Snap;
+    if (snap.margins) page.margins = Object.assign({}, snap.margins);
+    if (snap.bodyFontPt !== undefined) page.bodyFontPt = snap.bodyFontPt;
+    if (Array.isArray(snap.boxes)) {
+      page.boxes = snap.boxes.map((bx) => {
+        if (!bx) return bx;
+        const bxCopy = Object.assign({}, bx);
+        if (bx._p2Box !== undefined) {
+          Object.defineProperty(bxCopy, "_p2Box", { value: bx._p2Box, enumerable: false, configurable: true, writable: true });
+        }
+        return bxCopy;
+      });
+    }
+    if (Array.isArray(snap.bands)) {
+      page.bands = snap.bands.map(cloneBandForA03Fix3);
+    }
+    delete page._preA03Fix4Snap;
+    delete page._a03Fix4Repaired;
+    return page;
+  }
+
+  function restoreA03Fix4Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreA03Fix4Page(p));
+    return ir;
+  }
+
+  function repairA03Fix4Page(page, info) {
+    if (!a03Fix4On()) return restoreA03Fix4Page(page);
+    if (!page || !Array.isArray(page.bands) || page.frame || !Array.isArray(page.boxes) || !page.boxes.length) return page;
+    const hasDarkBanner = page.bands.some((b) => b && Array.isArray(b.cells) && b.cells.some((c) => c && Array.isArray(c.items) && c.items.some((it) => it && it.kind === "para" && (it.shade === "000000" || (it.shade && it.color === "FFFFFF")))));
+    if (!hasDarkBanner) return page;
+    if (page._a03Fix4Repaired) return page;
+
+    if (a03FixOn()) repairA03Page(page, info);
+    if (nestBoxOn()) repairNestBoxPage(page, info);
+    if (tblMergeOn()) repairTblMergePage(page, info);
+    if (vspaceOn()) repairVSpacePage(page, info);
+    if (widthOn()) repairWidthPage(page, info);
+
+    snapshotPageBeforeA03Fix4(page);
+    Object.defineProperty(page, "_a03Fix4Repaired", { value: true, enumerable: false, configurable: true, writable: true });
+
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === "object") {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+    const stripBoldMarks = (it) => {
+      if (!it || it.kind !== "para" || it.shade) return;
+      it.bold = false;
+      if (typeof it.text === "string") it.text = it.text.replace(/\*\*/g, "");
+      if (Array.isArray(it.lines)) it.lines = it.lines.map((l) => String(l || "").replace(/\*\*/g, ""));
+      if (Array.isArray(it.tabLines)) it.tabLines = it.tabLines.map((l) => String(l || "").replace(/\*\*/g, ""));
+    };
+
+    // সব অ-ব্যানার অনুচ্ছেদ থেকে অবাঞ্ছিত বোল্ড অপসারণ এবং কালো ব্যানারের পূর্ণ-প্রস্থ ও কেন্দ্র-সাজানো নিশ্চিতকরণ
+    page.bands.forEach((b) => {
+      if (!b || !Array.isArray(b.cells)) return;
+      b.cells.forEach((c) => {
+        if (!c || !Array.isArray(c.items)) return;
+        c.items.forEach((it) => {
+          if (!it) return;
+          if (it.kind === "para") {
+            if (it.shade === "000000" || (it.shade && it.color === "FFFFFF")) {
+              delete it.shadeRun;
+              it.indentPt = 0;
+              it.centerShiftPt = null;
+              it.align = "c";
+            } else {
+              stripBoldMarks(it);
+            }
+          }
+        });
+      });
+    });
+
+    const isP1 = page.page === 1 || (page.boxes.length === 1 && page.bands[0] && page.bands[0].kind === "grid" && page.bands[0].y0 < 52);
+    if (isP1) {
+      // ১ক) পাতা ১ শীর্ষ শিরোনাম ব্যান্ড (Band 0): প্রথম আইটেমের spaceBeforePt=0
+      const b0 = page.bands[0];
+      if (b0 && b0.kind === "grid" && b0.cells && b0.cells[0] && Array.isArray(b0.cells[0].items)) {
+        b0.cells[0].items.forEach((it, idx) => {
+          if (!it) return;
+          if (idx === 0) it.spaceBeforePt = 0;
+          setHidden(it, "_a16LockFit", true);
+        });
+      }
+
+      // ১খ) পাতা ১-এর ব্যান্ড ও আইটেম পরিমার্জন (ড্রিফট ছাড়া)
+      page.bands.forEach((b) => {
+        if (!b || !Array.isArray(b.cells)) return;
+        b.cells.forEach((c) => {
+          if (!c || !Array.isArray(c.items)) return;
+          c.items.forEach((it) => {
+            if (!it) return;
+            const txt = String(it.text || "").trim();
+            if (it.kind === "para" && (it.shade === "000000" || (it.shade && it.color === "FFFFFF"))) {
+              if (it.rect && it.rect.y < 200) {
+                // ১ম কালো ব্যানার ("পেনশন সম্পর্কিত তথ্যাবলী")
+                setHidden(it, "_a03OrigInkOff", 13.5 * 0.11);
+                it.fontPt = 13.5;
+                it.lineSpacingPt = 20.0;
+                it.lineRule = "exact";
+                setHidden(it, "_a14PosVal", 6);
+                setHidden(it, "_a16LockFit", true);
+              } else {
+                // ২য় কালো ব্যানার ("পেনশনার/ পারিবারিক/ পেনশনভোগীর সাধারন তথ্যাবলী"): মূলের ১৫.৫pt ফন্ট ও অবস্থান বজায় রাখা
+                it.lineSpacingPt = 17.825;
+                it.lineRule = "exact";
+                setHidden(it, "_a16LockFit", true);
+              }
+            } else if (it.kind === "para") {
+              if (/^১\./.test(txt) && it.lines && it.lines.length === 3) {
+                // B6: ১. পেনশনারের নাম... (৩ লাইন * ১৬.০pt = ৪৮.০pt যাতে নিচের দাগের ফাঁক >= ১pt থাকে এবং +১pt ড্রিফট না ঘটে)
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 13.5) * 0.11);
+                it.fontPt = 12;
+                it.lineSpacingPt = 16.0;
+                it.lineRule = "exact";
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^২\./.test(txt)) {
+                // B7: ২. জাতীয় পরিচয় পত্র নম্বর...
+                it.lines = (it.lines || [txt]).map((l) => String(l).replace(/^২\.\s*/, "২.   "));
+                it.text = it.lines.join("\n");
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^৩\./.test(txt)) {
+                // B9: ৩. পেনশনের ধরণ: সুপারনিউয়েশন ⟦ ⟧ ...
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 13.5) * 0.11);
+                it.fontPt = 11.5;
+                it.lineSpacingPt = 13.8;
+                it.lineRule = "exact";
+                const ln9 = "৩.   পেনশনের ধরণ: সুপারনিউয়েশন  ⟦ ⟧   রিটায়ারিং  ⟦ ⟧   ইনভেলিড  ⟦ ⟧   ক্ষতিপূরণ  ⟦ ⟧   পারিবারিক  ⟦ ⟧";
+                it.lines = [ln9];
+                it.text = ln9;
+                it.tabLines = null;
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 23);
+                setHidden(it, "_a03BoxNbsp", 7);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^৮\./.test(txt)) {
+                // B14: ৮. পেনশনার নিজে অবসরপ্রাপ্ত সরকারি কর্মচারী হলে অনুগ্রহ করে টিক দিন : ⟦ ⟧
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 13) * 0.11);
+                it.fontPt = 12;
+                it.lineSpacingPt = 13.8;
+                it.lineRule = "exact";
+                const ln14 = "৮.   পেনশনার নিজে অবসরপ্রাপ্ত সরকারি কর্মচারী হলে অনুগ্রহ করে টিক দিন :  ⟦ ⟧";
+                it.lines = [ln14];
+                it.text = ln14;
+                it.tabLines = null;
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^(?:[৪-৭]|১[০-৪])\./.test(txt)) {
+                // B10..B13, B16, B17, B19, B20: ১২pt ফন্ট ও ১৩.৮pt লাইন-উচ্চতা
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 13.5) * 0.11);
+                it.lineSpacingPt = 13.8;
+                it.lineRule = "exact";
+                it.fontPt = 12;
+                const fixSer = (s) => String(s || "").replace(/^([৪-৭])\.\s*/, "$1.   ").replace(/^(১[০-৪])\.\s*/, "$1.  ");
+                if (Array.isArray(it.lines)) it.lines = it.lines.map(fixSer);
+                if (Array.isArray(it.tabLines)) it.tabLines = it.tabLines.map(fixSer);
+                it.text = fixSer(it.text);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^লিঙ্গ\s*:/.test(txt)) {
+                // B22: লিঙ্গ : পুরুষ ⟦ ⟧ মহিলা ⟦ ⟧
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 13.5) * 0.11);
+                it.fontPt = 12;
+                it.lineSpacingPt = 15.525;
+                it.lineRule = "exact";
+                it.tabLines = ["লিঙ্গ :      পুরুষ   ⟦ ⟧\tমহিলা   ⟦ ⟧"];
+                it.lines = ["লিঙ্গ :      পুরুষ   ⟦ ⟧ মহিলা   ⟦ ⟧"];
+                it.text = it.lines[0];
+                if (it.ruleBelow) setHidden(it.ruleBelow, "_gapPt", 30);
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^ধর্ম\s*:/.test(txt)) {
+                // B25: ধর্ম : ইসলাম ⟦ ⟧ হিন্দু ⟦ ⟧ খৃষ্টান ⟦ ⟧ / বৌদ্ধ ⟦ ⟧ অন্যান্য ⟦ ⟧ (বাম-সাজানো, মূলের y বজায় রেখে)
+                it.align = "l";
+                it.keepLines = true;
+                it.keepJust = false;
+                delete it.justRightPt;
+                it.fontPt = 11.5;
+                it.lineSpacingPt = 21.8;
+                it.lineRule = "exact";
+                it.lines = [
+                  "ধর্ম :    ইসলাম   ⟦ ⟧    হিন্দু ⟦ ⟧    খৃষ্টান  ⟦ ⟧",
+                  "বৌদ্ধ     ⟦ ⟧   অন্যান্য ⟦ ⟧"
+                ];
+                it.text = it.lines.join("\n");
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^বৈবাহিক/.test(txt)) {
+                // B26: বৈবাহিক অবস্থা : বিবাহিত ⟦ ⟧ বিধবা ⟦ ⟧ / অবিবাহিত ⟦ ⟧ তালাকপ্রাপ্ত ⟦ ⟧ (বাম-সাজানো, অতিরিক্ত y-সরণ ছাড়া)
+                it.align = "l";
+                it.keepLines = true;
+                it.keepJust = false;
+                delete it.justRightPt;
+                it.fontPt = 11.5;
+                it.lineSpacingPt = 21.5;
+                it.lineRule = "exact";
+                it.lines = [
+                  "বৈবাহিক অবস্থা :  বিবাহিত   ⟦ ⟧        বিধবা     ⟦ ⟧",
+                  "অবিবাহিত    ⟦ ⟧      তালাকপ্রাপ্ত ⟦ ⟧"
+                ];
+                it.text = it.lines.join("\n");
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^জন্ম তারিখ/.test(txt)) {
+                it.fontPt = 12;
+                setHidden(it, "_a16LockFit", true);
+              }
+            } else if (it.kind === "table") {
+              if (it.borderless && Array.isArray(it.rows) && it.rows.length === 1 && /^১২\./.test(String(it.rows[0][0] || "").trim())) {
+                it.rowHeightsPt = [13.75];
+                it.rowHeightsExact = true;
+                setHidden(it, "_a16LockFit", true);
+              } else {
+                repairA03Fix3DateTable(it, false);
+              }
+            }
+          });
+        });
+      });
+    } else {
+      // ২) পাতা ২ পরিমার্জন (কোনো উল্লম্ব ড্রিফট বা বক্স-প্যাডিং বিলোপ ছাড়া)
+      page.bands.forEach((b) => {
+        if (!b || !Array.isArray(b.cells)) return;
+        b.cells.forEach((c) => {
+          if (!c || !Array.isArray(c.items)) return;
+          c.items.forEach((it) => {
+            if (!it) return;
+            const txt = String(it.text || "").trim();
+            if (it.kind === "para" && (it.shade === "000000" || (it.shade && it.color === "FFFFFF"))) {
+              if (it.rect && it.rect.y < 400) {
+                // B44: ১ম কালো ব্যানার ("ভবিষ্যত পেনশন ভাতা সম্পর্কিত তথ্য")
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 12.5) * 0.11);
+                it.fontPt = 12.5;
+                it.lineSpacingPt = 14.375;
+                it.lineRule = "exact";
+                setHidden(it, "_a16LockFit", true);
+              } else {
+                // B57: ২য় কালো ব্যানার ("ভবিষ্যতে সরাসরি ব্যাংক হিসাবে পেনশন প্রদানের জন্য ব্যাংক হিসাব সম্পর্কিত তথ্য")
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 11) * 0.11);
+                it.fontPt = 12;
+                it.lineSpacingPt = 12.65;
+                it.lineRule = "exact";
+                setHidden(it, "_a16LockFit", true);
+              }
+            } else if (it.kind === "para") {
+              if (/^যদি স্থায়ী ঠিকানা/.test(txt)) {
+                // B28: যদি স্থায়ী ঠিকানা ও বর্তমান ঠিকানা একই হয়, অনুগ্রহ করে টিক দিন। ⟦ ⟧
+                it.fontPt = 9.5;
+                it.lineSpacingPt = 12.1;
+                it.lineRule = "exact";
+                const ln28 = "যদি স্থায়ী ঠিকানা ও বর্তমান ঠিকানা একই হয়, অনুগ্রহ করে টিক দিন।   ⟦ ⟧";
+                it.lines = [ln28];
+                it.text = ln28;
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^গ্রস পেনশন সমর্পণের/.test(txt)) {
+                // B45: গ্রস পেনশন সমর্পণের পরিমাণ : সম্পূর্ণ ⟦ ⟧ অর্ধেক ⟦ ⟧
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 11) * 0.11);
+                it.fontPt = 11;
+                it.lineSpacingPt = 12.65;
+                it.lineRule = "exact";
+                it.tabLines = ["গ্রস পেনশন সমর্পণের পরিমাণ     :       সম্পূর্ণ     ⟦ ⟧\tঅর্ধেক   ⟦ ⟧"];
+                it.lines = ["গ্রস পেনশন সমর্পণের পরিমাণ     :       সম্পূর্ণ     ⟦ ⟧ অর্ধেক   ⟦ ⟧"];
+                it.text = it.lines[0];
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^সর্বশেষ পরিশোধিত পেনশন/.test(txt)) {
+                // B46: সর্বশেষ পরিশোধিত পেনশন : মাস [   ] বছর [ | | | ]
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 11) * 0.11);
+                it.underline = false;
+                it.fontPt = 11;
+                it.lineSpacingPt = 12.65;
+                it.lineRule = "exact";
+                const ln46 = "সর্বশেষ পরিশোধিত পেনশন :       মাস   ⟦ ⟧        বছর     ⟦ ⟧";
+                it.lines = [ln46];
+                it.text = ln46;
+                it.tabLines = null;
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03MonthYearBoxes", true);
+                setHidden(it, "_a16LockFit", true);
+              } else if (/^পেনশন উত্তোলন করা হয়/.test(txt) && b.kind === "flow") {
+                // B52 (Band 11): x=303.25pt খাড়া বিভাজক রেখাসহ ২-ঘরের গ্রিড ব্যান্ডে রূপান্তর (মূলের y0=424.6..445.3 অপরিবর্তিত রেখে)
+                const rb52 = it.ruleBelow || b.ruleBelow || { srcY: 458.2, sz: 4 };
+                setHidden(rb52, "_p2Rule", true);
+                const origY0 = b.y0 || 424.6;
+                const origY1 = b.y1 || 445.3;
+                const leftIt = cloneItemForA03Fix3(it);
+                delete leftIt.ruleBelow;
+                leftIt.tabLines = null;
+                leftIt.tabStops = null;
+                leftIt.fontPt = 11;
+                leftIt.lineSpacingPt = 12.65;
+                leftIt.lineRule = "exact";
+                leftIt.indentPt = 5.8;
+                leftIt.spaceBeforePt = 0;
+                leftIt.rect = Object.assign({}, it.rect || {}, { x: 41.26, y: origY0, w: 215.43, h: 17.0 });
+                leftIt.lines = ["পেনশন উত্তোলন করা হয় : হিসাব রক্ষণ অফিস হতে   ⟦ ⟧"];
+                leftIt.text = leftIt.lines[0];
+                setHidden(leftIt, "_a03OrigInkOff", 11 * 0.11);
+                setHidden(leftIt, "_a03BoxRuns", true);
+                setHidden(leftIt, "_a03BoxSz", 25);
+                setHidden(leftIt, "_a03BoxNbsp", 8);
+                setHidden(leftIt, "_a16LockFit", true);
+
+                const rightIt = cloneItemForA03Fix3(it);
+                delete rightIt.ruleBelow;
+                rightIt.tabLines = null;
+                rightIt.tabStops = null;
+                rightIt.fontPt = 11;
+                rightIt.lineSpacingPt = 12.65;
+                rightIt.lineRule = "exact";
+                rightIt.indentPt = 96.9;
+                rightIt.spaceBeforePt = 0;
+                rightIt.rect = Object.assign({}, it.rect || {}, { x: 400.16, y: origY0, w: 104.12, h: 17.0 });
+                rightIt.lines = ["ব্যাংক হতে          ⟦ ⟧"];
+                rightIt.text = rightIt.lines[0];
+                setHidden(rightIt, "_a03OrigInkOff", 11 * 0.11);
+                setHidden(rightIt, "_a03BoxRuns", true);
+                setHidden(rightIt, "_a03BoxSz", 25);
+                setHidden(rightIt, "_a03BoxNbsp", 8);
+                setHidden(rightIt, "_a16LockFit", true);
+
+                b.kind = "grid";
+                b.y0 = origY0;
+                b.y1 = origY1;
+                b.boxIds = (it.boxIds && it.boxIds.length) ? it.boxIds.slice() : [1];
+                delete leftIt.boxIds;
+                delete rightIt.boxIds;
+                b.ruleBelow = rb52;
+                b.cells = [
+                  { x0: 35.5, x1: 303.25, ruleRight: true, items: [leftIt] },
+                  { x0: 303.25, x1: 558, items: [rightIt] }
+                ];
+              } else if (/^হিসাব নম্বর\s*:/.test(txt)) {
+                // B60: হিসাব নম্বর :   হিসাবের ধরণ : সঞ্চয়ী ⟦ ⟧ চলতি ⟦ ⟧
+                setHidden(it, "_a03OrigInkOff", (it.fontPt || 11) * 0.11);
+                it.fontPt = 11;
+                it.lineSpacingPt = 12.65;
+                it.lineRule = "exact";
+                it.tabLines = ["হিসাব নম্বর :\tহিসাবের ধরণ :       সঞ্চয়ী     ⟦ ⟧        চলতি    ⟦ ⟧"];
+                it.lines = ["হিসাব নম্বর : হিসাবের ধরণ :       সঞ্চয়ী     ⟦ ⟧        চলতি    ⟦ ⟧"];
+                it.text = it.lines[0];
+                setHidden(it, "_a03BoxRuns", true);
+                setHidden(it, "_a03BoxSz", 25);
+                setHidden(it, "_a03BoxNbsp", 8);
+                setHidden(it, "_a16LockFit", true);
+              }
+            } else if (it.kind === "table") {
+              if (it.borderless && Array.isArray(it.rows) && it.rows.length === 3 && /যদি হিসাব রক্ষণ/.test(String(it.rows[0][0] || ""))) {
+                // B53: যদি হিসাব রক্ষণ অফিস হতে... | যদি ব্যাংক হতে... (খাড়া বিভাজক রেখা ঠিক x=303.25pt-এ স্থাপন, সারি-উচ্চতা অপরিবর্তিত)
+                it.indentPt = 0;
+                it.widthPt = 522.5;
+                it.colFractions = [267.75 / 522.5, 254.75 / 522.5];
+                it.fullVRule = [true];
+                setHidden(it, "_p2VRule", true);
+                setHidden(it, "_a16LockFit", true);
+              } else {
+                repairA03Fix3DateTable(it, true);
+              }
+            }
+          });
+        });
+      });
+    }
+    return page;
+  }
+
+  function repairA03Fix4Ir(ir, pageInfo) {
+    if (!a03Fix4On()) return restoreA03Fix4Ir(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairA03Fix4Page(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -13839,7 +14277,12 @@
     restoreA03Fix3Ir: { value: restoreA03Fix3Ir, enumerable: false },
     a02FixOn: { value: a02FixOn, enumerable: false },
     repairA02FixPage: { value: repairA02FixPage, enumerable: false },
-    repairA02FixIr: { value: repairA02FixIr, enumerable: false }
+    repairA02FixIr: { value: repairA02FixIr, enumerable: false },
+    a03Fix4On: { value: a03Fix4On, enumerable: false },
+    repairA03Fix4Page: { value: repairA03Fix4Page, enumerable: false },
+    repairA03Fix4Ir: { value: repairA03Fix4Ir, enumerable: false },
+    restoreA03Fix4Page: { value: restoreA03Fix4Page, enumerable: false },
+    restoreA03Fix4Ir: { value: restoreA03Fix4Ir, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;

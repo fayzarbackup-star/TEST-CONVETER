@@ -273,6 +273,29 @@ function extractRequestMeta(request, url) {
   return { metaObj, models: models.slice(0, 6) };
 }
 
+// ২০২৬-১০-২১: Google যেসব Cloudflare-অবস্থান থেকে Gemini দেয় না — সেখানে US Durable Object দিয়ে যাওয়া
+const US_HOP_COLOS = new Set(['HKG', 'MFM']);
+function usEgressStub(env) {
+  if (!env || !env.US_EGRESS) return null;
+  return env.US_EGRESS.get(env.US_EGRESS.idFromName('us-egress-1'), { locationHint: 'wnam' });
+}
+
+// US-এ স্থির একটি Durable Object — শুধু Gemini-তে অনুরোধ ফরোয়ার্ড করে (অন্য গন্তব্য নিষেধ)
+export class UsEgress {
+  constructor(state, env) {}
+  async fetch(request) {
+    const target = request.headers.get('x-fz-target') || '';
+    if (target === 'trace') return fetch('https://cloudflare.com/cdn-cgi/trace');
+    if (!target.startsWith('https://generativelanguage.googleapis.com/')) return new Response('bad target', { status: 400 });
+    return fetch(target, {
+      method: request.method,
+      headers: { 'Content-Type': 'application/json' },
+      body: request.body,
+      duplex: 'half'
+    });
+  }
+}
+
 export default {
   async fetch(request, env = {}, ctx = null) {
     try {
@@ -336,6 +359,14 @@ export default {
           out.runLoc = (tr.match(/^loc=(.+)$/m) || [])[1] || null;
           out.traceMs = Date.now() - t0;
         } catch (e) { out.traceErr = String(e.message || e); }
+        if (url.searchParams.get('us') === '1') {
+          try {
+            const stub = usEgressStub(env);
+            const tr = stub ? await (await stub.fetch('https://us-egress/', { headers: { 'x-fz-target': 'trace' } })).text() : '';
+            out.usColo = (tr.match(/^colo=(.+)$/m) || [])[1] || null;
+            out.usLoc = (tr.match(/^loc=(.+)$/m) || [])[1] || null;
+          } catch (e) { out.usErr = String(e.message || e); }
+        }
         try {
           const t1 = Date.now();
           await (await fetch('https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta', { method: 'HEAD' })).arrayBuffer();
@@ -577,13 +608,24 @@ export default {
                 } else {
                   outboundBody = raw ? rawBuf.slice(0) : bodyStr; // প্রতিটি চেষ্টায় নিজস্ব কপি (ফেইলওভারে পুনর্ব্যবহার)
                 }
-                res = await fetch(geminiUrl, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: outboundBody,
-                  duplex: 'half',
-                  signal: attemptAbort.signal
-                });
+                // ২০২৬-১০-২১: placement কাজ করছে না — HKG-এর মতো নিষিদ্ধ অঞ্চলে বা একবার LOCATION হলে US-এর Durable Object দিয়ে Google-এ যাওয়া
+                const viaUs = (locationFails > 0 || US_HOP_COLOS.has(cf.colo) || url.searchParams.get('us') === '1') ? usEgressStub(env) : null;
+                if (viaUs) logRec.viaUs = (logRec.viaUs || 0) + 1;
+                res = viaUs
+                  ? await viaUs.fetch('https://us-egress/', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'x-fz-target': geminiUrl },
+                      body: outboundBody,
+                      duplex: 'half',
+                      signal: attemptAbort.signal
+                    })
+                  : await fetch(geminiUrl, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: outboundBody,
+                      duplex: 'half',
+                      signal: attemptAbort.signal
+                    });
               } catch (netErr) {
                 const entry = ensureEntry(ledger, key, Date.now());
                 const aborted = netErr && (netErr.name === 'AbortError' || /abort/i.test(String(netErr.message || '')));

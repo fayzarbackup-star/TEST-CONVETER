@@ -23,3 +23,13 @@ DAILY_PER_IP = "500"
 # অঞ্চল-সীমার ঝুঁকিও নেই)। ব্যবহারকারী ঢাকার Cloudflare-এই যুক্ত হন; ফিরিয়ে নিতে এই অংশ মুছে deploy।
 [placement]
 region = "gcp:us-central1"
+
+# ২০২৬-১০-২১: placement সত্ত্বেও Worker ব্যবহারকারীর edge-এ (DAC/HKG) চলে; HKG থেকে Gemini "User location is not supported"।
+# তাই US-এ স্থির Durable Object (locationHint wnam) দিয়ে Google-এ যাওয়ার বিকল্প পথ।
+[[durable_objects.bindings]]
+name = "US_EGRESS"
+class_name = "UsEgress"
+
+[[migrations]]
+tag = "v1-us-egress"
+new_sqlite_classes = ["UsEgress"]

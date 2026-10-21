@@ -7,7 +7,7 @@ const token = process.env.FAYZAR_PROXY_TOKEN || /PROXY_TOKEN:[\s\S]{0,400}?\|\|\
 const N = parseInt(process.argv[2] || '6', 10);
 for (let i = 0; i < N; i++) {
   const t = Date.now();
-  const res = await fetch(url, {
+  const res = await fetch(process.env.PROBE_US ? url + (url.includes('?') ? '&' : '?') + 'us=1' : url, { // PROBE_US=1: US Durable Object পথ
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token, Origin: 'http://localhost:3008' },
     body: JSON.stringify({ payload: { contents: [{ parts: [{ text: 'Reply with only the number: 2+2' }] }], generationConfig: { maxOutputTokens: 200 } }, models: ['gemini-3-flash-preview', 'gemini-3.8-flash', 'gemini-3.6-flash'] })
