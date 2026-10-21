@@ -9,9 +9,10 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
 import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // ভিত্তি সুইচসমূহ (switch-defaults.js লোড না করে সরাসরি সক্রিয়করণ)
 const BASELINE_SWITCHES = [

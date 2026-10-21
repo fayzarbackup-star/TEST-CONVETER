@@ -109,6 +109,7 @@
 | Word COM মাপ | `tools/dump-doc.ps1`, `tools/cv-tabs.ps1`, `tools/pdf-pages.ps1` |
 | কর্মপরিকল্পনা (চলমান, ☐/☑) | `docs/WORK_PLAN.md` |
 | ব্যবহারকারীর স্থায়ী অপারেশনাল নির্দেশনা ও ব্রিফিং | `docs/USER_OPERATIONAL_DIRECTIVES.md` |
+| ৩-পিসি Gemini ব্রিজ হাব (কাজের সারি, Firebase-এর বদলে) | `fayzar-bridge-hub/index.js` (Worker+DO), `tools/bridge_task.mjs`, `docs/BRIDGE_HUB_PLAN.md`; চুক্তি `scratch/bundles/BRIDGE_APP_v1_PROMPT.md` §4 |
 | মাল্টি-এজেন্ট ম্যানেজমেন্ট ও অ্যাসিস্ট্যান্ট ট্র্যাকার | `docs/MULTI_AGENT_MANAGEMENT.md`, `gemini-bridge-extension/`, `tools/agent_manager.mjs` |
 | হুবহু-মোডের সোনালি সেট ও স্কোর (WORK_PLAN A) | `qa/golden/` — `build-golden.ps1` → `finalize-golden.mjs` → `faithful-score.mjs [--ids] [--capture] [--save-baseline]`; PDF-মাত্র নমুনা: `image-score.mjs` (একটি), `asis-score.mjs [--ids] [--capture] [--save-baseline]` (ব্যাচ, তালিকা `qa/golden-data/asis/manifest.json`); **লেআউট-স্কোর (মূল লক্ষ্য)** `layout-score.mjs` (পরিষ্কার স্ক্যান, লাইন-অবস্থান/বিস্তার/উচ্চতা/দাগ/কালি), Word ছাড়া পুনর্মাপ `asis-layout.mjs [--ids] [--save-baseline]`, লাইন-সরণ নির্ণয় `line-drift.mjs <id>`; ডেটা লোকাল `qa/golden-data/` (ব্যক্তিগত, পুশ নয়) |
 | প্রক্সি অবস্থা/লগ | `qa/proxy-status.mjs`, `qa/proxy-log.mjs` |
