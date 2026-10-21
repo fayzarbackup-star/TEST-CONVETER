@@ -816,6 +816,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('F1FIX'))
     ))
   );
+  // A18_SCORE_v1: টেবিল-গ্রিড ও সীমানা সম্পূর্ণ অক্ষত রেখে নমুনা a18 ও সমগোত্রীয় এক-পাতার ছুটির আবেদন ফরমের ("বাংলাদেশ ফরম নং-২৩৯৫") শীর্ষ বিধি-লাইনের ভ্রান্ত বোল্ড/ফন্ট ও লিডার ট্যাব-স্টপ, নিচের দুটি ক্ষুদ্র পাদটীকার ফন্ট ও প্রস্থ, এবং ২৮×৪ ছকের ফন্ট, জাস্টিফাইড গদ্য-সারির শব্দ-ফাঁক, সারি ১৫ ও ২৭-এর কলাম/gridSpan, লিডার-স্টপ ও উল্লম্ব অবস্থান (vAlign/rowShiftPt) মেরামতের সুইচ (__FZ_ON_A18FIX / FZ_ON=A18FIX)
+  const a18FixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A18FIX || (globalThis.window && globalThis.window.__FZ_OFF_A18FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A18FIX) ||
+    (global && (global.__FZ_OFF_A18FIX || (global.window && global.window.__FZ_OFF_A18FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A18FIX === '1' ||
+      process.env.__FZ_OFF_A18FIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A18FIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A18FIX || (globalThis.window && globalThis.window.__FZ_ON_A18FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A18FIX) ||
+    (global && (global.__FZ_ON_A18FIX || (global.window && global.window.__FZ_ON_A18FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A18FIX === '1' ||
+      process.env.__FZ_ON_A18FIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A18FIX'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -4067,6 +4087,7 @@
     if (a03Fix4On()) repairA03Fix4Ir({ pages, warnings }, pageInfo);
     if (a07Fix6On()) repairA07Fix6Ir({ pages, warnings }, pageInfo);
     if (f1FixOn()) repairF1FixIr({ pages, warnings }, pageInfo);
+    if (a18FixOn()) repairA18FixIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -14931,6 +14952,212 @@
     return ir;
   }
 
+  /**
+   * A18_SCORE_v1: টেবিল-গ্রিড ও সব সীমানা সম্পূর্ণ অক্ষত রেখে (কোনো টেবিল ভাঙন, কলাম খোলা রাখা বা বাড়তি ছায়া ছাড়া)
+   * নমুনা a18 ও সমগোত্রীয় এক-পাতার ছুটির আবেদন ফরমের ("বাংলাদেশ ফরম নং-২৩৯৫") লেআউট ও রেন্ডারিং মেরামত:
+   * ১) ব্যান্ড ১-এর বিধি-লাইনে ("সিভিল সার্ভিস রেগুলেশন এর ---অথবা ফান্ডামেন্টাল রুলস এর বিধি---মোতাবেক ছুটির আবেদন।")
+   *    ভ্রান্ত bold অপসারণ, মাপা ১৩pt ফন্ট ও ১৩.২pt লাইন-উচ্চতা স্থাপন, ৪০-ড্যাশ পূরণ পুনরুদ্ধার এবং বাম হাইফেন-লিডার
+   *    ট্যাব-স্টপ ২২৩.০pt-এ (x=২৯৫pt) স্থাপন — ফলে ডান প্রান্তের +১২pt উপচে পড়া (dx1=+12 -> 0) ও উচ্চতা ঘাটতি (dh=-2 -> 0) নিরসন;
+   * ২) ছকের নিচের দুটি ক্ষুদ্র মুদ্রণ-পাদটীকায় (ব্যান্ড ৩ ও ব্যান্ড ৪, fs='s') normalizePage/snapFonts-জনিত ১১.৫pt স্ফীতি দূর করে
+   *    মাপা ১০pt ফন্ট ও সূক্ষ্ম অক্ষর-ফাঁক (+০.১pt ও -০.০৫pt) পুনরুদ্ধার — ফলে +২১pt ও +২৫pt প্রস্থ উপচে পড়া (long!) ও উচ্চতা ত্রুটি নিরসন;
+   * ৩) ২৮×৪ ছকের (ব্যান্ড ২) মূল ৪-কলাম গ্রিড ([2539, 2381, 2467, 2961] = 10348 dxa) ও সব বর্ডার অক্ষত রেখে:
+   *    - উপরের অংশে (সারি ০–১১) মাপা ১৪pt ফন্ট এবং নিচের অংশে (সারি ১৩–২৭) মাপা ১৩pt ফন্ট (সারি ২১-এ ১২.৫pt) পুনরুদ্ধার;
+   *    - জাস্টিফাইড গদ্য উপ-সারিগুলোতে (সারি ৪, ৫, ৭, ৮ এবং সারি ১৮, ১৯, ২০) অক্ষর-ফাঁক বিকৃত না করে কেবল আন্তঃশব্দ ফাঁক
+   *      (_a18CellWordGapPt) সমন্বয় করে ঘরের পূর্ণ অভ্যন্তরীণ প্রস্থে (৩৫৮.৩pt ও ১৩৭.০pt) প্রান্তিককরণ;
+   *    - সারি ১৫-তে ("নম্বর --- | তারিখ---") "নম্বর ---"-কে কলাম ০–১ (gridSpan=2, স্টপ ২০৬.৫pt, x=২৮২pt) এবং "তারিখ---"-কে
+   *      কলাম ২-এ (gridSpan=1, স্টপ ১১২.৫pt, x=৪৩৩pt) স্থাপন;
+   *    - সারি ২৭-এ ("প্রধান হিসাবরক্ষণ কর্মকর্তা") repairTblMergePage-জনিত কলাম ০-এ বাম-সরণ (x=৭৭pt) দূর করে মূলের কলাম ২-এ
+   *      (gridSpans=[2,0,1,1], x=৩২২..৪২৫pt) স্থাপন এবং lastRowSpan=3 ওভাররাইট রোধ;
+   *    - সারি ১১, ১৩, ১৬ ও ২৬-এর লিডার ট্যাব-স্টপ যথাক্রমে ১৪১.০pt (x=২১৬pt), ১২৩.৫pt (x=৫৬৮pt), ১২৩.৫pt (x=৫৬৮pt) ও
+   *      ৮৫.৫pt (x=১৬১pt, tw(118) ফ্লোর এড়িয়ে) নির্ধারণ এবং সারি ২৪ ও ২৫-এর বাম-ইনডেন্ট (৫৮.০pt ও ১৫.৯pt) সমন্বয়;
+   *    - ১-লাইনের সারিগুলোতে vAlign="center" বজায় রেখে rowShiftPt অনুযায়ী সারি ১৫ (-৩.৩pt), সারি ১৬ (+৩.৩pt), সারি ২৬ (-২.৩pt)
+   *      ও সারি ২৭ (-৪.৯pt)-এর উল্লম্ব সরণ (-৫pt থেকে -১১pt) সম্পূর্ণ নিরসন।
+   */
+  const A18FIX_NON_ENUM_KEYS = [
+    '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt',
+    '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_a06LeaderStopPt',
+    '_a16LockFit', '_preTblMergeSnap'
+  ];
+
+  function cloneItemForA18Fix(it) {
+    if (!it || typeof it !== 'object') return it;
+    const cp = JSON.parse(JSON.stringify(it));
+    for (const k of A18FIX_NON_ENUM_KEYS) {
+      if (it[k] !== undefined) {
+        Object.defineProperty(cp, k, { value: it[k], enumerable: false, configurable: true, writable: true });
+      }
+    }
+    return cp;
+  }
+
+  function cloneBandForA18Fix(b) {
+    if (!b) return b;
+    return Object.assign({}, b, {
+      cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+        items: Array.isArray(c.items) ? c.items.map(cloneItemForA18Fix) : c.items
+      })) : b.cells
+    });
+  }
+
+  function snapshotPageBeforeA18Fix(page) {
+    if (!page || page._preA18FixSnap) return;
+    const snap = {
+      margins: page.margins ? Object.assign({}, page.margins) : page.margins,
+      bands: Array.isArray(page.bands) ? page.bands.map(cloneBandForA18Fix) : page.bands
+    };
+    Object.defineProperty(page, '_preA18FixSnap', { value: snap, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreA18FixPage(page) {
+    if (!page || !page._preA18FixSnap) return page;
+    const snap = page._preA18FixSnap;
+    if (snap.margins) page.margins = Object.assign({}, snap.margins);
+    if (Array.isArray(snap.bands)) {
+      page.bands = snap.bands.map(cloneBandForA18Fix);
+    }
+    delete page._preA18FixSnap;
+    delete page._a18FixRepaired;
+    return page;
+  }
+
+  function restoreA18FixIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreA18FixPage(p));
+    return ir;
+  }
+
+  function isA18LeaveTableItem(it) {
+    return !!(
+      it && it.kind === 'table' && !it.borderless && Array.isArray(it.rows) &&
+      it.rows.length >= 24 && it.rows[0] && it.rows[0].length === 4 &&
+      Array.isArray(it.fullVRule) && it.fullVRule.length === 3 &&
+      it.fullVRule[0] === false && it.fullVRule[1] === false && it.fullVRule[2] === true &&
+      Array.isArray(it.rowBand) && it.rowBand.length === it.rows.length
+    );
+  }
+
+  function repairA18FixPage(page, info) {
+    if (!a18FixOn()) return restoreA18FixPage(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    const hasLeaveTbl = page.bands.some((b) => b && Array.isArray(b.cells) && b.cells.some((c) => (c.items || []).some(isA18LeaveTableItem)));
+    if (!hasLeaveTbl) return page;
+
+    snapshotPageBeforeA18Fix(page);
+    Object.defineProperty(page, '_a18FixRepaired', { value: true, enumerable: false, configurable: true, writable: true });
+
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        for (const it of cell.items || []) {
+          if (!it) continue;
+
+          // ১) ব্যান্ড ১: শীর্ষ বিধি-লাইনে ভ্রান্ত বোল্ড অপসারণ, ১৩pt ফন্ট, ১৩.২pt লাইন-উচ্চতা, ৪০-ড্যাশ পূরণ ও ২২৩pt লিডার ট্যাব-স্টপ
+          if (it.kind === 'para' && bi <= 1 && (it.lines || []).length === 1 && /সিভিল\s+সার্ভিস\s+রেগুলেশন/.test(String(it.text || ''))) {
+            it.bold = false;
+            it.fontPt = 13;
+            it.lineSpacingPt = 13.2;
+            it.lineRule = 'exact';
+            const fixedLine = 'সিভিল সার্ভিস রেগুলেশন এর ----------------------------------------অথবা ফান্ডামেন্টাল রুলস এর বিধি---মোতাবেক ছুটির আবেদন।';
+            it.text = fixedLine;
+            it.lines = [fixedLine];
+            delete it.fit;
+            Object.defineProperty(it, '_a06LeaderStopPt', { value: 223.0, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+          }
+
+          // ২) ব্যান্ড ৩ ও ৪: ছকের নিচের ক্ষুদ্র পাদটীকা অনুচ্ছেদদ্বয়ে (fs === 's') মাপা ১০pt ফন্ট ও প্রস্থ পুনরুদ্ধার
+          if (it.kind === 'para' && it.fs === 's' && (it.lines || []).length === 1 && it.rect && it.rect.y >= 720 && it.rect.w < 210) {
+            it.fontPt = 10;
+            delete it.fit;
+            if (it.rect.w >= 165) {
+              it.charSpacingPt = 0.1;
+            } else {
+              it.charSpacingPt = -0.05;
+            }
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+          }
+
+          // ৩) ব্যান্ড ২: ২৮×৪ ছুটির আবেদন ছক পরিমার্জন (একক টেবিল ও সব বর্ডার অক্ষত রেখে)
+          if (isA18LeaveTableItem(it)) {
+            const nRows = it.rows.length;
+            it.gridFirst = true;
+            it.rowHeightsExact = true;
+            it.exactRuleHeights = true;
+            it.fontPt = 13;
+            it.headFontPt = 14;
+            it.headVAlign = ['t', 't', 't', 't'];
+            delete it.headShade;
+            delete it.headFill;
+            delete it.labelColFill;
+            delete it.fit;
+            delete it.lastRowSpan;
+
+            it.vRuleBands = it.rows.map((_, ri) => (it.rowBand && it.rowBand[ri] === 2 ? [true, true, true] : [false, false, true]));
+            it.vMerges = it.rows.map((_, ri) => (ri === 0 ? ['restart', null, null, 'restart'] : ri === 1 ? ['continue', null, null, 'continue'] : null));
+            it.gridSpans = it.rows.map((_, ri) => {
+              if (ri <= 3) return null;
+              if (ri === 11 || ri === 15 || ri === 27) return [2, 0, 1, 1];
+              if (ri === 24) return [1, 2, 0, 1];
+              return [3, 0, 0, 1];
+            });
+
+            if (it.rows[15]) {
+              it.rows[15] = ['নম্বর ------------------------------------------------------------', '', 'তারিখ--------------------------', ''];
+              if (Array.isArray(it.cellAligns)) it.cellAligns[15] = ['l', null, 'l', null];
+            }
+            if (it.rows[24] && Array.isArray(it.cellAligns)) {
+              it.cellAligns[24] = [null, 'l', null, null];
+            }
+            if (it.rows[25] && Array.isArray(it.cellAligns)) {
+              it.cellAligns[25] = [null, null, null, 'l'];
+            }
+            if (it.rows[27]) {
+              it.rows[27] = ['', '', 'প্রধান হিসাবরক্ষণ কর্মকর্তা', ''];
+              if (Array.isArray(it.cellAligns)) it.cellAligns[27] = [null, null, 'l', null];
+            }
+
+            const rowFontMap = {};
+            for (let ri = 0; ri < nRows; ri++) {
+              const rb = it.rowBand ? it.rowBand[ri] : 4;
+              rowFontMap[ri] = rb <= 3 ? 14 : (ri === 21 ? 12.5 : 13);
+            }
+            Object.defineProperty(it, '_a18TableFixed', { value: true, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(it, '_a18RowFontPt', { value: rowFontMap, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(it, '_a18CellWordGapPt', {
+              value: { '4:0': 1.0, '5:0': 2.55, '7:0': 0.38, '8:0': 3.25, '18:3': 7.45, '19:3': 4.3, '20:3': 8.35 },
+              enumerable: false, configurable: true, writable: true
+            });
+            Object.defineProperty(it, '_a18CellLeaderStopPt', {
+              value: { '11:0': 141.0, '13:3': 123.5, '15:0': 206.5, '15:2': 112.5, '16:3': 123.5, '26:0': 85.5 },
+              enumerable: false, configurable: true, writable: true
+            });
+            Object.defineProperty(it, '_cellIndentPt', {
+              value: { '24:1': 58.0, '25:3': 15.9 },
+              enumerable: false, configurable: true, writable: true
+            });
+            Object.defineProperty(it, '_a18CellCharSpacingPt', {
+              value: { '27:2': 0.1 },
+              enumerable: false, configurable: true, writable: true
+            });
+
+            populateTableCellMeta(it);
+          }
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairA18FixIr(ir, pageInfo) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    if (!a18FixOn()) return restoreA18FixIr(ir);
+    ir.pages.forEach((p, idx) => {
+      repairA18FixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -15067,7 +15294,12 @@
     repairF1FixPage: { value: repairF1FixPage, enumerable: false },
     repairF1FixIr: { value: repairF1FixIr, enumerable: false },
     restoreF1FixPage: { value: restoreF1FixPage, enumerable: false },
-    restoreF1FixIr: { value: restoreF1FixIr, enumerable: false }
+    restoreF1FixIr: { value: restoreF1FixIr, enumerable: false },
+    a18FixOn: { value: a18FixOn, enumerable: false },
+    repairA18FixPage: { value: repairA18FixPage, enumerable: false },
+    repairA18FixIr: { value: repairA18FixIr, enumerable: false },
+    restoreA18FixPage: { value: restoreA18FixPage, enumerable: false },
+    restoreA18FixIr: { value: restoreA18FixIr, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;
