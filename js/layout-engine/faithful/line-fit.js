@@ -536,6 +536,24 @@
     }
     return false;
   }
+  // A13_SCORE_v1: নমুনা a13 ও সমগোত্রীয় প্রত্যয়ন/মঞ্জুরীপত্র ফরমের স্থূল লেআউট ও রেন্ডারিং ত্রুটি সংশোধনের সুইচ (__FZ_ON_A13FIX / FZ_ON=A13FIX)
+  function isA13FixOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A13FIX || (globalThis.window && globalThis.window.__FZ_OFF_A13FIX))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A13FIX)) return false;
+    if (global && Boolean(global.__FZ_OFF_A13FIX || (global.window && global.window.__FZ_OFF_A13FIX))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A13FIX === '1' || process.env.__FZ_OFF_A13FIX === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A13FIX')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A13FIX || (globalThis.window && globalThis.window.__FZ_ON_A13FIX))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A13FIX)) return true;
+    if (global && Boolean(global.__FZ_ON_A13FIX || (global.window && global.window.__FZ_ON_A13FIX))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A13FIX === '1' || process.env.__FZ_ON_A13FIX === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A13FIX')) return true;
+    }
+    return false;
+  }
   function defaultWrapMeasure(s) {
     const str = String(s || '');
     const fills = (str.match(FILL_G) || []).join('');
@@ -1758,6 +1776,23 @@
     return ir;
   }
 
+  function repairA13FixPage(page) {
+    if (!isA13FixOn() || !page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA13FixPage !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA13FixPage === 'function') return IR.repairA13FixPage(page);
+    return page;
+  }
+
+  function repairA13FixIr(ir) {
+    if (!isA13FixOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA13FixIr !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA13FixIr === 'function') return IR.repairA13FixIr(ir);
+    ir.pages.forEach((p) => repairA13FixPage(p));
+    return ir;
+  }
+
   function fit(ir, measure, opts) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
       p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), r2On = isRules2On(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
@@ -1800,9 +1835,11 @@
     if (a16f4On) repairA16Fix4Ir(ir);
     const a14f4On = isA14Fix4On();
     if (a14f4On) repairA14Fix4Ir(ir);
+    const a13fOn = isA13FixOn();
+    if (a13fOn) repairA13FixIr(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -1914,6 +1951,9 @@
     if (a14f4On && ir && Array.isArray(ir.pages)) {
       repairA14Fix4Ir(ir);
     }
+    if (a13fOn && ir && Array.isArray(ir.pages)) {
+      repairA13FixIr(ir);
+    }
     return n;
     } finally {
       _activeFitFont = prevFont;
@@ -1921,7 +1961,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA13FixOn, repairA13FixPage, repairA13FixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

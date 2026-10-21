@@ -16,7 +16,9 @@
   // ১০-২১: A07FIX3 যোগ (a07 ৮২.৭→৮৭.১, a09 ছবি +১.৮, a16 −০.১ নগণ্য)
   // ১০-২১: A14FIX4 যোগ (a14 ৯২.৪→৯৩.৮, a03 +০.২, কেউ কমেনি)
   // ১০-২১: RULES2 (v3) যোগ (a02 ৯০.৭→৯৫.০, a03 রিগ্রেশন সারানো, কেউ কমেনি)
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A07FIX3', 'A14FIX4', 'RULES2'];
+  // ১০-২১: A07FIX3 বাদ — a07-এর টেবিল ভেঙে দেয় (ঘর টুকরো, প্রথম কলাম হারায়, আংশিক দাগ); স্কোর এটা ধরেনি
+  // ১০-২১: A13FIX যোগ (a13 ৯৩.৮→৯৬.৭, a01 +০.৪; শিরোনাম-পিচ নিয়ম heading-এ সীমিত করে a14 −১ সারানো)
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A14FIX4', 'RULES2', 'A13FIX'];
   DEFAULT_ON.forEach((k) => {
     if (!global['__FZ_OFF_' + k]) global['__FZ_ON_' + k] = true;
   });
