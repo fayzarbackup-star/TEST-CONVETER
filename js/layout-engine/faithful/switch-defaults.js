@@ -14,7 +14,8 @@
   // ১০-২১: A16FIX3 যোগ (a16 +১.৫, বাকিরা অপরিবর্তিত)
   // ১০-২১: A14RULES যোগ (a14 ৮১.১→৯২.৪, কেউ কমেনি)
   // ১০-২১: A07FIX3 যোগ (a07 ৮২.৭→৮৭.১, a09 ছবি +১.৮, a16 −০.১ নগণ্য)
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A07FIX3'];
+  // ১০-২১: A14FIX4 যোগ (a14 ৯২.৪→৯৩.৮, a03 +০.২, কেউ কমেনি)
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A07FIX3', 'A14FIX4'];
   DEFAULT_ON.forEach((k) => {
     if (!global['__FZ_OFF_' + k]) global['__FZ_ON_' + k] = true;
   });

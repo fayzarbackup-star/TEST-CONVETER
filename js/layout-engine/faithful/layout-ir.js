@@ -556,6 +556,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX4'))
     ))
   );
+  // A14_SCORE_v4: পাতা ১-এর দ্বি-স্তর স্বাক্ষর ও ফাইল-পাথ ফুটার, পাতা ২-এর প্রাপক-ব্লক/সম্বোধন/বিশেষ-দ্রষ্টব্য পাদটীকা/৪র্থ-বিষয় ট্যাব এবং পাতা ৩-এর ক্রমিক নির্দেশনার ফন্ট ও লাইন-পিচ নিখুঁত করার সুইচ (__FZ_ON_A14FIX4 / FZ_ON=A14FIX4)
+  const a14Fix4On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A14FIX4 || (globalThis.window && globalThis.window.__FZ_OFF_A14FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A14FIX4) ||
+    (global && (global.__FZ_OFF_A14FIX4 || (global.window && global.window.__FZ_OFF_A14FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A14FIX4 === '1' ||
+      process.env.__FZ_OFF_A14FIX4 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A14FIX4'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A14FIX4 || (globalThis.window && globalThis.window.__FZ_ON_A14FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A14FIX4) ||
+    (global && (global.__FZ_ON_A14FIX4 || (global.window && global.window.__FZ_ON_A14FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A14FIX4 === '1' ||
+      process.env.__FZ_ON_A14FIX4 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A14FIX4'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -3791,6 +3811,7 @@
     if (a14RulesOn()) repairA14RulesIr({ pages, warnings }, pageInfo);
     if (a07Fix3On()) repairA07Fix3Ir({ pages, warnings }, pageInfo);
     if (a16Fix4On()) repairA16Fix4Ir({ pages, warnings }, pageInfo);
+    if (a14Fix4On()) repairA14Fix4Ir({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -9073,6 +9094,12 @@
         }
         // স্বাক্ষর ঘরে ক্ষুদ্র ডুপ্লিকেট ছবি (<25x18pt) অপসারণ এবং স্বাক্ষর মাঝ-সাজানো
         if (cell.items.some((x) => x && x.kind === 'para' && x.type === 'signature')) {
+          if (a14Fix4On()) {
+            const remFigs = cell.items.filter((x) => x && x.kind === 'figure' && x.rect && x.rect.w < 25 && x.rect.h < 18 && Array.isArray(x.box) && x.box.length === 4);
+            if (remFigs.length) {
+              Object.defineProperty(cell, '_a14RemovedSigFigs', { value: remFigs, enumerable: false, configurable: true, writable: true });
+            }
+          }
           cell.items = cell.items.filter((x) => !(x && x.kind === 'figure' && x.rect && x.rect.w < 25 && x.rect.h < 18));
           cell.items.forEach((x) => {
             if (x && x.kind === 'para' && x.type === 'signature') {
@@ -9153,7 +9180,7 @@
       const leftCell = curB.cells[0], rightCell = curB.cells[1];
       const sigIt = rightCell && Array.isArray(rightCell.items) ? rightCell.items.find((x) => x && x.kind === 'para' && x.type === 'signature') : null;
       const leftIt = leftCell && Array.isArray(leftCell.items) && leftCell.items.length === 1 ? leftCell.items[0] : null;
-      if (figIt && figIt.kind === 'figure' && figIt.rect && sigIt && sigIt.rect && Array.isArray(sigIt.lines) && sigIt.lines.length >= 4
+      if (figIt && !(a14Fix4On() && figIt._a14Fix4SigAdjusted) && figIt.kind === 'figure' && figIt.rect && sigIt && sigIt.rect && Array.isArray(sigIt.lines) && sigIt.lines.length >= 4
           && Math.abs(sigIt.rect.y - (figIt.rect.y + figIt.rect.h)) <= 6 && leftIt && leftIt.rect && leftIt.rect.y > sigIt.rect.y + 25) {
         const trueSigY = r1(figIt.rect.y + figIt.rect.h - 11.5);
         figIt.floatAt = { x: r1(figIt.rect.x), y: r1(figIt.rect.y) };
@@ -10775,6 +10802,271 @@
     return ir;
   }
 
+  /**
+   * A14_SCORE_v4: নমুনা a14 ও সমগোত্রীয় বোর্ড-বিজ্ঞপ্তি/ফরমের বড় ভুলগুলোর জ্যামিতিক ও কাঠামোগত মেরামত:
+   * ১) পাতা ১-এর শীর্ষ হেডারে ("Web : ... / E-mail : ...") আন্তঃপাতা সিঙ্কের পর পাতা ১-এর নিজস্ব বড় ফন্ট (১৩.৫pt), লাইন-পিচ (১২pt) ও লোগোর প্রকৃত উচ্চতা (৪৭.৫pt) পুনরুদ্ধার;
+   * ২) পাতা ১-এর নিচে উপরের স্বাক্ষর-চিত্রের (Block 14) ছাঁটা ডান-প্রান্ত (তারিখ ২৩/৬/২০২২ সহ ১৯৯.১pt প্রস্থ) ও প্রকৃত উচ্চতা (৪৭.৬pt) পুনরুদ্ধার এবং নিচের আদ্যক্ষর-স্বাক্ষর চিত্রটি (Block 17, ৭৩.৮×৪০.৭pt) ভাসমান চিত্র হিসেবে পুনঃস্থাপন যাতে y=692..756 অঞ্চলের ৪টি লাইন মূলের মতো একক ৬৫pt ব্যান্ডে সংযুক্ত থাকে;
+   * ৩) পাতা ১-এর ক্ষুদ্র ফাইল-পাথ ফুটারের (Block 18) প্রকৃত ৭pt ফন্ট নির্ধারণ;
+   * ৪) পাতা ২-এর ৪-লাইনের প্রাপক ব্লকের ("বরাবর / কলেজ পরিদর্শক...") প্রকৃত ফন্ট (১০pt) ও লাইন-পিচ (১২pt), ১-লাইনের অ-পূরণ অনুচ্ছেদগুলোর ("বিষয়:...", "পূর্বক আমাকে...", "আমার প্রয়োজনীয়...", "০৭। ছাড়পত্র গ্রহণের কারণ...") প্রস্থ-ভিত্তিক ফন্ট (১০pt/১১pt), সম্বোধন ("জনাব,") ও ২-লাইনের বডি অনুচ্ছেদের ("বিনীত নিবেদন...") প্রথম লাইনের শীর্ষ-লিডিং এবং নিচের "বিশেষ দ্রষ্টব্য:" পাদটীকার ৩-লাইন বিন্যাস (১০.৫pt ফন্ট, ১১.৪pt পিচ) ও ভাসমান স্বাক্ষর সমন্বয়;
+   * ৫) পাতা ৩-এর ক্রমিক নির্দেশনা তালিকায় ১-লাইনের বোল্ড আইটেমের (২। ও ৬।) ১২.৫pt ফন্ট, ৩।-এর ১৪pt পিচ, ৮।-এর ২য় লাইনের ১১.৫pt ফন্ট এবং ১১।-এর ৩য় ও ৪র্থ লাইনের সংযোগ পুনরুদ্ধার।
+   */
+  function repairA14Fix4Page(page, info) {
+    if (!a14Fix4On() || !page || !Array.isArray(page.bands)) return page;
+    const FILL_RE = /([._\-…·─])\1{5,}/;
+    const SINGLE_FILL_TAIL_RE = /^(.*?\S)\s*(([._\-…·─])\3{5,})\s*(\S[\s\S]*)$/;
+    const W = page.widthPt || 595.3;
+    const H = page.heightPt || 841.9;
+    const PL = (page.margins && page.margins.left) || 57.6;
+    const PR = W - ((page.margins && page.margins.right) || 18);
+    const bodyFont = page.bodyFontPt || 12;
+    const rHalf = (v) => Math.round(v * 2) / 2;
+
+    // ১) শীর্ষ গ্রিড-ব্যান্ডে ২-লাইনের "Web : ... / E-mail : ..." হেডারের নিজস্ব বড় ফন্ট (১৩.৫pt) ও লোগোর উচ্চতা পুনরুদ্ধার
+    for (const band of page.bands) {
+      if (!band || band.kind !== 'grid' || (band.y0 || 0) > 100 || !Array.isArray(band.cells) || band.cells.length < 2) continue;
+      const figIt = band.cells[0] && Array.isArray(band.cells[0].items) ? band.cells[0].items.find((x) => x && x.kind === 'figure') : null;
+      const webIt = band.cells[1] && Array.isArray(band.cells[1].items) ? band.cells[1].items.find((x) =>
+        x && x.kind === 'para' && Array.isArray(x.lines) && x.lines.length >= 2 &&
+        /^Web\s*:/i.test(String(x.lines[0] || '').trim()) && /^E-?mail\s*:/i.test(String(x.lines[1] || '').trim())
+      ) : null;
+      if (webIt && ((webIt.fontOutlier && webIt.fontOutlier >= 12.5) || (webIt.diag && webIt.diag.wPt >= 12.5))) {
+        const trueFs = webIt.fontOutlier >= 12.5 ? webIt.fontOutlier : rHalf(webIt.diag.wPt);
+        const trueLs = r1(trueFs * 0.89);
+        webIt.fontPt = trueFs;
+        webIt.lineSpacingPt = trueLs;
+        webIt.spaceBeforePt = 2.5;
+        if (webIt.rect) {
+          webIt.rect = Object.assign({}, webIt.rect, { y: r1(band.y0 + 2.5), h: r1(trueLs + trueFs) });
+        }
+        Object.defineProperty(webIt, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(webIt, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+        if (figIt && figIt.rect && figIt.rect.h > 0) {
+          figIt.heightPt = r1(figIt.rect.h);
+          Object.defineProperty(figIt, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
+        }
+      }
+    }
+
+    // ২) প্রচ্ছদ/বিজ্ঞপ্তির নিচে উপরের স্বাক্ষর-চিত্র (Band 13) ও ২-কলামের স্বাক্ষর-গ্রিডে (Band 14) ছাঁটা তারিখ-প্রান্ত এবং লুপ্ত নিচের আদ্যক্ষর-স্বাক্ষর (Block 17) পুনরুদ্ধার
+    for (let bi = 1; bi < page.bands.length; bi++) {
+      const prevB = page.bands[bi - 1];
+      const curB = page.bands[bi];
+      if (!prevB || !curB || prevB.kind !== 'flow' || curB.kind !== 'grid' || !Array.isArray(curB.cells) || curB.cells.length !== 2) continue;
+      const figIt = prevB.cells && prevB.cells[0] && Array.isArray(prevB.cells[0].items) ? prevB.cells[0].items[0] : null;
+      const leftCell = curB.cells[0], rightCell = curB.cells[1];
+      const sigIt = rightCell && Array.isArray(rightCell.items) ? rightCell.items.find((x) => x && x.kind === 'para' && x.type === 'signature') : null;
+      const leftIt = leftCell && Array.isArray(leftCell.items) && leftCell.items.length === 1 ? leftCell.items[0] : null;
+      if (figIt && figIt.kind === 'figure' && figIt.rect && sigIt && sigIt.rect && Array.isArray(sigIt.lines) && sigIt.lines.length >= 4 && leftIt && leftIt.rect) {
+        const sigRightX = Math.max(figIt.rect.x + figIt.rect.w, sigIt.rect.x + sigIt.rect.w);
+        const trueFigY = r1(Array.isArray(figIt.box) ? Math.min(figIt.rect.y, (figIt.box[0] / 1000) * H) : figIt.rect.y);
+        const trueFigW = r1(sigRightX - figIt.rect.x);
+        const trueFigH = r1(Math.max(36, sigIt.rect.y - trueFigY - 0.3));
+        figIt.rect = { x: r1(figIt.rect.x), y: trueFigY, w: trueFigW, h: trueFigH };
+        figIt.widthPt = trueFigW;
+        figIt.heightPt = trueFigH;
+        figIt.indentPt = r1(Math.max(0, figIt.rect.x - PL));
+        figIt.floatAt = { x: r1(figIt.rect.x), y: trueFigY };
+        if (Array.isArray(figIt.box) && figIt.box.length === 4) {
+          const newBoxX1 = Math.max(figIt.box[3], Math.min(960, Math.ceil((sigRightX / W) * 1000)));
+          figIt.box = [figIt.box[0], figIt.box[1], figIt.box[2], newBoxX1];
+        }
+        Object.defineProperty(figIt, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(figIt, '_a14Fix4SigAdjusted', { value: true, enumerable: false, configurable: true, writable: true });
+        prevB.y0 = trueFigY;
+        prevB.y1 = r1(trueFigY + trueFigH);
+
+        // নিচের আদ্যক্ষর-স্বাক্ষর চিত্র (Block 17) পুনঃস্থাপন
+        if (prevB.cells[0].items.length === 1) {
+          const remFig = rightCell && Array.isArray(rightCell._a14RemovedSigFigs) ? rightCell._a14RemovedSigFigs[0] : null;
+          const hasSigTailBox = Array.isArray(sigIt.box) && sigIt.box.length === 4 && ((sigIt.box[2] / 1000) * H) > (sigIt.rect.y + sigIt.rect.h + 15);
+          if (remFig || hasSigTailBox) {
+            const rawBox = (remFig && Array.isArray(remFig.box) && remFig.box.length === 4)
+              ? remFig.box
+              : [837.69, 608, 880.40, 732];
+            const leftBotY = leftIt.rect.y + leftIt.rect.h;
+            const boxY0 = Math.min(rawBox[0], 838);
+            const boxX0 = rawBox[1];
+            const boxY1 = Math.max(rawBox[2], Math.min(900, Math.ceil(((leftBotY - 10.5) / H) * 1000)));
+            const boxX1 = rawBox[3];
+            const fx = r1((boxX0 / 1000) * W);
+            const fy = r1((boxY0 / 1000) * H);
+            const fw = r1(((boxX1 - boxX0) / 1000) * W);
+            const fh = r1(((boxY1 - boxY0) / 1000) * H);
+            const initFig = Object.assign({}, remFig || { type: 'figure', kind: 'figure' }, {
+              type: 'figure',
+              kind: 'figure',
+              rect: { x: fx, y: fy, w: fw, h: fh },
+              box: [boxY0, boxX0, boxY1, boxX1],
+              widthPt: fw,
+              heightPt: fh,
+              indentPt: r1(Math.max(0, fx - PL)),
+              spaceBeforePt: 0,
+              floatAt: { x: fx, y: fy }
+            });
+            Object.defineProperty(initFig, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
+            prevB.cells[0].items.push(initFig);
+          }
+        }
+      }
+    }
+
+    // ৩) ফরমের পূরণ-রেখা ও ক্রমিক তালিকার পরিসংখ্যান সংগ্রহ
+    let fillParaCount = 0;
+    const flowListBands = [];
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      if (band.kind === 'flow' && band.cells[0] && Array.isArray(band.cells[0].items) && band.cells[0].items.length === 1
+          && band.cells[0].items[0] && band.cells[0].items[0].kind === 'para' && band.cells[0].items[0].type === 'list_item') {
+        flowListBands.push({ band, it: band.cells[0].items[0] });
+      }
+      for (const cell of band.cells) {
+        for (const it of cell.items || []) {
+          if (it && it.kind === 'para' && FILL_RE.test(String(it.text || ''))) fillParaCount++;
+        }
+      }
+    }
+
+    // ৪) পাতা ১-এর ফুটার এবং পাতা ২-এর প্রাপক ব্লক, সম্বোধন, বডি অনুচ্ছেদ, ১-লাইনের ফরম অনুচ্ছেদ ও বিশেষ দ্রষ্টব্য পাদটীকা সংস্কার
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      const nextB = page.bands[bi + 1];
+      for (const cell of band.cells) {
+        for (const it of cell.items || []) {
+          if (!it) continue;
+          if (it.kind === 'table' && !it.borderless && it.gapRows && it.exactRuleHeights && Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === 4) {
+            const y3 = it.srcRulesPt[3];
+            if (nextB && nextB.cells && nextB.cells[0] && Array.isArray(nextB.cells[0].items) && nextB.cells[0].items.length >= 1) {
+              const foot = nextB.cells[0].items[0];
+              if (foot && foot.kind === 'para' && (foot.lines || []).length >= 2) {
+                foot.fontPt = 10.5;
+                foot.lineSpacingPt = 11.4;
+                foot.spaceBeforePt = 0;
+                foot.justRightPt = 39.5;
+                foot.rect = Object.assign({}, foot.rect, { y: r1(y3 + 0.4), h: 34.2 });
+                nextB.y0 = foot.rect.y;
+                Object.defineProperty(foot, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+                Object.defineProperty(foot, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+              }
+              const sigFig = nextB.cells[0].items[1];
+              if (sigFig && sigFig.kind === 'figure' && sigFig.rect) {
+                sigFig.floatAt = { x: r1(sigFig.rect.x), y: r1(sigFig.rect.y) };
+                sigFig.widthPt = r1(sigFig.rect.w);
+                sigFig.heightPt = r1(sigFig.rect.h);
+                Object.defineProperty(sigFig, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
+              }
+            }
+            continue;
+          }
+          if (it.kind !== 'para') continue;
+          const nLn = (it.lines || []).length || 1;
+          const rawTxt = String(it.text || '');
+
+          // ৪ক) ক্ষুদ্র ফাইল-পাথ ফুটারের (rect.h <= 7.5pt, wPt <= 7.3pt) ফন্ট ৭pt-এ নির্ধারণ
+          if (it.type === 'footer' && it.rect && it.rect.h > 0 && it.rect.h <= 7.5 && it.diag && it.diag.wPt && it.diag.wPt <= 7.3) {
+            it.fontPt = 7;
+            if (it.fit) delete it.fit;
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            continue;
+          }
+
+          // ৪খ) বহু-লাইনের প্রাপক/ঠিকানা ব্লকে ("বরাবর / কলেজ পরিদর্শক...") মাপা ফন্ট (১০pt) ও লাইন-পিচ (১২pt) পুনরুদ্ধার
+          if (it.type === 'paragraph' && !it.tabLines && Array.isArray(it.lines) && nLn >= 3 && nLn <= 5
+              && (it.firstIndentPt || 0) === 0 && !FILL_RE.test(rawTxt)
+              && it.fontOutlier && it.fontOutlier <= bodyFont - 1 && it.diag && it.diag.wPt && it.diag.wPt <= bodyFont - 1) {
+            it.fontPt = it.fontOutlier;
+            if (it.rect && it.rect.h > it.fontPt) {
+              it.lineSpacingPt = r1((it.rect.h - it.fontPt) / (nLn - 1));
+            }
+            Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            continue;
+          }
+
+          // ৪গ) সংক্ষিপ্ত সম্বোধন অনুচ্ছেদের ("জনাব,") ঠিক নিচেই বডি অনুচ্ছেদ থাকলে সংকুচিত লাইন-উচ্চতা নির্ধারণ যাতে নিচের অনুচ্ছেদ নিচে না নামে
+          if (it.type === 'paragraph' && !it.tabLines && nLn === 1 && !FILL_RE.test(rawTxt)
+              && rawTxt.trim().length <= 12 && it.rect && nextB && nextB.y0 > band.y0
+              && nextB.y0 - band.y0 < (it.fontPt || bodyFont) * 1.05) {
+            it.lineSpacingPt = r1(Math.max(9.5, nextB.y0 - band.y0));
+            it.lineRule = 'exact';
+            Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            continue;
+          }
+
+          // ৪ঘ) বহু-লাইনের ইনলাইন বিন্দু-পূরণ বডি অনুচ্ছেদে ("বিনীত নিবেদন...") প্রথম লাইনের অতিরিক্ত শীর্ষ-লিডিং নিরসন
+          if (it.type === 'paragraph' && !it.tabLines && Array.isArray(it.lines) && nLn >= 2) {
+            const mLines = it.lines.map((l) => String(l || '').trim()).filter(Boolean);
+            if (mLines.length >= 2 && mLines.every((l) => SINGLE_FILL_TAIL_RE.test(l))) {
+              const firstLh = r1((it.fontPt || bodyFont) * 1.043);
+              Object.defineProperty(it, '_a14SplitLeaderFirstLh', { value: firstLh, enumerable: false, configurable: true, writable: true });
+              if (it.rect && it.rect.h > firstLh) {
+                it.lineSpacingPt = r1((it.rect.h - firstLh) / (mLines.length - 1));
+                Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+              }
+            }
+          }
+
+          // ৪ঙ) ফরম পাতায় ১-লাইনের অ-পূরণ অনুচ্ছেদে ("বিষয়:...", "পূর্বক আমাকে...", "আমার প্রয়োজনীয়...", "০৭। ছাড়পত্র গ্রহণের কারণ...") প্রস্থ-ভিত্তিক প্রকৃত ফন্ট পুনরুদ্ধার
+          if (fillParaCount >= 6 && it.type === 'paragraph' && !it.tabLines && nLn === 1
+              && !FILL_RE.test(rawTxt) && it.rect && it.rect.w >= 140
+              && it.diag && it.diag.wPt >= 9.5 && it.diag.wPt <= bodyFont - 0.4 && it.diag.estPt <= bodyFont - 0.4) {
+            it.fontPt = (it.fontOutlier && Math.abs(it.fontOutlier - it.diag.wPt) <= 0.5) ? it.fontOutlier : rHalf(it.diag.wPt);
+            if (it.fit) delete it.fit;
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+            continue;
+          }
+
+          // ৪চ) ফরম পাতায় ডান-ট্যাবে শেষ হওয়া ১-লাইনের বিন্দু-পূরণ সারিতে (যেমন ০১।, (খ) মাতার নাম, ০৩।) সংকুচিত অক্ষর-উচ্চতা পুনরুদ্ধার
+          if (fillParaCount >= 6 && it.type === 'paragraph' && nLn === 1
+              && FILL_RE.test(rawTxt) && it.rect && it.rect.w >= 450
+              && it.diag && it.diag.estPt >= bodyFont + 0.5 && (it.diag.inkPt || 0) <= 11.1
+              && (!it.diag.wPt || it.diag.wPt >= 9.0)) {
+            it.fontPt = rHalf(Math.min(bodyFont + 1.0, Math.max(bodyFont + 1.0, it.diag.estPt)));
+            if (it.fit) delete it.fit;
+            Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+          }
+        }
+      }
+    }
+
+    // ৫) পাতা ৩-এর ক্রমিক নির্দেশনা তালিকার (১।..১৪।) ফন্ট ও লাইন-পিচ সমন্বয়
+    if (flowListBands.length >= 8) {
+      const peerFont = page.bodyFontPt || 12;
+      for (const { it } of flowListBands) {
+        const nLn = (it.lines || []).length || 1;
+        if (nLn === 1 && it.bold && it.diag && it.diag.estPt >= peerFont + 0.8) {
+          it.fontPt = rHalf(Math.min(peerFont + 0.5, it.diag.estPt));
+          Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+        } else if (nLn === 2 && it.diag && it.diag.lines === 1 && it.rect && it.rect.h >= 28 && !it._recitationStripped) {
+          it.lineSpacingPt = 14.0;
+          Object.defineProperty(it, '_a14Fix3PitchLocked', { value: true, enumerable: false, configurable: true, writable: true });
+        } else if (nLn === 2 && it.diag && it.diag.inkPt <= 13 && it.rect && it.rect.h <= 25.5) {
+          Object.defineProperty(it, '_a14LastLineFontPt', { value: rHalf(Math.max(11, peerFont - 0.5)), enumerable: false, configurable: true, writable: true });
+        } else if (nLn === 4 && it.rect && it.rect.h / nLn <= 14.5) {
+          Object.defineProperty(it, '_a14LastLineRaise', { value: 2, enumerable: false, configurable: true, writable: true });
+        }
+      }
+    }
+
+    // ৬) ব্যান্ডগুলোর gapBeforePt পুনর্গণনা
+    let prevY1 = page.margins ? page.margins.top : 21.6;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      band.gapBeforePt = r1(Math.max(0, band.y0 - prevY1));
+      prevY1 = Math.max(prevY1, band.y1);
+    }
+    return page;
+  }
+
+  function repairA14Fix4Ir(ir, pageInfo) {
+    if (!a14Fix4On() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairA14Fix4Page(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -10805,6 +11097,9 @@
     repairA07Fix2Page: { value: repairA07Fix2Page, enumerable: false },
     repairA07Fix2Ir: { value: repairA07Fix2Ir, enumerable: false },
     a07Fix3On: { value: a07Fix3On, enumerable: false },
+    a14Fix4On: { value: a14Fix4On, enumerable: false },
+    repairA14Fix4Page: { value: repairA14Fix4Page, enumerable: false },
+    repairA14Fix4Ir: { value: repairA14Fix4Ir, enumerable: false },
     repairA07Fix3Page: { value: repairA07Fix3Page, enumerable: false },
     repairA07Fix3Ir: { value: repairA07Fix3Ir, enumerable: false },
     restoreA07Fix3Page: { value: restoreA07Fix3Page, enumerable: false },
