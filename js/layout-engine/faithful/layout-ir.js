@@ -876,6 +876,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX6'))
     ))
   );
+  // F1_SCORE_v2: নমুনা f1 ও সমগোত্রীয় ৩-পাতার শিক্ষাবৃত্তি/অনলাইন আবেদন ফরমের হালকা ধূসর পূর্ণ টেবিল-গ্রিড বর্ডার (DFDFDF) ও বাম কলাম/শিরোনাম ছায়া (F2F2F2) পুনরুদ্ধার, পাতা ১ ও ২-এর ১৭-ঘর অঙ্ক-বাক্সের ০.৭৫pt বর্ডার, পাতা ২ সারি ১-এর ২য় লাইন পুনরুদ্ধার, রেডিও-বিকল্পের ১১.৫pt ফন্ট ও অক্ষর-ফাঁক, পাতা ৩ "সংযুক্তি:" ছকের ৯pt শিরোনাম ও বহিঃস্থ ধূসর বর্ডার/ছায়া এবং স্বাক্ষর-গ্রিড প্রান্তিককরণ নিখুঁত করার সুইচ (__FZ_ON_F1FIX2 / FZ_ON=F1FIX2, বন্ধ: __FZ_OFF_F1FIX2 / FZ_OFF=F1FIX2)
+  const f1Fix2On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_F1FIX2 || (globalThis.window && globalThis.window.__FZ_OFF_F1FIX2))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_F1FIX2) ||
+    (global && (global.__FZ_OFF_F1FIX2 || (global.window && global.window.__FZ_OFF_F1FIX2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_F1FIX2 === '1' ||
+      process.env.__FZ_OFF_F1FIX2 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('F1FIX2'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_F1FIX2 || (globalThis.window && globalThis.window.__FZ_ON_F1FIX2))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_F1FIX2) ||
+    (global && (global.__FZ_ON_F1FIX2 || (global.window && global.window.__FZ_ON_F1FIX2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_F1FIX2 === '1' ||
+      process.env.__FZ_ON_F1FIX2 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('F1FIX2'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -4130,6 +4150,7 @@
     if (a18FixOn()) repairA18FixIr({ pages, warnings }, pageInfo);
     if (a08FixOn()) repairA08FixIr({ pages, warnings }, pageInfo);
     if (a16Fix6On()) repairA16Fix6Ir({ pages, warnings }, pageInfo);
+    if (f1Fix2On()) repairF1Fix2Ir({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -15854,6 +15875,412 @@
     return ir;
   }
 
+  /**
+   * F1_SCORE_v2: নমুনা f1 (৩-পাতার অনলাইন শিক্ষাবৃত্তি আবেদন ফরম)-এর দৃশ্যমান ও কাঠামোগত ত্রুটি নিরসন:
+   * ১) পাতা ১ (২৪×২) ও পাতা ২ (১৬×২)-এর মূল ফরম-ছকে মূলের হালকা ধূসর পূর্ণ টেবিল-গ্রিড বর্ডার (top, left, bottom, right, insideH, insideV = 0.5pt #DFDFDF)
+   *    পুনরুদ্ধার এবং rowBand=null করে সব সারির অনুভূমিক বিভাজক রেখা অক্ষত রাখা (কোনো সারি-বর্ডার মুছে ফেলা নয়);
+   * ২) পাতা ১ ও পাতা ২-এর বাম কলাম (k=0, এবং পাতা ১ সারি ০ ও সারি ৯-এর gridSpan=2 সেকশন-শিরোনাম)-এ মূলের হালকা ধূসর পটভূমি ছায়া (#F2F2F2)
+   *    এবং পাতা ১ সারি ০ ও সারি ৯-এ গাঢ় নেভি-নীল (#003366) রঙ স্থাপন (ডান কলাম k=1 সম্পূর্ণ সাদা রাখা);
+   * ৩) পাতা ১ সারি ১৪ ও পাতা ২ সারি ১-এর ১৭-ঘর অঙ্ক-বাক্সে ০.৫pt (w:sz="4") বর্ডারের ডানতম দেয়াল অ্যান্টি-অ্যালিয়াসিংয়ে হালকা হয়ে
+   *    প্রস্থ ১৬pt কমে যাওয়া (dx1=-16) ও পাতা ২-এ উপরের বক্স-রেখা হারানো রোধে বক্স-বর্ডার ০.৭৫pt (w:sz="6") স্থাপন;
+   * ৪) পাতা ২ সারি ১-এর ২-লাইনের লেবেলে ("অভিভাবকের জাতীয় পরিচয়পত্র (এনআইডি) নং\n(ইংরেজি): *") beforePt=10.2 ও linePt=11.0 দিয়ে
+   *    ২য় লাইনকে y=94..103pt-এ স্থাপন (বক্স-রেখা y=101-এর নিচে y=102..103 ব্যান্ড পুনরুদ্ধার);
+   * ৫) পাতা ২ সারি ২-এর ২য় লাইনে ("**মোবাইল নম্বর ১১ সংখ্যার হতে হবে।**") lineCharSpacingPt={1: 0.35} দিয়ে প্রস্থ ১২১pt থেকে ১৩২pt-এ উন্নীতকরণ (dx1=-10 -> 0);
+   * ৬) পাতা ২ সারি ৭-এর ১০টি রেডিও-বিকল্পে ১১.৫pt ফন্ট, charSpacingPt=0.3, radioIndentPt=21, _f1RadioTextTabPt=39.0 এবং beforePt=4.5, linePt=16.0
+   *    দিয়ে প্রস্থ ঘাটতি (dx1=-8 -> 0) ও ক্রমপুঞ্জিত উল্লম্ব সরণ (dy=+3..+5 -> 0) নিরসন; এবং পাতা ১ সারি ৫-এ radioIndentPt=42, _f1RadioTextTabPt=60.5, charSpacingPt=0.25 স্থাপন;
+   * ৭) পাতা ১ সারি ২, ৩, ৪, ৬, ৭, ৮-এ ১০.৫pt ফন্ট ও vAlign="top" (beforePt=6.5, linePt=11.5), সারি ১৭-এ vAlign="top" (beforePt=5.5, linePt=11.5, dh=-3 নিরসন),
+   *    সারি ২৩-এ উচ্চতা ২২.৫pt এবং পাতা ২ সারি ৬ (beforePt=5.5) ও সারি ১৫ (উচ্চতা ৩০.০pt, beforePt=12.0)-এর উল্লম্ব অবস্থান সংশোধন;
+   * ৮) পাতা ৩-এর ৪×১ "সংযুক্তি:" ছকে বহিঃস্থ হালকা ধূসর বর্ডার (#DFDFDF, insideH/insideV=nil), হালকা ধূসর পটভূমি (#F2F2F2), সারি ০-এ ৯pt বোল্ড ফন্ট (dh=+3 -> 0),
+   *    rowHeightsPt=[8.5, 21.0, 21.0, 12.0], bulletIndentPt=40.5, _f1RadioTextTabPt=57.5 এবং নিচের স্বাক্ষর-গ্রিডের অবস্থান সমন্বয় (dy=+4..+2 -> 0, dx0=+2 -> 0)।
+   */
+  function cloneItemForF1Fix2(it) {
+    if (!it || typeof it !== 'object') return it;
+    const cp = JSON.parse(JSON.stringify(it));
+    for (const k of Object.getOwnPropertyNames(it)) {
+      const d = Object.getOwnPropertyDescriptor(it, k);
+      if (d && !d.enumerable && d.value !== undefined) {
+        const val = (d.value && typeof d.value === 'object') ? JSON.parse(JSON.stringify(d.value)) : d.value;
+        Object.defineProperty(cp, k, { value: val, enumerable: false, configurable: true, writable: true });
+      }
+    }
+    return cp;
+  }
+
+  function cloneBandForF1Fix2(b) {
+    if (!b || typeof b !== 'object') return b;
+    return Object.assign({}, b, {
+      cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+        items: Array.isArray(c.items) ? c.items.map(cloneItemForF1Fix2) : c.items
+      })) : b.cells
+    });
+  }
+
+  function snapshotPageBeforeF1Fix2(page) {
+    if (!page || page._preF1Fix2Snap) return;
+    const snap = {
+      bodyFontPt: page.bodyFontPt,
+      margins: page.margins ? Object.assign({}, page.margins) : page.margins,
+      boxes: Array.isArray(page.boxes) ? JSON.parse(JSON.stringify(page.boxes)) : page.boxes,
+      bands: Array.isArray(page.bands) ? page.bands.map(cloneBandForF1Fix2) : page.bands
+    };
+    Object.defineProperty(page, '_preF1Fix2Snap', { value: snap, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreF1Fix2Page(page) {
+    if (!page || !page._preF1Fix2Snap) return page;
+    const snap = page._preF1Fix2Snap;
+    if (snap.bodyFontPt !== undefined) page.bodyFontPt = snap.bodyFontPt;
+    if (snap.margins) page.margins = Object.assign({}, snap.margins);
+    if (Array.isArray(snap.boxes)) page.boxes = JSON.parse(JSON.stringify(snap.boxes));
+    if (Array.isArray(snap.bands)) page.bands = snap.bands.map(cloneBandForF1Fix2);
+    delete page._preF1Fix2Snap;
+    delete page._f1Fix2Repaired;
+    return page;
+  }
+
+  function restoreF1Fix2Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreF1Fix2Page(p));
+    return ir;
+  }
+
+  function repairF1Fix2Page(page, info) {
+    if (!f1Fix2On()) return restoreF1Fix2Page(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    if (page._f1Fix2Repaired) return page;
+
+    let hasNoVRulesBoxTable = false;
+    let hasAttachTable = false;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it || it.kind !== 'table' || !Array.isArray(it.rows)) continue;
+          if (it._f1FormTable || (it.noVRules && it.rows.length >= 12 && it.rows.some((r) => Array.isArray(r) && r.some((c) => typeof c === 'string' && c.startsWith(BOX_MARK))))) {
+            hasNoVRulesBoxTable = true;
+          }
+          if (it._f1AttachTable || (it.borderless && it.rows.length >= 3 && it.rows.length <= 6 && /^সংযুক্তি/.test(String((it.rows[0] && it.rows[0][0]) || '').trim())
+              && it.rows.slice(1).some((r) => Array.isArray(r) && /^\s*○/.test(String(r[0] || ''))))) {
+            hasAttachTable = true;
+          }
+        }
+      }
+    }
+    if (!hasNoVRulesBoxTable && !hasAttachTable) return page;
+
+    // ভিত্তি F1FIX মেরামত এখনও না চলে থাকলে স্ন্যাপশট নেওয়ার আগে তা সম্পন্ন করা
+    if (!page._f1FixRepaired && f1FixOn()) {
+      repairF1FixPage(page, info);
+    }
+
+    snapshotPageBeforeF1Fix2(page);
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === 'object') {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+    setHidden(page, '_f1Fix2Repaired', true);
+
+    const PL = (page.margins && page.margins.left) || 57.6;
+    if (hasNoVRulesBoxTable && page.bodyFontPt >= 18) {
+      page.bodyFontPt = 11;
+    }
+
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it) continue;
+
+          if (it.kind === 'para' && hasNoVRulesBoxTable) {
+            const txt = String(it.text || '').trim();
+            if (it.fs === 's' && it.fontPt >= 13 && it.diag && it.diag.wPt >= 8.5 && it.diag.wPt <= 10.5 && /বি\.?\s*দ্র/.test(txt)) {
+              it.fontPt = 9.5;
+              if (it.fit) delete it.fit;
+              setHidden(it, '_a16LockFit', true);
+            }
+          }
+
+          // পাতা ১ ও পাতা ২-এর মূল ২-কলাম ফরম-ছক পরিমার্জন
+          if (it.kind === 'table' && (it._f1FormTable || (it.noVRules && Array.isArray(it.rows) && it.rows.length >= 12))) {
+            const isP1Tbl = it.rows.length >= 20;
+            const baseRectW = (it.rect && it.rect.w) || (isP1Tbl ? 481.7 : 477.4);
+            const targetW = r1(baseRectW + 5.4);
+            if (!it._f1FormTable || Math.abs((it.widthPt || 0) - targetW) > 0.2) {
+              setHidden(it, '_f1FormTable', true);
+              setHidden(it, '_a16LockFit', true);
+              const col0WPt = isP1Tbl ? 162.65 : 184.01;
+              it.widthPt = targetW;
+              it.colFractions = [col0WPt / targetW, (targetW - col0WPt) / targetW];
+            }
+
+            // ১) পূর্ণ সারি-গ্রিড ও হালকা ধূসর বর্ডার (#DFDFDF) এবং বাম কলাম/শিরোনাম ছায়া (#F2F2F2)
+            it.rowBand = null;
+            setHidden(it, '_f1LightBorders', true);
+            setHidden(it, '_f1LabelColFill', 'F2F2F2');
+            setHidden(it, '_f1BoxBorderSz', 6);
+
+            const curW = it.widthPt || 489.2;
+            const col0WPt = curW * ((Array.isArray(it.colFractions) && it.colFractions[0]) || (isP1Tbl ? 0.3339 : 0.3812));
+            const col1StartPt = PL + (it.indentPt || 0) + col0WPt;
+
+            // ২) রেডিও-বাটন বাম-ইনডেন্ট ও ট্যাব-স্টপ
+            if (isP1Tbl) {
+              it.radioIndentPt = 42;
+              setHidden(it, '_f1RadioTextTabPt', 60.5);
+            } else {
+              it.radioIndentPt = 21;
+              setHidden(it, '_f1RadioTextTabPt', 39.0);
+            }
+
+            // ৩) শেষ সারির উচ্চতা সমন্বয় (পাতা ১ সারি ২৩: ১৭.৩ -> ২২.৫pt; পাতা ২ সারি ১৫: ২৩.৩ -> ৩০.০pt)
+            if (Array.isArray(it.rowHeightsPt) && it.rowHeightsPt.length === it.rows.length) {
+              if (isP1Tbl && it.rowHeightsPt[23] < 20) {
+                it.rowHeightsPt[23] = 22.5;
+                it.heightPt = r1(it.rowHeightsPt.reduce((a, b) => a + b, 0));
+              } else if (!isP1Tbl && it.rowHeightsPt[15] < 26) {
+                it.rowHeightsPt[15] = 30.0;
+                it.heightPt = r1(it.rowHeightsPt.reduce((a, b) => a + b, 0));
+              }
+            }
+
+            const boxSpecs = Object.assign({}, it._f1BoxSpecs || {});
+            const rowMeta = Object.assign({}, it._f1RowMeta || {});
+            let cumY = (it.rect && it.rect.y) || (isP1Tbl ? 155.5 : 44.1);
+            const hrList = (info && Array.isArray(info.hrules)) ? info.hrules : null;
+
+            for (let ri = 0; ri < it.rows.length; ri++) {
+              const r = it.rows[ri];
+              const rowH = (Array.isArray(it.rowHeightsPt) && it.rowHeightsPt[ri]) || 24;
+              const rowY0 = cumY;
+              const rowY1 = cumY + rowH;
+              cumY = rowY1;
+              if (!Array.isArray(r)) continue;
+
+              for (let k = 0; k < r.length; k++) {
+                const c = r[k];
+                if (typeof c === 'string' && c.startsWith(BOX_MARK)) {
+                  const parts = c.slice(BOX_MARK.length).split(BOX_SEP);
+                  if ((parts.length === 12 || parts.length === 18) && parts[parts.length - 1] === '') {
+                    parts.pop();
+                    r[k] = BOX_MARK + parts.join(BOX_SEP);
+                  }
+                  const nBoxes = parts.length;
+                  let bxX = nBoxes === 11 ? 254.3 : (isP1Tbl && ri === 21 ? 246.1 : 247.1);
+                  let bxW = nBoxes === 11 ? 199.1 : (isP1Tbl && ri === 14 ? 294.6 : 290.3);
+                  let bxTopY = rowY0 + 7.0;
+                  let bxH = nBoxes === 11 ? 12.0 : (isP1Tbl && ri === 14 ? 13.5 : 18.5);
+                  if (isP1Tbl) {
+                    if (ri === 1) { bxTopY = 182.75; bxH = 12.0; }
+                    else if (ri === 14) { bxTopY = 530.50; bxH = 13.5; }
+                    else if (ri === 18) { bxTopY = 632.50; bxH = 18.5; }
+                    else if (ri === 21) { bxTopY = 717.75; bxH = 18.5; }
+                  } else {
+                    if (ri === 1) { bxTopY = 82.50; bxH = 18.5; }
+                    else if (ri === 2) { bxTopY = 121.25; bxH = 12.0; }
+                  }
+                  if (hrList && hrList.length >= 2) {
+                    const mHrs = hrList.filter((hr) => hr && hr.w >= 150 && hr.y >= rowY0 - 4 && hr.y <= rowY1 + 4).sort((a, b) => a.y - b.y);
+                    if (mHrs.length >= 2) {
+                      bxX = mHrs[0].x;
+                      bxW = mHrs[0].w;
+                      bxTopY = mHrs[0].y;
+                      bxH = Math.max(10, mHrs[mHrs.length - 1].y - mHrs[0].y);
+                    }
+                  }
+                  const actualRowTop = rowY0 - 0.1;
+                  boxSpecs[ri] = {
+                    nBoxes,
+                    indentPt: Math.max(0, r1(bxX - col1StartPt)),
+                    widthPt: r1(bxW),
+                    heightPt: r1(bxH),
+                    leadPt: Math.max(0, r1(bxTopY - actualRowTop)),
+                    borderSz: 6
+                  };
+                }
+              }
+
+              const c0 = String(r[0] || '').trim();
+              const c1 = String(r[1] || '').trim();
+
+              if (isP1Tbl) {
+                if ((ri === 0 || ri === 9) && c0 && !c1) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: {
+                        fontPt: 11.5,
+                        color: '003366',
+                        charSpacingPt: ri === 0 ? 0.15 : 0.2,
+                        beforePt: ri === 0 ? 0.5 : 5.5,
+                        linePt: ri === 0 ? 11.5 : 12.5
+                      }
+                    }
+                  };
+                } else if (ri === 2 || ri === 3 || ri === 4 || ri === 6 || ri === 7 || ri === 8) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: { 0: { fontPt: 10.5, beforePt: 6.5, linePt: 11.5 } }
+                  };
+                } else if (ri === 5) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { fontPt: 10.5, beforePt: 6.5, linePt: 11.5 },
+                      1: { beforePt: 5.0, linePt: 11.9, charSpacingPt: 0.25 }
+                    }
+                  };
+                } else if (ri === 15 && /DD\/MM\/YYYY/i.test(c1)) {
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cells: {
+                      1: { align: 'l', indentPt: 29, color: 'C8C8C8' }
+                    }
+                  };
+                } else if (ri === 17) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: { 0: { beforePt: 5.5, linePt: 11.5 } }
+                  };
+                } else if (boxSpecs[ri]) {
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cellVAlign: { 0: 'center', 1: 'top' }
+                  };
+                }
+              } else {
+                if (ri === 0) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: { 0: { beforePt: 0, linePt: 10.8 } }
+                  };
+                } else if (ri === 1) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cellVAlign: { 0: 'top', 1: 'top' },
+                    cells: { 0: { beforePt: 10.2, linePt: 11.0 } }
+                  };
+                } else if (ri === 2) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cellVAlign: { 0: 'top', 1: 'top' },
+                    cells: { 0: { beforePt: 6.2, linePt: 11.5, lineCharSpacingPt: { 1: 0.35 } } }
+                  };
+                } else if (ri === 3 && /abc@gmail\.com/i.test(c1)) {
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cells: {
+                      1: { align: 'l', indentPt: 3.0, charSpacingPt: 1.45 }
+                    }
+                  };
+                } else if (ri === 4) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 13.0, linePt: 15.0 },
+                      1: { beforePt: 13.0, linePt: 15.0 }
+                    }
+                  };
+                } else if (ri === 5) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 7.0, linePt: 14.5 },
+                      1: { beforePt: 7.0, linePt: 14.5 }
+                    }
+                  };
+                } else if (ri === 6) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 5.5, linePt: 14.5 },
+                      1: { beforePt: 5.5, linePt: 14.5 }
+                    }
+                  };
+                } else if (ri === 7) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 4.5, linePt: 16.0 },
+                      1: { fontPt: 11.5, charSpacingPt: 0.3, beforePt: 4.5, linePt: 16.0 }
+                    }
+                  };
+                } else if (ri === 12) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 8.5, linePt: 13.0 }
+                    }
+                  };
+                } else if (ri === 15) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 12.0, linePt: 11.5 }
+                    }
+                  };
+                }
+              }
+            }
+            setHidden(it, '_f1BoxSpecs', boxSpecs);
+            setHidden(it, '_f1RowMeta', rowMeta);
+            if (tblMergeOn() || it.cells || it.cellMeta || it.colWidthsPt) {
+              populateTableCellMeta(it);
+            }
+          }
+
+          // পাতা ৩-এর ৪×১ "সংযুক্তি:" ছক পরিমার্জন
+          if (it.kind === 'table' && (it._f1AttachTable || (it.borderless && hasAttachTable && Array.isArray(it.rows) && it.rows.length === 4))) {
+            setHidden(it, '_f1AttachTable', true);
+            setHidden(it, '_a16LockFit', true);
+            setHidden(it, '_f1BoxOuterBorders', true);
+            setHidden(it, '_f1LabelColFill', 'F2F2F2');
+            it.rows = it.rows.map((r) => [String((Array.isArray(r) ? r[0] : r) || '').trim()]);
+            it.colAligns = ['l'];
+            it.colFractions = null;
+            it.widthPt = 483.2;
+            it.bulletIndentPt = 40.5;
+            setHidden(it, '_f1RadioTextTabPt', 57.5);
+            it.rowHeightsPt = [8.5, 21.0, 21.0, 12.0];
+            it.heightPt = 62.5;
+            setHidden(it, '_f1RowMeta', {
+              0: { vAlign: 'top', cells: { 0: { fontPt: 9, bold: true, beforePt: 0, linePt: 9.0 } } },
+              1: { vAlign: 'top', cells: { 0: { fontPt: 12, charSpacingPt: 0.45, beforePt: 0, linePt: 11.5 } } },
+              2: { vAlign: 'top', cells: { 0: { fontPt: 12, beforePt: 0, linePt: 13.5 } } },
+              3: { vAlign: 'top', cells: { 0: { fontPt: 12, beforePt: 0, linePt: 12.0 } } }
+            });
+          }
+        }
+      }
+
+      // পাতা ৩-এর নিচের স্বাক্ষর গ্রিড-ব্যান্ডগুলোর উল্লম্ব ও অনুভূমিক অবস্থান সমন্বয়
+      if (hasAttachTable && band.kind === 'grid' && Array.isArray(band.cells) && band.cells.length === 2) {
+        if (bi === 1 && band.gapBeforePt > 50) {
+          band.gapBeforePt = r1(band.gapBeforePt - 1.5);
+          band.y0 = r1(band.y0 - 1.5);
+          band.y1 = r1(band.y1 - 1.5);
+        }
+        const leftIt = band.cells[0] && band.cells[0].items && band.cells[0].items[0];
+        if (leftIt && leftIt.kind === 'para' && leftIt.centerShiftPt != null) {
+          leftIt.centerShiftPt = r1(leftIt.centerShiftPt - 2.0);
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairF1Fix2Ir(ir, pageInfo) {
+    if (!f1Fix2On()) return restoreF1Fix2Ir(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairF1Fix2Page(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -16005,7 +16432,12 @@
     repairA16Fix6Page: { value: repairA16Fix6Page, enumerable: false },
     repairA16Fix6Ir: { value: repairA16Fix6Ir, enumerable: false },
     restoreA16Fix6Page: { value: restoreA16Fix6Page, enumerable: false },
-    restoreA16Fix6Ir: { value: restoreA16Fix6Ir, enumerable: false }
+    restoreA16Fix6Ir: { value: restoreA16Fix6Ir, enumerable: false },
+    f1Fix2On: { value: f1Fix2On, enumerable: false },
+    repairF1Fix2Page: { value: repairF1Fix2Page, enumerable: false },
+    repairF1Fix2Ir: { value: repairF1Fix2Ir, enumerable: false },
+    restoreF1Fix2Page: { value: restoreF1Fix2Page, enumerable: false },
+    restoreF1Fix2Ir: { value: restoreF1Fix2Ir, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;

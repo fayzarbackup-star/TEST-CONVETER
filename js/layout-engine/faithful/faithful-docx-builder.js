@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || f1Fix2On() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_f1LightBorders', '_f1BoxOuterBorders', '_f1BoxBorderSz', '_f1LabelColFill', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -877,6 +877,26 @@
       process.env.__FZ_ON_A16FIX6 === '1' ||
       process.env.__FZ_ON_A16FIX6 === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX6'))
+    ))
+  );
+  // F1_SCORE_v2: নমুনা f1 ও সমগোত্রীয় ৩-পাতার শিক্ষাবৃত্তি/অনলাইন আবেদন ফরমের হালকা ধূসর পূর্ণ টেবিল-গ্রিড বর্ডার (DFDFDF) ও বাম কলাম/শিরোনাম ছায়া (F2F2F2) পুনরুদ্ধার, পাতা ১ ও ২-এর ১৭-ঘর অঙ্ক-বাক্সের ০.৭৫pt বর্ডার, পাতা ২ সারি ১-এর ২য় লাইন পুনরুদ্ধার, রেডিও-বিকল্পের ১১.৫pt ফন্ট ও অক্ষর-ফাঁক, পাতা ৩ "সংযুক্তি:" ছকের ৯pt শিরোনাম ও বহিঃস্থ ধূসর বর্ডার/ছায়া এবং স্বাক্ষর-গ্রিড প্রান্তিককরণ নিখুঁত করার সুইচ (__FZ_ON_F1FIX2 / FZ_ON=F1FIX2, বন্ধ: __FZ_OFF_F1FIX2 / FZ_OFF=F1FIX2)
+  const f1Fix2On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_F1FIX2 || (globalThis.window && globalThis.window.__FZ_OFF_F1FIX2))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_F1FIX2) ||
+    (global && (global.__FZ_OFF_F1FIX2 || (global.window && global.window.__FZ_OFF_F1FIX2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_F1FIX2 === '1' ||
+      process.env.__FZ_OFF_F1FIX2 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('F1FIX2'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_F1FIX2 || (globalThis.window && globalThis.window.__FZ_ON_F1FIX2))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_F1FIX2) ||
+    (global && (global.__FZ_ON_F1FIX2 || (global.window && global.window.__FZ_ON_F1FIX2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_F1FIX2 === '1' ||
+      process.env.__FZ_ON_F1FIX2 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('F1FIX2'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -2382,6 +2402,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix6Page === 'function') IR.repairA16Fix6Page(page);
     }
+    if ((f1Fix2On() || (page && page._preF1Fix2Snap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairF1Fix2Page === 'function') IR.repairF1Fix2Page(page);
+    }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
     let cur = page.margins.top;
@@ -3592,7 +3617,7 @@
       if (formKitOn() && typeof txt === 'string' && /^\(\s*[•*]?\s*\)\s*\S/m.test(txt.trim())) {
         txt = txt.split('\n').map((ln) => ln.replace(/^(\s*)\(\s*\)\s*/, '$1○ ').replace(/^(\s*)\(\s*[•*]\s*\)\s*/, '$1● ')).join('\n');
       }
-      const isF1Tbl = f1FixOn() && !!(item._f1FormTable || item._f1AttachTable);
+      const isF1Tbl = (f1FixOn() || f1Fix2On()) && !!(item._f1FormTable || item._f1AttachTable);
       const f1Rm = isF1Tbl && item._f1RowMeta ? item._f1RowMeta[ri] : null;
       const f1Cm = f1Rm && f1Rm.cells ? f1Rm.cells[k] : null;
       const isRadioOrBox = typeof txt === 'string' && (txt.startsWith(BOX_MARK) || (!globalThis.__FZ_OFF_BOXPOS && /^[○●◯◉□☐☑■✓✔•◦]/m.test(txt.trim())));
@@ -3758,18 +3783,21 @@
         const tblLineXml = f1LineXml != null ? f1LineXml : ((tableColOn() && item.lineSpacingPt) ? ` w:line="${tw(item.lineSpacingPt)}" w:lineRule="exact"` : (!t && formFixOn ? digitBoxLineXml : radLineXml));
         const befTw = (f1Cm && f1Cm.beforePt != null) ? (!li ? tw(f1Cm.beforePt) : 0) : (sh > 0 && !li ? tw(sh) : 0);
         const aftTw = (f1Cm && f1Cm.beforePt != null) ? 0 : (sh < 0 && li === nL - 1 ? tw(-sh) : 0);
+        const lineCellItem = (f1Fix2On() && f1Cm && f1Cm.lineCharSpacingPt && f1Cm.lineCharSpacingPt[li] != null)
+          ? Object.assign({}, rowCellItem, { charSpacingPt: f1Cm.lineCharSpacingPt[li] })
+          : rowCellItem;
         if (isF1Tbl && item._f1RadioTextTabPt > 0 && t && /^\s*○/.test(String(t))) {
           const restTxt = String(t).replace(/^\s*○\s*/, '');
           const tabPosTw = tw(item._f1RadioTextTabPt);
           const tabXml = `<w:tabs><w:tab w:val="left" w:pos="${tabPosTw}"/></w:tabs>`;
-          const circleIt = Object.assign({}, rowCellItem, { fontPt: 12, bold: true, charSpacingPt: 0 });
-          const runs = runsFor('**○**', circleIt) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + (restTxt ? runsFor(restTxt, rowCellItem) : '');
+          const circleIt = Object.assign({}, lineCellItem, { fontPt: 12, bold: true, charSpacingPt: 0 });
+          const runs = runsFor('**○**', circleIt) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + (restTxt ? runsFor(restTxt, lineCellItem) : '');
           return `<w:p><w:pPr>${pShd}${tabXml}<w:spacing w:before="${befTw}" w:after="${aftTw}"${tblLineXml}/>${radIndXml}<w:jc w:val="left"/><w:rPr><w:sz w:val="${pMarkSz}"/><w:szCs w:val="${pMarkSz}"/></w:rPr></w:pPr>${runs}</w:p>`;
         }
         const a18WordGapPt = a18FixOn() && item._a18CellWordGapPt && item._a18CellWordGapPt[ri + ':' + k] > 0 ? item._a18CellWordGapPt[ri + ':' + k] : 0;
         const bodyRunsXml = t ? (a18WordGapPt > 0
-          ? String(t).split(/\s+/).filter(Boolean).map((w) => runsFor(w, rowCellItem)).join(`<w:r><w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/><w:spacing w:val="${tw(a18WordGapPt)}"/><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r>`)
-          : runsFor(t, rowCellItem)) : "";
+          ? String(t).split(/\s+/).filter(Boolean).map((w) => runsFor(w, lineCellItem)).join(`<w:r><w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/><w:spacing w:val="${tw(a18WordGapPt)}"/><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r>`)
+          : runsFor(t, lineCellItem)) : "";
         return `<w:p><w:pPr>${pShd}<w:spacing w:before="${befTw}" w:after="${aftTw}"${tblLineXml}/>${radIndXml}<w:jc w:val="${jc}"/><w:rPr><w:sz w:val="${pMarkSz}"/><w:szCs w:val="${pMarkSz}"/></w:rPr></w:pPr>${bodyRunsXml}</w:p>`;
       };
       // f1/B9: সংখ্যা-বাক্সের সারি (layout-ir foldBoxRows) ⇒ ঘরের ভেতরে ছোট টেবিল, প্রতি অঙ্কে একটি বাক্স
@@ -3793,10 +3821,14 @@
     const bdrSz = (a12FixOn() && item._a12BorderSz) ? item._a12BorderSz : 6;
     const B = item.borderless ? NILB :`<w:tblBorders><w:top w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/><w:left w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/><w:bottom w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/><w:right w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/><w:insideH w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/><w:insideV w:val="single" w:sz="${bdrSz}" w:space="0" w:color="000000"/></w:tblBorders>`;
     // f1: মাপে খাড়া দাগ নেই (layout-ir noVRules) ⇒ বাঁ/ডান/ভেতরের খাড়া দাগ বাদ; B2: অনুভূমিক (insideH) ও খাড়া (insideV) আলাদা নিয়ন্ত্রণ
-    let BV = !item.borderless && item.noVRules && !(tableGridOn() && item.keepHRules)
-      ? (globalThis.__FZ_ON_NOVGRAY ? B.replace(/w:sz="6"/g, 'w:sz="4"').replace(/w:color="000000"/g, 'w:color="DFDFDF"') : B.replace(/<w:(left|right|insideV|top|bottom|insideH) [^>]*\/>/g, '<w:$1 w:val="nil"/>'))
-      : B;
-    if ((tableGridOn() || a10FixOn()) && !item.borderless) {
+    const f1LightBdr = f1Fix2On() && !!item._f1LightBorders;
+    const f1OuterBoxBdr = f1Fix2On() && !!item._f1BoxOuterBorders;
+    let BV = f1OuterBoxBdr
+      ? '<w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="DFDFDF"/><w:left w:val="single" w:sz="4" w:space="0" w:color="DFDFDF"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="DFDFDF"/><w:right w:val="single" w:sz="4" w:space="0" w:color="DFDFDF"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>'
+      : (!item.borderless && item.noVRules && !(tableGridOn() && item.keepHRules)
+        ? ((globalThis.__FZ_ON_NOVGRAY || f1LightBdr) ? B.replace(/w:sz="6"/g, 'w:sz="4"').replace(/w:color="000000"/g, 'w:color="DFDFDF"') : B.replace(/<w:(left|right|insideV|top|bottom|insideH) [^>]*\/>/g, '<w:$1 w:val="nil"/>'))
+        : B);
+    if ((tableGridOn() || a10FixOn()) && !item.borderless && !f1LightBdr) {
       if (item.noInsideH || item.noHRules || item.insideH === false) {
         BV = BV.replace(/<w:insideH [^>]*\/>/, '<w:insideH w:val="nil"/>');
       }
@@ -3873,7 +3905,7 @@
     const cw = (() => {
       if (!fr) return () => colW;
       const ws = Array.from({ length: nCols }, (_, k) => Math.round(colW * nCols * fr[k]));
-      if ((a12FixOn() || a03Fix3On() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a18FixOn()) && nCols >= 2) {
+      if ((a12FixOn() || f1Fix2On() || a03Fix3On() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a18FixOn()) && nCols >= 2) {
         const diff = colW * nCols - ws.reduce((a, b) => a + b, 0);
         if (diff !== 0 && ws[nCols - 1] + diff > 0) ws[nCols - 1] += diff;
       }
@@ -3993,7 +4025,8 @@
         const a07ForceTop = ((a07Fix3On() || a07Fix5On() || a07Fix6On() || a08FixOn()) && ((item._a07RowVAlignTop && ri > 0) || (item._a07RowVAlignTopRows && item._a07RowVAlignTopRows[ri]))) || (a03Fix3On() && a03P2VExtra > 0);
         const va = hv ? (hv === 't' ? 'top' : 'center') : (a18FixOn() && item._a18TableFixed) ? 'center' : a07ForceTop ? 'top' : !globalThis.__FZ_OFF_VTOP && !rowHasBox && !item.noVRules && lns[k] && (sparseSerialTop || (!item.headShade && (isSerRow || hasBlankCell) && tallRow) || (maxLn >= 2 && (lns[k] < maxLn || ((maxLn >= 3 || tallRow) && !globalThis.__FZ_OFF_VTOP4)))) ? 'top' : 'center';
         // a02 + B9: শিরোনাম-সারি, লেবেল-কলাম বা ঘরের পটভূমি-রং (headShade / fill / cellFills)
-        const tcFill = formKitOn() ? resolveCellFill(ri, k, r) : (ri === 0 && item.headShade ? item.headShade : null);
+        const f1ColFill = (f1Fix2On() && item._f1LabelColFill && k === 0) ? item._f1LabelColFill : null;
+        const tcFill = f1ColFill || (formKitOn() ? resolveCellFill(ri, k, r) : (ri === 0 && item.headShade ? item.headShade : null));
         const shd = tcFill ? `<w:shd w:val="clear" w:color="auto" w:fill="${tcFill}"/>` : '';
         // [Rule FB5: FZ_OFF=FORMFIX / FZ_OFF=FB5] bandBorders নিজেই উল্লম্ব-মার্জ করা ঘরের মাঝের বর্ডার nil করে দেয়; তাই <w:vMerge/> ট্যাগ বাদ রেখে প্রতিটি সারি এডিট-যোগ্য রাখা এবং অঙ্ক-বাক্সের সরু ঘরে (<=24pt) tcMar শূন্য রাখা।
         const cmVm = tblMergeOn() && item._cellMeta && item._cellMeta[ri] && item._cellMeta[ri][k] ? (item._cellMeta[ri][k].vmerge || item._cellMeta[ri][k].vMerge) : null;
@@ -4003,10 +4036,10 @@
         const hasSubTblCell = a16FixOn() && typeof r[k] === 'string' && /<table\b/i.test(r[k]);
         const cellRot = cellRotOf(item, ri, k);
         const rotXml = cellRot ? `<w:textDirection w:val="${cellRot}"/>` : '';
-        const f1Va = (f1FixOn() && (item._f1FormTable || item._f1AttachTable)) ? ((item._f1RowMeta && item._f1RowMeta[ri] && ((item._f1RowMeta[ri].cellVAlign && item._f1RowMeta[ri].cellVAlign[k]) || item._f1RowMeta[ri].vAlign)) || (item._f1AttachTable ? 'top' : null)) : null;
+        const f1Va = ((f1FixOn() || f1Fix2On()) && (item._f1FormTable || item._f1AttachTable)) ? ((item._f1RowMeta && item._f1RowMeta[ri] && ((item._f1RowMeta[ri].cellVAlign && item._f1RowMeta[ri].cellVAlign[k]) || item._f1RowMeta[ri].vAlign)) || (item._f1AttachTable ? 'top' : null)) : null;
         const effVa = cellRot ? 'center' : (f1Va ? f1Va : (a16Fix4On() && ri > 0 && vm === 'restart' && !item.headShade ? 'top' : va));
         const isA02OptCell = a02FixOn() && item._a02FamilyTable && ri > 0 && k === 2 && (((item.cellAligns && item.cellAligns[ri] && item.cellAligns[ri][k]) || (item.colAligns && item.colAligns[k])) === 'l');
-        const isF1NoRightMar = f1FixOn() && item._f1FormTable && ((item._f1BoxSpecs && item._f1BoxSpecs[ri] && k === 1) || (k === 0 && String(r[k] || '').includes('\n')));
+        const isF1NoRightMar = (f1FixOn() || f1Fix2On()) && item._f1FormTable && ((item._f1BoxSpecs && item._f1BoxSpecs[ri] && k === 1) || (k === 0 && String(r[k] || '').includes('\n')));
         const tcMarXml = (isOpenSerTc0 || hasSubTblCell) ? '<w:tcMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tcMar>' : isF1NoRightMar ? '<w:tcMar><w:right w:w="0" w:type="dxa"/></w:tcMar>' : (isA02OptCell ?'<w:tcMar><w:left w:w="96" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tcMar>' : ((a07Fix6On() && item._a07CompactHdrMar && ri === 0 && k >= 1) ? '<w:tcMar><w:left w:w="28" w:type="dxa"/><w:right w:w="28" w:type="dxa"/></w:tcMar>' : (!isDigitBoxRf && !isCompactBoxA13 && (item.gridFirst || (formFixTbl && !globalThis.__FZ_OFF_FB5 && w <= tw(24)) || ((ruleFixOn() || (rules2On() && (item.headShade || item._digitBoxStrip || item.cellPaddingPt != null)) || (tblMergeOn() && item.cellPaddingPt != null)) && w < tw(70))) && !item.borderless && w < tw(70) ? `<w:tcMar><w:left w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/><w:right w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/></w:tcMar>` : '')));
         return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${sp[k] > 1 ? `<w:gridSpan w:val="${sp[k]}"/>` : ''}${vmXml}${bandBorders(ri, k, sp[k]) || ruleBorder(ri, k, sp[k])}${shd}${tcMarXml}${rotXml}<w:vAlign w:val="${effVa}"/></w:tcPr>${cellBody(vm === 'continue' ? '' : r[k], ri, k, w)}</w:tc>`;
       }).join('');
@@ -4023,15 +4056,16 @@
     return tblLeadSpacer +
       // ২০২৬-১০-১৩: Word বাঁ-বর্ডার বসায় tblInd − ঘরের-ফাঁকে (মাপা: a08/a02 টেবিল ঠিক ২×৫.৪pt বাঁয়ে ছিল) ⇒ সীমানাওয়ালা: বর্ডার মাপা
       // বাঁ-প্রান্তে (+ফাঁক); সীমানাহীন: লেখা মাপা বাঁ-প্রান্তে (tblInd = ইনডেন্ট)
-      `<w:tbl><w:tblPr><w:tblW w:w="${(a07Fix5On() || a07Fix6On() || f1FixOn() || a18FixOn()) ? Array.from({ length: nCols }, (_, k) => cw(k)).reduce((a, b) => a + b, 0) : colW * nCols}" w:type="dxa"/><w:tblInd w:w="${Math.round((item.indentPt || 0) * 20 + ((item.borderless && !(a03Fix3On() && Array.isArray(item.splitBoxCols) && item.splitBoxCols.length === nCols)) || (formFixTbl && item.noVRules) ? 0 : (item.gridFirst && cw(0) < tw(70) ? (cw(0) < tw(25) ? 0 : 28) : cellMarTw)))}" w:type="dxa"/>${BV}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="${cellMarTw}" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="${cellMarTw}" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${Array.from({ length: nCols }, (_, k) => `<w:gridCol w:w="${cw(k)}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>${tblRuleBelowXml}`;
+      `<w:tbl><w:tblPr><w:tblW w:w="${(a07Fix5On() || a07Fix6On() || f1FixOn() || f1Fix2On() || a18FixOn()) ? Array.from({ length: nCols }, (_, k) => cw(k)).reduce((a, b) => a + b, 0) : colW * nCols}" w:type="dxa"/><w:tblInd w:w="${Math.round((item.indentPt || 0) * 20 + ((item.borderless && !(a03Fix3On() && Array.isArray(item.splitBoxCols) && item.splitBoxCols.length === nCols)) || (formFixTbl && item.noVRules) ? 0 : (item.gridFirst && cw(0) < tw(70) ? (cw(0) < tw(25) ? 0 : 28) : cellMarTw)))}" w:type="dxa"/>${BV}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="${cellMarTw}" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="${cellMarTw}" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${Array.from({ length: nCols }, (_, k) => `<w:gridCol w:w="${cw(k)}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>${tblRuleBelowXml}`;
   }
 
   /** সংখ্যা-বাক্সের সারি: n ঘরের ছোট সীমানাওয়ালা টেবিল (বাক্স ≤১৮pt), শেষে খালি অনুচ্ছেদ (ঘর অনুচ্ছেদে শেষ হতেই হবে) */
   function boxRowXml(cells, availPt, f1Spec) {
     const n = Math.max(1, cells.length);
-    if (f1FixOn() && f1Spec) {
+    if ((f1FixOn() || f1Fix2On()) && f1Spec) {
       const bw = Math.max(160, Math.round(tw(f1Spec.widthPt || 200) / n));
-      const BB = '<w:tblBorders>' + ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('') + '</w:tblBorders>';
+      const boxBdrSz = (f1Fix2On() && f1Spec.borderSz) ? f1Spec.borderSz : 4;
+      const BB = '<w:tblBorders>' + ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="${boxBdrSz}" w:space="0" w:color="000000"/>`).join('') + '</w:tblBorders>';
       const hTw = tw(f1Spec.heightPt || 14);
       const pLineTw = Math.max(160, hTw - 20);
       const indXml = f1Spec.indentPt > 0 ? `<w:tblInd w:w="${tw(f1Spec.indentPt)}" w:type="dxa"/>` : '';
@@ -4554,6 +4588,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA16Fix6Ir === 'function') IR.repairA16Fix6Ir(ir);
     }
+    if ((f1Fix2On() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preF1Fix2Snap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairF1Fix2Ir === 'function') IR.repairF1Fix2Ir(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4652,7 +4691,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || f1Fix2On() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4744,6 +4783,7 @@
     a06FixOn: { value: a06FixOn, enumerable: false },
     a03Fix4On: { value: a03Fix4On, enumerable: false },
     f1FixOn: { value: f1FixOn, enumerable: false },
+    f1Fix2On: { value: f1Fix2On, enumerable: false },
     widthOn: { value: widthOn, enumerable: false },
     a14Fix3On: { value: a14Fix3On, enumerable: false },
     fontFixOn: { value: fontFixOn, enumerable: false },
