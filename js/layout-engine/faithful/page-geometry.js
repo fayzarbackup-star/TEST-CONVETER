@@ -20,6 +20,26 @@
   const SPECK_OFF = !!global.__FZ_OFF_SPECK;   // নির্ণয়-সুইচ (ছিটে-বাদ বন্ধ করতে)
   // B2 টেবিল রেখা-জাল সুইচ: শুধু globalThis.__FZ_ON_TABLEGRID সত্য হলে সক্রিয়
   const tableGridOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_TABLEGRID : global.__FZ_ON_TABLEGRID);
+  // A02_RULES_v2: রেখা/টেবিল-দাগ, ফ্রেম ও ছোট বাক্স শনাক্তকরণ সুইচ (__FZ_ON_RULES2 / FZ_ON=RULES2, বন্ধ: __FZ_OFF_RULES2)
+  const rules2On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_RULES2 || (globalThis.window && globalThis.window.__FZ_OFF_RULES2))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_RULES2) ||
+    (global && (global.__FZ_OFF_RULES2 || (global.window && global.window.__FZ_OFF_RULES2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_RULES2 === '1' ||
+      process.env.__FZ_OFF_RULES2 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((x) => x.trim()).includes('RULES2'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_RULES2 || (globalThis.window && globalThis.window.__FZ_ON_RULES2))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_RULES2) ||
+    (global && (global.__FZ_ON_RULES2 || (global.window && global.window.__FZ_ON_RULES2))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_RULES2 === '1' ||
+      process.env.__FZ_ON_RULES2 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((x) => x.trim()).includes('RULES2'))
+    ))
+  );
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const median = (a) => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; };
@@ -1086,7 +1106,7 @@
   /** Part-17.8 + B2: পাতার বা ছকের খাড়া বিভাজক-রেখা — কলাম-স্ক্যান (আড়াআড়ি দাগে জোড়া থাকলেও শনাক্ত) ও সরু খণ্ড */
   function verticalRules(m, opts) {
     const o = opts || {}, ppt = o.pxPerPt || 1;
-    if (!tableGridOn()) {
+    if (!tableGridOn() && !rules2On()) {
       return (o.comps || components(m, null, 6))
         .filter((c) => !isFrameComp(m, c) && (c.x1 - c.x0 + 1) <= Math.max(4, ppt * 2.5) && (c.y1 - c.y0 + 1) >= 25 * ppt)
         .map((c) => ({ x: (c.x0 + c.x1) / 2 / ppt, y: c.y0 / ppt, h: (c.y1 - c.y0 + 1) / ppt }));
@@ -1148,7 +1168,7 @@
 
   /** B2: পাশাপাশি ছোট ছোট বাক্স শনাক্তকরণ (যেমন "বড় সংখ্যা গোল কর" — পূর্ণ-প্রস্থ রেখা নয়, প্রতিটি ছোট বাক্সের নিজস্ব সীমা) */
   function detectSmallBoxes(m, rect, opts) {
-    if (!tableGridOn()) return [];
+    if (!tableGridOn() && !rules2On()) return [];
     const o = opts || {}, ppt = o.pxPerPt || 1;
     const gm = o.gridMask || (m && m.mask ? m : (m && m.data ? inkMask(m) : null));
     if (!gm || !gm.mask) return [];
@@ -1286,7 +1306,9 @@
         const need = Math.min(L.on / (L.y1 - L.y0 + 1), R.on / (R.y1 - R.y0 + 1)) < 0.85 ? 0.4 : 0.6;
         if (rowCover(y0, L.x1 + 1, R.x0 - 1) < need || rowCover(y1, L.x1 + 1, R.x0 - 1) < need) continue;
         if (R.x1 - L.x0 >= W * 0.9 && y1 - y0 >= H * 0.9) continue;
-        out.push({ x0: L.x0 / ppt, y0: y0 / ppt, x1: (R.x1 + 1) / ppt, y1: (y1 + 1) / ppt, t: (L.x1 - L.x0 + R.x1 - R.x0 + 2) / 2 / ppt, dashed: Math.max(L.on / (L.y1 - L.y0 + 1), R.on / (R.y1 - R.y0 + 1)) < 0.85 });   // দুই পাশই ভাঙা হলে তবে ড্যাশ
+        const isDashedBox = Math.max(L.on / (L.y1 - L.y0 + 1), R.on / (R.y1 - R.y0 + 1)) < 0.85;
+        if (rules2On() && isDashedBox && (y1 - y0) / ppt <= 26 && (R.x1 - L.x0) / ppt < 120) continue;
+        out.push({ x0: L.x0 / ppt, y0: y0 / ppt, x1: (R.x1 + 1) / ppt, y1: (y1 + 1) / ppt, t: (L.x1 - L.x0 + R.x1 - R.x0 + 2) / 2 / ppt, dashed: isDashedBox });   // দুই পাশই ভাঙা হলে তবে ড্যাশ
         break;   // সবচেয়ে কাছের ডান জোড়া
       }
     }
@@ -1661,6 +1683,7 @@
 
   const FayzarPageGeometry = { RATIO, inkMask, otsuThreshold, components, linesOf, estimateFontPt, blockMetrics, pageMargins, detectFrame, countHLines, verticalRules, horizontalRules, boxFrames, fitBoxDrift, fitExtentDrift, applyDrift, snapBoxesToLines, vDashComps, median, pageBackground, blockShade, hLinePositions, darkBandMask, tableRowBands, checkTableRows };
   Object.defineProperty(FayzarPageGeometry, 'detectSmallBoxes', { value: detectSmallBoxes, enumerable: false });
+  Object.defineProperty(FayzarPageGeometry, 'rules2On', { value: rules2On, enumerable: false });
   global.FayzarPageGeometry = FayzarPageGeometry;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarPageGeometry;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

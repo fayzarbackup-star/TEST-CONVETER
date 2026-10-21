@@ -1,5 +1,5 @@
 /**
- * INDENT_v1 — ইনডেন্ট, অ্যালাইনমেন্ট, ট্যাব-স্টপ, ঘরের প্যাডিং ও twip রূপান্তর যাচাই পরীক্ষা
+ * INDENT_v2 — ইনডেন্ট, অ্যালাইনমেন্ট, ট্যাব-স্টপ, ঘরের প্যাডিং ও লাইন-ভাঙা রোধ (a09, a12, a13, a14, a16) যাচাই পরীক্ষা
  * চালানোর নিয়ম: node tests/indent.test.mjs
  * শূন্য বাহ্যিক নির্ভরতা — সম্পূর্ণ অফলাইনে চলে।
  */
@@ -13,8 +13,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '..');
 
-// ডিফল্ট ৫টি সুইচ চালু করা
-['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX'].forEach((k) => { globalThis['__FZ_ON_' + k] = true; }); // টেস্ট যে ভিত্তিতে লেখা — প্রোডাকশন-ডিফল্ট বদলালেও স্থির
+// INDENT_v2 যে ভিত্তিতে লেখা — প্রোডাকশন-ডিফল্ট বদলালেও স্থির
+['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT'].forEach((k) => { globalThis['__FZ_ON_' + k] = true; });
 const IR = require(path.join(ROOT, 'js/layout-engine/faithful/layout-ir.js'));
 const LF = require(path.join(ROOT, 'js/layout-engine/faithful/line-fit.js'));
 const DB = require(path.join(ROOT, 'js/layout-engine/faithful/faithful-docx-builder.js'));
@@ -43,8 +43,14 @@ function bytesEqual(a, b) {
   return true;
 }
 
-function loadRun(name) {
-  const dir = path.join(ROOT, 'qa/golden-data/runs/base5', name);
+function loadRun(name, preferSubdir = 'base5') {
+  const candidates = [
+    path.join(ROOT, 'qa/golden-data/runs', preferSubdir, name),
+    path.join(ROOT, 'qa/golden-data/runs/base5', name),
+    path.join(ROOT, 'qa/golden-data/runs/WRAPFIT+NESTBOX+TBLMERGE+A03FIX+A16FIX+VSPACE+BOXSPLIT', name)
+  ];
+  const dir = candidates.find((d) => fs.existsSync(path.join(d, 'measures.json')) && fs.existsSync(path.join(d, 'ir.json')));
+  if (!dir) throw new Error(`Run data not found for ${name}`);
   const measures = JSON.parse(fs.readFileSync(path.join(dir, 'measures.json'), 'utf8'));
   const ir = JSON.parse(fs.readFileSync(path.join(dir, 'ir.json'), 'utf8'));
   return { measures, ir };
@@ -70,7 +76,8 @@ function setIndentSwitch(on, off = false) {
 const runs = {
   a09: loadRun('a09'),
   a12: loadRun('a12'),
-  a16: loadRun('a16')
+  a16: loadRun('a16'),
+  a13: loadRun('a13', 'WRAPFIT+NESTBOX+TBLMERGE+A03FIX+A16FIX+VSPACE+BOXSPLIT')
 };
 
 // ============================================================================
@@ -89,6 +96,7 @@ for (const [name, data] of Object.entries(runs)) {
   const xmlFromSavedOff = DB.bodyXml(clone(data.ir)).xml;
   const docxFromSavedOff = await DB.build(clone(data.ir), { JSZip: DB.MiniJSZip, type: 'uint8array' });
   baseline[name] = {
+    irBuildObj: irFromBuildOff,
     irJson: JSON.stringify(irFromBuildOff),
     xmlBuild: xmlFromBuildOff,
     xmlSaved: xmlFromSavedOff,
@@ -160,7 +168,7 @@ check('সুইচ চালু অবস্থায় LF.isIndentOn() === tr
   }
 }
 
-// --- ২খ. a09 যাচাই (ব্লক বাম-ইনডেন্ট, ইনলাইন লিডার ট্যাব-স্টপ, ঝুলন্ত ক্রমিক তালিকা ও স্বাক্ষর ব্লক) ---
+// --- ২খ. a09 যাচাই (ব্লক বাম-ইনডেন্ট, ইনলাইন লিডার ট্যাব-স্টপ, ঝুলন্ত ক্রমিক তালিকা, স্বাক্ষর ব্লক ও ১-পাতা রক্ষণ) ---
 {
   const irSaved = clone(runs.a09.ir);
   LF.fit(irSaved);
@@ -186,23 +194,26 @@ check('সুইচ চালু অবস্থায় LF.isIndentOn() === tr
     const xml3i1 = DB.paraXml(b3i1, 0, { media: [], availW: avW });
     check(`a09 (${label}) ব্যান্ড ৩ আইটেম ১: ডান হাইফেন লিডার ট্যাব w:pos="8956"`, xml3i1.includes('w:val="right" w:leader="hyphen" w:pos="8956"'), xml3i1);
 
-    // ব্যান্ড ৬ ("উপজেলা: --- জেলা: ---এর") ও ব্যান্ড ৭ ("বৈধ উত্তরাধিকারী... ---কে"): পূর্ণ প্রস্থের লিডার ট্যাব-স্টপ
+    // ব্যান্ড ৬ ("উপজেলা: --- জেলা: ---এর") ও ব্যান্ড ৭ ("বৈধ উত্তরাধিকারী... ---কে"): পূর্ণ প্রস্থের লিডার ট্যাব-স্টপ ও প্রান্তিক ওভারহ্যাং রক্ষণ
     const xml6 = DB.paraXml(p1.bands[6].cells[0].items[0], 0, { media: [], availW: avW });
     const xml7 = DB.paraXml(p1.bands[7].cells[0].items[0], 0, { media: [], availW: avW });
-    check(`a09 (${label}) ব্যান্ড ৬: ২য় লিডার ট্যাব-স্টপ w:pos="9090"`, xml6.includes('w:pos="9090"'), xml6);
-    check(`a09 (${label}) ব্যান্ড ৭: লিডার ট্যাব-স্টপ w:pos="9166"`, xml7.includes('w:pos="9166"'), xml7);
+    check(`a09 (${label}) ব্যান্ড ৬: ২য় লিডার ট্যাব-স্টপ w:pos="9090" ও w:right="-80"`, xml6.includes('w:pos="9090"') && xml6.includes('w:right="-80"'), xml6);
+    check(`a09 (${label}) ব্যান্ড ৭: লিডার ট্যাব-স্টপ w:pos="9166", w:right="-80" ও সংকুচিত প্রান্তিক শব্দ`, xml7.includes('w:pos="9166"') && xml7.includes('w:right="-80"') && xml7.includes('w:spacing w:val="-6"'), xml7);
 
-    // ব্যান্ড ৮ ("অভিভাবক নিযুক্ত করিলাম...") ও ব্যান্ড ১২ ("বি:দ্র: মনোনীত ব্যক্তিগণ..."): ব্লক বাম-ইনডেন্ট 36pt (w:left="720") পুনরুদ্ধার
+    // ব্যান্ড ৮ ("অভিভাবক নিযুক্ত করিলাম...") ও ব্যান্ড ১২ ("বি:দ্র: মনোনীত ব্যক্তিগণ..."): ব্লক বাম-ইনডেন্ট 36pt (w:left="720") ও অক্ষর-সংকোচন পুনরুদ্ধার
     const b8 = p1.bands[8].cells[0].items[0];
     const b12 = p1.bands[12].cells[0].items[0];
+    const xml12 = DB.paraXml(b12, 0, { media: [], availW: avW });
     check(`a09 (${label}) ব্যান্ড ৮: indentPt === 36 ও w:left="720"`, b8.indentPt === 36 && DB.pPr(b8, 0).includes('w:left="720"'));
-    check(`a09 (${label}) ব্যান্ড ১২: indentPt === 36, fontPt === 12 ও w:left="720"`, b12.indentPt === 36 && b12.fontPt === 12 && DB.pPr(b12, 0).includes('w:left="720"'));
+    check(`a09 (${label}) ব্যান্ড ১২: indentPt === 36, fontPt === 12, charSpacingPt === -0.25 ও w:left="720"`, b12.indentPt === 36 && b12.fontPt === 12 && b12.charSpacingPt === -0.25 && DB.pPr(b12, 0).includes('w:left="720"') && xml12.includes('w:spacing w:val="-5"'));
 
-    // ব্যান্ড ১০ ("২।\t----- নং ক্রমিকে..."): একক ট্যাব-স্টপ [36.5], fi=-36.5, w:left="730" w:hanging="730", একক <w:p> ও w:jc="both"
+    // ব্যান্ড ১০ ("২।\t----- নং ক্রমিকে..."): একক ট্যাব-স্টপ [36.5], fi=-36.5, w:left="730" w:hanging="730", একক <w:p>, w:jc="both" এবং ১ম লাইনের পূরণ-রেখা সংক্ষিপ্তকরণ (<=30 ড্যাশ)
     const b10 = p1.bands[10].cells[0].items[0];
     const xml10 = DB.paraXml(b10, 0, { media: [], availW: avW });
+    const fills10 = b10.tabLines[0].match(/-{3,}/g) || [];
     check(`a09 (${label}) ব্যান্ড ১০: একক ট্যাব-স্টপ [36.5], fi === -36.5 ও fontPt === 12`, b10.tabStops.length === 1 && b10.tabStops[0] === 36.5 && b10.firstIndentPt === -36.5 && b10.fontPt === 12);
     check(`a09 (${label}) ব্যান্ড ১০: একক <w:p>, w:left="730" w:hanging="730" ও w:jc="both"`, (xml10.match(/<w:p>/g) || []).length === 1 && xml10.includes('w:left="730" w:hanging="730"') && !xml10.includes('w:pos="898"') && xml10.includes('w:jc w:val="both"'));
+    check(`a09 (${label}) ব্যান্ড ১০: ১ম লাইনের পূরণ-রেখাদ্বয় ১ লাইনে আঁটার মতো সংক্ষিপ্ত (<=5 ও <=30 ড্যাশ)`, fills10.length === 2 && fills10[0].length <= 5 && fills10[1].length <= 30, JSON.stringify(fills10));
 
     // ব্যান্ড ১১ ("৩।\tউপর্যুক্ত স্বাক্ষরকারীগণ..."): ফন্ট 12pt পুনরুদ্ধার
     const b11 = p1.bands[11].cells[0].items[0];
@@ -274,6 +285,77 @@ check('সুইচ চালু অবস্থায় LF.isIndentOn() === tr
   // সংরক্ষিত IR-এ প্যাডিংযুক্ত অণু-স্বাক্ষর চিত্রের (পাতা ৩, ৪, ৬, ৭, ৮, ৯) উচ্চতা ও প্রস্থ পুনরুদ্ধার যাচাই
   const p3Fig = irSaved.pages[2].bands[3].cells[0].items[0];
   check('a16 (saved-IR) পাতা ৩ অণু-স্বাক্ষর চিত্র: heightPt === 25.2, widthPt === 58.4 ও indentPt === 169.4', p3Fig.heightPt === 25.2 && p3Fig.widthPt === 58.4 && p3Fig.indentPt === 169.4);
+}
+
+// --- ২ঘ. a13 যাচাই (দীর্ঘ শিরোনাম "চিফ একাউন্টস্ এন্ড ফিন্যান্স অফিসার/..." ও "গৃহ নির্মাণ ঋণ..."-এর fit ফলাফল INDENT বন্ধের সমান থাকা) ---
+{
+  const irSavedOn = clone(runs.a13.ir);
+  IR.repairIndentIr(irSavedOn);
+  const xmlSavedOn = DB.bodyXml(clone(runs.a13.ir)).xml;
+
+  const irBuiltOn = IR.build(clone(runs.a13.measures.cap), clone(runs.a13.measures.measures), clone(runs.a13.measures.pageInfo));
+  LF.fit(irBuiltOn);
+  const xmlBuiltOn = DB.bodyXml(clone(irBuiltOn)).xml;
+
+  // ১) সংরক্ষিত গোল্ডেন IR (যেখানে ব্রাউজারের Canvas 2D মাপে ব্যান্ড ৩-এর justRightPt = 12.9048pt ও w:right="258" সংরক্ষিত আছে)
+  const b3SavedOn = irSavedOn.pages[0].bands[3].cells[0].items[0];
+  const b3SavedOff = runs.a13.ir.pages[0].bands[3].cells[0].items[0];
+  const ppr3SavedOn = DB.pPr(b3SavedOn, 0);
+  const ppr3SavedOff = DB.pPr(b3SavedOff, 0);
+  check(
+    'a13 (saved-IR) ব্যান্ড ৩ দীর্ঘ শিরোনাম ("চিফ একাউন্টস্..."): justRightPt (12.9pt) ও fit হুবহু INDENT বন্ধের সমান',
+    b3SavedOn.fontPt === b3SavedOff.fontPt &&
+      b3SavedOn.indentPt === b3SavedOff.indentPt &&
+      b3SavedOn.firstIndentPt === b3SavedOff.firstIndentPt &&
+      Math.abs(b3SavedOn.justRightPt - 12.9048) < 0.01 &&
+      b3SavedOn.justRightPt === b3SavedOff.justRightPt &&
+      JSON.stringify(b3SavedOn.fit) === JSON.stringify(b3SavedOff.fit)
+  );
+  check(
+    'a13 (saved-IR) ব্যান্ড ৩ দীর্ঘ শিরোনাম: pPr হুবহু INDENT বন্ধের সমান (w:right="258", w:right="894" নয়)',
+    ppr3SavedOn === ppr3SavedOff && ppr3SavedOn.includes('w:right="258"') && !ppr3SavedOn.includes('w:right="894"'),
+    ppr3SavedOn
+  );
+
+  // ২) ব্রাউজার Canvas 2D প্রস্থ-মাপক (measure) সহ IR.build + LF.fit চালালেও INDENT চালু ও বন্ধ অবস্থায় ব্যান্ড ৩, ৫ ও ৬ হুবহু অভিন্ন থাকা
+  const canvasLikeMeasure = (s, bold) => {
+    const str = String(s || '');
+    const bLen = str.replace(/[ঁ-ঃ়া-্ৗ]/g, '').length;
+    const karLen = (str.match(/[ািীেৈোৌৗ]/g) || []).length;
+    return (bLen * 38 + karLen * 14) * (bold ? 1.25 : 1.115);
+  };
+  setIndentSwitch(false, false);
+  const irCanvasOff = IR.build(clone(runs.a13.measures.cap), clone(runs.a13.measures.measures), clone(runs.a13.measures.pageInfo));
+  LF.fit(irCanvasOff, canvasLikeMeasure);
+  setIndentSwitch(true, false);
+  const irCanvasOn = IR.build(clone(runs.a13.measures.cap), clone(runs.a13.measures.measures), clone(runs.a13.measures.pageInfo));
+  LF.fit(irCanvasOn, canvasLikeMeasure);
+
+  const b3CanvasOn = irCanvasOn.pages[0].bands[3].cells[0].items[0];
+  const b3CanvasOff = irCanvasOff.pages[0].bands[3].cells[0].items[0];
+  check(
+    'a13 (Canvas-fit) ব্যান্ড ৩ দীর্ঘ শিরোনাম: LF.fit কর্তৃক সংকুচিত justRightPt (<15pt) INDENT চালু থাকলেও ওভাররাইট হয় না',
+    b3CanvasOn.justRightPt < 15 && b3CanvasOn.justRightPt === b3CanvasOff.justRightPt && DB.pPr(b3CanvasOn, 0) === DB.pPr(b3CanvasOff, 0)
+  );
+
+  const b5BuiltOn = irBuiltOn.pages[0].bands[5].cells[0].items[0];
+  const b5BuiltOff = baseline.a13.irBuildObj.pages[0].bands[5].cells[0].items[0];
+  check(
+    'a13 (built-IR) ব্যান্ড ৫ মূল শিরোনাম ("গৃহ নির্মাণ ঋণ..."): centerShiftPt (-7.1pt) ও pPr হুবহু INDENT বন্ধের সমান',
+    b5BuiltOn.fontPt === b5BuiltOff.fontPt && b5BuiltOn.centerShiftPt === b5BuiltOff.centerShiftPt && DB.pPr(b5BuiltOn, 0) === DB.pPr(b5BuiltOff, 0)
+  );
+
+  const b6CanvasOn = irCanvasOn.pages[0].bands[6].cells[0].items[0];
+  const b6CanvasOff = irCanvasOff.pages[0].bands[6].cells[0].items[0];
+  check(
+    'a13 (Canvas-fit) ব্যান্ড ৬ ("মহোদয়,..."): firstIndentPt === 0 ও pPr হুবহু INDENT বন্ধের সমান',
+    b6CanvasOn.firstIndentPt === 0 && b6CanvasOn.firstIndentPt === b6CanvasOff.firstIndentPt && DB.pPr(b6CanvasOn, 0) === DB.pPr(b6CanvasOff, 0)
+  );
+
+  check(
+    'a13: সুইচ চালু অবস্থায় নির্মিত ও সংরক্ষিত সম্পূর্ণ XML হুবহু INDENT বন্ধের সমান (শূন্য রিগ্রেশন)',
+    xmlBuiltOn === baseline.a13.xmlBuild && xmlSavedOn === baseline.a13.xmlSaved && JSON.stringify(irCanvasOn) === JSON.stringify(irCanvasOff)
+  );
 }
 
 console.log(`ফলাফল: ${passed} পাস, ${failed} ব্যর্থ`);

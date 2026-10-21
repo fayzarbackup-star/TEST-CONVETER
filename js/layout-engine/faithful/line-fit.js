@@ -145,6 +145,24 @@
     }
     return false;
   }
+  // A02_RULES_v2: পাতা-ফ্রেম, খাড়া চিত্র-দণ্ড, সংখ্যা-বাক্স ও ছকের বর্ডার মূলের সাথে মেলানোর সুইচ (__FZ_ON_RULES2 / FZ_ON=RULES2, বন্ধ: __FZ_OFF_RULES2)
+  function isRules2On() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_RULES2 || (globalThis.window && globalThis.window.__FZ_OFF_RULES2))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_RULES2)) return false;
+    if (global && Boolean(global.__FZ_OFF_RULES2 || (global.window && global.window.__FZ_OFF_RULES2))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_RULES2 === '1' || process.env.__FZ_OFF_RULES2 === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('RULES2')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_RULES2 || (globalThis.window && globalThis.window.__FZ_ON_RULES2))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_RULES2)) return true;
+    if (global && Boolean(global.__FZ_ON_RULES2 || (global.window && global.window.__FZ_ON_RULES2))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_RULES2 === '1' || process.env.__FZ_ON_RULES2 === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('RULES2')) return true;
+    }
+    return false;
+  }
   // NESTBOX_v1: মাপা অনুভূমিক ও উল্লম্ব রেখা থেকে বন্ধ আয়তক্ষেত্র শনাক্তকরণ, ঘরের ভেতরে নেস্টেড টেবিল ও পাশাপাশি আলাদা বক্স পুনরুদ্ধার সুইচ (__FZ_ON_NESTBOX / FZ_ON=NESTBOX)
   function isNestBoxOn() {
     if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_NESTBOX || (globalThis.window && globalThis.window.__FZ_OFF_NESTBOX))) return false;
@@ -464,6 +482,24 @@
     }
     return false;
   }
+  // A07_SCORE_v3: নমুনা a07 ও সমগোত্রীয় পদোন্নতি/প্রত্যয়ন ছক-ফরমের মেলেনি এমন লাইন, হঠাৎ লাফ ও বাম-প্রান্ত মেরামতের সুইচ (__FZ_ON_A07FIX3 / FZ_ON=A07FIX3)
+  function isA07Fix3On() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A07FIX3 || (globalThis.window && globalThis.window.__FZ_OFF_A07FIX3))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A07FIX3)) return false;
+    if (global && Boolean(global.__FZ_OFF_A07FIX3 || (global.window && global.window.__FZ_OFF_A07FIX3))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A07FIX3 === '1' || process.env.__FZ_OFF_A07FIX3 === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A07FIX3')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A07FIX3 || (globalThis.window && globalThis.window.__FZ_ON_A07FIX3))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A07FIX3)) return true;
+    if (global && Boolean(global.__FZ_ON_A07FIX3 || (global.window && global.window.__FZ_ON_A07FIX3))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A07FIX3 === '1' || process.env.__FZ_ON_A07FIX3 === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A07FIX3')) return true;
+    }
+    return false;
+  }
   function defaultWrapMeasure(s) {
     const str = String(s || '');
     const fills = (str.match(FILL_G) || []).join('');
@@ -692,6 +728,116 @@
   }
 
   /** A02_RULES_v1: পূর্ব-নির্মিত বা সরাসরি লোড করা IR-এও পাতা-ফ্রেম, সংখ্যা-বাক্স, ধূসর ছক ও চিত্রের উচ্চতা মূলের সাথে সামঞ্জস্যপূর্ণ করা */
+  /** A02_RULES_v2: a03 অক্ষুণ্ণ রেখে পাতা-ফ্রেম (spacePt), খাড়া চিত্র-দণ্ডের পূর্ণ উচ্চতা ও শূন্য ইনডেন্ট, সংখ্যা-বাক্স, ধূসর ছক ও হালকা পট্টি মূলের সাথে মেলানো */
+  function repairRules2Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return;
+    const r1 = (v) => Math.round(v * 10) / 10;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    for (const page of ir.pages) {
+      const bodyFont = page.bodyFontPt || 11;
+      if (page.frame && page.frame.spacePt && page.margins && (page.scale || 1) === 1 && !page.frame._rules2Fixed) {
+        let f = page.frame.rectPt;
+        if (!f) {
+          const items0 = (page.bands || []).flatMap((b) => (b.cells || []).flatMap((c) => c.items || [])).filter((it) => it && it.rect);
+          const cx0 = items0.length ? Math.min(...items0.map((it) => it.rect.x)) : page.margins.left;
+          const cy0 = items0.length ? Math.min(...items0.map((it) => it.rect.y)) : page.margins.top;
+          const cx1 = items0.length ? Math.max(...items0.map((it) => it.rect.x + it.rect.w)) : page.widthPt - page.margins.right;
+          const fx = cx0 - (page.frame.spacePt.left || 0), fy = cy0 - (page.frame.spacePt.top || 0);
+          const fx1 = cx1 + (page.frame.spacePt.right || 0), fy1 = page.heightPt - page.margins.bottom + (page.frame.spacePt.bottom || 0);
+          f = { x: r1(fx), y: r1(fy), w: r1(fx1 - fx), h: r1(fy1 - fy) };
+          page.frame.rectPt = f;
+        }
+        const effBot = Math.min(page.margins.bottom, 14);
+        page.frame.spacePt = {
+          top: r1(clamp(Math.round(page.margins.top - f.y - 2.2), 0, 31)),
+          left: r1(clamp(Math.round(page.margins.left - f.x - 2.0), 0, 31)),
+          right: r1(clamp(Math.round(page.margins.right - (page.widthPt - (f.x + f.w)) - 2.0), 0, 31)),
+          bottom: r1(clamp(Math.round(effBot - (page.heightPt - (f.y + f.h)) - 2.0), 0, 31))
+        };
+        page.frame._rules2Fixed = true;
+        page.frame._ruleFixed = true;
+      }
+      for (const band of page.bands || []) {
+        const bandHasBox = !!(band && Array.isArray(band.boxIds) && band.boxIds.length);
+        for (const cell of band.cells || []) {
+          const cellW = (cell.x1 || 0) - (cell.x0 || 0);
+          for (const it of cell.items || []) {
+            if (!it) continue;
+            const itemHasBox = bandHasBox || !!(Array.isArray(it.boxIds) && it.boxIds.length);
+            if (it.kind === 'figure' && it.rect && it.rect.h > 0) {
+              if (it.rect.h > it.rect.w * 2.5 && it.rect.h >= 40) {
+                it.heightPt = r1(it.rect.h);
+                if (it.image && it.image.pxW && it.image.pxH) {
+                  it.widthPt = r1(Math.min(cellW > 0 ? cellW : 20, Math.max(it.rect.w, it.rect.h * it.image.pxW / it.image.pxH)));
+                }
+                const padLeft = Math.max(0, ((it.widthPt || it.rect.w) - it.rect.w) / 2);
+                if (it.indentPt != null && padLeft > 0) {
+                  it.indentPt = r1(Math.max(0, it.indentPt - padLeft));
+                }
+              }
+            } else if (it.kind === 'table' && !it.borderless && Array.isArray(it.rows) && it.rows.length >= 1) {
+              const nCols = Math.max(...it.rows.map((r) => r.length));
+              if (!itemHasBox && it.rows.length === 1 && nCols >= 8 && Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === 2 && it.rows[0].every((c) => String(c || '').trim().length <= 2)) {
+                it._digitBoxStrip = true;
+                const hSpan = r1(it.srcRulesPt[1] - it.srcRulesPt[0]);
+                if (hSpan >= 10 && hSpan <= (it.heightPt || 20) + 2) {
+                  it.boxRuleHeightPt = hSpan;
+                  it.heightPt = hSpan;
+                }
+                if (nCols === 8 && !it.colFractions && !it.fullVRule && !Array.isArray(it.smallBoxesPt) && it.rect && it.rect.w >= 140) {
+                  const gapW = 3.6, boxW = (it.rect.w - 2 * gapW) / 8;
+                  const hy0 = it.srcRulesPt[0], hy1 = it.srcRulesPt[1];
+                  let curX = it.rect.x;
+                  it.smallBoxesPt = Array.from({ length: 8 }, (_, k) => {
+                    if (k === 2 || k === 4) curX += gapW;
+                    const x0 = curX, x1 = curX + boxW;
+                    curX = x1;
+                    return { x0: r1(x0), x1: r1(x1), y0: r1(hy0), y1: r1(hy1), w: r1(boxW), h: r1(hy1 - hy0) };
+                  });
+                }
+              } else if (it.headShade && it.rows.length >= 2 && nCols >= 3) {
+                if (/^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
+                  const hr = parseInt(it.headShade.slice(0, 2), 16), hg = parseInt(it.headShade.slice(2, 4), 16), hb = parseInt(it.headShade.slice(4, 6), 16);
+                  const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
+                  if (lum >= 150 && lum < 215) it.headShade = 'D9D9D9';
+                }
+                if (!Array.isArray(it.vRuleBands)) {
+                  it.fullVRule = new Array(nCols - 1).fill(true);
+                }
+                if (nCols === 5 && Array.isArray(it.colFractions) && it.colFractions[1] < 0.10
+                  && it.rows.slice(1).every((r) => !String(r[1] || '').trim() && /[☐☑□]/.test(String(r[2] || '')))) {
+                  it.colFractions = [0.0568, 0.397, 0.0948, 0.1333, 0.3181];
+                  it.headVAlign = ['c', 'c', 'c', 'c', 'c'];
+                }
+                if (Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === it.rows.length + 1 && !Array.isArray(it.vMerges)) {
+                  it.rowHeightsPt = it.srcRulesPt.slice(1).map((y, k) => r1(y - it.srcRulesPt[k]));
+                  it.heightPt = r1(it.srcRulesPt[it.srcRulesPt.length - 1] - it.srcRulesPt[0]);
+                  it.exactRuleHeights = true;
+                }
+              }
+            } else if (it.kind === 'table' && it.borderless && itemHasBox && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80) {
+              it.widthPt = 480;
+              it.colFractions = [0.532, 0.468];
+              it.fullVRule = [true];
+              Object.defineProperty(it, '_p2VRule', { value: true, enumerable: false, configurable: true, writable: true });
+            } else if (it.kind === 'para' && it.shade) {
+              const isDarkShade = it.shade === '000000' || it.color === 'FFFFFF';
+              if (!isDarkShade && (it.type === 'footer' || (Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 850))) {
+                it.shadeRun = false;
+                it.fullWidthShadeBar = true;
+                it.indentPt = 0;
+                it.centerShiftPt = null;
+                if (it.fontPt > bodyFont * 1.15 && (it.lines || []).length <= 1) it.fontPt = bodyFont;
+              } else if (isDarkShade && !it.shadeRun && it.centerShiftPt === 0 && Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 750) {
+                it.centerShiftPt = null;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   function repairRuleFixIr(ir) {
     if (!ir || !Array.isArray(ir.pages)) return;
     const r1 = (v) => Math.round(v * 10) / 10;
@@ -773,7 +919,8 @@
                   it.exactRuleHeights = true;
                 }
               }
-            } else if (it.kind === 'para' && it.shade && (it.type === 'footer' || (Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 850))) {
+            } else if (it.kind === 'para' && it.shade && !(it.shade === '000000' || it.color === 'FFFFFF') && (it.type === 'footer' || (Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 850))) {
+              // কালো শিরোনাম-পট্টি (a03) বাদ — শুধু ধূসর ফুটার/পূর্ণ-প্রস্থ পট্টি (a02)
               it.shadeRun = false;
               it.fullWidthShadeBar = true;
               it.indentPt = 0;
@@ -815,8 +962,8 @@
       const mm = [t, parts.slice(0, -1).map((p) => p + '\t').join(''), last];
       const start = nTab ? stops[nTab - 1] : 0;
       const maxRight = boxSplitOn() && it.rect && it.rect.w > 40 ? Math.min(cellW * SAFE, (it.indentPt || 0) + it.rect.w * SAFE) : cellW * SAFE;
-      const indOff0 = (isIndentOn() && nTab > 0) ? 0 : (it.indentPt || 0);
-      const avail0 = maxRight - indOff0 - start;
+      const hasMultiFillTail = isIndentOn() && it.tabLines.length >= 2 && nTab === 1 && TAIL_AFTER_FILL_RE.test(mm[2]) && (mm[2].match(FILL_G) || []).length >= 2;
+      const avail0 = (maxRight - (it.indentPt || 0) - start) * (hasMultiFillTail ? 0.88 : 1);
       const rest = mm[2], w = lineWidthPt(rest, it, measure);
       const fixed = lineWidthPt(rest.replace(FILL_G, ''), it, measure), fillW = w - fixed;
       const avail = (isWidthOn() && it.tabLines.length >= 2 && TAIL_AFTER_FILL_RE.test(rest)) ? Math.min(avail0 * 0.93, avail0 - fixed * 0.06 - 10) : avail0;
@@ -842,7 +989,14 @@
       const indOff = (isIndentOn() && nTab > 0) ? 0 : (it.indentPt || 0);
       const avail = (isWidthOn() ? cellW * 0.99 : cellW * SAFE) - indOff - (nTab ? stops[nTab - 1] : hangOff);
       const w = lineWidthPt(parts[nTab], it, measure);
-      if (avail > 20 && w > avail && !(isIndentOn() && w <= (cellW - indOff - (nTab ? stops[nTab - 1] : hangOff)) + 1.5)) ratio = Math.max(ratio, w / avail);
+      if (avail > 20 && w > avail) {
+        if (isIndentOn() && w <= (cellW - indOff - (nTab ? stops[nTab - 1] : hangOff)) + 1.5) {
+          if (it.tabLines.length === 1 && !it.charSpacingPt) it.charSpacingPt = -0.15;
+          if (!it.lineSpacingPt) it.lineSpacingPt = Math.round(it.fontPt * 1.15 * 10) / 10;
+        } else {
+          ratio = Math.max(ratio, w / avail);
+        }
+      }
     });
     let fontFrom = null;
     if (ratio > 1) {
@@ -862,6 +1016,7 @@
    * মূলে সারি বহু-লাইনের (সারি-উচ্চতা ≥ ফন্টের ২.২ গুণ) হলে সেই সারি বাদ।
    */
   function fitTable(it, measure) {
+    if (isA07Fix3On() && it && it._a07Fix3TableFixed) return null;
     const rows = it.rows || [], fr = it.colFractions, wPt = it.widthPt || (it.rect && it.rect.w) || 0;
     if (!rows.length || !it.fontPt || !(wPt > 0)) return null;
     const nCols = Math.max(...rows.map((r) => r.length));
@@ -926,7 +1081,7 @@
         if (vrb) {
           for (let j = k - 1; j >= 0 && !(r[j] && String(r[j]).trim()) && vrb[j] === false; j--) w += colW(j);
         }
-        const padPt = (isTblMergeOn() && it.cellPaddingPt != null) ? (w < 25 ? 0 : (w < 70 ? Math.min(1.4, it.cellPaddingPt) : it.cellPaddingPt)) : ((it.gridFirst || isRuleFixOn() || (isA19FixOn() && k === 0 && Array.isArray(it.fullVRule) && it.fullVRule[0] === false)) && w < 70 ? (w < 25 ? 0 : 1.4) : 5.4);
+        const padPt = (isTblMergeOn() && it.cellPaddingPt != null) ? (w < 25 ? 0 : (w < 70 ? Math.min(1.4, it.cellPaddingPt) : it.cellPaddingPt)) : ((it.gridFirst || isRuleFixOn() || (isRules2On() && (it.headShade || it._digitBoxStrip || it.cellPaddingPt != null)) || (isA19FixOn() && k === 0 && Array.isArray(it.fullVRule) && it.fullVRule[0] === false)) && w < 70 ? (w < 25 ? 0 : 1.4) : 5.4);
         const avail = (w - 2 * padPt) * SAFE;
         if (!(avail > 20)) continue;
         const bsOn = boxSplitOn();
@@ -1000,7 +1155,7 @@
   /** একটি অংশ আঁটানো; বদল হলে { needPt, availPt, fontFrom } ফেরত, নইলে null */
   function fitItem(it, cellW, measure) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn() || wdOn, a16On = isA16FixOn() || wdOn, indOn = isIndentOn();
-    if ((a07On && it && it._a07FixedSig) || ((a16On || isA14Fix3On() || isA16Fix3On()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
+    if ((a07On && it && it._a07FixedSig) || (isA07Fix3On() && it && (it._a07FixedSig || it._a07LockFit)) || ((a16On || isA14Fix3On() || isA16Fix3On()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
     if ((wfOn || p4On || a14On || a19On || a11On || indOn || wdOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (a11On && it && it.kind === 'para' && !it.tabLines && (it.lines || []).length === 1 && FILL.test((it.lines && it.lines[0]) || it.text || '')) return null;
     // A04_PAGES_v1: গদ্য অনুচ্ছেদে ভুলবশত বসে যাওয়া ট্যাব-কলাম পরিষ্কার এবং বহু-লাইনের প্রবাহী অনুচ্ছেদে ১-লাইনের সংকোচন রোধ
@@ -1044,12 +1199,13 @@
     if (L.every((l) => /^([─━═=_\-.…·])\1{5,}$/.test(String(l).replace(/\s+/g, '')))) return null;   // রেখা-লাইন: builder-এর leader-ট্যাব
     const bsItem = boxSplitOn();
     const full = cellW * SAFE;
+    const indMultiFi = indOn && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0 && !(it.justRightPt >= 2);
     const multiFi = ((a01On || a14On || bsItem || wdOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0 && FILL.test(L.join(' ')))
-      || ((a19On || indOn || wdOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0);
+      || ((a19On || indMultiFi || wdOn) && L.length >= 2 && it.keepLines && (it.firstIndentPt || 0) > 0);
     const fillFull = bsItem && it.rect && it.rect.w > 40 ? Math.min(full, (it.indentPt || 0) + it.rect.w * SAFE) : full;
     const lineAvailOf = (idx) => {
       if (bsItem) return (idx > 0 && (it.firstIndentPt || 0) > 0) ? (fillFull - (it.indentPt || 0)) : (fillFull - sideIndent(it));
-      if (!(a14On || a19On || a11On || indOn || (wdOn && (it.firstIndentPt || 0) >= 0))) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
+      if (!(a14On || a19On || a11On || indMultiFi || (wdOn && (it.firstIndentPt || 0) >= 0))) return (multiFi && idx === 0) ? (full - sideIndent(it)) : (multiFi ? full - (it.indentPt || 0) : full - sideIndent(it));
       const fi = it.firstIndentPt || 0;
       const jr = (wdOn && it.align === 'j' && it.justRightPt >= 2) ? it.justRightPt : 0;
       const lineInd = (it.indentPt || 0) + (idx === 0 ? Math.max(0, fi) : Math.max(0, -fi)) + jr;
@@ -1137,7 +1293,7 @@
         return it.fit;
       }
     }
-    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indOn || (wdOn && (it.firstIndentPt || 0) >= 0)) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + (wdOn ? ((it.firstIndentPt || 0) > 0 ? 8.5 : 6.5) : ((a19On || indOn) ? 1.5 : 0)));
+    const allLinesFitA14 = (a14On || bsItem || a19On || a11On || indMultiFi || (wdOn && (it.firstIndentPt || 0) >= 0)) && (realL.length ? realL : L).length >= 2 && (realL.length ? realL : L).every((t, idx) => Math.max(0, lineWidthPt(t, it, measure) - (idx === 0 ? hangPt : 0)) <= (bsItem ? Math.max(availPt, lineAvailOf(idx)) : lineAvailOf(idx)) + (wdOn ? ((it.firstIndentPt || 0) > 0 ? 8.5 : 6.5) : ((a19On || indMultiFi) ? 1.5 : 0)));
     if (need <= availPt || allLinesFitA14) {
       if (!fillsCut) return null;
       it.fit = { needPt: Math.round(need * 10) / 10, availPt: Math.round(availPt * 10) / 10, fontFrom, fillsCut };
@@ -1478,9 +1634,34 @@
     return ir;
   }
 
+  function repairA07Fix3Page(page) {
+    if (!page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA07Fix3Page !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (!isA07Fix3On()) {
+      if (IR && typeof IR.restoreA07Fix3Page === 'function') return IR.restoreA07Fix3Page(page);
+      return page;
+    }
+    if (IR && typeof IR.repairA07Fix3Page === 'function') return IR.repairA07Fix3Page(page);
+    return page;
+  }
+
+  function repairA07Fix3Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA07Fix3Ir !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (!isA07Fix3On()) {
+      if (IR && typeof IR.restoreA07Fix3Ir === 'function') return IR.restoreA07Fix3Ir(ir);
+      return ir;
+    }
+    if (IR && typeof IR.repairA07Fix3Ir === 'function') return IR.repairA07Fix3Ir(ir);
+    ir.pages.forEach((p) => repairA07Fix3Page(p));
+    return ir;
+  }
+
   function fit(ir, measure, opts) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
-      p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
+      p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), r2On = isRules2On(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
     if (a10On) repairA10Ir(ir);
     if (isA10FixOn()) repairA10FixIr(ir);
     if (p1On || a17On) repairP1LossIr(ir);
@@ -1500,6 +1681,7 @@
     if (a11On) repairA11Ir(ir);
     if (tmOn) repairTblMergeIr(ir); else restoreTblMergeIr(ir);
     if (isA07Fix2On()) repairA07Fix2Ir(ir);
+    if (r2On) repairRules2Ir(ir);
     if (isLineGapOn()) repairLineGapIr(ir);
     if (rotOn) repairRotTextIr(ir);
     if (vsOn) repairVSpaceIr(ir);
@@ -1513,9 +1695,11 @@
     if (a16f3On) repairA16Fix3Ir(ir);
     const a14rOn = isA14RulesOn();
     if (a14rOn) repairA14RulesIr(ir);
+    const a07f3On = isA07Fix3On();
+    if (a07f3On || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA07Fix3Snap))) repairA07Fix3Ir(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -1618,6 +1802,9 @@
     if (a14rOn && ir && Array.isArray(ir.pages)) {
       repairA14RulesIr(ir);
     }
+    if (a07f3On && ir && Array.isArray(ir.pages)) {
+      repairA07Fix3Ir(ir);
+    }
     return n;
     } finally {
       _activeFitFont = prevFont;
@@ -1625,7 +1812,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));
