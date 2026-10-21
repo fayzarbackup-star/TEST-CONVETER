@@ -537,6 +537,24 @@
     }
     return false;
   }
+  // A02_SCORE_v1: নমুনা a02 ও সমগোত্রীয় এক-পাতার অনাপত্তি সনদ (NOC) ফরমের পাতা-ফ্রেম দূরত্ব, শীর্ষ এমব্লেম চিত্রের উচ্চতা, শিরোনাম/উপ-শিরোনাম ও বডি-লাইনের ফন্ট ও প্রস্থ, ডট-লিডার/ওয়েবসাইট লাইনের প্রান্তিককরণ, পারিবারিক ছকের শিরোনাম ও সারি-উচ্চতা, ৪-কলাম স্বাক্ষর-গ্রিড এবং ধূসর পাদটীকা বারের নিখুঁত জ্যামিতিক মেরামতের সুইচ (__FZ_ON_A02FIX / FZ_ON=A02FIX, বন্ধ: __FZ_OFF_A02FIX / FZ_OFF=A02FIX)
+  function isA02FixOn() {
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A02FIX || (globalThis.window && globalThis.window.__FZ_OFF_A02FIX))) return false;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_OFF_A02FIX)) return false;
+    if (global && Boolean(global.__FZ_OFF_A02FIX || (global.window && global.window.__FZ_OFF_A02FIX))) return false;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_OFF_A02FIX === '1' || process.env.__FZ_OFF_A02FIX === 'true') return false;
+      if (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A02FIX')) return false;
+    }
+    if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_ON_A02FIX || (globalThis.window && globalThis.window.__FZ_ON_A02FIX))) return true;
+    if (typeof window !== 'undefined' && Boolean(window.__FZ_ON_A02FIX)) return true;
+    if (global && Boolean(global.__FZ_ON_A02FIX || (global.window && global.window.__FZ_ON_A02FIX))) return true;
+    if (typeof process !== 'undefined' && process && process.env) {
+      if (process.env.__FZ_ON_A02FIX === '1' || process.env.__FZ_ON_A02FIX === 'true') return true;
+      if (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A02FIX')) return true;
+    }
+    return false;
+  }
   // A14_SCORE_v4: পাতা ১-এর দ্বি-স্তর স্বাক্ষর ও ফাইল-পাথ ফুটার, পাতা ২-এর প্রাপক-ব্লক/সম্বোধন/বিশেষ-দ্রষ্টব্য পাদটীকা/৪র্থ-বিষয় ট্যাব এবং পাতা ৩-এর ক্রমিক নির্দেশনার ফন্ট ও লাইন-পিচ নিখুঁত করার সুইচ (__FZ_ON_A14FIX4 / FZ_ON=A14FIX4)
   function isA14Fix4On() {
     if (typeof globalThis !== 'undefined' && Boolean(globalThis.__FZ_OFF_A14FIX4 || (globalThis.window && globalThis.window.__FZ_OFF_A14FIX4))) return false;
@@ -2051,6 +2069,23 @@
     return ir;
   }
 
+  function repairA02FixPage(page) {
+    if (!isA02FixOn() || !page || !Array.isArray(page.bands)) return page;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA02FixPage !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA02FixPage === 'function') return IR.repairA02FixPage(page);
+    return page;
+  }
+
+  function repairA02FixIr(ir) {
+    if (!isA02FixOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    let IR = (typeof globalThis !== 'undefined' && globalThis.FayzarLayoutIR) || (global && global.FayzarLayoutIR);
+    if ((!IR || typeof IR.repairA02FixIr !== 'function') && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+    if (IR && typeof IR.repairA02FixIr === 'function') return IR.repairA02FixIr(ir);
+    ir.pages.forEach((p) => repairA02FixPage(p));
+    return ir;
+  }
+
   function fit(ir, measure, opts) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), elOn = isExtraLinesOn(), a10On = (isA10LinesOn() || isA10FixOn()),
       p1On = isP1LossOn(), p2On = isP2DriftOn(), rfOn = isRuleFixOn(), r2On = isRules2On(), a03On = isA03FixOn(), nbOn = isNestBoxOn(), rotOn = isRotTextOn(), a17On = isA17FixOn(), a14On = isA14FixOn(), vsOn = isVSpaceOn(), a07On = isA07FixOn() || vsOn || wdOn, a19On = isA19FixOn(), a16On = isA16FixOn(), a11On = isA11FixOn(), tmOn = isTblMergeOn();
@@ -2107,9 +2142,11 @@
     if (a12fOn) repairA12FixIr(ir);
     const a03f3On = isA03Fix3On();
     if (a03f3On || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA03Fix3Snap))) repairA03Fix3Ir(ir);
+    const a02fOn = isA02FixOn();
+    if (a02fOn) repairA02FixIr(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On || a09fOn || a14f5On || a07f5On || a12fOn || a03f3On) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On || a09fOn || a14f5On || a07f5On || a12fOn || a03f3On || a02fOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -2242,6 +2279,9 @@
     if (a03f3On && ir && Array.isArray(ir.pages)) {
       repairA03Fix3Ir(ir);
     }
+    if (a02fOn && ir && Array.isArray(ir.pages)) {
+      repairA02FixIr(ir);
+    }
     return n;
     } finally {
       _activeFitFont = prevFont;
@@ -2249,7 +2289,7 @@
   }
 
   const FayzarLineFit = { fit, fitItem, fitTable, sideIndent, lineWidthPt, FONT_WIDTH_RATIOS, getFontWidthRatio, isFontPickOn, isWrapFitOn, isExtraLinesOn, isA10LinesOn, repairA10Ir,
-    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA13FixOn, repairA13FixPage, repairA13FixIr, isA12FixOn, repairA12FixPage, repairA12FixIr, isA16Fix5On, repairA16Fix5Page, repairA16Fix5Ir, isA09FixOn, repairA09FixPage, repairA09FixIr, isA14Fix5On, repairA14Fix5Page, repairA14Fix5Ir, restoreA14Fix5Page, restoreA14Fix5Ir, isA07Fix5On, repairA07Fix5Page, repairA07Fix5Ir, isA03Fix3On, repairA03Fix3Page, repairA03Fix3Ir, restoreA03Fix3Page, restoreA03Fix3Ir, isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
+    isP1LossOn, repairP1LossIr, isA01FixOn, repairA01Ir, isP2DriftOn, repairP2DriftPage, repairP2DriftIr, isRuleFixOn, repairRuleFixIr, isRules2On, repairRules2Ir, isA07Fix3On, repairA07Fix3Page, repairA07Fix3Ir, isA16Fix4On, repairA16Fix4Page, repairA16Fix4Ir, isA14Fix4On, repairA14Fix4Page, repairA14Fix4Ir, isA13FixOn, repairA13FixPage, repairA13FixIr, isA12FixOn, repairA12FixPage, repairA12FixIr, isA16Fix5On, repairA16Fix5Page, repairA16Fix5Ir, isA09FixOn, repairA09FixPage, repairA09FixIr, isA14Fix5On, repairA14Fix5Page, repairA14Fix5Ir, restoreA14Fix5Page, restoreA14Fix5Ir, isA07Fix5On, repairA07Fix5Page, repairA07Fix5Ir, isA03Fix3On, repairA03Fix3Page, repairA03Fix3Ir, restoreA03Fix3Page, restoreA03Fix3Ir, isA02FixOn, repairA02FixPage, repairA02FixIr,isA03FixOn, repairA03Page, repairA03Ir, isA17FixOn, repairA17Ir, isA14FixOn, repairA14Ir, isA07FixOn, repairA07Page, repairA07Ir, isA19FixOn, repairA19Page, repairA19Ir, isA16FixOn, repairA16Page, repairA16Ir, isA11FixOn, repairA11Page, repairA11Ir, isA10FixOn, repairA10FixPage, repairA10FixIr, isTblMergeOn, repairTblMergePage, repairTblMergeIr, restoreTblMergePage, restoreTblMergeIr, isLineGapOn, repairLineGapPage, repairLineGapIr, isNestBoxOn, repairNestBoxPage, repairNestBoxIr, isRotTextOn, repairRotTextPage, repairRotTextIr, isVSpaceOn, repairVSpacePage, repairVSpaceIr, isIndentOn, repairIndentPage, repairIndentIr, isWidthOn, repairWidthPage, repairWidthIr, isA07Fix2On, repairA07Fix2Page, repairA07Fix2Ir, isA14Fix3On, repairA14Fix3Page, repairA14Fix3Ir, isFontFixOn, repairFontFixPage, repairFontFixIr, isA16Fix3On, repairA16Fix3Page, repairA16Fix3Ir, isA14RulesOn, repairA14RulesPage, repairA14RulesIr };
   global.FayzarLineFit = FayzarLineFit;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLineFit;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : global));

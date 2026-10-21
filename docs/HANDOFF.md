@@ -1,9 +1,10 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২১ সন্ধ্যা — কাজ একটানা চলবে, থামবে না
-- **লাইভ:** ডিফল্ট ২০ (…A07FIX5, A12FIX) — push 08c907d ✓; ডিফল্ট-রান ট্যাগ S20_0c8d9f40। A03FIX3 কোডে বসানো কিন্তু **বন্ধ** (a03 −২১.৬, সারি জমে নিচে সরে; DEF18-এও একই) — run-all 3328/0, এখনো push হয়নি (push করো)।
-- **এখনই করো (Downloads-এ এসেছে, ১৬:৪০):** ① A02_SCORE_v1.zip (A02FIX) বসাও ② A07_SCORE_v4.zip — পুরোনো A07FIX3-ভিত্তি (A07FIX3 টেবিল ভাঙায় বাতিল) ⇒ খুব সাবধানে, টেবিল চোখে; সম্ভবত বাতিল।
-- **A03_SCORE_v4 পাঠানো বাকি:** ট্যাব 0 এখন u/4 (fayzarbackup6) নতুন চ্যাট, মোড Flash, switch-mode টাইমআউট। স্ক্রিনশট/read-tab দেখে Argon করে একবার পাঠাও: `sendtask.ps1 A03_SCORE_v4 a03 S21_8de24d5f A03FIX4 0 342327911 4 scratch\bundles\A03v4_note.md` (বা শুধু switch-mode + agent_manager send)। u/1-এ "Important account alert", মোড-বোতাম নেই — ওটা এড়াও।
-- **Gemini ট্যাব:** 0 u/4 (উপরে) · 1 u/7 A07_SCORE_v4 এসেছে ⇒ খালি · 2 u/3 A02_SCORE_v1 এসেছে ⇒ খালি · 3 u/2 **A06_SCORE_v1** চলছে (a06 লেআউট ৬৯; "তারিখ" কোলন-কলামে সরে যাওয়া)। খালি ট্যাবে পরের কাজ: f1 (৭৪.২, পুরোনো রান — আগে S20-এ স্কোর করো), a16 ৯৪.৬, a08, a18।
-- **নজর:** `powershell -File scratch\watchn.ps1 "3=A06_SCORE_v1,0=A03_SCORE_v4"` (শুধু fetch; চলমান চ্যাটে বার্তা নয়)।
-- **বসানোর চক্র:** `apply_reply.ps1 <ID>` → `node tools/merge-switch-check.mjs scratch/stage_<ID>` → হারানো লাইন হাতে (শর্তে নতুন সুইচ, keepInternalProps কী, export, measure-শর্ত, lockfit) → টেস্ট → run-all → `asis-ab --on X --base <২০ ডিফল্ট> --ids <লক্ষ্য>,a01,a12,a13,a03` → খারাপ হলে compare PNG (বাম = মূল, ডান = আমাদের) দেখে কারণ → টেবিল চোখে → switch-defaults → run-all → `node scratch/github_sync.js --push "<msg>"`।
-- **পাঠানো:** `sendtask.ps1 <TASK> <id> <runTag> <SW> <idx> <tabId> <acct> [note.md]`; tabId (/tabs অবস্থান): 0=342327911, 1=342327931, 2=342327946, 3=342327925 — পাঠানোর আগে /tabs দেখে নাও। প্রম্পটে জিপ-নির্দেশ ইতিমধ্যে কড়া; জিপ না দিলে "চূড়ান্ত <ID>.zip দিন"।
-- **নতুন সেশন (নিয়ম):** ~১০০K টোকেন বা বড় কাজের আগে: HANDOFF → পটভূমির কাজ বন্ধ → `tools\new-session.bat` → পুরোনো সেশনে আর কাজ নয়।
+# হ্যান্ডঅফ — ২০২৬-১০-২১ রাত — কাজ একটানা চলবে, থামবে না
+- **লাইভ:** ডিফল্ট ২০ (…A07FIX5, A12FIX), রান-ট্যাগ S20_0c8d9f40 (a01 98.7, a02 94.9, a03 96.5, a06 69, a07 84.1, a12 99.6, a13 96.7, a14 95.6)। A03FIX3 কোডে, **বন্ধ**।
+- **A02FIX (A02_SCORE_v1) কোডে বসানো** (হারানো লাইন হাতে: safeNoWrapTail, isA02OptCell tcMar, exports, line-fit measure-শর্ত) — a02fix টেস্ট 40/0, run-all 3368/0। এখন asis-ab চলছে (`--on A02FIX --base <২০> --ids a02,a01,a12,a13,a03`); ভালো হলে switch-defaults-এ যোগ → run-all → push।
+- **A07_SCORE_v4 বাতিল** (A07FIX3-পথ চালু করে, টেবিল ভাঙে; A07FIX5 ইতিমধ্যে ডিফল্ট) — বসানো হয়নি।
+- **Gemini ট্যাব:** 0 u/4 **A03_SCORE_v4** চলছে · 1 u/7 **A07_SCORE_v6** চলছে (S20 ভিত্তি, সুইচ A07FIX6) · 2 u/3 খালি · 3 u/2 **A06_SCORE_v1** চলছে।
+- **ট্যাব 2-এর পরের কাজ:** আগে f1,a16,a08,a18 S20(+A02FIX হলে নতুন ভিত্তি)-এ স্কোর করো (asis-ab --ids দিয়ে ভিত্তি-রান হয়), তারপর সবচেয়ে দুর্বলটি পাঠাও।
+- **নজর:** `powershell -File scratch\watchn.ps1 "3=A06_SCORE_v1,0=A03_SCORE_v4,1=A07_SCORE_v6"` (শুধু fetch)।
+- **বসানোর চক্র:** `apply_reply.ps1 <ID>` → `node tools/merge-switch-check.mjs scratch/stage_<ID>` → হারানো লাইন হাতে → টেস্ট → run-all → `node qa/golden/asis-ab.mjs --on X --base <২০ কমা-তালিকা> --ids <লক্ষ্য>,a01,a12,a13,a03` → খারাপ হলে compare PNG → টেবিল চোখে → switch-defaults → run-all → `node scratch/github_sync.js --push "<msg>"`।
+- **পাঠানো:** `sendtask.ps1 <TASK> <id> <runTag> <SW> <idx> <tabId> <acct> [note.md]`; tabId: 0=342327911, 1=342327931, 2=342327946, 3=342327925। ফাইল আগেই সংযুক্ত থাকলে `agent_manager send` **--file ছাড়া**।
+- **নতুন সেশন:** ~১০০K টোকেন হলে HANDOFF → পটভূমি বন্ধ → `tools\new-session.bat`।
