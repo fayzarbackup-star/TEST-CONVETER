@@ -412,7 +412,7 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || rules2On() || a07Fix3On() || a16Fix4On() || a14Fix4On()) || !src || !dst || src === dst) return dst;
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On()) || !src || !dst || src === dst) return dst;
     for (const k of ['_p2VRule', '_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
@@ -3590,7 +3590,7 @@
     const dx = nL - L, o = keepInternalProps(it, Object.assign({}, it));
     if (o.indentPt != null) o.indentPt = Math.max(0, o.indentPt - dx);
     if (o.tabStops) o.tabStops = o.tabStops.map((t) => (formKitOn() && t && typeof t === 'object' ? Object.assign({}, t, { pos: Math.max(1, (t.pos != null ? t.pos : t.x) - dx) }) : Math.max(1, t - dx)));
-    if (rules2On() && o.shade && !o.shadeRun && o.align === 'c' && (o.centerShiftPt === 0 || o.centerShiftPt == null || o.fullWidthShadeBar)) { o.indentPt = 0; o.centerShiftPt = null; }
+    if (rules2On() && o.fullWidthShadeBar && o.shade && o.shade !== '000000' && o.color !== 'FFFFFF' && !o.shadeRun && o.align === 'c') { o.indentPt = 0; o.centerShiftPt = null; }
     else if (o.centerShiftPt != null) o.centerShiftPt -= (nL + nR) / 2 - (L + R) / 2;
     if (o.rightIndentPt != null) o.rightIndentPt = Math.max(0, o.rightIndentPt - (R - nR));
     if (o.justRightPt != null) o.justRightPt = Math.max(0, o.justRightPt - (R - nR));

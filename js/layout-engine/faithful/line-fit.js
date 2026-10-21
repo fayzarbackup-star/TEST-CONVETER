@@ -771,6 +771,42 @@
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     for (const page of ir.pages) {
       const bodyFont = page.bodyFontPt || 11;
+      const isUnframedBoxForm = !page.frame && Array.isArray(page.boxes) && page.boxes.some((bx) => !bx.dashed && (bx.x1 - bx.x0) >= (page.widthPt || 595) * 0.7 && (bx.y1 - bx.y0) >= (page.heightPt || 842) * 0.25);
+      if (isUnframedBoxForm) {
+        const b0 = (page.bands || [])[0];
+        if (b0 && b0.kind === 'grid' && Array.isArray(b0.cells) && b0.cells.length === 2) {
+          const c0 = b0.cells[0], c1 = b0.cells[1];
+          const fig = c1 && Array.isArray(c1.items) && c1.items.length === 1 && c1.items[0] && c1.items[0].kind === 'figure' ? c1.items[0] : null;
+          if (fig && fig.rect && Math.abs(c0.x1 - fig.rect.x) <= 2.5) {
+            const aR = Math.max(...(c0.items || []).map((it) => (it && it.rect ? it.rect.x + it.rect.w : c0.x0)));
+            const mid = r1((aR + fig.rect.x) / 2);
+            delete c0.ruleRight;
+            c0.x1 = mid; c1.x0 = mid;
+            fig.indentPt = r1(Math.max(0, fig.rect.x - mid));
+            (c0.items || []).forEach((it) => {
+              if (it && it.kind === 'para' && it.align === 'c' && it.rect) {
+                const slack = Math.max(0, ((c0.x1 - c0.x0) - it.rect.w * (isWidthOn() ? 1 : 1.06)) / 2);
+                it.centerShiftPt = r1(clamp((it.rect.x + it.rect.w / 2) - (c0.x0 + c0.x1) / 2, -slack, slack));
+              }
+            });
+          }
+        }
+        (page.bands || []).forEach((b) => {
+          if (!b || b.kind !== 'grid' || !Array.isArray(b.cells) || b.cells.length !== 2 || !b.boxIds || !b.boxIds.length) return;
+          const bx = (page.boxes || []).find((x) => !x.nestedBox && b.boxIds.includes(x.id));
+          if (!bx) return;
+          const c0 = b.cells[0], c1 = b.cells[1];
+          if (c0.items && c0.items.length === 2 && c1.items && c1.items.length === 2 && c1.items.some((it) => it && it.kind === 'table')) {
+            const it0 = c0.items[0], it1 = c0.items[1];
+            if (it0 && it1 && it0.rect && it1.rect && !it0.ruleBelow && it1.rect.y - (it0.rect.y + it0.rect.h) >= 22) {
+              const rb = { srcY: r1(it1.rect.y - 8.6), sz: 4 };
+              Object.defineProperty(rb, '_p2Rule', { value: true, enumerable: false, configurable: true, writable: true });
+              it0.ruleBelow = rb;
+            }
+          }
+        });
+        continue;
+      }
       if (page.frame && page.frame.spacePt && page.margins && (page.scale || 1) === 1 && !page.frame._rules2Fixed) {
         let f = page.frame.rectPt;
         if (!f) {
@@ -851,11 +887,6 @@
                   it.exactRuleHeights = true;
                 }
               }
-            } else if (it.kind === 'table' && it.borderless && itemHasBox && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80) {
-              it.widthPt = 480;
-              it.colFractions = [0.532, 0.468];
-              it.fullVRule = [true];
-              Object.defineProperty(it, '_p2VRule', { value: true, enumerable: false, configurable: true, writable: true });
             } else if (it.kind === 'para' && it.shade) {
               const isDarkShade = it.shade === '000000' || it.color === 'FFFFFF';
               if (!isDarkShade && (it.type === 'footer' || (Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 850))) {
@@ -864,8 +895,6 @@
                 it.indentPt = 0;
                 it.centerShiftPt = null;
                 if (it.fontPt > bodyFont * 1.15 && (it.lines || []).length <= 1) it.fontPt = bodyFont;
-              } else if (isDarkShade && !it.shadeRun && it.centerShiftPt === 0 && Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 750) {
-                it.centerShiftPt = null;
               }
             }
           }

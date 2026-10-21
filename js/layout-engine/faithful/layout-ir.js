@@ -1833,7 +1833,7 @@
       const hasFillCols = !globalThis.__FZ_OFF_FILLW2 && nCols >= 4 && hasBodyCol && fillColCount >= 2;
       m = dropEmptyMeasuredCol(m, nCols);
       // A02_RULES_v1: ১-সারির সংখ্যা-বাক্স ছকে (তারিখ/NID/অবসর গ্রহণের তারিখ) মাপা আড়া-রেখার প্রকৃত উচ্চতা এবং দিন-মাস-বছরের মাঝের বর্ডারহীন ফাঁক (smallBoxesPt) শনাক্তকরণ
-      if ((ruleFixOn() || ((tblMergeOn() || rules2On()) && nCols >= 8 && Array.isArray(m && m.hRulesPt) && m.hRulesPt.length === 2)) && m && !m.empty && m.rectPt && m.hasGrid !== false && rows.length === 1 && nCols >= 4 && rows[0].every((c) => String(c || '').trim().length <= 2)) {
+      if ((ruleFixOn() || ((tblMergeOn() || (rules2On() && (m.hRulesPt[1] - m.hRulesPt[0]) <= 19)) && nCols >= 8 && Array.isArray(m && m.hRulesPt) && m.hRulesPt.length === 2)) && m && !m.empty && m.rectPt && m.hasGrid !== false && rows.length === 1 && nCols >= 4 && rows[0].every((c) => String(c || '').trim().length <= 2)) {
         base._digitBoxStrip = true;
         if (Array.isArray(m.hRulesPt) && m.hRulesPt.length === 2) {
           const hSpan = r1(m.hRulesPt[1] - m.hRulesPt[0]);
@@ -3209,6 +3209,7 @@
    */
   function applyVerticalRules(page, vrules, rawBoxes) {
     if (!vrules || !vrules.length || !page.xform) return;
+    if (rules2On() && !tableGridOn() && !page.frame && Array.isArray(rawBoxes) && rawBoxes.some((bx) => !bx.dashed && (bx.x1 - bx.x0) >= (page.widthPt || 595) * 0.7 && (bx.y1 - bx.y0) >= (page.heightPt || 842) * 0.3)) return;
     const X = page.xform;
     const rules = vrules.map((v) => ({ x: X.left + (v.x - X.x0) * X.scale, y0: X.top + (v.y - X.y0) * X.scale, y1: X.top + (v.y + v.h - X.y0) * X.scale }));
     for (const band of page.bands) {
@@ -4309,7 +4310,7 @@
             // বক্সের ভেতরে ২-কলামের বর্ডারলেস ফরম-ছক (যেমন a03 পাতা-২ ব্যান্ড ১৮) — মাঝের খাড়া বিভাজক রেখা ও পূর্ণ প্রস্থ
             if (it.borderless && it.boxIds && it.boxIds.length && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80) {
               it.widthPt = 480;
-              it.colFractions = rules2On() ? [0.532, 0.468] : [0.546, 0.454];
+              it.colFractions = [0.546, 0.454];
               it.fullVRule = [true];
               Object.defineProperty(it, '_p2VRule', { value: true, enumerable: false, configurable: true, writable: true });
               if (it.fit && it.fit.fontFrom) { it.fontPt = it.fit.fontFrom; delete it.fit; }
@@ -4456,13 +4457,14 @@
 
     // ৩) বক্সের ভেতরের ২-কলাম গ্রিড ব্যান্ডে অনুপস্থিত মাঝের খাড়া বিভাজক রেখা ও বাম কলামের আড়াআড়ি বিভাজক রেখা পুনরুদ্ধার
     page.bands.forEach((b) => {
-      if (!b || b.kind !== 'grid' || b.cells.length !== 2 || b.cells[0].ruleRight || !b.boxIds || !b.boxIds.length) return;
+      const needBoxRuleBelow = rules2On() && b && b.kind === 'grid' && b.cells && b.cells.length === 2 && b.cells[0].items && b.cells[0].items.length === 2 && b.cells[1].items && b.cells[1].items.length === 2 && b.cells[1].items.some((it) => it && it.kind === 'table') && !b.cells[0].items[0].ruleBelow;
+      if (!b || b.kind !== 'grid' || b.cells.length !== 2 || (b.cells[0].ruleRight && !needBoxRuleBelow) || !b.boxIds || !b.boxIds.length) return;
       const bx = (page.boxes || []).find((x) => b.boxIds.includes(x.id));
       if (!bx) return;
       const c0 = b.cells[0], c1 = b.cells[1];
       if (c0.items.length >= 2 && c1.items.length >= 2) {
         let divX = 289.25;
-        if (info && Array.isArray(info.vrules)) {
+        if ((!rules2On() || tableGridOn()) && info && Array.isArray(info.vrules)) {
           const vr = info.vrules.find((v) => Math.abs(v.x - (bx.x0 + bx.x1) / 2) <= 25 && v.y <= b.y0 + 15 && v.y + v.h >= b.y1 - 15);
           if (vr) divX = r1(vr.x);
         }
@@ -4522,7 +4524,7 @@
             if (it.shade && it.shadeRun && Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 750) {
               delete it.shadeRun;
               it.indentPt = 0;
-              it.centerShiftPt = rules2On() ? null : 0;
+              it.centerShiftPt = 0;
             }
             // দ্বি-ক্ষেত্রের এক-লাইনের ফরম-সারিতে Gemini-র অতিরিক্ত বিন্দু ও কোলনের আগের ভুল ট্যাব সংশোধন
             if ((!it.diag || it.diag.wPt == null) && Array.isArray(it.tabStopsSrc) && it.tabStopsSrc.length === 1 && it.lines && it.lines.length === 1) {
@@ -4582,7 +4584,7 @@
             }
             if (it.borderless && it.boxIds && it.boxIds.length && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80) {
               it.widthPt = 480;
-              it.colFractions = rules2On() ? [0.532, 0.468] : [0.546, 0.454];
+              it.colFractions = [0.546, 0.454];
               it.fullVRule = [true];
               Object.defineProperty(it, '_p2VRule', { value: true, enumerable: false, configurable: true, writable: true });
               if (it.fit && it.fit.fontFrom) { it.fontPt = it.fit.fontFrom; delete it.fit; }
@@ -4642,7 +4644,7 @@
     if (info && Array.isArray(info.hrules)) {
       info.hrules.forEach((h) => { if (h && h.w >= 12) hSegs.push({ x0: h.x, x1: h.x + h.w, y: h.y }); });
     }
-    if (info && Array.isArray(info.vrules)) {
+    if ((!rules2On() || tableGridOn()) && info && Array.isArray(info.vrules)) {
       info.vrules.forEach((v) => { if (v && v.h >= 12) vSegs.push({ x: v.x, y0: v.y, y1: v.y + v.h }); });
     }
     if (page && Array.isArray(page.boxes)) {
@@ -4759,7 +4761,7 @@
         }
       }
     }
-    const hasBoxedGridSplit = page.bands.some((b) => b && b.kind === 'grid' && b.cells && b.cells.length === 2 && !b.cells[0].ruleRight && b.boxIds && b.boxIds.length);
+    const hasBoxedGridSplit = page.bands.some((b) => b && b.kind === 'grid' && b.cells && b.cells.length === 2 && (!b.cells[0].ruleRight || (rules2On() && b.cells[0].items && b.cells[0].items.length === 2 && b.cells[1].items && b.cells[1].items.length === 2 && b.cells[1].items.some((it) => it && it.kind === 'table') && !b.cells[0].items[0].ruleBelow)) && b.boxIds && b.boxIds.length);
     const hasBoxedTwoColTbl = page.bands.some((b) => b && b.cells && b.cells.some((c) => (c.items || []).some((it) => it && it.kind === 'table' && it.borderless && it.boxIds && it.boxIds.length && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80)));
     const hasBottomSplitBoxes = page.bands.some((b) => b && b.cells && b.cells.some((c) => (c.items || []).some((it) => it && it.kind === 'table' && it.borderless && (!it.boxIds || !it.boxIds.length) && Array.isArray(it.rows) && it.rows.length === 2 && it.rows[0].length === 2 && it.colGapPt >= 100 && !it.rows[1].some((cell) => String(cell || '').trim()))));
 
@@ -4876,13 +4878,14 @@
 
     // ৩) বক্সের ভেতরের ২-কলাম গ্রিড ব্যান্ডে মাঝের খাড়া বিভাজক রেখা ও বাম কলামের আড়াআড়ি বিভাজক রেখা পুনরুদ্ধার এবং আলাদা সাব-বক্স নথিবদ্ধকরণ
     page.bands.forEach((b) => {
-      if (!b || b.kind !== 'grid' || b.cells.length !== 2 || b.cells[0].ruleRight || !b.boxIds || !b.boxIds.length) return;
+      const needBoxRuleBelow = rules2On() && b && b.kind === 'grid' && b.cells && b.cells.length === 2 && b.cells[0].items && b.cells[0].items.length === 2 && b.cells[1].items && b.cells[1].items.length === 2 && b.cells[1].items.some((it) => it && it.kind === 'table') && !b.cells[0].items[0].ruleBelow;
+      if (!b || b.kind !== 'grid' || b.cells.length !== 2 || (b.cells[0].ruleRight && !needBoxRuleBelow) || !b.boxIds || !b.boxIds.length) return;
       const bx = (page.boxes || []).find((x) => !x.nestedBox && b.boxIds.includes(x.id));
       if (!bx) return;
       const c0 = b.cells[0], c1 = b.cells[1];
       if (c0.items.length >= 2 && c1.items.length >= 2) {
         let divX = 289.25;
-        if (info && Array.isArray(info.vrules)) {
+        if ((!rules2On() || tableGridOn()) && info && Array.isArray(info.vrules)) {
           const vr = info.vrules.find((v) => Math.abs(v.x - (bx.x0 + bx.x1) / 2) <= 25 && v.y <= b.y0 + 15 && v.y + v.h >= b.y1 - 15);
           if (vr) divX = r1(vr.x);
         }
@@ -4957,7 +4960,7 @@
             if (it.shade && it.shadeRun && Array.isArray(it.box) && (it.box[3] - it.box[1]) >= 750) {
               delete it.shadeRun;
               it.indentPt = 0;
-              it.centerShiftPt = rules2On() ? null : 0;
+              it.centerShiftPt = 0;
             }
             if ((!it.diag || it.diag.wPt == null) && Array.isArray(it.tabStopsSrc) && it.tabStopsSrc.length === 1 && it.lines && it.lines.length === 1) {
               const mTwo = /^([^:]+?:\s*)[.…·]{6,}\s*([^:]+?:\s*.*)$/.exec(String(it.lines[0]));
@@ -5014,7 +5017,7 @@
             }
             if (it.borderless && it.boxIds && it.boxIds.length && Array.isArray(it.rows) && it.rows.length === 3 && it.colFractions && it.colFractions.length === 2 && it.colGapPt >= 80) {
               it.widthPt = 480;
-              it.colFractions = rules2On() ? [0.532, 0.468] : [0.546, 0.454];
+              it.colFractions = [0.546, 0.454];
               it.fullVRule = [true];
               Object.defineProperty(it, '_p2VRule', { value: true, enumerable: false, configurable: true, writable: true });
               if (it.fit && it.fit.fontFrom) { it.fontPt = it.fit.fontFrom; delete it.fit; }

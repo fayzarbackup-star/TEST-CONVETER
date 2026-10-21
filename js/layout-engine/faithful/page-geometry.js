@@ -1106,7 +1106,8 @@
   /** Part-17.8 + B2: পাতার বা ছকের খাড়া বিভাজক-রেখা — কলাম-স্ক্যান (আড়াআড়ি দাগে জোড়া থাকলেও শনাক্ত) ও সরু খণ্ড */
   function verticalRules(m, opts) {
     const o = opts || {}, ppt = o.pxPerPt || 1;
-    if (!tableGridOn() && !rules2On()) {
+    const r2SubScan = rules2On() && !!(o.box || o.rect || !m || m.W < 400 || m.H < 400);
+    if (!tableGridOn() && !r2SubScan) {
       return (o.comps || components(m, null, 6))
         .filter((c) => !isFrameComp(m, c) && (c.x1 - c.x0 + 1) <= Math.max(4, ppt * 2.5) && (c.y1 - c.y0 + 1) >= 25 * ppt)
         .map((c) => ({ x: (c.x0 + c.x1) / 2 / ppt, y: c.y0 / ppt, h: (c.y1 - c.y0 + 1) / ppt }));
@@ -1307,7 +1308,7 @@
         if (rowCover(y0, L.x1 + 1, R.x0 - 1) < need || rowCover(y1, L.x1 + 1, R.x0 - 1) < need) continue;
         if (R.x1 - L.x0 >= W * 0.9 && y1 - y0 >= H * 0.9) continue;
         const isDashedBox = Math.max(L.on / (L.y1 - L.y0 + 1), R.on / (R.y1 - R.y0 + 1)) < 0.85;
-        if (rules2On() && isDashedBox && (y1 - y0) / ppt <= 26 && (R.x1 - L.x0) / ppt < 120) continue;
+        if (rules2On() && isDashedBox && y0 >= H * 0.90 && (y1 - y0) / ppt <= 23 && (R.x1 - L.x0) / ppt < 120) continue;
         out.push({ x0: L.x0 / ppt, y0: y0 / ppt, x1: (R.x1 + 1) / ppt, y1: (y1 + 1) / ppt, t: (L.x1 - L.x0 + R.x1 - R.x0 + 2) / 2 / ppt, dashed: isDashedBox });   // দুই পাশই ভাঙা হলে তবে ড্যাশ
         break;   // সবচেয়ে কাছের ডান জোড়া
       }
