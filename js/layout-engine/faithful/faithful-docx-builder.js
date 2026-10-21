@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || rules2On() || a07Fix3On()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_p2VRule', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || rules2On() || a07Fix3On() || a16Fix4On()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_p2VRule', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -535,6 +535,26 @@
       process.env.__FZ_ON_A07FIX3 === '1' ||
       process.env.__FZ_ON_A07FIX3 === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A07FIX3'))
+    ))
+  );
+  // A16_SCORE_v4: নমুনা a16 ও সমগোত্রীয় চেকলিস্ট/স্মারক নথির সূচিপত্র বুলেট, আন্ডারলাইন, চেকলিস্ট ছক ও উপ-ছক সংস্কারের সুইচ (__FZ_ON_A16FIX4 / FZ_ON=A16FIX4)
+  const a16Fix4On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A16FIX4 || (globalThis.window && globalThis.window.__FZ_OFF_A16FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A16FIX4) ||
+    (global && (global.__FZ_OFF_A16FIX4 || (global.window && global.window.__FZ_OFF_A16FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A16FIX4 === '1' ||
+      process.env.__FZ_OFF_A16FIX4 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A16FIX4'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A16FIX4 || (globalThis.window && globalThis.window.__FZ_ON_A16FIX4))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A16FIX4) ||
+    (global && (global.__FZ_ON_A16FIX4 || (global.window && global.window.__FZ_ON_A16FIX4))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A16FIX4 === '1' ||
+      process.env.__FZ_ON_A16FIX4 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX4'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1863,6 +1883,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA07Fix3Page === 'function') IR.repairA07Fix3Page(page);
     }
+    if (a16Fix4On() && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix4Page === 'function') IR.repairA16Fix4Page(page);
+    }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
     let cur = page.margins.top;
@@ -3012,7 +3037,7 @@
             italic: cMeta && cMeta.italic != null ? !!cMeta.italic : baseCellIt.italic
           })
         : baseCellIt;
-      if (tableGridOn() && ri === 0) {
+      if ((tableGridOn() || a16Fix4On()) && ri === 0) {
         const hBold = !!(item.headBold || (item.headCellBold && item.headCellBold[k]) || (cMeta && cMeta.bold));
         const hUl = !!(item.headUnderline || (item.headCellUnderline && item.headCellUnderline[k]) || (cMeta && cMeta.underline));
         if (hBold || hUl) {
@@ -3135,7 +3160,7 @@
       // f1/B9: সংখ্যা-বাক্সের সারি (layout-ir foldBoxRows) ⇒ ঘরের ভেতরে ছোট টেবিল, প্রতি অঙ্কে একটি বাক্স
       if (typeof txt === 'string' && txt.startsWith(BOX_MARK)) return boxRowXml(txt.slice(BOX_MARK.length).split(BOX_SEP), cw(k) / 20 - 2 * marPt) + figXml;
       const st = subTable(txt);
-      if (st) return (st.pre ? st.pre.split('\n').map(cellP).join('') : '') + subTableXml(st.rows, a16FixOn() ? cw(k) / 20 : cw(k) / 20 - 2 * marPt, fsz, a16FixOn() ? curRowH : 0) + (st.post ? st.post.split('\n').map(cellP).join('') : '') + figXml;
+      if (st) return (st.pre ? st.pre.split('\n').map(cellP).join('') : '') + subTableXml(st.rows, a16FixOn() ? cw(k) / 20 : cw(k) / 20 - 2 * marPt, fsz, a16FixOn() ? curRowH : 0, item) + (st.post ? st.post.split('\n').map(cellP).join('') : '') + figXml;
       // A19_SCORE_v1: ফরম-ছকের বহু-লাইনের (nL >= 3) বর্ণনামূলক গদ্য-ঘরে প্রতিটি লাইনকে আলাদা বাম-সাজানো অনুচ্ছেদ না বানিয়ে
       // একক দুপাশে-সমান (<w:jc w:val="both"/>) অনুচ্ছেদে <w:br/> দিয়ে যুক্ত করা, যাতে অ-শেষ লাইনগুলো ঘরের ডান কিনারা পর্যন্ত বিস্তৃত হয়
       if (a19FixOn() && nL >= 3 && jc === 'left' && !figXml && !isRadioOrBox && !/\t|([._\-…·─])\1{5,}/.test(String(txt || ''))) {
@@ -3353,7 +3378,7 @@
         const hasSubTblCell = a16FixOn() && typeof r[k] === 'string' && /<table\b/i.test(r[k]);
         const cellRot = cellRotOf(item, ri, k);
         const rotXml = cellRot ? `<w:textDirection w:val="${cellRot}"/>` : '';
-        const effVa = cellRot ? 'center' : va;
+        const effVa = cellRot ? 'center' : (a16Fix4On() && ri > 0 && vm === 'restart' && !item.headShade ? 'top' : va);
         const tcMarXml = (isOpenSerTc0 || hasSubTblCell) ? '<w:tcMar><w:left w:w="0" w:type="dxa"/><w:right w:w="0" w:type="dxa"/></w:tcMar>' : (!isDigitBoxRf && (item.gridFirst || (formFixTbl && !globalThis.__FZ_OFF_FB5 && w <= tw(24)) || ((ruleFixOn() || (rules2On() && (item.headShade || item._digitBoxStrip || item.cellPaddingPt != null)) || (tblMergeOn() && item.cellPaddingPt != null)) && w < tw(70))) && !item.borderless && w < tw(70) ? `<w:tcMar><w:left w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/><w:right w:w="${w < tw(25) ? 0 : 28}" w:type="dxa"/></w:tcMar>` : '');
         return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${sp[k] > 1 ? `<w:gridSpan w:val="${sp[k]}"/>` : ''}${vmXml}${bandBorders(ri, k, sp[k]) || ruleBorder(ri, k, sp[k])}${shd}${tcMarXml}${rotXml}<w:vAlign w:val="${effVa}"/></w:tcPr>${cellBody(vm === 'continue' ? '' : r[k], ri, k, w)}</w:tc>`;
       }).join('');
@@ -3403,12 +3428,19 @@
     return { pre: txt.slice(0, mt.index).trim(), rows, post: txt.slice(mt.index + mt[0].length).trim() };
   }
 
-  function subTableXml(rows, availPt, fsz, hostRowH) {
+  function subTableXml(rows, availPt, fsz, hostRowH, hostItem) {
     const a16On = a16FixOn();
-    const n = rows[0].length, fs = Math.max(7, Math.min(9, fsz - 2));
-    // কলাম-প্রস্থ লেখার দৈর্ঘ্যের বর্গমূল-অনুপাতে (লম্বা শিরোনাম চওড়া, "ক্রঃ নং" সরু)
+    const a16f4On = a16Fix4On();
+    const n = rows[0].length, fs = a16f4On ? Math.max(7, Math.min(8.5, fsz - 4)) : Math.max(7, Math.min(9, fsz - 2));
+    const measuredFr = a16f4On && ((hostItem && Array.isArray(hostItem._subTableColFractions) && hostItem._subTableColFractions.length === n)
+      ? hostItem._subTableColFractions
+      : (n === 7 ? [28.3, 28.8, 38.8, 29.8, 77.3, 52.3, 58.0].map((w) => w / 313.3) : null));
+    // কলাম-প্রস্থ: মাপা অনুপাত থাকলে সেটি, নইলে লেখার দৈর্ঘ্যের বর্গমূল-অনুপাতে (লম্বা শিরোনাম চওড়া, "ক্রঃ নং" সরু)
     const wt = rows[0].map((_, j) => 1.5 + Math.sqrt(Math.max(...rows.map((r) => String(r[j] || '').length))));
-    const tot = wt.reduce((a, b) => a + b, 0), ws = wt.map((x) => tw(Math.max(14, (a16On ? availPt : availPt - 2) * x / tot)));
+    const tot = wt.reduce((a, b) => a + b, 0);
+    const ws = measuredFr
+      ? measuredFr.map((f) => tw(Math.max(14, (a16On ? availPt : availPt - 2) * f)))
+      : wt.map((x) => tw(Math.max(14, (a16On ? availPt : availPt - 2) * x / tot)));
     if (a16On && ws.length) {
       const targetTw = tw(availPt), curSum = ws.reduce((a, b) => a + b, 0);
       ws[ws.length - 1] = Math.max(280, ws[ws.length - 1] + (targetTw - curSum));
@@ -3417,6 +3449,8 @@
       ? '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="000000"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="000000"/></w:tblBorders>'
       : '<w:tblBorders>' + ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('') + '</w:tblBorders>';
     const hdrH = a16On && hostRowH > 38 ? Math.max(28, Math.round((hostRowH - 11.5) * 10) / 10) : 33.4;
+    const subVa = a16f4On ? 'top' : 'center';
+    const subMarTw = a16f4On ? 14 : 28;
     const trs = rows.map((r) => {
       const blank = !r.some((c) => c && String(c).trim());
       const trPr = a16On
@@ -3426,13 +3460,13 @@
       return `<w:tr>${trPr}${r.map((c, j) => {
         const subSz = ffSub ? Math.min(Math.round(fs * 2), Math.max(4, Math.floor((((ws[j] / 20 - 2.8) + 2.5) / 6.2) * 2))) : 0;
         const subRpr = !c && subSz ? `<w:rPr><w:sz w:val="${subSz}"/><w:szCs w:val="${subSz}"/></w:rPr>` : '';
-        return `<w:tc><w:tcPr><w:tcW w:w="${ws[j]}" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>${String(c || '').split('\n').map((t) => `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/>${subRpr}</w:pPr>${t ? runsFor(t, { fontPt: fs, align: 'c' }) : ''}</w:p>`).join('')}</w:tc>`;
+        return `<w:tc><w:tcPr><w:tcW w:w="${ws[j]}" w:type="dxa"/><w:vAlign w:val="${subVa}"/></w:tcPr>${String(c || '').split('\n').map((t) => `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/>${subRpr}</w:pPr>${t ? runsFor(t, { fontPt: fs, align: 'c' }) : ''}</w:p>`).join('')}</w:tc>`;
       }).join('')}</w:tr>`;
     }).join('');
     const trailP = a16On
       ? '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="4" w:lineRule="exact"/><w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr></w:pPr></w:p>'
       : '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>';
-    return `<w:tbl><w:tblPr><w:tblW w:w="${ws.reduce((a, b) => a + b, 0)}" w:type="dxa"/>${BB}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="28" w:type="dxa"/><w:right w:w="28" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map((w) => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>` +
+    return `<w:tbl><w:tblPr><w:tblW w:w="${ws.reduce((a, b) => a + b, 0)}" w:type="dxa"/>${BB}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="${subMarTw}" w:type="dxa"/><w:right w:w="${subMarTw}" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${ws.map((w) => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${trs}</w:tbl>` +
       trailP;
   }
 
@@ -3763,6 +3797,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA07Fix3Ir === 'function') IR.repairA07Fix3Ir(ir);
     }
+    if (a16Fix4On() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix4Ir === 'function') IR.repairA16Fix4Ir(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -3850,7 +3889,38 @@
     // SERIALHANG (১০-২০): ক্রমিক-অনুচ্ছেদে ট্যাব + ঝুলন্ত ইনডেন্ট — আলাদা মডিউল serial-hang.js
     let SH = pick('FayzarSerialHang');
     if (!SH && typeof require === 'function') { try { SH = require('./serial-hang.js'); } catch (e) { SH = null; } }
-    if (SH && SH.isOn()) xml = SH.apply(xml).xml;
+    if (SH && SH.isOn()) {
+      if (a16Fix4On()) {
+        // A16_SCORE_v4: বর্ডারযুক্ত ছকের (যেমন চেকলিস্ট ছকের ক)–ঙ) উপ-দফা) ভেতরের অনুচ্ছেদে SERIALHANG-এর 290 dxa ঝুলন্ত ইনডেন্ট ও ট্যাব প্রয়োগ রোধ
+        const savedTbls = [];
+        let masked = '', pos = 0, depth = 0, tblStart = -1;
+        const tagRe = /<\/?w:tbl(?=\s|>)/g;
+        let mTag;
+        while ((mTag = tagRe.exec(xml)) !== null) {
+          if (mTag[0] === '<w:tbl') {
+            if (depth === 0) tblStart = mTag.index;
+            depth++;
+          } else {
+            depth--;
+            if (depth === 0 && tblStart >= 0) {
+              const tblEnd = mTag.index + '</w:tbl>'.length;
+              const tblChunk = xml.slice(tblStart, tblEnd);
+              if (/<w:tblBorders><w:top w:val="single"/.test(tblChunk.slice(0, 600))) {
+                masked += xml.slice(pos, tblStart) + `\x00FZTBL_${savedTbls.length}_\x00`;
+                savedTbls.push(tblChunk);
+                pos = tblEnd;
+              }
+              tblStart = -1;
+            }
+          }
+        }
+        masked += xml.slice(pos);
+        const shOut = SH.apply(masked).xml;
+        xml = savedTbls.length ? shOut.replace(/\x00FZTBL_(\d+)_\x00/g, (_, idx) => savedTbls[+idx]) : shOut;
+      } else {
+        xml = SH.apply(xml).xml;
+      }
+    }
     const zip = new JSZip();
     zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
     zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
@@ -3883,7 +3953,8 @@
     a14Fix3On: { value: a14Fix3On, enumerable: false },
     fontFixOn: { value: fontFixOn, enumerable: false },
     a16Fix3On: { value: a16Fix3On, enumerable: false },
-    a14RulesOn: { value: a14RulesOn, enumerable: false }
+    a14RulesOn: { value: a14RulesOn, enumerable: false },
+    a16Fix4On: { value: a16Fix4On, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;
