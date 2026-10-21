@@ -412,7 +412,7 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || indentFixOn() || f1Fix2On() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) || !src || !dst || src === dst) return dst;
+    if (!(vspaceOn() || indentFixOn() || f1Fix2On() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) || !src || !dst || src === dst) return dst;
     for (const k of ['_indentFixLineNbsp', '_origIndentFixCs', '_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_f1LightBorders', '_f1BoxOuterBorders', '_f1BoxBorderSz', '_f1LabelColFill', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
@@ -917,6 +917,26 @@
       process.env.__FZ_ON_INDENTFIX === '1' ||
       process.env.__FZ_ON_INDENTFIX === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('INDENTFIX'))
+    ))
+  );
+  // VGAP_TYPE_v1: উল্লম্ব স্পেসিং ত্রুটি (|dy| >= 4) নিরসনে সাধারণ জ্যামিতিক ও কাঠামোগত সংস্কার সুইচ (__FZ_ON_VGAPFIX / FZ_ON=VGAPFIX, বন্ধ: __FZ_OFF_VGAPFIX / FZ_OFF=VGAPFIX)
+  const vgapFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_VGAPFIX || (globalThis.window && globalThis.window.__FZ_OFF_VGAPFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_VGAPFIX) ||
+    (global && (global.__FZ_OFF_VGAPFIX || (global.window && global.window.__FZ_OFF_VGAPFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_VGAPFIX === '1' ||
+      process.env.__FZ_OFF_VGAPFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('VGAPFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_VGAPFIX || (globalThis.window && globalThis.window.__FZ_ON_VGAPFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_VGAPFIX) ||
+    (global && (global.__FZ_ON_VGAPFIX || (global.window && global.window.__FZ_ON_VGAPFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_VGAPFIX === '1' ||
+      process.env.__FZ_ON_VGAPFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('VGAPFIX'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1879,7 +1899,7 @@
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
     const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
     const cSp = (wrapFitOn() || a01FixOn() || a06FixOn() || a08FixOn() || indentFixOn()) && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
-    const posXml = (a14Fix4On() || a14Fix5On() || a03Fix3On() || a03Fix4On() || a08FixOn() || indentFixOn()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
+    const posXml = (a14Fix4On() || a14Fix5On() || a03Fix3On() || a03Fix4On() || a08FixOn() || indentFixOn() || vgapFixOn()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
     const colored = (xml) => {
       let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
       if (cSp || posXml) x = x.replace(/<w:sz /g, `${cSp}${posXml}<w:sz `);
@@ -1974,7 +1994,7 @@
     const empty = rows.map((r, ri) => !r.some((c) => c && String(c).trim()) && !figRows.has(ri));
     // a18: রেখা-ভাগ থেকে মাপা সারি-উচ্চতা (layout-ir rowBandHeights) — মোট = মাপা টেবিল-উচ্চতা (planPage ছোট করলে সেই অনুপাতে)
     const rbh = it.rowHeightsPt;
-    if ((a14FixOn() || a19FixOn() || tblMergeOn() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || (lineGapOn() && it._a14LineGap) || a12FixOn() || a08FixOn() || indentFixOn()) && it.exactRuleHeights && Array.isArray(rbh) && rbh.length === rows.length) {
+    if ((a14FixOn() || a19FixOn() || tblMergeOn() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || (lineGapOn() && it._a14LineGap) || a12FixOn() || a08FixOn() || indentFixOn() || vgapFixOn()) && it.exactRuleHeights && Array.isArray(rbh) && rbh.length === rows.length) {
       const res = rbh.map((h) => ({ h, exact: true }));
       res.fitted = true;
       return res;
@@ -2208,7 +2228,7 @@
   const inkOff = (it) => {
     if (faithfulStudioOn()) it = layoutItem(it);
     if (it.kind !== 'para') return 0;
-    if ((a03Fix3On() || a03Fix4On()) && it._a03OrigInkOff != null) return it._a03OrigInkOff;
+    if ((a03Fix3On() || a03Fix4On() || vgapFixOn()) && it._a03OrigInkOff != null) return it._a03OrigInkOff;
     const fs = it.fontPt || 12;
     const ls = (it.tabLines && it.tabLines.length) ? it.tabLines : (it.lines && it.lines.length ? it.lines : String(it.text || '').split('\n'));
     const t = String(ls[0] || it.text || '');
@@ -2237,6 +2257,11 @@
   const lead = (it) => ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a06FixOn() || a07Fix6On()) && it && it.kind === 'figure' && it._a07FigLeadPt > 0 ? it._a07FigLeadPt : inkOff(it) + raExtra(it));
 
   function planPage(page) {
+    if (!vgapFixOn() && page && page._preVGapFixSnap) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.restoreVGapFixPage === 'function') IR.restoreVGapFixPage(page);
+    }
     if (p2DriftOn() && page && (page.page == null || page.page >= 2)) {
       let LF = pick('FayzarLineFit');
       if (!LF && typeof require === 'function') { try { LF = require('./line-fit.js'); } catch (e) { LF = null; } }
@@ -2431,6 +2456,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairIndentFixPage === 'function') IR.repairIndentFixPage(page);
+    }
+    if ((vgapFixOn() || (page && page._preVGapFixSnap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairVGapFixPage === 'function') IR.repairVGapFixPage(page);
     }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
@@ -3897,11 +3927,11 @@
     const rowBA = (ri) => (formFixTbl && RB0 && ri > 0 && RB0[ri - 1] === RB0[ri] ? 0 : BA);
     // [Rule FB4: FZ_OFF=FORMFIX / FZ_OFF=FB4] ছকের সারিতে w:hRule="exact"-এর বদলে "atLeast" ব্যবহৃত হবে এবং Word-এর বর্ডার-পুরুত্ব (rowBA = 0.75pt) বাদ দিয়ে w:val লেখা হবে।
     const gfAtLeast = !!(item.gridFirst || (formFixTbl && !globalThis.__FZ_OFF_FB4));
-    const rfExactTbl = isRotTbl || isCompactBoxA13 || (ruleFixOn() || tblMergeOn() || rules2On() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || a14FixOn() || a19FixOn() || (lineGapOn() && item._a14LineGap) || a12FixOn() || a08FixOn()) && (isDigitBoxRf || item.exactRuleHeights || (item.headShade && Array.isArray(item.srcRulesPt) && item.srcRulesPt.length === rows.length + 1));
+    const rfExactTbl = isRotTbl || isCompactBoxA13 || (ruleFixOn() || tblMergeOn() || rules2On() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || a14FixOn() || a19FixOn() || (lineGapOn() && item._a14LineGap) || a12FixOn() || a08FixOn() || vgapFixOn()) && (isDigitBoxRf || item.exactRuleHeights || (item.headShade && Array.isArray(item.srcRulesPt) && item.srcRulesPt.length === rows.length + 1));
     const trPrFor = (r, ri) => isDigitBoxRf
       ? `<w:trPr><w:trHeight w:val="${tw(Math.max(12, (item.boxRuleHeightPt || item.heightPt || 16) - rowBA(ri)))}" w:hRule="exact"/></w:trPr>`
       : rh.fitted
-      ?`<w:trPr><w:trHeight w:val="${tw(((rh[ri].exact && (!gfAtLeast || isRotTbl || ((tblMergeOn() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || a14Fix3On() || (lineGapOn() && item._a14LineGap) || a12FixOn() || a08FixOn()) && item.exactRuleHeights))) || ((a14FixOn() || (lineGapOn() && item._a14LineGap)) && item.gapRows && item.gapRows[ri])) ? rh[ri].h : Math.max(1, rh[ri].h - rowBA(ri)))}" w:hRule="${(rfExactTbl || (rh[ri].exact && !gfAtLeast)) ? 'exact' : 'atLeast'}"/></w:trPr>`
+      ?`<w:trPr><w:trHeight w:val="${tw(((rh[ri].exact && (!gfAtLeast || isRotTbl || ((tblMergeOn() || a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On() || a18FixOn() || a14Fix3On() || (lineGapOn() && item._a14LineGap) || a12FixOn() || a08FixOn() || vgapFixOn()) && item.exactRuleHeights))) || ((a14FixOn() || (lineGapOn() && item._a14LineGap)) && item.gapRows && item.gapRows[ri])) ? rh[ri].h : Math.max(1, rh[ri].h - rowBA(ri)))}" w:hRule="${(rfExactTbl || (rh[ri].exact && !gfAtLeast)) ? 'exact' : 'atLeast'}"/></w:trPr>`
       : isEmpty(r, ri) && rowH ? `<w:trPr><w:trHeight w:val="${tw(gfAtLeast ? Math.max(1, rowH * 0.4 - rowBA(ri)) : rowH * 0.4)}" w:hRule="${(rfExactTbl || !gfAtLeast) ? 'exact' : 'atLeast'}"/></w:trPr>`
       : (rowH > (item.fontPt || 11) * 1.3
         // ছোট লেখার সারি (আরবি/একশব্দ) ⇒ "ঠিক" মূলের উচ্চতা (Word-এর বাড়তি লাইন-উচ্চতায় পাতা উপচাত); লম্বা লেখা ⇒ "অন্তত"
@@ -4254,7 +4284,7 @@
     const dx = nL - L, o = keepInternalProps(it, Object.assign({}, it));
     if (o.indentPt != null) o.indentPt = Math.max(0, o.indentPt - dx);
     if (o.tabStops) o.tabStops = o.tabStops.map((t) => (formKitOn() && t && typeof t === 'object' ? Object.assign({}, t, { pos: Math.max(1, (t.pos != null ? t.pos : t.x) - dx) }) : Math.max(1, t - dx)));
-    if ((rules2On() && o.fullWidthShadeBar && o.shade && o.shade !== '000000' && o.color !== 'FFFFFF' && !o.shadeRun && o.align === 'c') || ((a03Fix3On() || a03Fix4On()) && ((o.shade && !o.shadeRun && o.align === 'c') || o._p2VRule))) { o.indentPt = 0; o.centerShiftPt = null; }
+    if ((rules2On() && o.fullWidthShadeBar && o.shade && o.shade !== '000000' && o.color !== 'FFFFFF' && !o.shadeRun && o.align === 'c') || ((a03Fix3On() || a03Fix4On() || vgapFixOn()) && ((o.shade && !o.shadeRun && o.align === 'c') || o._p2VRule))) { o.indentPt = 0; o.centerShiftPt = null; }
     else if (o.centerShiftPt != null) o.centerShiftPt -= (nL + nR) / 2 - (L + R) / 2;
     if (o.rightIndentPt != null) o.rightIndentPt = Math.max(0, o.rightIndentPt - (R - nR));
     if (o.justRightPt != null) o.justRightPt = Math.max(0, o.justRightPt - (R - nR));
@@ -4419,6 +4449,11 @@
 
   /** নকশা → document.xml-এর body এবং মিডিয়া */
   function bodyXml(ir, opts) {
+    if (!vgapFixOn() && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preVGapFixSnap)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.restoreVGapFixIr === 'function') IR.restoreVGapFixIr(ir);
+    }
     if (p2DriftOn() && ir && Array.isArray(ir.pages)) {
       let LF = pick('FayzarLineFit');
       if (!LF && typeof require === 'function') { try { LF = require('./line-fit.js'); } catch (e) { LF = null; } }
@@ -4625,6 +4660,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairIndentFixIr === 'function') IR.repairIndentFixIr(ir);
     }
+    if ((vgapFixOn() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preVGapFixSnap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairVGapFixIr === 'function') IR.repairVGapFixIr(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4663,7 +4703,7 @@
         return paraXml(keepInternalProps(e.it, Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before })), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
       }, ctx.boxes);
       if (!pageXml) pageXml = '<w:p/>';
-      if ((a16Fix5On() || a16Fix6On() || indentFixOn()) && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
+      if ((a16Fix5On() || a16Fix6On() || indentFixOn() || vgapFixOn()) && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
         const ovRuns = page._a16Fix5Overlays.map((ov, ovi) => {
           const gVal = ov.gray != null ? ov.gray : 0;
           let mEntry = ctx.media.find((m) => m._a16Fix5Gray === gVal);
@@ -4723,7 +4763,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || indentFixOn() || f1Fix2On() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || indentFixOn() || f1Fix2On() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn() || vgapFixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4825,6 +4865,7 @@
     a16Fix4On: { value: a16Fix4On, enumerable: false },
     a16Fix5On: { value: a16Fix5On, enumerable: false },
     a16Fix6On: { value: a16Fix6On, enumerable: false },
+    vgapFixOn: { value: vgapFixOn, enumerable: false },
     makeGrayPngBase64: { value: makeGrayPngBase64, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
