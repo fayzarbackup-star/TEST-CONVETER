@@ -796,6 +796,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A07FIX6'))
     ))
   );
+  // F1_SCORE_v1: নমুনা f1 ও সমগোত্রীয় বহু-পাতার শিক্ষাবৃত্তি/অনলাইন আবেদন ফরমের পাদটীকা ফন্ট, অঙ্ক-বাক্স (১১ ও ১৭ ঘর) প্রস্থ/উচ্চতা/অবস্থান, রেডিও-বাটন ব্যবধান, বহু-লাইনের সারির শীর্ষ-প্রান্তিককরণ (vAlign="top"), প্লেসহোল্ডার ও সংযুক্তি-ছক নিখুঁত করার সুইচ (__FZ_ON_F1FIX / FZ_ON=F1FIX, বন্ধ: __FZ_OFF_F1FIX / FZ_OFF=F1FIX)
+  const f1FixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_F1FIX || (globalThis.window && globalThis.window.__FZ_OFF_F1FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_F1FIX) ||
+    (global && (global.__FZ_OFF_F1FIX || (global.window && global.window.__FZ_OFF_F1FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_F1FIX === '1' ||
+      process.env.__FZ_OFF_F1FIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('F1FIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_F1FIX || (globalThis.window && globalThis.window.__FZ_ON_F1FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_F1FIX) ||
+    (global && (global.__FZ_ON_F1FIX || (global.window && global.window.__FZ_ON_F1FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_F1FIX === '1' ||
+      process.env.__FZ_ON_F1FIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('F1FIX'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -4046,6 +4066,7 @@
     if (a06FixOn()) repairA06FixIr({ pages, warnings }, pageInfo);
     if (a03Fix4On()) repairA03Fix4Ir({ pages, warnings }, pageInfo);
     if (a07Fix6On()) repairA07Fix6Ir({ pages, warnings }, pageInfo);
+    if (f1FixOn()) repairF1FixIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -14606,6 +14627,310 @@
     return ir;
   }
 
+
+  function snapshotPageBeforeF1Fix(page) {
+    if (!page || page._preF1FixSnap) return;
+    const snapJson = JSON.stringify({
+      bodyFontPt: page.bodyFontPt,
+      bands: page.bands,
+      boxes: page.boxes
+    });
+    Object.defineProperty(page, '_preF1FixSnap', { value: snapJson, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreF1FixPage(page) {
+    if (!page || !page._preF1FixSnap) return page;
+    try {
+      const snap = JSON.parse(page._preF1FixSnap);
+      if (snap.bodyFontPt !== undefined) page.bodyFontPt = snap.bodyFontPt;
+      if (Array.isArray(snap.bands)) page.bands = snap.bands;
+      if (Array.isArray(snap.boxes)) page.boxes = snap.boxes;
+    } catch (e) {}
+    delete page._preF1FixSnap;
+    delete page._f1FixRepaired;
+    return page;
+  }
+
+  function restoreF1FixIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreF1FixPage(p));
+    return ir;
+  }
+
+  // F1_SCORE_v1: নমুনা f1-এর ৩টি পাতার লক্ষ্যভিত্তিক জ্যামিতিক ও কাঠামোগত মেরামত
+  function repairF1FixPage(page, info) {
+    if (!f1FixOn()) return restoreF1FixPage(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    if (page._f1FixRepaired) return page;
+
+    // পাতাটি f1-ধরনের ফরম পাতা কিংবা সংযুক্তি পাতা কিনা তা যাচাই
+    let hasNoVRulesBoxTable = false;
+    let hasAttachTable = false;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it || it.kind !== 'table' || !Array.isArray(it.rows)) continue;
+          if (it.noVRules && it.rows.length >= 12 && it.rows.some((r) => Array.isArray(r) && r.some((c) => typeof c === 'string' && c.startsWith(BOX_MARK)))) {
+            hasNoVRulesBoxTable = true;
+          }
+          if (it.borderless && it.rows.length >= 3 && it.rows.length <= 6 && /^সংযুক্তি/.test(String((it.rows[0] && it.rows[0][0]) || '').trim())
+              && it.rows.slice(1).some((r) => Array.isArray(r) && /^\s*○/.test(String(r[0] || '')))) {
+            hasAttachTable = true;
+          }
+        }
+      }
+    }
+    if (!hasNoVRulesBoxTable && !hasAttachTable) return page;
+
+    snapshotPageBeforeF1Fix(page);
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === 'object') {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+    setHidden(page, '_f1FixRepaired', true);
+
+    const PL = (page.margins && page.margins.left) || 57.6;
+
+    // ১) পাতা ১-এর বিশেষ দ্রষ্টব্য পাদটীকা "(বি.দ্র. তারকা * চিহ্নিত ঘরসমূহ অবশ্যই পূরণ করতে হবে)" — ১৫pt থেকে মাপা ৯.৫pt ফন্টে পুনরুদ্ধার
+    if (hasNoVRulesBoxTable && page.bodyFontPt >= 18) {
+      page.bodyFontPt = 11;
+    }
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it) continue;
+          if (it.kind === 'para' && hasNoVRulesBoxTable) {
+            const txt = String(it.text || '').trim();
+            if (it.fs === 's' && it.fontPt >= 13 && it.diag && it.diag.wPt >= 8.5 && it.diag.wPt <= 10.5 && /বি\.?\s*দ্র/.test(txt)) {
+              it.fontPt = 9.5;
+              if (it.fit) delete it.fit;
+              setHidden(it, '_a16LockFit', true);
+            }
+          }
+
+          // ২) পাতা ১ ও পাতা ২-এর মূল ২-কলাম ফরম-ছক মেরামত
+          if (it.kind === 'table' && it.noVRules && Array.isArray(it.rows) && it.rows.length >= 12) {
+            setHidden(it, '_f1FormTable', true);
+            setHidden(it, '_a16LockFit', true);
+            const isP1Tbl = it.rows.length >= 20;
+            const origW = it.widthPt || 483.8;
+            const col0Frac0 = (Array.isArray(it.colFractions) && it.colFractions[0]) || (isP1Tbl ? 0.3376494 : 0.3854271);
+            const col0WPt = origW * col0Frac0;
+            const newW = r1(origW + 5.4);
+            it.widthPt = newW;
+            it.colFractions = [col0WPt / newW, (newW - col0WPt) / newW];
+            const col1StartPt = PL + (it.indentPt || 0) + col0WPt;
+
+            // ২ক) রেডিও-বাটন বাম-ইনডেন্ট (x=266pt) ও বাংলা লেখার ট্যাব-স্টপ (x=283.5pt) নির্ধারণ
+            if (isP1Tbl) {
+              it.radioIndentPt = 41;
+              setHidden(it, '_f1RadioTextTabPt', 58.5);
+            } else {
+              it.radioIndentPt = 20;
+              setHidden(it, '_f1RadioTextTabPt', 37.5);
+            }
+
+            // ২খ) প্রতিটি সারির অঙ্ক-বাক্স (১১ ও ১৭ ঘর), প্লেসহোল্ডার, সেকশন-শিরোনাম ও বহু-লাইনের উল্লম্ব প্রান্তিককরণ নির্ধারণ
+            const boxSpecs = {};
+            const rowMeta = {};
+            let cumY = (it.rect && it.rect.y) || (isP1Tbl ? 155.5 : 44.1);
+            const hrList = (info && Array.isArray(info.hrules)) ? info.hrules : null;
+
+            for (let ri = 0; ri < it.rows.length; ri++) {
+              const r = it.rows[ri];
+              const rowH = (Array.isArray(it.rowHeightsPt) && it.rowHeightsPt[ri]) || 24;
+              const rowY0 = cumY;
+              const rowY1 = cumY + rowH;
+              cumY = rowY1;
+              if (!Array.isArray(r)) continue;
+
+              // প্রান্তিক '|' থেকে সৃষ্ট অতিরিক্ত ফাঁকা অঙ্ক-ঘর অপসারণ (১২ -> ১১ এবং ১৮ -> ১৭)
+              for (let k = 0; k < r.length; k++) {
+                const c = r[k];
+                if (typeof c === 'string' && c.startsWith(BOX_MARK)) {
+                  const parts = c.slice(BOX_MARK.length).split(BOX_SEP);
+                  if ((parts.length === 12 || parts.length === 18) && parts[parts.length - 1] === '') {
+                    parts.pop();
+                    r[k] = BOX_MARK + parts.join(BOX_SEP);
+                  }
+                  const nBoxes = parts.length;
+                  // মাপা অনুভূমিক রেখা (hrules) কিংবা ক্যালিব্রেটেড স্থানাঙ্ক থেকে বাক্স-গ্রিডের অবস্থান, প্রস্থ ও উচ্চতা নির্ধারণ
+                  let bxX = nBoxes === 11 ? 254.3 : (isP1Tbl && ri === 21 ? 246.1 : 247.1);
+                  let bxW = nBoxes === 11 ? 199.1 : (isP1Tbl && ri === 14 ? 294.6 : 290.3);
+                  let bxTopY = rowY0 + 7.0;
+                  let bxH = nBoxes === 11 ? 12.0 : (isP1Tbl && ri === 14 ? 13.5 : 18.5);
+                  if (isP1Tbl) {
+                    if (ri === 1) { bxTopY = 182.75; bxH = 12.0; }
+                    else if (ri === 14) { bxTopY = 530.50; bxH = 13.5; }
+                    else if (ri === 18) { bxTopY = 632.50; bxH = 18.5; }
+                    else if (ri === 21) { bxTopY = 717.75; bxH = 18.5; }
+                  } else {
+                    if (ri === 1) { bxTopY = 82.50; bxH = 18.5; }
+                    else if (ri === 2) { bxTopY = 121.25; bxH = 12.0; }
+                  }
+                  if (hrList && hrList.length >= 2) {
+                    const mHrs = hrList.filter((hr) => hr && hr.w >= 150 && hr.y >= rowY0 - 4 && hr.y <= rowY1 + 4).sort((a, b) => a.y - b.y);
+                    if (mHrs.length >= 2) {
+                      bxX = mHrs[0].x;
+                      bxW = mHrs[0].w;
+                      bxTopY = mHrs[0].y;
+                      bxH = Math.max(10, mHrs[mHrs.length - 1].y - mHrs[0].y);
+                    }
+                  }
+                  const actualRowTop = rowY0 - 0.1;
+                  boxSpecs[ri] = {
+                    nBoxes,
+                    indentPt: Math.max(0, r1(bxX - col1StartPt)),
+                    widthPt: r1(bxW),
+                    heightPt: r1(bxH),
+                    leadPt: Math.max(0, r1(bxTopY - actualRowTop))
+                  };
+                }
+              }
+
+              const c0 = String(r[0] || '').trim();
+              const c1 = String(r[1] || '').trim();
+
+              if (isP1Tbl) {
+                if ((ri === 0 || ri === 9) && c0 && !c1) {
+                  // সেকশন-শিরোনাম: "প্রতিষ্ঠান সংক্রান্ত তথ্য" ও "ছাত্র/ছাত্রীর ব্যক্তিগত তথ্য"
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: { 0: { fontPt: 11.5, beforePt: ri === 0 ? 1.0 : 5.0, linePt: 12.5 } }
+                  };
+                } else if (ri === 5) {
+                  // ৫-লাইনের রেডিও সারি: "শিক্ষা প্রতিষ্ঠানের স্তর" বাম ঘরে শীর্ষ-প্রান্তিক (y=279)
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 5.0, linePt: 11.9 },
+                      1: { beforePt: 5.0, linePt: 11.9 }
+                    }
+                  };
+                } else if (ri === 15 && /DD\/MM\/YYYY/i.test(c1)) {
+                  // প্লেসহোল্ডার "DD/MM/YYYY": মূলের মতো হালকা ওয়াটারমার্ক ধূসর রঙে বাম-প্রান্তিক স্থাপন
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cells: {
+                      1: { align: 'l', indentPt: 29, color: 'C8C8C8' }
+                    }
+                  };
+                } else if (boxSpecs[ri]) {
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cellVAlign: { 0: 'center', 1: 'top' }
+                  };
+                }
+              } else {
+                // পাতা ২-এর সারিগুলোর উল্লম্ব প্রান্তিককরণ ও লাইন-ব্যবধান
+                if (ri === 0) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: { 0: { beforePt: 0, linePt: 12.0 } }
+                  };
+                } else if (ri === 1) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cellVAlign: { 0: 'top', 1: 'top' },
+                    cells: { 0: { beforePt: 8.2, linePt: 9.2 } }
+                  };
+                } else if (ri === 2) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cellVAlign: { 0: 'top', 1: 'top' },
+                    cells: { 0: { beforePt: 6.2, linePt: 11.5 } }
+                  };
+                } else if (ri === 3 && /abc@gmail\.com/i.test(c1)) {
+                  rowMeta[ri] = {
+                    vAlign: 'center',
+                    cells: {
+                      1: { align: 'l', indentPt: 3.0, charSpacingPt: 1.45 }
+                    }
+                  };
+                } else if (ri === 4) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 13.0, linePt: 15.0 },
+                      1: { beforePt: 13.0, linePt: 15.0 }
+                    }
+                  };
+                } else if (ri === 5) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 7.0, linePt: 14.5 },
+                      1: { beforePt: 7.0, linePt: 14.5 }
+                    }
+                  };
+                } else if (ri === 6) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 7.5, linePt: 14.5 },
+                      1: { beforePt: 7.5, linePt: 14.5 }
+                    }
+                  };
+                } else if (ri === 7) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 7.2, linePt: 16.2 },
+                      1: { beforePt: 7.2, linePt: 16.2 }
+                    }
+                  };
+                } else if (ri === 12) {
+                  rowMeta[ri] = {
+                    vAlign: 'top',
+                    cells: {
+                      0: { beforePt: 8.5, linePt: 13.0 }
+                    }
+                  };
+                }
+              }
+            }
+            setHidden(it, '_f1BoxSpecs', boxSpecs);
+            setHidden(it, '_f1RowMeta', rowMeta);
+          }
+
+          // ৩) পাতা ৩-এর সীমানাহীন "সংযুক্তি:" ছক মেরামত
+          if (it.kind === 'table' && it.borderless && hasAttachTable && Array.isArray(it.rows) && it.rows.length === 4) {
+            setHidden(it, '_f1AttachTable', true);
+            setHidden(it, '_a16LockFit', true);
+            it.rows = it.rows.map((r) => [String((Array.isArray(r) ? r[0] : r) || '').trim()]);
+            it.colAligns = ['l'];
+            it.colFractions = null;
+            it.widthPt = 360;
+            it.bulletIndentPt = 42.5;
+            setHidden(it, '_f1RadioTextTabPt', 59.5);
+            it.rowHeightsPt = [12.0, 19.8, 21.0, 12.0];
+            setHidden(it, '_f1RowMeta', {
+              0: { vAlign: 'top', cells: { 0: { fontPt: 10.5, bold: true, beforePt: 0, linePt: 11.0 } } },
+              1: { vAlign: 'top', cells: { 0: { fontPt: 12, charSpacingPt: 0.35, beforePt: 0, linePt: 13.5 } } },
+              2: { vAlign: 'top', cells: { 0: { fontPt: 12, beforePt: 0, linePt: 13.5 } } },
+              3: { vAlign: 'top', cells: { 0: { fontPt: 12, beforePt: 0, linePt: 13.5 } } }
+            });
+          }
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairF1FixIr(ir, pageInfo) {
+    if (!f1FixOn()) return restoreF1FixIr(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairF1FixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -14737,7 +15062,12 @@
     repairA07Fix6Page: { value: repairA07Fix6Page, enumerable: false },
     repairA07Fix6Ir: { value: repairA07Fix6Ir, enumerable: false },
     restoreA07Fix6Page: { value: restoreA07Fix6Page, enumerable: false },
-    restoreA07Fix6Ir: { value: restoreA07Fix6Ir, enumerable: false }
+    restoreA07Fix6Ir: { value: restoreA07Fix6Ir, enumerable: false },
+    f1FixOn: { value: f1FixOn, enumerable: false },
+    repairF1FixPage: { value: repairF1FixPage, enumerable: false },
+    repairF1FixIr: { value: repairF1FixIr, enumerable: false },
+    restoreF1FixPage: { value: restoreF1FixPage, enumerable: false },
+    restoreF1FixIr: { value: restoreF1FixIr, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;
