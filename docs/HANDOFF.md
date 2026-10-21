@@ -1,10 +1,9 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২১ (দুপুর) — কাজ একটানা চলবে, থামবে না
-- **লাইভ (push d345494):** ডিফল্ট-চালু ১৫ সুইচ (…A14RULES A07FIX3 A14FIX4)। লেআউট: a07 ৮৭.১, a16 ৯০.০, a02 ৯০.৭, a14 ৯৩.৮, a13 ৯৩.৮, a03 ৯৬.৫। ১৫-ট্যাগ = `WRAPFIT+NESTBOX+TBLMERGE+A03FIX+A16FIX+VSPACE+BOXSPLIT+SERIALHANG+A07FIX2+A14FIX3+WIDTH+A16FIX3+A14RULES+A07FIX3+A14FIX4`।
-- **বসানো কিন্তু বন্ধ:** FONTFIX, INDENT v2, A16FIX4 (নিরপেক্ষ)।
-- **A02_RULES_v3 (RULES2):** merge হয়েছে (builder keepInternalProps-শর্ত থেকে rules2On বাদ), rules2.test ১৩/০ → run-all চলছে → `asis-ab --on RULES2 --base <১৫টি> --ids a02,a03,a07,a14,a16,a13,a01`।
-- **Downloads-এ, বসানো বাকি (একটি একটি):** A13_SCORE_v1, A16_SCORE_v5 (দুটি কপি — "(1)" নতুন, তুলনা করো), A03_SCORE_v2 (ব্যবহারকারী জিপ চেয়ে নিয়েছেন)।
-- **Gemini ট্যাব (tabIndex = /tabs তালিকার অবস্থান):** 0 u/1 A09_SCORE_v1 (A09FIX) · 1 u/2 A14_SCORE_v5 (A14FIX5) · 2 u/7 A07_SCORE_v4 (A07FIX4) · 3 u/3 A02_SCORE_v1 (A02FIX)। নজর `watchn.ps1 "0=A09_SCORE_v1,1=A14_SCORE_v5,2=A07_SCORE_v4,3=A02_SCORE_v1"` (এখন জিপ ছাড়া থেমে থাকলে নিজে জিপ চায়)।
-- **পাঠানো আটকালে ("Task mode not selected"):** ট্যাব সামনে/সক্রিয় না থাকলে debugger-ক্লিক কাজ করে না। সমাধান: পুরোনো ট্যাব `navigate-tab?tabId=X&url=about:blank` → `Start-Process chrome https://gemini.google.com/u/N/app` → সঙ্গে সঙ্গে `agent_manager send --tab <নতুন অবস্থান> ...` (navigate ছাড়া)। exec-script Gemini-তে চলে না (Trusted Types)।
-- **জিপ-নির্দেশ:** PROMPT-এর শুরুতে বাধ্যতামূলক জিপ-ব্লক (make-score-task) + _RULES_TAIL; চ্যাট-বার্তা ইংরেজিতে (ps1-এ বাংলা ভাঙে; ps1 ফাইল UTF-8 BOM সহ রাখো)। বাড়তি নির্দেশ: sendtask ৮ম আর্গুমেন্ট (.md); বাড়তি ফাইল: `$env:TASK_EXTRA`।
-- **বসানোর চক্র:** `apply_reply.ps1 <ID>` → `merge-switch-check` → হারানো লাইন হাতে (লাইভের পরের সুইচ রেখে; export, keepInternalProps, measure-শর্ত; ডিফল্ট-চালু সুইচের শর্তে নতুন আচরণ নতুন সুইচের অধীনে) → টেস্ট পিন → run-all → asis-ab → কেউ না কমলে switch-defaults → run-all → `node scratch/github_sync.js --push`।
-- **নিয়ম:** একবারে একটি ভারী রান; A/B/run-all চলাকালীন কোড বসাবে না; ছোট বাগ নিজে, বড় কাজ Gemini; ক্যাপচা নিজে সমাধান নয়।
+# হ্যান্ডঅফ — ২০২৬-১০-২১ (দুপুর ~১২:৩০) — কাজ একটানা চলবে, থামবে না
+- **লাইভ (push 2e9a774):** ডিফল্ট ১৬: WRAPFIT NESTBOX TBLMERGE A03FIX A16FIX VSPACE BOXSPLIT SERIALHANG A07FIX2 A14FIX3 WIDTH A16FIX3 A14RULES A14FIX4 RULES2 A13FIX। **A07FIX3 বাদ** — a07-এর টেবিল ভাঙত (স্কোর ধরেনি)। নতুন ডিফল্টের a07 রান = ট্যাগ `DEF16b` (টেবিল অক্ষত, লেআউট ৮২.৭)।
+- **টেবিল-নিয়ম (ব্যবহারকারী):** আগে পূর্ণ গ্রিড → তারপর gridSpan/vMerge → তারপর লেখা; টেবিল কাটা/দাগ মোছা/অকারণ ধূসর নিষেধ (_RULES_TAIL-এ যোগ)। টেবিল ছোঁয়া সুইচ গ্রহণের আগে টেবিল-পাতার compare PNG চোখে দেখো। **বাকি:** qa-স্কোরে টেবিল-গ্রিড অখণ্ডতা পরীক্ষা যোগ (scratchpad tblsplit.mjs-এর ধারণা থেকে)।
+- **বসানো কিন্তু বন্ধ:** FONTFIX, INDENT v2, A16FIX4, A07FIX3।
+- **Downloads-এ, বসানো বাকি (একটি একটি; টেবিল চোখে দেখে):** A16_SCORE_v5 (দুটি কপি, "(1)" নতুন), A03_SCORE_v2, A09_SCORE_v1।
+- **Gemini ট্যাব (tabIndex = /tabs অবস্থান):** 0 u/1 A07_SCORE_v5 (A07FIX5, ভিত্তি DEF16b, নোটে টেবিল-নিষেধ) · 1 u/2 A14_SCORE_v5 · 2 u/7 A07_SCORE_v4 (পুরোনো ভিত্তি A07FIX3-সহ — উত্তর এলে সাবধানে, টেবিল দেখো) · 3 u/3 A02_SCORE_v1। নজর `watchn.ps1 "0=A07_SCORE_v5,1=A14_SCORE_v5,2=A07_SCORE_v4,3=A02_SCORE_v1"` (শুধু fetch; চলমান চ্যাটে কখনো স্বয়ংক্রিয় বার্তা নয়)।
+- **পাঠানো আটকালে:** পুরোনো ট্যাব about:blank → `Start-Process chrome https://gemini.google.com/u/N/app` → সঙ্গে সঙ্গে `agent_manager send --tab <অবস্থান> --task T --prompt "<ইংরেজি>" --file <bundle> --force`।
+- **বসানোর চক্র:** `apply_reply.ps1 <ID>` → `merge-switch-check` → হারানো লাইন হাতে → টেস্ট পিন → run-all (otsu গতি-টেস্ট Word চলাকালীন মাঝে মাঝে ব্যর্থ — আলাদা চালিয়ে দেখো) → asis-ab → টেবিল-পাতা চোখে → কেউ না কমলে switch-defaults → run-all → push।
+- **Desktop:** `Fayzar-তুলনা-2026-10-21\` (compare PNG ২৪টি, Word-ডিফল্ট১৬\*.docx, a07-টেবিল-ঠিক.docx)।

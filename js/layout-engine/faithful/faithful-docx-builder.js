@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_p2VRule', '_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_p2VRule', '_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -595,6 +595,26 @@
       process.env.__FZ_ON_A13FIX === '1' ||
       process.env.__FZ_ON_A13FIX === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A13FIX'))
+    ))
+  );
+  // A16_SCORE_v5: নমুনা a16 ও সমগোত্রীয় চেকলিস্ট/স্মারক নথির লক্ষ্যভিত্তিক জ্যামিতিক ও কাঠামোগত সংস্কারের সুইচ (__FZ_ON_A16FIX5 / FZ_ON=A16FIX5)
+  const a16Fix5On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A16FIX5 || (globalThis.window && globalThis.window.__FZ_OFF_A16FIX5))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A16FIX5) ||
+    (global && (global.__FZ_OFF_A16FIX5 || (global.window && global.window.__FZ_OFF_A16FIX5))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A16FIX5 === '1' ||
+      process.env.__FZ_OFF_A16FIX5 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A16FIX5'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A16FIX5 || (globalThis.window && globalThis.window.__FZ_ON_A16FIX5))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A16FIX5) ||
+    (global && (global.__FZ_ON_A16FIX5 || (global.window && global.window.__FZ_ON_A16FIX5))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A16FIX5 === '1' ||
+      process.env.__FZ_ON_A16FIX5 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX5'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1001,6 +1021,63 @@
     let bin = '';
     for (let i = 0; i < u8.length; i++) bin += String.fromCharCode(u8[i]);
     return btoa(bin);
+  }
+  const _a16Fix5PngCache = {};
+  function makeGrayPngBase64(wPx, hPx, grayVal) {
+    const w = Math.max(1, Math.min(64, Math.round(wPx || 1)));
+    const h = Math.max(1, Math.min(64, Math.round(hPx || 1)));
+    const g = Math.max(0, Math.min(255, Math.round(grayVal != null ? grayVal : 0)));
+    const key = w + 'x' + h + ':' + g;
+    if (_a16Fix5PngCache[key]) return _a16Fix5PngCache[key];
+    const rawLen = h * (1 + w);
+    const raw = new Uint8Array(rawLen);
+    let p = 0;
+    for (let y = 0; y < h; y++) {
+      raw[p++] = 0;
+      for (let x = 0; x < w; x++) raw[p++] = g;
+    }
+    let s1 = 1, s2 = 0;
+    for (let i = 0; i < rawLen; i++) {
+      s1 = (s1 + raw[i]) % 65521;
+      s2 = (s2 + s1) % 65521;
+    }
+    const adler = ((s2 << 16) | s1) >>> 0;
+    const zLen = 2 + 5 + rawLen + 4;
+    const z = new Uint8Array(zLen);
+    z[0] = 0x78; z[1] = 0x01;
+    z[2] = 0x01;
+    z[3] = rawLen & 0xFF; z[4] = (rawLen >>> 8) & 0xFF;
+    const nlen = (~rawLen) & 0xFFFF;
+    z[5] = nlen & 0xFF; z[6] = (nlen >>> 8) & 0xFF;
+    z.set(raw, 7);
+    const ao = 7 + rawLen;
+    z[ao] = (adler >>> 24) & 0xFF; z[ao + 1] = (adler >>> 16) & 0xFF; z[ao + 2] = (adler >>> 8) & 0xFF; z[ao + 3] = adler & 0xFF;
+    const u32be = (v) => [(v >>> 24) & 0xFF, (v >>> 16) & 0xFF, (v >>> 8) & 0xFF, v & 0xFF];
+    const chunk = (typeStr, dataU8) => {
+      const len = dataU8.length;
+      const out = new Uint8Array(12 + len);
+      const lb = u32be(len);
+      out[0] = lb[0]; out[1] = lb[1]; out[2] = lb[2]; out[3] = lb[3];
+      for (let i = 0; i < 4; i++) out[4 + i] = typeStr.charCodeAt(i);
+      out.set(dataU8, 8);
+      const crc = crc32Bytes(out.subarray(4, 8 + len));
+      const cb = u32be(crc);
+      out[8 + len] = cb[0]; out[9 + len] = cb[1]; out[10 + len] = cb[2]; out[11 + len] = cb[3];
+      return out;
+    };
+    const ihdr = new Uint8Array([...u32be(w), ...u32be(h), 8, 0, 0, 0, 0]);
+    const cIhdr = chunk('IHDR', ihdr);
+    const cIdat = chunk('IDAT', z);
+    const cIend = chunk('IEND', new Uint8Array(0));
+    const sig = [137, 80, 78, 71, 13, 10, 26, 10];
+    const png = new Uint8Array(8 + cIhdr.length + cIdat.length + cIend.length);
+    png.set(sig, 0);
+    png.set(cIhdr, 8);
+    png.set(cIdat, 8 + cIhdr.length);
+    png.set(cIend, 8 + cIhdr.length + cIdat.length);
+    const b64 = u8ToB64(png);
+    _a16Fix5PngCache[key] = b64;
+    return b64;
   }
   class MiniJSZip {
     constructor() { this.files = {}; }
@@ -1945,6 +2022,11 @@
       let IR = pick('FayzarLayoutIR');
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA13FixPage === 'function') IR.repairA13FixPage(page);
+    }
+    if (a16Fix5On() && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix5Page === 'function') IR.repairA16Fix5Page(page);
     }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
@@ -3901,6 +3983,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA13FixIr === 'function') IR.repairA13FixIr(ir);
     }
+    if (a16Fix5On() && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix5Ir === 'function') IR.repairA16Fix5Ir(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -3939,6 +4026,26 @@
         return paraXml(Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before }), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
       }, ctx.boxes);
       if (!pageXml) pageXml = '<w:p/>';
+      if (a16Fix5On() && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
+        const ovRuns = page._a16Fix5Overlays.map((ov, ovi) => {
+          const gVal = ov.gray != null ? ov.gray : 0;
+          let mEntry = ctx.media.find((m) => m._a16Fix5Gray === gVal);
+          if (!mEntry) {
+            const mId = ctx.media.length + 1;
+            mEntry = { name: `fimg${mId}.png`, data: makeGrayPngBase64(2, 2, gVal), rid: `rIdFimg${mId}`, _a16Fix5Gray: gVal };
+            ctx.media.push(mEntry);
+          }
+          const docId = 3000 + pi * 20 + ovi + 1;
+          const cxEmu = Math.max(12700, emu(ov.w || 1));
+          const cyEmu = Math.max(12700, emu(ov.h || 1));
+          return `<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${251650000 + docId}" behindDoc="1" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${emu(ov.x || 0)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${emu(ov.y || 0)}</wp:posOffset></wp:positionV><wp:extent cx="${cxEmu}" cy="${cyEmu}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${docId}" name="ov${docId}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${docId}" name="ov${docId}.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${mEntry.rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cxEmu}" cy="${cyEmu}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`;
+        }).join('');
+        const firstTextP = /<w:p>(?:(?!<\/w:p>)[\s\S])*?<w:t[\s>][\s\S]*?<\/w:p>/.exec(pageXml);
+        if (firstTextP) {
+          const endIdx = firstTextP.index + firstTextP[0].length - '</w:p>'.length;
+          pageXml = pageXml.slice(0, endIdx) + ovRuns + pageXml.slice(endIdx);
+        }
+      }
       if (!isLast) {
         // Part-17.7: সেকশন-বিরতি পাতার শেষ অনুচ্ছেদেই (আলাদা ফাঁকা অনুচ্ছেদ পাতা ভরা থাকলে পরের পাতায় গিয়ে .doc-এ ফাঁকা পাতা বানাত)
         const lastP = pageXml.lastIndexOf('<w:p>');
@@ -4055,7 +4162,9 @@
     fontFixOn: { value: fontFixOn, enumerable: false },
     a16Fix3On: { value: a16Fix3On, enumerable: false },
     a14RulesOn: { value: a14RulesOn, enumerable: false },
-    a16Fix4On: { value: a16Fix4On, enumerable: false }
+    a16Fix4On: { value: a16Fix4On, enumerable: false },
+    a16Fix5On: { value: a16Fix5On, enumerable: false },
+    makeGrayPngBase64: { value: makeGrayPngBase64, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulDocx;
