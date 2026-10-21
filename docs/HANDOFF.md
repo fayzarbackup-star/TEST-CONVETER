@@ -1,5 +1,6 @@
 # হ্যান্ডঅফ — ২০২৬-১০-২১ বিকেল — কাজ একটানা চলবে, থামবে না
-- **লাইভ:** ডিফল্ট ১৯: WRAPFIT NESTBOX TBLMERGE A03FIX A16FIX VSPACE BOXSPLIT SERIALHANG A07FIX2 A14FIX3 WIDTH A16FIX3 A14RULES A14FIX4 RULES2 A13FIX A16FIX5 A14FIX5 A07FIX5 (শেষ push: run-all সবুজ হলে "A07FIX5 default-on…"; না হলে `%TEMP%\runall_def19.txt` দেখো)। লেআউট: a07 ৮৪.১, a14 ৯৫.৬, a16 ৯৪.৬, a02 ৯৪.৯, a13 ৯৬.৭, a03 ৯৬.৫, a01 ৯৮.৮, a09 ৯৯; a12 ৯৫.৯ (ছবি ৮৫.৫)।
+- **লাইভ:** ডিফল্ট ১৯: WRAPFIT NESTBOX TBLMERGE A03FIX A16FIX VSPACE BOXSPLIT SERIALHANG A07FIX2 A14FIX3 WIDTH A16FIX3 A14RULES A14FIX4 RULES2 A13FIX A16FIX5 A14FIX5 A07FIX5 (run-all 3301/0, push 6bbc356 ✓)। লেআউট: a07 ৮৪.১, a14 ৯৫.৬, a16 ৯৪.৬, a02 ৯৪.৯, a13 ৯৬.৭, a03 ৯৬.৫, a01 ৯৮.৮, a09 ৯৯; a12 ৯৫.৯ (ছবি ৮৫.৫)।
+- **Downloads-এ এসেছে, বসানো বাকি:** A12_SCORE_v1.zip (১৪:৩৮) ⇒ ট্যাব 3 (u/2) খালি — নতুন কাজ দাও।
 - **বন্ধ/বাতিল:** A07FIX3 (টেবিল ভাঙে), A09FIX (a01 −২৫), A03FIX2 (টেবিল-রূপান্তর; মেশানো হয়নি), FONTFIX, INDENT v2, A16FIX4।
 - **Gemini ট্যাব (tabIndex = /tabs অবস্থান):** 0 u/1 A03_SCORE_v3 (A03FIX3, ভিত্তি DEF18) · 1 u/7 A07_SCORE_v4 (পুরোনো A07FIX3-ভিত্তি — এলে খুব সাবধানে/সম্ভবত বাতিল) · 2 u/3 A02_SCORE_v1 (A02FIX) · 3 u/2 A12_SCORE_v1 (A12FIX)। **নজর আবার চালাও:** `powershell -File scratch\watchn.ps1 "0=A03_SCORE_v3,1=A07_SCORE_v4,2=A02_SCORE_v1,3=A12_SCORE_v1"` (শুধু fetch; চলমান চ্যাটে কখনো বার্তা নয়)।
 - **টেবিল-নিয়ম:** এক ছক = এক টেবিল; আগে গ্রিড → merge → লেখা। টেবিল-ছোঁয়া সুইচ গ্রহণের আগে compare PNG চোখে দেখো (স্কোর ও প্রস্থ-পরীক্ষা ভাঙন ধরে না)। বাকি: qa-তে border-ভিত্তিক গ্রিড-পরীক্ষা।

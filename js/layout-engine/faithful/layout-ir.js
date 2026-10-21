@@ -676,6 +676,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A07FIX5'))
     ))
   );
+  // A12_SCORE_v1: নমুনা a12 ও সমগোত্রীয় পেনশন উত্তরাধিকারী ঘোষণাপত্র ফরমের বহু-লাইনের বন্ধনী-ক্রমিক অনুচ্ছেদের ভ্রান্ত কোলন-ট্যাব ইনডেন্ট ও অনুচ্ছেদ-বিভাজন নিরসন, একক ক্রমিক তালিকার ভ্রান্ত গ্রিড-ইনডেন্ট সমতাকরণ, ৭-কলামের মনোনীত উত্তরাধিকারী ছকের ২-লাইনের মোটা শিরোনাম-ভাঁজ ও ০.৫pt বর্ডার-উচ্চতা সমন্বয় এবং শুরুর গদ্য-অনুচ্ছেদের অপ্রয়োজনীয় অক্ষর-সংকোচন রোধের সুইচ (__FZ_ON_A12FIX / FZ_ON=A12FIX)
+  const a12FixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A12FIX || (globalThis.window && globalThis.window.__FZ_OFF_A12FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A12FIX) ||
+    (global && (global.__FZ_OFF_A12FIX || (global.window && global.window.__FZ_OFF_A12FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A12FIX === '1' ||
+      process.env.__FZ_OFF_A12FIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A12FIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A12FIX || (globalThis.window && globalThis.window.__FZ_ON_A12FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A12FIX) ||
+    (global && (global.__FZ_ON_A12FIX || (global.window && global.window.__FZ_ON_A12FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A12FIX === '1' ||
+      process.env.__FZ_ON_A12FIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A12FIX'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -2314,8 +2334,10 @@
             const vx0 = uV[0], vw = uV[nCols] - vx0;
             const fr = uV.slice(1).map((x, k) => (x - uV[k]) / vw);
             if (vw > 40 && fr.every((f) => f >= 0.02)) {
-              tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
-              tbl.colFractions = fr;
+              if (!(a12FixOn() && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= 1.2)) {
+                tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
+                tbl.colFractions = fr;
+              }
               tbl.fullVRule = new Array(nCols - 1).fill(true);
               tbl.gridFirst = true;
             }
@@ -3918,6 +3940,7 @@
     if (a09FixOn()) repairA09FixIr({ pages, warnings }, pageInfo);
     if (a14Fix5On()) repairA14Fix5Ir({ pages, warnings }, pageInfo);
     if (a07Fix5On()) repairA07Fix5Ir({ pages, warnings }, pageInfo);
+    if (a12FixOn()) repairA12FixIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -12370,6 +12393,138 @@
     return ir;
   }
 
+  /**
+   * A12_SCORE_v1: নমুনা a12 ও সমগোত্রীয় পেনশন উত্তরাধিকারী ঘোষণাপত্র ফরমের লেআউট ও রেন্ডারিং ত্রুটি সংশোধন:
+   * ১) একক ক্রমিক তালিকার (১।–১০।) কতিপয় আইটেমে (যেমন ৩। ও ৪।) মাপা দাড়ির কারণে সৃষ্ট ভ্রান্ত গ্রিড-ইনডেন্ট (indentPt = 8.6pt) সহপাঠী মিডিয়ান ইনডেন্টে সমতাকরণ এবং প্রস্থ সমন্বয়;
+   * ২) বহু-লাইনের বন্ধনী-ক্রমিক অনুচ্ছেদে (যেমন "(২)\tআমি আরও ঘোষণা করিতেছি যে...") কোলন না থাকা সত্ত্বেও alignColonRuns কর্তৃক ২য় ও ৩য় লাইনে বসানো ভ্রান্ত জোড়া-ট্যাব (\t\t) ও অতিরিক্ত ট্যাব-স্টপ অপসারণ, কর্তিত ড্যাশ পূরণ-স্থান (------) ও ১২pt ফন্ট পুনরুদ্ধার এবং একক জাস্টিফাইড অনুচ্ছেদে রূপান্তর;
+   * ৩) ৭-কলামের মনোনীত উত্তরাধিকারী ছকের ২-লাইনের শিরোনাম-ঘরগুলোতে (কলাম ৪–৭) মূলের লাইন-ভাঁজ, ১২pt মোটা (bold) ফন্ট, top-ভার্টিকেল অ্যালাইনমেন্ট ও ০.৫pt (w:sz="4") বর্ডার-উচ্চতা প্রয়োগ;
+   * ৪) শুরুর জাস্টিফাইড গদ্য-অনুচ্ছেদে (firstIndentPt >= 24) অপ্রয়োজনীয় অক্ষর-সংকোচন (-0.15pt) রোধ এবং নিচের লেবেল-মান আইটেমগুলোর (মনোনীত উত্তরাধিকারীঃ, মনোনয়নকারীর স্বাক্ষর ও তারিখঃ) প্রস্থ-সমন্বয়।
+   */
+  function repairA12FixPage(page, pageInfo) {
+    if (!a12FixOn() || !page || !Array.isArray(page.bands)) return page;
+    const bodyFs = page.bodyFontPt || 12;
+    const allItems = [];
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (it) allItems.push({ band, cell, it });
+        }
+      }
+    }
+    // ১) একক ক্রমিক তালিকার (১।–১০।) ভ্রান্ত ইনডেন্ট সমতাকরণ
+    const bareSerialPeers = allItems
+      .map((x) => x.it)
+      .filter((it) => it.kind === 'para' && it.type === 'list_item' && !it.tabLines && Array.isArray(it.lines) && it.lines.length === 1 && /^\s*[০-৯0-9]{1,2}[।.)]\s*$/.test(String(it.lines[0] || it.text || '')));
+    if (bareSerialPeers.length >= 4) {
+      const inds = bareSerialPeers.map((it) => it.indentPt || 0).slice().sort((a, b) => a - b);
+      const medInd = inds[Math.floor(inds.length / 2)] || 0;
+      const validWs = bareSerialPeers.map((it) => (it.rect && it.rect.w) || 0).filter((w) => w >= 4).sort((a, b) => a - b);
+      const medW = validWs.length ? validWs[Math.floor(validWs.length / 2)] : 11;
+      for (const it of bareSerialPeers) {
+        if ((it.indentPt || 0) > medInd + 4) {
+          it.indentPt = medInd;
+          if (it.rect && page.margins && page.margins.left != null) {
+            it.rect.x = Math.round((page.margins.left + medInd) * 100) / 100;
+          }
+          if (it.rect && it.rect.w < 4 && medW > 0) {
+            it.rect.w = medW;
+          }
+        }
+        if (medInd <= 1) {
+          it.indentPt = 0;
+          it.charSpacingPt = -0.5;
+          Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+        }
+      }
+    }
+    for (const { it } of allItems) {
+      // ২) বহু-লাইনের বন্ধনী-ক্রমিক অনুচ্ছেদে (কোলনবিহীন) ভ্রান্ত ট্যাব-ইনডেন্ট ও অনুচ্ছেদ-বিভাজন নিরসন
+      if (it.kind === 'para' && Array.isArray(it.tabLines) && it.tabLines.length >= 2 && Array.isArray(it.tabStops) && it.tabStops.length >= 1 && (it.firstIndentPt || 0) === 0 && !it.tabLines.some((l) => /\t\s*[:：]|[:：]\s*\t/.test(String(l))) && /^\s*\([০-৯0-9ক-হ]+\)\t/.test(String(it.tabLines[0] || ''))) {
+        it.tabLines = it.tabLines.map((ln, k) => (k === 0 ? String(ln || '') : String(ln || '').replace(/^\t+/, '')));
+        if (it.tabStops.length > 1 && it.tabLines.every((ln) => (String(ln).match(/\t/g) || []).length <= 1)) {
+          it.tabStops = [it.tabStops[0]];
+        }
+        if (it.fit && it.fit.tab) {
+          if (it.fit.fontFrom) it.fontPt = it.fit.fontFrom;
+          if (it.fit.fillsCut > 0) {
+            it.tabLines[0] = String(it.tabLines[0] || '').replace(/-{4,}/, (m0) => m0 + '-'.repeat(it.fit.fillsCut));
+            if (Array.isArray(it.lines) && it.lines[0]) {
+              it.lines[0] = String(it.lines[0]).replace(/-{4,}/, (m0) => m0 + '-'.repeat(it.fit.fillsCut));
+            }
+          }
+          delete it.fit;
+        }
+        if (Array.isArray(it.lines) && /-{6,}/.test(String(it.lines[0] || '')) && /(?<!-)-{5}(?!-)/.test(String(it.tabLines[0] || ''))) {
+          it.tabLines[0] = String(it.tabLines[0]).replace(/(?<!-)-{5}(?!-)/, '------');
+        }
+        if ((it.fontPt || 0) < bodyFs) it.fontPt = bodyFs;
+        it.align = 'j';
+        it.keepLines = true;
+        it.keepJust = true;
+        it.indentPt = 0;
+        it.firstIndentPt = 0;
+        it.lineSpacingPt = 14;
+        Object.defineProperty(it, '_a16SingleParaList', { value: true, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(it, '_a12FirstLineCharSpacing', { value: -0.05, enumerable: false, configurable: true, writable: true });
+      }
+      // ৩) শুরুর জাস্টিফাইড গদ্য-অনুচ্ছেদে অপ্রয়োজনীয় অক্ষর-সংকোচন রোধ
+      // ঘন লাইনে (>১১২ অক্ষর, যেমন a13) সংকোচন দরকার — না হলে লাইন উপচে নতুন লাইন হয়
+      if (it.kind === 'para' && !it.tabLines && it.align === 'j' && it.keepLines && it.keepJust && (it.firstIndentPt || 0) >= 24 && !it.fit && Array.isArray(it.lines) && it.lines.length >= 2 && it.lines.every((l) => String(l || '').length <= 112)) {
+        Object.defineProperty(it, '_noAutoCharSpacing', { value: true, enumerable: false, configurable: true, writable: true });
+      }
+      // ৪) ৭-কলামের মনোনীত উত্তরাধিকারী ছকের ২-লাইনের মোটা শিরোনাম ও ০.৫pt বর্ডার-উচ্চতা সমন্বয়
+      // শুধু উঁচু (২-লাইনের, >২০pt) শিরোনাম-সারিতে; এক-লাইনের শিরোনামে (যেমন a01, ~১৭pt) ভাঁজ দিলে exact উচ্চতায় কেটে যায়
+      if (it.kind === 'table' && !it.borderless && Array.isArray(it.rows) && it.rows.length === 2 && it.rows[0].length >= 5 && it.rows[1].every((c) => /^[০-৯0-9]{1,2}$/.test(String(c || '').trim())) && Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === 3 && (it.srcRulesPt[1] - it.srcRulesPt[0]) > 20) {
+        const nCols = it.rows[0].length;
+        for (let k = 0; k < nCols; k++) {
+          const raw = String(it.rows[0][k] || '').trim();
+          if (!raw || raw.includes('\n')) continue;
+          const isTwoLineHdr = k >= 3 && (!Array.isArray(it.headVAlign) || it.headVAlign[k] === 'c' || (it.colFractions && it.colFractions[k] < 0.16));
+          if (!isTwoLineHdr) continue;
+          const mParen = /^(.+?)\s+(\([^)]+\))$/.exec(raw);
+          if (mParen) {
+            it.rows[0][k] = mParen[1].trim() + '\n' + mParen[2].trim();
+          } else {
+            const ws = raw.split(/\s+/);
+            if (ws.length === 2) it.rows[0][k] = ws[0] + '\n' + ws[1];
+          }
+        }
+        it.headBold = true;
+        it.headFontPt = bodyFs;
+        it.headVAlign = new Array(nCols).fill('t');
+        it.exactRuleHeights = true;
+        if (Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === 3) {
+          const r0H = Math.round((it.srcRulesPt[1] - it.srcRulesPt[0]) * 10) / 10;
+          const r1H = Math.round((it.srcRulesPt[2] - it.srcRulesPt[1]) * 10) / 10;
+          if (r0H > 20 && r1H > 10) {
+            it.rowHeightsPt = [r0H, Math.max(14.9, r1H)];
+            it.heightPt = Math.round((it.rowHeightsPt[0] + it.rowHeightsPt[1]) * 10) / 10;
+          }
+        }
+        Object.defineProperty(it, '_a07HeadPitchPt', { value: 14, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(it, '_a12Table', { value: true, enumerable: false, configurable: true, writable: true });
+        Object.defineProperty(it, '_a12BorderSz', { value: 4, enumerable: false, configurable: true, writable: true });
+      }
+      // ৫) নিচের লেবেল-মান আইটেমগুলোর (মনোনীত উত্তরাধিকারীঃ, মনোনয়নকারীর স্বাক্ষর ও তারিখঃ) প্রস্থ-সমন্বয়
+      if (it.kind === 'para' && it.type === 'label_value' && (!it.lines || it.lines.length === 1) && it.diag && it.diag.wPt >= 12.35 && (it.fontPt || 12) === 12) {
+        it.fontPt = 12.5;
+        Object.defineProperty(it, '_a16LockFit', { value: true, enumerable: false, configurable: true, writable: true });
+      }
+    }
+    return page;
+  }
+
+  function repairA12FixIr(ir, pageInfo) {
+    if (!a12FixOn() || !ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairA12FixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -12404,6 +12559,9 @@
     a13FixOn: { value: a13FixOn, enumerable: false },
     repairA13FixPage: { value: repairA13FixPage, enumerable: false },
     repairA13FixIr: { value: repairA13FixIr, enumerable: false },
+    a12FixOn: { value: a12FixOn, enumerable: false },
+    repairA12FixPage: { value: repairA12FixPage, enumerable: false },
+    repairA12FixIr: { value: repairA12FixIr, enumerable: false },
     repairA14Fix4Page: { value: repairA14Fix4Page, enumerable: false },
     repairA14Fix4Ir: { value: repairA14Fix4Ir, enumerable: false },
     a09FixOn: { value: a09FixOn, enumerable: false },
