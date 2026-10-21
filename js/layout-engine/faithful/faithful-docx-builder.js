@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -737,6 +737,26 @@
       process.env.__FZ_ON_A03FIX3 === '1' ||
       process.env.__FZ_ON_A03FIX3 === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A03FIX3'))
+    ))
+  );
+  // A06_SCORE_v1: নমুনা a06 ও সমগোত্রীয় গৃহ নির্মাণ ঋণ উপযুক্ততা প্রত্যয়ন ফরমের প্রবাহ-শিরোনামের আন্ডারলাইন, কোলন-ট্যাব তালিকার "তারিখ" ও ট্যাব-স্টপ, লিডার-লেবেল ফন্ট/স্টপ, জাস্টিফাইড অনুচ্ছেদের justRightPt এবং এমব্লেম চিত্রের আকার মেরামতের সুইচ (__FZ_ON_A06FIX / FZ_ON=A06FIX)
+  const a06FixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A06FIX || (globalThis.window && globalThis.window.__FZ_OFF_A06FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A06FIX) ||
+    (global && (global.__FZ_OFF_A06FIX || (global.window && global.window.__FZ_OFF_A06FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A06FIX === '1' ||
+      process.env.__FZ_OFF_A06FIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A06FIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A06FIX || (globalThis.window && globalThis.window.__FZ_ON_A06FIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A06FIX) ||
+    (global && (global.__FZ_ON_A06FIX || (global.window && global.window.__FZ_ON_A06FIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A06FIX === '1' ||
+      process.env.__FZ_ON_A06FIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A06FIX'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -1696,7 +1716,7 @@
     const runShd = item.shadeRun && /^[0-9A-F]{6}$/i.test(rShadeVal || '') ? `<w:shd w:val="clear" w:color="auto" w:fill="${rShadeVal}"/>` : '';
     const sup = item.sup ? '<w:vertAlign w:val="superscript"/>' : '';
     const rColVal = formKitOn() ? (normHex(item.color) || item.color) : item.color;
-    const cSp = (wrapFitOn() || a01FixOn()) && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
+    const cSp = (wrapFitOn() || a01FixOn() || a06FixOn()) && item.charSpacingPt ? `<w:spacing w:val="${Math.round(item.charSpacingPt * 20)}"/>` : '';
     const posXml = (a14Fix4On() || a14Fix5On() || a03Fix3On()) && item._a14PosVal ? `<w:position w:val="${item._a14PosVal}"/>` : '';
     const colored = (xml) => {
       let x = rColVal ? xml.replace(/<w:sz /g, `<w:color w:val="${rColVal}"/><w:sz `) : xml;
@@ -1964,7 +1984,7 @@
       if (it.kind === 'photo_box' || it.type === 'photo_box' || it.photoBox) return (it.heightPt || (it.rect && it.rect.h) || 105) + 4;
     }
     if (it.kind === 'figure') {
-      if ((a07Fix2On() || a07Fix3On() || a07Fix5On()) && it._a07FigLeadPt > 0) return it.heightPt || (it.rect && it.rect.h) || 0;
+      if ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a06FixOn()) && it._a07FigLeadPt > 0) return it.heightPt || (it.rect && it.rect.h) || 0;
       if (ruleFixOn() || vspaceOn()) {
         const hFig = (it.rect && it.rect.h > 0 && ((it.rect.h > it.rect.w * 2.5 && (it.heightPt || 0) < it.rect.h * 0.85) || Math.abs((it.heightPt || 0) - it.rect.h) > 0.5))
           ? Math.round(it.rect.h * 10) / 10
@@ -2052,7 +2072,7 @@
   // ২০২৬-১০-১৩: ওপরের ছোট রেখা (layout-ir ruleAbove, স্বাক্ষর-দাগ) — বর্ডার + ফাঁক লেখার আগে; লাইন-শুরু ততটুকু আগে
   const raSpace = (it) => (it.ruleAbove && it.rect ? clamp(Math.round(it.rect.y - inkOff(it) - it.ruleAbove.srcY - it.ruleAbove.sz / 8), 0, 31) : 0);
   const raExtra = (it) => (it.ruleAbove ? raSpace(it) + it.ruleAbove.sz / 8 : 0);
-  const lead = (it) => ((a07Fix2On() || a07Fix3On() || a07Fix5On()) && it && it.kind === 'figure' && it._a07FigLeadPt > 0 ? it._a07FigLeadPt : inkOff(it) + raExtra(it));
+  const lead = (it) => ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a06FixOn()) && it && it.kind === 'figure' && it._a07FigLeadPt > 0 ? it._a07FigLeadPt : inkOff(it) + raExtra(it));
 
   function planPage(page) {
     if (p2DriftOn() && page && (page.page == null || page.page >= 2)) {
@@ -2205,6 +2225,11 @@
     }
     // A02FIX-এর builder-নিয়ম শুধু IR যে পাতাকে a02-আকৃতি ধরে মেরামত করেছে সেখানে (নইলে a01/a13-এর ডট-রেখা সরত)
     a02CurPage = !!(page && page._a02FixRepaired);
+    if ((a06FixOn() || (page && page._preA06FixSnap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA06FixPage === 'function') IR.repairA06FixPage(page);
+    }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
     let cur = page.margins.top;
@@ -2586,7 +2611,7 @@
       const drawing = `<w:r>${tiny}<w:drawing>${open}<wp:docPr id="${1000 + id}" name="fig${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000 + id}" name="fig${id}.${ext}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdFimg${id}"/>${srcRectXml}<a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(wPt)}" cy="${emu(hPt)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>${fa ? '</wp:anchor>' : '</wp:inline>'}</w:drawing></w:r>`;
       // ২০২৬-১০-১২: "auto" লাইনে Word ছবির নিচে অনুচ্ছেদ-ফন্টের নিম্নাংশ যোগ করত (লোগোর পরে সব ~৯pt নিচে, a02/a13)।
       // উচ্চতা = ছবি + ২pt (planPage-এর itemH-এর সমান), "ঠিক" লাইন
-      const figLinePt = (ruleFixOn() || vspaceOn() || ((a07Fix2On() || a07Fix3On() || a07Fix5On()) && item._a07FigLeadPt > 0) || (rules2On() && item.rect && item.rect.h > item.rect.w * 2.5 && item.rect.h >= 40)) ? hPt : hPt + 2;
+      const figLinePt = (ruleFixOn() || vspaceOn() || ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a06FixOn()) && item._a07FigLeadPt > 0) || (rules2On() && item.rect && item.rect.h > item.rect.w * 2.5 && item.rect.h >= 40)) ? hPt : hPt + 2;
       const fp = pPr(Object.assign({}, item, { align: 'l', firstIndentPt: 0 }), extraBeforePt)
         // "ঠিক" লাইনে Word বেসলাইন লাইনের ~৮০%-এ বসায় (ফন্ট যত ছোটই হোক) ⇒ ছবির ওপর কাটা; খুদে ফন্টে "অন্তত" ⇒ উচ্চতা ≈ ছবি
         .replace(/w:line="\d+" w:lineRule="\w+"/, `w:line="${tw(fa ? 1 : figLinePt)}" w:lineRule="${tiny ? 'atLeast' : 'exact'}"`)
@@ -2778,7 +2803,8 @@
     // ২০২৬-১০-১৩: লিডার-বিন্দু ট্যাব-রানের ফরম্যাট নেয় — ফরম্যাটহীন রানে বিন্দু খুদে ও ধূসর (f2: মূলের কালো বিন্দু-রেখা হারিয়ে
     // লাইনের ডান-প্রান্ত ৪০০pt ছোট দেখাত) ⇒ লেখার মাপে, মোটা
     // ২০২৬-১০-১৪ (মালিক: বিন্দু মূলে চিকন) ⇒ মোটা শুধু FZ_ON=DOTBOLD-এ; আকার আগের মতো লেখার সমান
-    const LTAB = `<w:r><w:rPr>${globalThis.__FZ_ON_DOTBOLD || item.bold ? '<w:b/><w:bCs/>' : ''}<w:sz w:val="${Math.round((item.fontPt || 12) * 2)}"/><w:szCs w:val="${Math.round((item.fontPt || 12) * 2)}"/></w:rPr><w:tab/></w:r>`;
+    const ltabSz = (a06FixOn() && item._a06DotBold) ? Math.max(24, Math.round((item.fontPt || 12) * 2)) : Math.round((item.fontPt || 12) * 2);
+    const LTAB = `<w:r><w:rPr>${globalThis.__FZ_ON_DOTBOLD || item.bold || (a06FixOn() && item._a06DotBold) ? '<w:b/><w:bCs/>' : ''}<w:sz w:val="${ltabSz}"/><w:szCs w:val="${ltabSz}"/></w:rPr><w:tab/></w:r>`;
     // B9/B5 (২০২৬-১০-১১): এক-লাইনের "লেবেল: ........" — শেষের বিন্দু-সারি মূলের মাপা ডান-প্রান্ত পর্যন্ত dot-leader ট্যাবে
     // (Gemini-র গোনা বিন্দু বেশি হলে লাইন ভাঙত, কম হলে ছোট হতো; ট্যাব-স্টপ ঘর/মার্জিনের বাইরে যায় না)
     // B5 (২০২৬-১০-১১): শুধু রেখা-অক্ষরের লাইন ("──────", "______") — Gemini-র গোনা অক্ষর বেশি হলে Word-এ ২–৮ লাইনে
@@ -2915,7 +2941,7 @@
               ? Math.max(curX - fw + minFillW, (item.indentPt || 0) + item._origRectW - segW(segs[si + 1].val) - 36)
               : curX;
             curX = midStop;
-            const stopPos = isLast ? (boxSplitOn() ? Math.max(curX, (item.indentPt || 0) + totalW) : (item.indentPt || 0) + totalW) : midStop;
+            const stopPos = (a06FixOn() && item._a06LeaderStopPt > 0 && !isLast) ? item._a06LeaderStopPt : (isLast ? (boxSplitOn() ? Math.max(curX, (item.indentPt || 0) + totalW) : (item.indentPt || 0) + totalW) : midStop);
             const leader = /[.…·]/.test(sg.ch) ? "dot" : (sg.ch === "-" || sg.ch === "─") ? "hyphen" : "underscore";
             tabXmls.push(`<w:tab w:val="${isLast ? "right" : "left"}" w:leader="${leader}" w:pos="${tw(stopPos)}"/>`);
             bodyParts.push(leader === "dot" ? LTAB : TAB);
@@ -2959,8 +2985,8 @@
     const DOTS = /[ \u00a0]*[.…·]{6,}\s*$/;
     const stops = (item.tabStops || []).map((t) => (formKitOn() && t && typeof t === 'object' ? (t.pos != null ? t.pos : t.x) : t)).filter((t) => t < lpos - 12);
     const fsz = item.fontPt || 12;
-    const plainLen = (s) => { const clean = String(s).replace(/\*\*|<[^>]+>/g, ''); const spVir = widthOn() ? (clean.match(/[ \u09cd]/g) || []).length * 0.45 : 0; return Math.max(0, (pleaderOn ? clean.replace(/[ঁ-ঃ়া-্ৗ]/g, '') : clean).length - spVir); };
-    const est = (s) => { const n = plainLen(s); return n * fsz * (n <= 2 ? 0.3 : (widthOn() ? 0.46 : 0.5)); };   // ":" একা সরু
+    const plainLen = (s) => { const clean = String(s).replace(/\*\*|<[^>]+>/g, ''); const spVir = (widthOn() || a06FixOn()) ? (clean.match(/[ \u09cd]/g) || []).length * 0.45 : 0; return Math.max(0, (pleaderOn ? clean.replace(/[ঁ-ঃ়া-্ৗ]/g, '') : clean).length - spVir); };
+    const est = (s) => { const n = plainLen(s); return n * fsz * (n <= 2 ? 0.3 : ((widthOn() || a06FixOn()) ? 0.46 : 0.5)); };   // ":" একা সরু
     const segsOf = (ln) => String(ln).replace(DOTS, '').split('\t');
     const tabsSafe = (ln, start) => {
       const seg = segsOf(ln);
@@ -4276,6 +4302,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA02FixIr === 'function') IR.repairA02FixIr(ir);
     }
+    if ((a06FixOn() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA06FixSnap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA06FixIr === 'function') IR.repairA06FixIr(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4374,7 +4405,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a03Fix3On()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4451,6 +4482,7 @@
     a12FixOn: { value: a12FixOn, enumerable: false },
     a03Fix3On: { value: a03Fix3On, enumerable: false },
     a02FixOn: { value: a02FixOn, enumerable: false },
+    a06FixOn: { value: a06FixOn, enumerable: false },
     widthOn: { value: widthOn, enumerable: false },
     a14Fix3On: { value: a14Fix3On, enumerable: false },
     fontFixOn: { value: fontFixOn, enumerable: false },
