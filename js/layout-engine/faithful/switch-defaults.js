@@ -23,7 +23,8 @@
   // ১০-২১: A16FIX5 যোগ (a16 ৯০.১→৯৪.৬, a07 +০.২, কেউ কমেনি; টেবিলে হাত দেয় না — docx-diff যাচাই)
   // ১০-২১: A13FIX যোগ (a13 ৯৩.৮→৯৬.৭, a01 +০.৪; শিরোনাম-পিচ নিয়ম heading-এ সীমিত করে a14 −১ সারানো)
   // ১০-২২: A08FIX যোগ (a08 ৯০.৯→৯৮.৯, ছবি ৮৩.৮→৯২; a02/a03/a06/a12/a18/f1 অপরিবর্তিত); A16FIX6 যোগ (a16 ৯৪.৬→৯৬.৯; a01/a08/a13/a14/a18/f1 অপরিবর্তিত); F1FIX2 যোগ (f1 ৯৪.৩→৯৪.৮, ধূসর ছক-বর্ডার/ছায়া)
-  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A14FIX4', 'RULES2', 'A13FIX', 'A16FIX5', 'A14FIX5', 'A07FIX5', 'A12FIX', 'A02FIX', 'A06FIX', 'A07FIX6', 'F1FIX', 'A18FIX', 'A08FIX', 'A16FIX6', 'F1FIX2', 'INDENTFIX', 'VGAPFIX', 'SERIALFIX'];
+  const DEFAULT_ON = ['WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT', 'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A14FIX4', 'RULES2', 'A13FIX', 'A16FIX5', 'A14FIX5', 'A07FIX5', 'A12FIX', 'A02FIX', 'A06FIX', 'A07FIX6', 'F1FIX', 'A18FIX', 'A08FIX', 'A16FIX6', 'F1FIX2', 'INDENTFIX', 'VGAPFIX', 'SERIALFIX', 'MISSINGFIX'];
+  // ১০-২২: MISSINGFIX v2 যোগ (v1 a06 −৬১/a13 −৪৮ ধস সারানো) — a16 +০.৩, f1 ছবি +০.১; a06/a07/a13/a14 অপরিবর্তিত
   // ১০-২২: SERIALFIX (ধরন-ভিত্তিক ক্রমিক-ফাঁক) যোগ — a03 +০.৬, a08 +০.৮, a14 +০.৮, a13 +০.২; খারাপ ০
   // ১০-২২: VGAPFIX (ধরন-ভিত্তিক উল্লম্ব ফাঁক) যোগ — a03 ৯৬.১→৯৭.৬, f1 ৯৪.৮→৯৬.৫, a07 +০.১; বাকি ৯ অপরিবর্তিত
   // ১০-২২: INDENTFIX (ধরন-ভিত্তিক বাম-প্রান্ত) যোগ — a14 ৯৫.৬→৯৭.৪, a16 ৯৬.৯→৯৮.৭, a03 −০.৪; বাকি ৯ অপরিবর্তিত

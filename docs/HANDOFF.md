@@ -8,8 +8,8 @@
 - **INDENTFIX ✅ ডিফল্টে, push 3e32d54** (a14/a16 +১.৮, a03 −০.৪; run-all 4823/0)।
 - **VGAPFIX ✅ ডিফল্টে, push 9e25512** (a03 +১.৫, f1 +১.৭; 4846/0)। merge3 KEEP_OURS সুইচ-OR লাইন হারায় → scratchpad lostdiff.mjs (খোঁজ) + port*.mjs (লাইন-নির্দিষ্ট বসানো)।
 - **SERIALFIX ✅ ডিফল্টে, push 8bf335a** (a03/a08/a14/a13 বাড়ল, খারাপ ০; 4900/0; serialfix টেস্টে INDENT/VGAP বন্ধ রাখা)।
-- **MISSING_TYPE_v1 বসানো (ডিফল্ট-বন্ধ MISSINGFIX):** লাইন পোর্ট (scratchpad portmissing.mjs), missingfix 705/0। run-all + A/B চলছে → scratch\ab_MISSINGFIX.txt; ভালো হলে defaults + push।
-- **ট্যাব (০৪:১০):** u/3 FONT_TYPE_v1 (id 342328174) · u/7 RULES_TYPE_v1 (id 342328218) চলছে · u/1 BRIDGE_APP_v1 (অন্য সেশনের — ছুঁয়ো না)। SHORT zip রাখা। সব বান্ডেল পাঠানো শেষ। ধাপ: RULES এলে বসাও → তারপর SHORT, FONT বসাও (ব্যবহারকারীর ক্রম)।
+- **MISSINGFIX ✗ ডিফল্ট-বন্ধ (কোড push 7841f7a):** A/B a06 −৬১, a13 −৪৮, a14 −৪, a07 −৩ (একা চালালেও একই) ⇒ MISSING_TYPE_v2 পাঠানো (বান্ডেল = v1 + এখনকার js + ফল-টেবিলসহ PROMPT; scratch\bundles\MISSING_TYPE_v2_bundle.zip = base)।
+- **ট্যাব (০৪:৪০):** u/3 FONT_TYPE_v1 (id 342328174) · u/4 MISSING_TYPE_v2 (id 342328222) · u/6 RULES_TYPE_v1 (id 342328226; u/7-এ usage limit, ০৫:১২-তে খোলে) · u/1 BRIDGE_APP_v1 (অন্য সেশনের)। পাহারা: scratchpad watchids.ps1 "id=TASK,..." (background; zip/থামা/limit-এ বের হয়)। SHORT zip রাখা। ক্রম: RULES → MISSING v2 → SHORT → FONT বসাও।
 - **নজর:** প্রতি ~১০–১৫ মিনিটে read-tab; zip দেখলে `agent_manager fetch --tab N --name <TASK>`; zip-ছাড়া উত্তর হলে পড়ে ব্যবস্থা ("জিপ দিন"); ~৬০ মিনিট পার হলে পাতা পড়ে কারণ দেখো।
 - **INDENT_TYPE_v1 (পরের কাজ, এখনই):** Downloads\gemini-inbox\INDENT_TYPE_v1.zip; ফাইল: faithful-docx-builder.js(+56/-23), layout-ir.js(+437), line-fit.js(+62), switch-defaults.js (INDENTFIX ডিফল্টে যোগ — **নিও না**, A/B পরে ঠিক করো), tests/indentfix.test.mjs। বাংলা-লিটারাল চেক ✅ পরিষ্কার (শুধু টেস্ট-বার্তা)। এখন বসানোর চক্র চালাও।
 - **বসানোর চক্র:** apply_reply → merge-switch-check → হারানো হুক (port-lost.mjs) → সংশ্লিষ্ট টেস্ট → run-all → asis-ab (১২ ফাইল) → ছবি → ভালো হলে defaults → push main।

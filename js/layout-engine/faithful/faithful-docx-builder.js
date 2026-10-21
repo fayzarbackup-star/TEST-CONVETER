@@ -3304,12 +3304,6 @@
         }
         return runsFor(p, boldIt);
       }
-      if (missingFixOn() && idx === 0 && item._missingFixRephRaise) {
-        const mReph = /^(\s*[০-৯0-9]+[।.)]\s*)(\S*\u09b0\u09cd\S*)([\s\S]*)$/.exec(String(p || ''));
-        if (mReph) {
-          return runsFor(mReph[1], item) + runsFor(mReph[2], Object.assign({}, item, { _a14PosVal: item._missingFixRephRaise })) + (mReph[3] ? runsFor(mReph[3], item) : '');
-        }
-      }
       return runsFor(p, item);
     };
     const lineRuns = (ln, lead) => (lead ? String(ln).replace(DOTS, '').split('\t').map(renderTabSeg).join(TAB) + LTAB
@@ -3814,11 +3808,9 @@
       const a07RowLineXml = a16ThreeLineXml != null ? a16ThreeLineXml : ((a07FixOn() || a07Fix2On() || a07Fix3On() || a09FixOn() || a07Fix5On() || a07Fix6On() || vspaceOn() || a12FixOn()) && !tight
         ? (ri === 0 && item._a07HeadPitchPt && hasCellTxt
           ? ` w:line="${tw(item._a07HeadPitchPt)}" w:lineRule="exact"`
-          : (missingFixOn() && item._missingFixRowPitchPt && item._missingFixRowPitchPt[ri] > 0 && effA07NL >= 2 && hasCellTxt
-            ? ` w:line="${tw(item._missingFixRowPitchPt[ri])}" w:lineRule="exact"`
-            : (item._a07MultiLinePitch && Array.isArray(item.rowHeightsPt) && effA07NL >= 2 && rh.fitted && rh[ri] && (rh[ri].h - BA) / effA07NL > fsz * 1.15
-              ? ` w:line="${tw(Math.min((missingFixOn() && typeof item._a07MultiLinePitch === 'number' && item._a07MultiLinePitch > 0) ? item._a07MultiLinePitch : (fsz * ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On()) ? 1.45 : 1.38)), Math.floor(((rh[ri].h - BA) / effA07NL) * 20) / 20))}" w:lineRule="exact"`
-              : null)))
+          : (item._a07MultiLinePitch && Array.isArray(item.rowHeightsPt) && effA07NL >= 2 && rh.fitted && rh[ri] && (rh[ri].h - BA) / effA07NL > fsz * 1.15
+            ? ` w:line="${tw(Math.min((vgapFixOn() && typeof item._a07MultiLinePitch === 'number' && item._a07MultiLinePitch > 0) ? item._a07MultiLinePitch : (fsz * ((a07Fix2On() || a07Fix3On() || a07Fix5On() || a07Fix6On()) ? 1.45 : 1.38)), Math.floor(((rh[ri].h - BA) / effA07NL) * 20) / 20))}" w:lineRule="exact"`
+            : null))
         : null);
       const extraRowLineXml = a07RowLineXml != null ? a07RowLineXml : ((extraLinesOn() || a19FixOn()) && (item.rowHeightsLine || Array.isArray(item.rowHeightsPt)) && nL >= 2 && rh.fitted && rh[ri] && !tight && (rh[ri].h - BA) / nL > fsz * 1.15
         ? ` w:line="${tw(Math.min(fsz * (nL === 2 && /([._\-…·─])\1{5,}/.test(String(txt || '')) ? 1.95 : 1.42), (rh[ri].h - BA) / nL))}" w:lineRule="exact"`
@@ -3896,9 +3888,8 @@
         const digitBoxLineXml = isDigitBoxRf && !t ? ` w:line="${tw(Math.max(10, (item.boxRuleHeightPt || item.heightPt || 16) - 2))}" w:lineRule="exact"` : "";
         const f1LineXml = (f1Cm && f1Cm.linePt > 0) ? ` w:line="${tw(f1Cm.linePt)}" w:lineRule="exact"` : null;
         const tblLineXml = f1LineXml != null ? f1LineXml : ((tableColOn() && item.lineSpacingPt) ? ` w:line="${tw(item.lineSpacingPt)}" w:lineRule="exact"` : (!t && formFixOn ? digitBoxLineXml : radLineXml));
-        const mfRowBef = (missingFixOn() && item._missingFixRowBeforePt && item._missingFixRowBeforePt[ri] != null && hasCellTxt) ? item._missingFixRowBeforePt[ri] : null;
-        const befTw = (f1Cm && f1Cm.beforePt != null) ? (!li ? tw(f1Cm.beforePt) : 0) : (mfRowBef != null ? (!li ? tw(mfRowBef) : 0) : (sh > 0 && !li ? tw(sh) : 0));
-        const aftTw = (f1Cm && f1Cm.beforePt != null) || mfRowBef != null ? 0 : (sh < 0 && li === nL - 1 ? tw(-sh) : 0);
+        const befTw = (f1Cm && f1Cm.beforePt != null) ? (!li ? tw(f1Cm.beforePt) : 0) : (sh > 0 && !li ? tw(sh) : 0);
+        const aftTw = (f1Cm && f1Cm.beforePt != null) ? 0 : (sh < 0 && li === nL - 1 ? tw(-sh) : 0);
         const lineCellItem = (f1Fix2On() && f1Cm && f1Cm.lineCharSpacingPt && f1Cm.lineCharSpacingPt[li] != null)
           ? Object.assign({}, rowCellItem, { charSpacingPt: f1Cm.lineCharSpacingPt[li] })
           : rowCellItem;
