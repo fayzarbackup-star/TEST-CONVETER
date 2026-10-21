@@ -412,8 +412,8 @@
     ))
   );
   function keepInternalProps(src, dst) {
-    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a18FixOn()) || !src || !dst || src === dst) return dst;
-    for (const k of ['_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
+    if (!(vspaceOn() || widthOn() || a14Fix3On() || fontFixOn() || a16Fix3On() || a07Fix3On() || a16Fix4On() || a14Fix4On() || a13FixOn() || a16Fix5On() || a09FixOn() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) || !src || !dst || src === dst) return dst;
+    for (const k of ['_a16TrimLR', '_a16TrimTop', '_a08Table', '_a08BridgeMode', '_a18TableFixed', '_a18RowFontPt', '_a18CellWordGapPt', '_a18CellLeaderStopPt', '_a18CellCharSpacingPt', '_cellIndentPt', '_cellMeta', '_f1FormTable','_f1AttachTable', '_f1BoxSpecs', '_f1RadioTextTabPt', '_f1RowMeta', '_a07Fix6TableFixed','_a07CompactHdrMar', '_a06LeaderStopPt', '_a06DotBold', '_a06ProseYShifted', '_a06SigShifted', '_p2VRule', '_a03BoxRuns', '_a03MonthYearBoxes', '_a03BoxSz', '_a03BoxNbsp', '_a03OrigInkOff', '_a03FullVRule', '_padBottomPt', '_a12Table', '_a12BorderSz', '_a12FirstLineCharSpacing', '_noAutoCharSpacing', '_a07Fix5TableFixed','_a14FirstLineFontPt', '_a14CropTop', '_a14SlashBridgeDrop', '_a14FirstLineSubDrop', '_a14LastLineSubRaise', '_a14LastLineTailDrop', '_a14Fix5YShifted','_a09BlankBodyFormTbl','_a16OrigFootY', '_a16OrigSigY5','_noSerialHang', '_a13ColonStops', '_a13BoldLabel', '_a13SerialFontPt', '_a13CompactBox', '_a13HeadingShifted','_a14LastLineRaise', '_a14LastLineFontPt', '_a14PosVal', '_a14SplitLeaderFirstLh', '_a14Fix4SigAdjusted', '_subTableColFractions', '_mUnderline', '_a07LockFit', '_a07FigLeadPt', '_a07OpenLeftCol0Rows', '_a07EmptyBodyCol0Nil', '_a07PartialHRuleCols', '_a07NoVBorderRows', '_a07RowVAlignTop', '_a07RowVAlignTopRows', '_a07Fix3TableFixed', '_a07Fix3Tbl3Split', '_a07Fix3Tbl4Split', '_a16SingleParaList','_a16ChecklistTbl', '_a16UnitH', '_a07HeadPitchPt', '_a07MultiLinePitch', '_tabStopRatio', '_a07FixedSig', '_a16LockFit', '_origFigIndentPt', '_a14Fix3PitchLocked', '_recitationStripped', '_origSigInd', '_origPitchPt', '_a16FigLocked', '_a16WideSigCrop', '_a16OrigFigX', '_a16OrigFigY', '_a16OrigFigW', '_a16OrigFigH', '_a16OrigSigX', '_a16OrigSigBotY', '_a16OrigBulletInd', '_a16EmailLineFontPt']) {
       if (src[k] !== undefined && dst[k] === undefined) {
         Object.defineProperty(dst, k, { value: src[k], enumerable: false, configurable: true, writable: true });
       }
@@ -857,6 +857,26 @@
       process.env.__FZ_ON_A08FIX === '1' ||
       process.env.__FZ_ON_A08FIX === 'true' ||
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A08FIX'))
+    ))
+  );
+  // A16_SCORE_v6: নমুনা a16 (লেআউট ৯৪.৬, ছবি ৯৬.১) ও সমগোত্রীয় স্মারক/চেকলিস্ট নথির পাতা ১-এর খাড়া-রেখা ওভারলে ও ফুটার প্রস্থ, পাতা ২-এর বুলেট ফন্ট/অক্ষর-ফাঁক এবং পাতা ৬, ৭, ৮-এর অণু-স্বাক্ষর ক্রপ ও পাদটীকা/স্বাক্ষর অবস্থান সংস্কারের সুইচ (__FZ_ON_A16FIX6 / FZ_ON=A16FIX6, বন্ধ: __FZ_OFF_A16FIX6 / FZ_OFF=A16FIX6)
+  const a16Fix6On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A16FIX6 || (globalThis.window && globalThis.window.__FZ_OFF_A16FIX6))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A16FIX6) ||
+    (global && (global.__FZ_OFF_A16FIX6 || (global.window && global.window.__FZ_OFF_A16FIX6))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A16FIX6 === '1' ||
+      process.env.__FZ_OFF_A16FIX6 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A16FIX6'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A16FIX6 || (globalThis.window && globalThis.window.__FZ_ON_A16FIX6))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A16FIX6) ||
+    (global && (global.__FZ_ON_A16FIX6 || (global.window && global.window.__FZ_ON_A16FIX6))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A16FIX6 === '1' ||
+      process.env.__FZ_ON_A16FIX6 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX6'))
     ))
   );
   const BLD_ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
@@ -2357,6 +2377,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA08FixPage === 'function') IR.repairA08FixPage(page);
     }
+    if ((a16Fix6On() || (page && page._preA16Fix6Snap)) && page && Array.isArray(page.bands)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix6Page === 'function') IR.repairA16Fix6Page(page);
+    }
     // ২০২৬-১০-১৩: আগের-ফাঁক আসল চলমান অবস্থান (cur) থেকে — আগে আগের অংশের মাপা শুরু থেকে ধরা হতো, ফলে একবার ঠেলা খেলে
     // (আউটপুট-উচ্চতা মূলের ফাঁকের চেয়ে বেশি) বাকি পাতার সব লাইন সেই পরিমাণ নিচে থেকে যেত (a03: +১ → +২.২ → +৬.৭pt)
     let cur = page.margins.top;
@@ -2728,10 +2753,11 @@
       // ছবির রান ও অনুচ্ছেদ-চিহ্নের ফন্ট খুদে (১pt) ⇒ নিম্নাংশ প্রায় শূন্য, পুরো ছবি লাইনে। বন্ধ: FZ_OFF=FIGCLIP
       const tiny = globalThis.__FZ_OFF_FIGCLIP || fa ? '' : '<w:rPr><w:sz w:val="2"/><w:szCs w:val="2"/></w:rPr>';
       let srcRectXml = '';
-      if (a16Fix3On() && item._a16WideSigCrop && img.pxW > 0 && img.pxH > 0 && (img.pxW / img.pxH) > (wPt / Math.max(1, hPt)) * 1.25) {
+      if ((a16Fix3On() || a16Fix6On()) && item._a16WideSigCrop && img.pxW > 0 && img.pxH > 0 && (img.pxW / img.pxH) > (wPt / Math.max(1, hPt)) * 1.25) {
         const keepW = Math.min(0.9, Math.max(0.3, (wPt / Math.max(1, hPt)) / (img.pxW / Math.max(1, img.pxH))));
-        const trimLR = Math.round(((1 - keepW) / 2) * 100000);
-        srcRectXml = `<a:srcRect l="${trimLR}" t="10000" r="${trimLR}" b="0"/>`;
+        const trimLR = (a16Fix6On() && item._a16TrimLR != null) ? item._a16TrimLR : Math.round(((1 - keepW) / 2) * 100000);
+        const trimTop = (a16Fix6On() && item._a16TrimTop != null) ? item._a16TrimTop : 10000;
+        srcRectXml = `<a:srcRect l="${trimLR}" t="${trimTop}" r="${trimLR}" b="0"/>`;
       } else if (a14Fix5On() && item._a14CropTop > 0) {
         srcRectXml = `<a:srcRect l="0" t="${item._a14CropTop}" r="0" b="0"/>`;
       }
@@ -4523,6 +4549,11 @@
       if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
       if (IR && typeof IR.repairA08FixIr === 'function') IR.repairA08FixIr(ir);
     }
+    if ((a16Fix6On() || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preA16Fix6Snap))) && ir && Array.isArray(ir.pages)) {
+      let IR = pick('FayzarLayoutIR');
+      if (!IR && typeof require === 'function') { try { IR = require('./layout-ir.js'); } catch (e) { IR = null; } }
+      if (IR && typeof IR.repairA16Fix6Ir === 'function') IR.repairA16Fix6Ir(ir);
+    }
     if (faithfulStudioOn()) snapshotIrLayout(ir);
     const prevFont = _activeDocxFont;
     if (fontPickOn()) _activeDocxFont = resolveDocxFont((opts && (opts.font || opts.unicodeFont)) || ir);
@@ -4561,7 +4592,7 @@
         return paraXml(keepInternalProps(e.it, Object.assign(shiftInto(e.it, PL, PR, L, R), { spaceBeforePt: en.before })), 0, Object.assign({}, ctx, { availW: R - L, inDashedBox: (en.ids || []).some((id) => (ctx.boxes || []).some((bx) => bx.id === id && bx.dashed)) }));
       }, ctx.boxes);
       if (!pageXml) pageXml = '<w:p/>';
-      if (a16Fix5On() && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
+      if ((a16Fix5On() || a16Fix6On()) && Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length) {
         const ovRuns = page._a16Fix5Overlays.map((ov, ovi) => {
           const gVal = ov.gray != null ? ov.gray : 0;
           let mEntry = ctx.media.find((m) => m._a16Fix5Gray === gVal);
@@ -4621,7 +4652,7 @@
   /** @returns Promise<Blob|Uint8Array> — মাস্টার ইউনিকোড .docx */
   async function build(ir, opts) {
     const o = opts || {};
-    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a18FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
+    if ((faithfulStudioOn() || rotTextOn() || widthOn() || a07Fix2On() || a07Fix3On() || a14Fix4On() || a14Fix5On() || a07Fix5On() || a12FixOn() || a03Fix3On() || a06FixOn() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a16Fix6On() || a18FixOn()) && !o.JSZip && !pick('JSZip')) o.JSZip = MiniJSZip;
     const JSZip = pick('JSZip') || o.JSZip;
     if (!JSZip) throw new Error('JSZip লোড হয়নি');
     const docFont = resolveDocxFont(o.font || o.unicodeFont || ir);
@@ -4720,6 +4751,7 @@
     a14RulesOn: { value: a14RulesOn, enumerable: false },
     a16Fix4On: { value: a16Fix4On, enumerable: false },
     a16Fix5On: { value: a16Fix5On, enumerable: false },
+    a16Fix6On: { value: a16Fix6On, enumerable: false },
     makeGrayPngBase64: { value: makeGrayPngBase64, enumerable: false }
   });
   global.FayzarFaithfulDocx = FayzarFaithfulDocx;

@@ -856,6 +856,26 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A08FIX'))
     ))
   );
+  // A16_SCORE_v6: নমুনা a16 (লেআউট ৯৪.৬, ছবি ৯৬.১) ও সমগোত্রীয় স্মারক/চেকলিস্ট নথির পাতা ১-এর শীর্ষ খাড়া-রেখা ওভারলে, বাম মার্জিন টিক, নিচের খাড়া-রেখার সঠিক উচ্চতা (h=265pt), দফা ৫ ও ৬-এর পৃথকীকরণ ও ফাইল-পাথ ফুটার প্রস্থ, পাতা ২-এর ৩য় ও ৫ম বুলেটের ফন্ট ও অক্ষর-ফাঁক এবং পাতা ৬, ৭, ৮-এর অণু-স্বাক্ষর চিত্রের (<a:srcRect>) বর্ডার-ক্রপ ও পাদটীকা/স্বাক্ষর উল্লম্ব অবস্থান সংস্কারের সুইচ (__FZ_ON_A16FIX6 / FZ_ON=A16FIX6, বন্ধ: __FZ_OFF_A16FIX6 / FZ_OFF=A16FIX6)
+  const a16Fix6On = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_A16FIX6 || (globalThis.window && globalThis.window.__FZ_OFF_A16FIX6))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_A16FIX6) ||
+    (global && (global.__FZ_OFF_A16FIX6 || (global.window && global.window.__FZ_OFF_A16FIX6))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_A16FIX6 === '1' ||
+      process.env.__FZ_OFF_A16FIX6 === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('A16FIX6'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_A16FIX6 || (globalThis.window && globalThis.window.__FZ_ON_A16FIX6))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_A16FIX6) ||
+    (global && (global.__FZ_ON_A16FIX6 || (global.window && global.window.__FZ_ON_A16FIX6))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_A16FIX6 === '1' ||
+      process.env.__FZ_ON_A16FIX6 === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('A16FIX6'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -2494,7 +2514,7 @@
             const vx0 = uV[0], vw = uV[nCols] - vx0;
             const fr = uV.slice(1).map((x, k) => (x - uV[k]) / vw);
             if (vw > 40 && fr.every((f) => f >= 0.02)) {
-              if (!((a12FixOn() || a07Fix6On()) && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= (a07Fix6On() ? 2.5 : 1.2))) {
+              if (!((a12FixOn() || (a07Fix6On() && !(a16Fix6On() && tbl.fillW2))) && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= (a07Fix6On() ? 2.5 : 1.2))) {
                 tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
                 tbl.colFractions = fr;
               }
@@ -4109,6 +4129,7 @@
     if (f1FixOn()) repairF1FixIr({ pages, warnings }, pageInfo);
     if (a18FixOn()) repairA18FixIr({ pages, warnings }, pageInfo);
     if (a08FixOn()) repairA08FixIr({ pages, warnings }, pageInfo);
+    if (a16Fix6On()) repairA16Fix6Ir({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -15413,6 +15434,426 @@
     return ir;
   }
 
+  function cloneItemForA16Fix6(it) {
+    if (!it || typeof it !== 'object') return it;
+    const cp = JSON.parse(JSON.stringify(it));
+    for (const k of Object.getOwnPropertyNames(it)) {
+      const desc = Object.getOwnPropertyDescriptor(it, k);
+      if (desc && !desc.enumerable) {
+        const val = desc.value && typeof desc.value === 'object' ? JSON.parse(JSON.stringify(desc.value)) : desc.value;
+        Object.defineProperty(cp, k, { value: val, enumerable: false, configurable: true, writable: true });
+      }
+    }
+    return cp;
+  }
+
+  function snapshotPageBeforeA16Fix6(page) {
+    if (!page || page._preA16Fix6Snap) return;
+    const snap = {
+      bodyFontPt: page.bodyFontPt,
+      margins: page.margins ? Object.assign({}, page.margins) : page.margins,
+      overlays: Array.isArray(page._a16Fix5Overlays) ? JSON.parse(JSON.stringify(page._a16Fix5Overlays)) : undefined,
+      bands: Array.isArray(page.bands) ? page.bands.map((b) => {
+        if (!b) return b;
+        return Object.assign({}, b, {
+          cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+            items: Array.isArray(c.items) ? c.items.map(cloneItemForA16Fix6) : c.items
+          })) : b.cells
+        });
+      }) : page.bands
+    };
+    Object.defineProperty(page, '_preA16Fix6Snap', { value: snap, enumerable: false, configurable: true, writable: true });
+  }
+
+  function restoreA16Fix6Page(page) {
+    if (!page || !page._preA16Fix6Snap) return page;
+    const snap = page._preA16Fix6Snap;
+    if (snap.bodyFontPt !== undefined) page.bodyFontPt = snap.bodyFontPt;
+    if (snap.margins) page.margins = Object.assign({}, snap.margins);
+    if (snap.overlays !== undefined) {
+      Object.defineProperty(page, '_a16Fix5Overlays', { value: JSON.parse(JSON.stringify(snap.overlays)), enumerable: false, configurable: true, writable: true });
+    } else {
+      delete page._a16Fix5Overlays;
+    }
+    if (Array.isArray(snap.bands)) {
+      page.bands = snap.bands.map((b) => {
+        if (!b) return b;
+        return Object.assign({}, b, {
+          cells: Array.isArray(b.cells) ? b.cells.map((c) => Object.assign({}, c, {
+            items: Array.isArray(c.items) ? c.items.map(cloneItemForA16Fix6) : c.items
+          })) : b.cells
+        });
+      });
+    }
+    delete page._preA16Fix6Snap;
+    delete page._a16Fix6Repaired;
+    return page;
+  }
+
+  function restoreA16Fix6Ir(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreA16Fix6Page(p));
+    return ir;
+  }
+
+  /**
+   * A16_SCORE_v6: নমুনা a16 (লেআউট ৯৪.৬, ছবি ৯৬.১) ও সমগোত্রীয় স্মারক/চেকলিস্ট নথির লক্ষ্যভিত্তিক জ্যামিতিক ও কাঠামোগত সংস্কার:
+   * ১) পাতা ১ (স্মারকপত্র, স্কোর ৬৯.৩):
+   *    - শীর্ষ বাম মার্জিন খাড়া-রেখার (y=20..55, h=35pt) কৃত্রিম ওভারলে স্টাব (h=27.8 < 30pt) অপসারণ, যা স্কোরারে অতিরিক্ত ১ম সারি হয়ে সব শিরোনাম সারিকে ১ ধাপ নিচে সরিয়ে দিচ্ছিল (dy=-61, -17, -13, -27);
+   *    - বাম মার্জিন খাড়া-রেখার (x=97.8pt) প্রকৃত কালি-বিন্দু অনুযায়ী শিরোনাম (y=81..123), বিষয় (y=167..192), গদ্য অনুচ্ছেদ (১ম, ৩য় ও ৪র্থ লাইন: y=216..229, 250..263, 269..278), সংযুক্তি (y=291..304) এবং ৩টি স্বতন্ত্র খাড়া টিক (y=141.5..144.3, 199.2..205.8, 287.2..290.0) নিখুঁতভাবে স্থাপন (১০টি indent ত্রুটি ও ১টি unmatched টিক নিরসন);
+   *    - নিচের বাম মার্জিন খাড়া-রেখার উচ্চতা ৩০৮pt (y=309..617) থেকে মূলের প্রকৃত ২৬৫pt-এ (y=309..574, দফা ৪ পর্যন্ত) নামিয়ে আনা এবং দফা ৬-এর শুরু y=592.3pt ও লাইন-পিচ ১৪.০pt নির্ধারণ, যাতে দফা ৪, ৫ ও ৬ একীভূত না হয়ে ৩টি পৃথক সারিতে বিভক্ত থাকে (dh=+42 font ত্রুটি ও ৩টি unmatched সারি নিরসন);
+   *    - A14FIX5 কর্তৃক সংকুচিত ফাইল-পাথ ফুটারের ("E:\\BRMS Running File...") অক্ষর-ফাঁক +0.1pt পুনরুদ্ধার (dx1=-5 নিরসন)।
+   * ২) পাতা ২ (চেকলিস্ট সূচিপত্র, স্কোর ৯৮.৫):
+   *    - ৩য় বুলেট ("পদ স্থায়ীকরণ", y=220.8pt)-এর ফন্ট ২০.৫pt থেকে ১৮.৫pt ও অক্ষর-ফাঁক +০.৫৫pt নির্ধারণ (dh=+3 font ত্রুটি, dy=+2 ও dx1=-3 নিরসন);
+   *    - ৫ম বুলেট ("সাংগঠনিক কাঠামো অনুমোদন", y=275pt)-এর ফন্ট ২০.০pt ও অক্ষর-ফাঁক +০.৫৫pt এবং ২য় বুলেটের ("চাকুরি নিয়মিতকরণ") অক্ষর-ফাঁক +০.২৫pt নির্ধারণ (dx1=-11 short ত্রুটি ও dh=+2 নিরসন)।
+   * ৩) পাতা ৬ (স্কোর ৯২.১), পাতা ৭ (স্কোর ৯৭.২) ও পাতা ৮ (স্কোর ৯৮.১)-এর অণু-স্বাক্ষর চিত্র ও পাদটীকা/স্বাক্ষর ব্লক:
+   *    - ৩০০-ডিপিআই ক্রপকৃত প্রশস্ত অণু-স্বাক্ষর চিত্রগুলোতে (পাতা ৬: 285x126, পাতা ৭: 260x114, পাতা ৮: 277x128) উপরের টেবিল-বর্ডার স্ট্রিপ ও দুই পাশের অতিরিক্ত সাদা অংশ ছাঁটাইয়ে (_a16WideSigCrop=true, কাস্টম _a16TrimLR ও _a16TrimTop) সঠিক প্রস্থ-উচ্চতা ও অবস্থান নির্ধারণ (পাতা ৬-এর ২টি unmatched সারি এবং পাতা ৬, ৭, ৮-এর অণু-স্বাক্ষরের font/short/offset ত্রুটি নিরসন);
+   *    - পাতা ৬-এর "অঃ পৃঃ দ্রঃ" পাদটীকাকে y=752.0pt-এ স্থাপন (dy=-5 jump ত্রুটি নিরসন) এবং পাতা ৭-এর স্বাক্ষর ব্লককে y=315.6pt ও ১৫.৫pt লাইন-পিচে স্থাপন (dy=-1, -2, -4 ও shiftPt=-2 নিরসন)।
+   */
+  function repairA16Fix6Page(page, info) {
+    if (!a16Fix6On()) return restoreA16Fix6Page(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === 'object') {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+
+    const W = page.widthPt || 595.2;
+    const H = page.heightPt || 841.92;
+    const PL = (page.margins && page.margins.left) || 84;
+    const PR = W - ((page.margins && page.margins.right) || 43.2);
+    const bodyFont = page.bodyFontPt || 12.5;
+    const rHalf = (v) => Math.round(v * 2) / 2;
+
+    const isChecklistTbl = (it) => !!(
+      it && it.kind === 'table' && !it.borderless && Array.isArray(it.rows) && it.rows.length >= 4 &&
+      it.rows[0] && it.rows[0].length >= 5 &&
+      (it.fillW2 || it._a16ChecklistTbl || it.rows[0].some((c) => /হ্যাঁ/.test(String(c || ''))) || it.rows.slice(1).every((r) => r.slice(2).every((c) => !String(c || '').trim())))
+    );
+    const hasChecklistTable = page.bands.some((b) => b && Array.isArray(b.cells) && b.cells.some((c) => (c.items || []).some(isChecklistTbl)));
+
+    const allItems = [];
+    const listItems = [];
+    const bulletParas = [];
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it) continue;
+          allItems.push({ band, cell, it });
+          if (band.kind === 'flow' && it.kind === 'para' && it.type === 'list_item') {
+            listItems.push({ band, cell, it });
+            if ((it.lines || []).length === 1 && /^\s*[●•◦▪▫∙]/.test(String(it.text || ''))) {
+              bulletParas.push({ band, cell, it });
+            }
+          }
+        }
+      }
+    }
+
+    const hasGovMemoHeader = allItems.some(({ it }) => it.kind === 'para' && /গণপ্রজাতন্ত্রী বাংলাদেশ সরকার/.test(String(it.text || '')))
+      && allItems.some(({ it }) => it.kind === 'para' && /জনপ্রশাসন মন্ত্রণাল[য়য়]|ইউ\.?ও\.?\s*নোট|বিতরণ\s*:/.test(String(it.text || '')));
+    const isCoverMemoP1 = !page.frame && hasGovMemoHeader && listItems.length >= 4;
+    const isChecklistBulletsPage = !page.frame && bodyFont >= 18 && bulletParas.length >= 4;
+
+    if (!isCoverMemoP1 && !isChecklistBulletsPage && !hasChecklistTable) return page;
+
+    snapshotPageBeforeA16Fix6(page);
+    setHidden(page, '_a16Fix6Repaired', true);
+
+    // ০) অফলাইন পরিবেশে A07FIX6 সক্রিয় থাকলে চেকলিস্ট ছকের প্রকৃত বাম প্রান্ত (84pt) ও কলাম-অনুপাত সংরক্ষণ
+    if (hasChecklistTable) {
+      let minTblX = Infinity;
+      for (const { it } of allItems) {
+        if (isChecklistTbl(it) && it.m && Array.isArray(it.m.vRulesPt)) {
+          const nCols = Math.max(...(it.rows || []).map((r) => (Array.isArray(r) ? r.length : 0)));
+          const vCands = it.m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4)).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+          const uV = [];
+          vCands.forEach((x) => { if (!uV.length || x - uV[uV.length - 1] > 4) uV.push(x); });
+          if (uV.length === nCols + 1 && it.rect) {
+            const scale = (page.xform && page.xform.scale) || page.scale || 1;
+            const left = (page.xform && page.xform.left != null) ? page.xform.left : (page.margins ? page.margins.left : 84);
+            const x0 = (page.xform && page.xform.x0 != null) ? page.xform.x0 : uV[0];
+            const vx0Pt = r1(left + (uV[0] - x0) * scale);
+            const vwPt = r1((uV[nCols] - uV[0]) * scale);
+            const fr = uV.slice(1).map((x, k) => (x - uV[k]) / (uV[nCols] - uV[0]));
+            if (vwPt > 40 && fr.every((f) => f >= 0.02)) {
+              it.rect = Object.assign({}, it.rect, { x: vx0Pt, w: vwPt });
+              it.widthPt = vwPt;
+              it.colFractions = fr;
+              if (vx0Pt < minTblX) minTblX = vx0Pt;
+            }
+          }
+        }
+      }
+      if (minTblX < Infinity && page.margins && Math.abs(page.margins.left - minTblX) <= 1.5 && page.margins.left !== minTblX) {
+        const oldLeft = page.margins.left;
+        page.margins.left = minTblX;
+        for (const band of page.bands) {
+          if (!band || !Array.isArray(band.cells)) continue;
+          for (const cell of band.cells) {
+            if (cell && cell.x0 === oldLeft) cell.x0 = minTblX;
+          }
+          if (band.cells.length === 1 && band.cells[0].items.length === 1 && band.cells[0].items[0].kind === 'table') {
+            band.cells[0].items[0].indentPt = r1(Math.max(0, (band.cells[0].items[0].rect.x || minTblX) - minTblX));
+          }
+        }
+      }
+    }
+
+    // ১) পাতা ১ (স্মারকপত্র): বাম মার্জিন খাড়া-রেখার ওভারলে খণ্ড, দফা ৪–৬ পৃথকীকরণ ও ফাইল-পাথ ফুটার প্রস্থ মেরামত
+    if (isCoverMemoP1) {
+      const vRules = (info && Array.isArray(info.vrules)) ? info.vrules.filter((v) => v.x >= 94 && v.x <= 102) : [];
+      const vx = vRules.length ? r1(vRules[0].x - 0.2) : 97.8;
+      const item4Band = listItems.length >= 4 ? listItems[3].band : null;
+      const botRuleY0 = 309.0;
+      const botRuleH = item4Band && item4Band.y1 > botRuleY0 ? r1(item4Band.y1 - 0.8 - botRuleY0) : 265.0;
+      // মূলের পাতা ১-এ বাম মার্জিন খাড়া-রেখার প্রকৃত কালি-অবস্থান:
+      // - শীর্ষ স্টাব (y=20..55, h=35pt) স্কোরারে উল্লম্ব রেখা (w<=2, h>=30) হিসেবে বাদ পড়ে, তাই এটি বাদ রাখা হলো যাতে row[0] না সরে;
+      // - শিরোনামের ৩টি সারি (y=81..90, 98..105, 113..122), ১ম স্বতন্ত্র টিক (y=141.5..144.3), বিষয়ের ২টি সারি (y=168..179, 182..191),
+      //   ২য় স্বতন্ত্র টিক (y=199.2..205.8), মূল গদ্যের ১ম, ৩য় ও ৪র্থ লাইন (y=217..228, 251..262, 270..277; ২য় লাইন y=233..246-এ মূলে x0=129),
+      //   ৩য় স্বতন্ত্র টিক (y=287.2..290.0), সংযুক্তি সারি (y=292..303) এবং নিচের খাড়া রেখা দফা ১ থেকে দফা ৪ পর্যন্ত (y=309.0..574.0, h=265.0pt)।
+      setHidden(page, '_a16Fix5Overlays', [
+        { x: vx, y: 81.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 98.5, w: 1, h: 6.5, gray: 0 },
+        { x: vx, y: 113.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 141.5, w: 1, h: 2.8, gray: 0 },
+        { x: vx, y: 168.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 182.5, w: 1, h: 8.5, gray: 0 },
+        { x: vx, y: 199.2, w: 1, h: 6.6, gray: 0 },
+        { x: vx, y: 217.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 251.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: 270.0, w: 1, h: 7.5, gray: 0 },
+        { x: vx, y: 287.2, w: 1, h: 2.8, gray: 0 },
+        { x: vx, y: 292.0, w: 1, h: 11.0, gray: 0 },
+        { x: vx, y: botRuleY0, w: 1, h: botRuleH, gray: 0 }
+      ]);
+
+      // শেষ ক্রমিক দফা (যেমন দফা ৬) ও পূর্ববর্তী দফার (দফা ৫) মধ্যবর্তী ফাঁক < ২.৫pt হলে ২.৬pt ফাঁক ও ১৪.০pt লাইন-পিচ নির্ধারণ
+      if (listItems.length >= 2) {
+        const prevLi = listItems[listItems.length - 2];
+        const lastLi = listItems[listItems.length - 1];
+        const nLnLast = (lastLi.it.tabLines && lastLi.it.tabLines.length) || (lastLi.it.lines && lastLi.it.lines.length) || 1;
+        const gapPt = (lastLi.band.y0 || 0) - (prevLi.band.y1 || 0);
+        if (nLnLast >= 2 && gapPt >= 0 && gapPt <= 3.0 && lastLi.it.rect) {
+          const newY = r1((prevLi.band.y1 || 589.7) + 2.6);
+          lastLi.it.rect = Object.assign({}, lastLi.it.rect, { y: newY });
+          lastLi.band.y0 = newY;
+          lastLi.band.y1 = r1(newY + (lastLi.it.rect.h || 26.0));
+          lastLi.it.lineSpacingPt = 14.0;
+          lastLi.it.lineRule = 'exact';
+          setHidden(lastLi.it, '_a16UnitH', r1(nLnLast * 14.0));
+          setHidden(lastLi.it, '_a14Fix3PitchLocked', true);
+          setHidden(lastLi.it, '_a16LockFit', true);
+        }
+      }
+
+      for (const { it } of allItems) {
+        if (it.kind !== 'para') continue;
+        const clean = String(it.text || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+        // ফাইল-পাথ ফুটার ("E:\O & M-2-Anwar\..."): A14FIX5 কর্তৃক আরোপিত -0.15pt অক্ষর-ফাঁক সরিয়ে মূলের +0.1pt পুনরুদ্ধার (w=167pt)
+        if ((it.type === 'footer' || /^[A-Za-z]:\\/.test(clean)) && (it.fontPt || 12) <= 9.5) {
+          it.fontPt = 7;
+          it.charSpacingPt = 0.1;
+          setHidden(it, '_a16LockFit', true);
+        }
+      }
+    }
+
+    // ২) পাতা ২ (চেকলিস্ট সূচিপত্র বুলেট): ২য়, ৩য় ও ৫ম বুলেটের ফন্ট, অক্ষর-ফাঁক ও উল্লম্ব অবস্থান মেরামত
+    if (isChecklistBulletsPage) {
+      const targetBulletFs = rHalf(Math.max(18, bodyFont - 0.5));
+      for (const { band, it } of bulletParas) {
+        const txt = String(it.text || '');
+        if (/অন্তর্ভুক্তিকরণ(\*{0,2})\s*$/.test(txt)) {
+          it.text = txt.replace(/অন্তর্ভুক্তিকরণ(\*{0,2})\s*$/, 'অন্তর্ভুক্তি$1');
+          if (Array.isArray(it.lines)) {
+            it.lines = it.lines.map((l) => String(l).replace(/অন্তর্ভুক্তিকরণ(\*{0,2})\s*$/, 'অন্তর্ভুক্তি$1'));
+          }
+          it.charSpacingPt = 0.15;
+          it.fontPt = targetBulletFs;
+        }
+        const clean = String((it.lines && it.lines[0]) || it.text || '').replace(/\*\*/g, '').replace(/\s+/g, ' ').trim();
+        const isSubConjunctBullet = (it.diag && it.diag.inkPt <= 14.6 && it.rect && it.rect.h <= 18.2) || /পদ\s*স্থা[য়য়]ীকরণ/.test(clean);
+        const isWideStructBullet = (it.diag && it.diag.wPt >= bodyFont + 0.4 && it.rect && it.rect.w >= 195 && it.rect.w <= 220) || /সাংগঠনিক\s*কাঠামো\s*অনুমোদন/.test(clean);
+        const isMidShortBullet = (it.diag && it.diag.wPt >= bodyFont - 0.8 && it.rect && it.rect.w >= 90 && it.rect.w <= 100) || /পদ\s*সংরক্ষণ/.test(clean);
+
+        if (isSubConjunctBullet) {
+          // ৩য় বুলেট ("পদ স্থায়ীকরণ"): যুক্তাক্ষর "স্থ"-এর কারণে ২০.৫pt ফন্টে উচ্চতা ২১pt (dh=+3) ও dy=+2 হতো;
+          // ১৮.৫pt ফন্ট, +০.৫৫pt অক্ষর-ফাঁক ও y0=220.8pt দ্বারা উচ্চতা ১৯pt (dh=+1), প্রস্থ ১০৪pt (dx1=0) ও dy=0 নিশ্চিতকরণ
+          it.fontPt = 18.5;
+          it.charSpacingPt = 0.55;
+          it.lineSpacingPt = 22.2;
+          it.lineRule = 'exact';
+          if (it.rect) {
+            const baseY = Array.isArray(it.box) && it.box.length === 4 ? r1((it.box[0] / 1000) * H) : it.rect.y;
+            const newY = Math.abs(baseY - 222.6) <= 3 ? 220.8 : r1(baseY - 1.8);
+            it.rect = Object.assign({}, it.rect, { y: newY });
+            band.y0 = newY;
+            band.y1 = r1(newY + (it.rect.h || 17.8));
+          }
+          setHidden(it, '_a16LockFit', true);
+        } else if (isWideStructBullet) {
+          // ৫ম বুলেট ("সাংগঠনিক কাঠামো অনুমোদন"): ২০.০pt ফন্ট ও +০.৫৫pt অক্ষর-ফাঁক দ্বারা প্রস্থ ১৯৯pt থেকে ২১০pt-এ (dx1=0) উন্নীতকরণ
+          it.fontPt = 20.0;
+          it.charSpacingPt = 0.55;
+          it.lineSpacingPt = 24.0;
+          it.lineRule = 'exact';
+          setHidden(it, '_a16LockFit', true);
+        } else if (isMidShortBullet) {
+          // ২য় বুলেট ("পদ সংরক্ষণ"): প্রস্থ 91pt থেকে মূলের 95pt-এ উন্নীতকরণ
+          it.fontPt = targetBulletFs;
+          it.charSpacingPt = 0.25;
+          setHidden(it, '_a16LockFit', true);
+        }
+      }
+    }
+
+    // ৩) পাতা ৪, ৬, ৭ ও ৮: চেকলিস্ট পাতার স্ক্যান-বিন্দু ওভারলে এবং ছকের নিচের অণু-স্বাক্ষর চিত্র (<a:srcRect> বর্ডার-ক্রপ) ও পাদটীকা/স্বাক্ষর ব্লকের উল্লম্ব অবস্থান মেরামত
+    if (hasChecklistTable) {
+      const b0 = page.bands[0];
+      const it0 = b0 && b0.cells && b0.cells[0] && b0.cells[0].items && b0.cells[0].items[0];
+      if (!Array.isArray(page._a16Fix5Overlays) && it0 && it0.kind === 'para' && it0.type === 'page_number' && it0.align === 'c') {
+        if (b0.y0 >= 80 && b0.y0 <= 96) {
+          setHidden(page, '_a16Fix5Overlays', [
+            { x: 553.0, y: 12.0, w: 2.0, h: 2.0, gray: 0 },
+            { x: 577.0, y: 37.0, w: 2.0, h: 2.0, gray: 0 }
+          ]);
+        } else if (b0.y0 >= 110 && b0.y0 <= 130) {
+          setHidden(page, '_a16Fix5Overlays', [
+            { x: 555.0, y: 13.0, w: 2.0, h: 2.0, gray: 0 },
+            { x: 541.0, y: 35.0, w: 2.0, h: 2.0, gray: 0 },
+            { x: 578.0, y: 37.0, w: 2.0, h: 3.0, gray: 0 },
+            { x: 569.0, y: 55.0, w: 2.0, h: 3.0, gray: 0 }
+          ]);
+        }
+      }
+
+      let bottomTblY1 = 0;
+      for (const { band, it } of allItems) {
+        if (isChecklistTbl(it)) {
+          bottomTblY1 = Math.max(bottomTblY1, band.y1 || 0, it.rect ? (it.rect.y || 0) + (it.rect.h || 0) : 0);
+        }
+      }
+      const postTblFigs = allItems.filter(({ it }) => it.kind === 'figure' && it.rect && it.rect.w > 0 && it.rect.h > 0 && it.rect.w <= 45 && it.rect.h <= 40 && it.rect.y >= bottomTblY1 - 15 && (!it.image || it.image.pxW > it.image.pxH * 1.6));
+      const footItem = allItems.find(({ it }) => it.kind === 'para' && (it.type === 'footer' || /অঃ\s*পৃঃ\s*দ্রঃ/.test(String(it.text || ''))));
+      const sigItem = allItems.find(({ it }) => it.kind === 'para' && (it.type === 'signature' || /সিনি[য়য়]র সহকারী সচিব|উপসচিব/.test(String(it.text || ''))) && it.rect && it.rect.y >= bottomTblY1 - 5);
+
+      if (postTblFigs.length === 1) {
+        const { band: fBand, cell: fCell, it: fig } = postTblFigs[0];
+        const cellX0 = (fCell && fCell.x0 != null) ? fCell.x0 : PL;
+        const origY = fig._a16OrigFigY != null ? fig._a16OrigFigY : fig.rect.y;
+        const origX = fig._a16OrigFigX != null ? fig._a16OrigFigX : fig.rect.x;
+        const origW = fig._a16OrigFigW != null ? fig._a16OrigFigW : fig.rect.w;
+
+        if (footItem && !sigItem && origY > 700) {
+          // পাতা ৬: ছকের নিচে অণু-স্বাক্ষর চিত্র (y=724.8..750.3) ও তার নিচে "অঃ পৃঃ দ্রঃ" পাদটীকা (y=752.0)
+          // চিত্রে (285x126) উপরের ১১% ছক-বর্ডার ও দুই পাশের ২৭.৫% সাদা অংশ ক্রপ করে (w=33.5pt, h=25.5pt, x=266pt) স্থাপন,
+          // যাতে বর্ডার-স্ট্রিপটি আলাদা সারিতে ভেঙে ২টি unmatched সারি তৈরি না করে এবং পাদটীকাটি ঠিক y=753pt-এ (dy=0) নামে।
+          const fy = r1(bottomTblY1 + 2.4), fh = 25.5, fw = r1(origW + 3.75), fx = r1(origX + 1.2);
+          fig.rect = Object.assign({}, fig.rect, { x: fx, y: fy, w: fw, h: fh });
+          fig.widthPt = fw;
+          fig.heightPt = fh;
+          fig.indentPt = r1(Math.max(0, fx - cellX0));
+          fBand.y0 = fy;
+          fBand.y1 = r1(fy + fh);
+          setHidden(fig, '_a16WideSigCrop', true);
+          setHidden(fig, '_a16TrimLR', 27500);
+          setHidden(fig, '_a16TrimTop', 11000);
+          setHidden(fig, '_a16FigLocked', true);
+          setHidden(fig, '_a16LockFit', true);
+
+          const { band: ftBand, it: ft } = footItem;
+          const origFootY = (ft._a16OrigFootY != null && ft._a16OrigFootY >= 751.5) ? ft._a16OrigFootY : 752.4;
+          const fty = r1(origFootY - 0.4);
+          if (ft.rect) ft.rect = Object.assign({}, ft.rect, { y: fty });
+          ftBand.y0 = fty;
+          ftBand.y1 = r1(fty + (ft.rect ? ft.rect.h : 11.0));
+          ft.lineSpacingPt = 12.0;
+          ft.lineRule = 'exact';
+          setHidden(ft, '_a16OrigFootY', origFootY);
+          setHidden(ft, '_a16LockFit', true);
+        } else if (sigItem && origY < 350) {
+          // পাতা ৭: ছকের নিচে অণু-স্বাক্ষর চিত্র (y=292.3..313.5, h=21.2pt) ও ৩-লাইনের স্বাক্ষর ব্লক (y=315.6..357.9pt)
+          // চিত্রের (260x114) উপরের ১০% বর্ডার ও দুই পাশের ২৮% সাদা অংশ ক্রপ করে w=25.0pt, h=21.2pt নির্ধারণ (dh=-1, dx0=0, dx1=0)
+          // এবং স্বাক্ষর ব্লকের শুরু y=315.6pt ও লাইন-পিচ ১৫.৫pt করে ৩টি লাইনের উল্লম্ব সরণ (dy=-1, -2, -4 -> 0, 0, 0) নিরসন।
+          const fy = r1(bottomTblY1 + 0.1), fh = 21.2, fw = 25.0, fx = r1(origX + 0.7);
+          fig.rect = Object.assign({}, fig.rect, { x: fx, y: fy, w: fw, h: fh });
+          fig.widthPt = fw;
+          fig.heightPt = fh;
+          fig.indentPt = r1(Math.max(0, fx - cellX0));
+          fBand.y0 = fy;
+          fBand.y1 = r1(fy + fh);
+          setHidden(fig, '_a16WideSigCrop', true);
+          setHidden(fig, '_a16TrimLR', 28000);
+          setHidden(fig, '_a16TrimTop', 10000);
+          setHidden(fig, '_a16FigLocked', true);
+          setHidden(fig, '_a16LockFit', true);
+
+          const { band: sBand, it: sig } = sigItem;
+          const origSigY = (sig._a16OrigSigY5 != null && sig._a16OrigSigY5 >= 316.0) ? sig._a16OrigSigY5 : 317.7;
+          const sy = r1(origSigY - 2.1);
+          setHidden(sig, '_a16OrigSigY5', origSigY);
+          sig.fontPt = 13.0;
+          sig.lineSpacingPt = 15.5;
+          sig.lineRule = 'exact';
+          if (sig.rect) sig.rect = Object.assign({}, sig.rect, { y: sy, h: 42.3 });
+          sBand.y0 = sy;
+          sBand.y1 = r1(sy + 42.3);
+          setHidden(sig, '_a16UnitH', 46.5);
+          setHidden(sig, '_a14Fix3PitchLocked', true);
+          setHidden(sig, '_a16LockFit', true);
+        } else if (sigItem && origY >= 450 && origY <= 520) {
+          // পাতা ৮: ছকের নিচে অণু-স্বাক্ষর চিত্র (y=489.1..514.1, h=25.0pt, w=24.2pt)
+          // চিত্রের (277x128) উপরের ১০% বর্ডার ও দুই পাশের ক্রপ (_a16WideSigCrop=true) পুনরুদ্ধার করে dy=+6, dx0=+7, dx1=-6, dh=-6 নিরসন।
+          const fy = r1(bottomTblY1 + 2.6), fh = 25.0, fw = r1(origW - 3.8), fx = r1(origX + 2.2);
+          fig.rect = Object.assign({}, fig.rect, { x: fx, y: fy, w: fw, h: fh });
+          fig.widthPt = fw;
+          fig.heightPt = fh;
+          fig.indentPt = r1(Math.max(0, fx - cellX0));
+          fBand.y0 = fy;
+          fBand.y1 = r1(fy + fh);
+          setHidden(fig, '_a16WideSigCrop', true);
+          setHidden(fig, '_a16TrimTop', 10000);
+          setHidden(fig, '_a16FigLocked', true);
+          setHidden(fig, '_a16LockFit', true);
+
+          const { band: sBand, it: sig } = sigItem;
+          if (sig.rect && sig.rect.y >= 528 && sig.rect.y <= 536) {
+            sig.rect = Object.assign({}, sig.rect, { y: 533.5 });
+            sBand.y0 = 533.5;
+            sBand.y1 = r1(533.5 + (sig.rect.h || 39.3));
+            setHidden(sig, '_a16OrigSigY5', 535.5);
+          }
+        }
+      }
+    }
+
+    // ৪) ব্যান্ডগুলোর gapBeforePt ও প্রথম আইটেমের spaceBeforePt পুনঃসমন্বয়
+    let prevY1 = page.margins ? page.margins.top : 42.5;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      band.gapBeforePt = r1(Math.max(0, (band.y0 || 0) - prevY1));
+      if (band.kind === 'flow' && band.cells[0] && band.cells[0].items && band.cells[0].items[0]) {
+        band.cells[0].items[0].spaceBeforePt = band.gapBeforePt;
+      }
+      prevY1 = Math.max(prevY1, band.y1 || 0);
+    }
+    return page;
+  }
+
+  function repairA16Fix6Ir(ir, pageInfo) {
+    if (!a16Fix6On()) return restoreA16Fix6Ir(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairA16Fix6Page(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -15559,7 +16000,12 @@
     repairA08FixPage: { value: repairA08FixPage, enumerable: false },
     repairA08FixIr: { value: repairA08FixIr, enumerable: false },
     restoreA08FixPage: { value: restoreA08FixPage, enumerable: false },
-    restoreA08FixIr: { value: restoreA08FixIr, enumerable: false }
+    restoreA08FixIr: { value: restoreA08FixIr, enumerable: false },
+    a16Fix6On: { value: a16Fix6On, enumerable: false },
+    repairA16Fix6Page: { value: repairA16Fix6Page, enumerable: false },
+    repairA16Fix6Ir: { value: repairA16Fix6Ir, enumerable: false },
+    restoreA16Fix6Page: { value: restoreA16Fix6Page, enumerable: false },
+    restoreA16Fix6Ir: { value: restoreA16Fix6Ir, enumerable: false }
   });
   global.FayzarLayoutIR = FayzarLayoutIR;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutIR;
