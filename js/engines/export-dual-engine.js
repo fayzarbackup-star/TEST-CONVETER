@@ -428,6 +428,14 @@
      * Renders OpenXML DOCX runs with native dynamic font switching (<w:r> & <m:oMath>).
      * Sits directly inside <w:p> to prevent invalid <w:t> nesting.
      */
+    /** পরীক্ষার হেডারের প্লেসহোল্ডার (শিক্ষক নিজের প্রতিষ্ঠান বসাবেন) — হলুদ হাইলাইটের জন্য; লেখা বদলায় না */
+    _isPlaceholderHeader(text) {
+      const t = String(text == null ? '' : text).replace(/\s+/g, ' ').trim();
+      if (!t) return false;
+      return t === 'আপনার প্রতিষ্ঠান এর নাম' || t === 'আপনার প্রতিষ্ঠানের নাম' || t === 'ঠিকানা লিখুন' ||
+        t === 'পরীক্ষার নাম লিখুন' || /^[.…]{4,}$/.test(t);
+    },
+
     renderDocxRuns(text, options = {}, style = {}) {
       if (!text) return '';
       const isBijoy = this.isBijoyFont(options);
@@ -440,6 +448,7 @@
       if (style.u) styleTags += '<w:u w:val="single"/>';
       const szVal = style.sz || 24;
       styleTags += `<w:sz w:val="${szVal}"/><w:szCs w:val="${szVal}"/>`;
+      if (style.hl) styleTags += '<w:highlight w:val="yellow"/>';
 
       if (!trp) {
         const escaped = this.formatDocxText(text, options);
@@ -1543,7 +1552,7 @@
           continue;
         }
         const align = hl.align === 'left' ? '\\ql' : '\\qc';
-        rtf += '{' + align + sty + '\\fs' + sz + '\\f0\\sl240\\slmult1\\sb0\\sa0 ' +
+        rtf += '{' + align + sty + '\\fs' + sz + '\\f0\\sl240\\slmult1\\sb0\\sa0 ' + (this._isPlaceholderHeader(hl.text) ? '\\highlight2 ' : '') +
           this.formatRtfText(hl.text || '', options) + '\\par}\n';
       }
       // হেডারের নিচে একটিমাত্র দৃশ্যমান বিভাজক
@@ -1563,6 +1572,7 @@
         if (o.italic) s += '<w:i/>';
         if (o.underline) s += '<w:u w:val="single"/>';
         s += '<w:sz w:val="' + (o.sz || g.baseSz) + '"/><w:szCs w:val="' + (o.sz || g.baseSz) + '"/>';
+        if (o.hl) s += '<w:highlight w:val="yellow"/>';
         return '<w:rPr>' + s + '</w:rPr>';
       };
       const run = (txt, o) => '<w:r>' + rPr(o || {}) + '<w:t xml:space="preserve">' + this.formatDocxText(txt || '', options) + '</w:t></w:r>';
@@ -1581,7 +1591,7 @@
           continue;
         }
         const jc = hl.align === 'left' ? '' : '<w:jc w:val="center"/>';
-        xml += '<w:p>' + pPr(jc) + run(hl.text, { bold: hl.bold, italic: hl.italic, sz }) + '</w:p>';
+        xml += '<w:p>' + pPr(jc) + run(hl.text, { bold: hl.bold, italic: hl.italic, sz, hl: this._isPlaceholderHeader(hl.text) }) + '</w:p>';
       }
       // বিভাজক রেখা
       xml += '<w:p><w:pPr><w:spacing w:before="0" w:after="60" w:line="100" w:lineRule="auto"/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr></w:pPr></w:p>';
@@ -1685,7 +1695,7 @@
       if (!options.returnInnerRtf) {
         rtf += '{\\rtf1\\ansi\\deff0\n';
         rtf += '{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + fontName + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n';
-        rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
+        rtf += '{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue0;}\n';
         rtf += this._cqPageSetupRtf(g, plan.headerSpan === 'page') + '\n';
       }
 
@@ -1735,7 +1745,7 @@
       let rtf = '';
       rtf += '{\\rtf1\\ansi\\deff0\n';
       rtf += '{\\fonttbl\n{\\f0\\fnil\\fcharset0 ' + fontName + ';}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n';
-      rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
+      rtf += '{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue0;}\n';
       // ---- সেকশন ১: CQ বুকলেট (A4 ল্যান্ডস্কেপ, ২ কলাম, 0.7" গ্যাপ) ----
       rtf += this._cqPageSetupRtf(cqPlan.geometry) + '\n';
       rtf += this.generateCqExamRtf(parsedCq, { ...options, returnInnerRtf: true, isCombined: true, auditNote: null, suppressAuditNote: true });
@@ -1930,7 +1940,7 @@
       if (!options.returnInnerRtf) {
         rtf += '{\\rtf1\\ansi\\deff0\n';
         rtf += `{\\fonttbl\n{\\f0\\fnil\\fcharset0 ${fontName};}\n{\\f1\\fnil\\fcharset0 Times New Roman;}\n}\n`;
-        rtf += '{\\colortbl;\\red0\\green0\\blue0;}\n';
+        rtf += '{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue0;}\n';
       }
 
       const plan = this._mcqPlan(parsedData, options, 'EXAM_MCQ');
@@ -1962,7 +1972,7 @@
         const hsz = sz + (hl.sizeDelta || 0);
         const align = hl.align === 'center' ? '\\qc' : '\\ql';
         const style = (hl.bold ? '\\b' : '') + (hl.italic ? '\\i' : '');
-        rtf += `{${align}${style}\\fs${hsz}\\f0${lineRtf}\\sb0\\sa0 ` + this.formatRtfText(hl.text || '', options) + '\\par}\n';
+        rtf += `{${align}${style}\\fs${hsz}\\f0${lineRtf}\\sb0\\sa0 ` + (this._isPlaceholderHeader(hl.text) ? '\\highlight2 ' : '') + this.formatRtfText(hl.text || '', options) + '\\par}\n';
       }
       // ---- ডিভাইডার: হেডারের নিচে সিঙ্গেল বর্ডার লাইন (খ.৪) ----
       rtf += '{\\ql\\fs4\\f0\\sl100\\slmult1\\sb0\\sa20\\brdrb\\brdrs\\brdrw10\\brsp20 \\par}\n';
@@ -2097,7 +2107,7 @@
         }
         if (!hl.text) continue;
         const jc = hl.align === 'center' ? '<w:jc w:val="center"/>' : '';
-        const style = { b: !!hl.bold, i: !!hl.italic, sz: hsz };
+        const style = { b: !!hl.bold, i: !!hl.italic, sz: hsz, hl: this._isPlaceholderHeader(hl.text) };
         bodyXml += `<w:p><w:pPr>${jc}<w:spacing w:line="240" w:lineRule="auto" w:before="0" w:after="0"/></w:pPr>${this.renderDocxRuns(hl.text, options, style)}</w:p>`;
       }
       // ---- ডিভাইডার (খ.৪) ----

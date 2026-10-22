@@ -107,7 +107,8 @@
 | একটি টেস্ট | `node --test --test-reporter=tap tests/<নাম>` |
 | সাইটের আসল ডাউনলোড-শিকল | `$env:FMTS='bijoy_docx,doc,unicode_docx'; node qa/site-chain-download.mjs <outDir> <fixture.md>[;cols]` |
 | Word COM মাপ | `tools/dump-doc.ps1`, `tools/cv-tabs.ps1`, `tools/pdf-pages.ps1` |
-| কর্মপরিকল্পনা (চলমান, ☐/☑) | `docs/WORK_PLAN.md` |
+| কর্মপরিকল্পনা (একমাত্র সক্রিয়, ২০২৬-১০-২৩) | `docs/FINAL_WORK_PLAN.md` (পুরোনো `WORK_PLAN.md` বাতিল) |
+| স্বয়ংক্রিয় মোডের ব্যাচ (ছবি/PDF → আসল Gemini OCR → .docx/.doc) | `node qa/auto-batch-e2e.mjs <inDir> <outDir> [formats]` (২–৪টি ফাইল; রেন্ডার `qa/golden/word-pdf-batch.ps1` → `qa/render-pdf-page.mjs`) |
 | ব্যবহারকারীর স্থায়ী অপারেশনাল নির্দেশনা ও ব্রিফিং | `docs/USER_OPERATIONAL_DIRECTIVES.md` |
 | ৩-পিসি Gemini ব্রিজ হাব (কাজের সারি, Firebase-এর বদলে) | `fayzar-bridge-hub/index.js` (Worker+DO), `tools/bridge_task.mjs`, `docs/BRIDGE_HUB_PLAN.md`; চুক্তি `scratch/bundles/BRIDGE_APP_v1_PROMPT.md` §4 |
 | মাল্টি-এজেন্ট ম্যানেজমেন্ট ও অ্যাসিস্ট্যান্ট ট্র্যাকার | `docs/MULTI_AGENT_MANAGEMENT.md`, `gemini-bridge-extension/`, `tools/agent_manager.mjs` |

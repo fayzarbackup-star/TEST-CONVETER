@@ -23,6 +23,18 @@
 - **GitHub Repo**: `https://github.com/fayzarbackup-star/TEST-CONVETER/tree/arena/01a0f18b-test-conveter`
 
 ## 3. Recently Implemented Features (DO NOT OVERWRITE)
+- **2026-10-22 রাত ১১:৩০ — task_TEST22 সম্পাদন (নতুন ২৮টি আসল নমুনার faithful-e2e ব্যাচ সম্পন্ন)**:
+  (1) foreground পরীক্ষামূলক একক ফাইল রান: `node qa/faithful-e2e.mjs "scratch/samples/new/2026-10-22/T- (1).jpeg" "scratch/samples/new/2026-10-22/out/T01_jpeg"` সফল (২০ সেকেন্ডে সম্পন্ন; .docx ও .doc তৈরি)।
+  (2) সম্পূর্ণ ব্যাচ রান: `node qa/faithful-e2e.mjs --jobs scratch/agent-out/test22_jobs.json` চালানো হয় এবং আউটপুট `scratch/agent-out/test22_run.txt`-এ সংরক্ষিত।
+  (3) ফলাফল: ২৮টির মধ্যে ২৮টি কাজই সফল (JOB ok, 0 failed)। প্রতিটি আউটপুট ফোল্ডারে faithful_docx-unicode.docx, faithful_docx-bijoy.docx, এবং faithful_Word2003.doc তৈরি হয়েছে।
+  (4) রিপোর্ট `scratch/agent-out/result_TEST22.md`-এ ৩০ লাইনে লিখিত (শেষ লাইন DONE)। কোনো js ফাইলে হাত দেওয়া হয়নি, push করা হয়নি।
+
+- **2026-10-22 দুপুর ১২:০৫ — task_SEND2 সম্পাদন (হাবে ২টি কাজ প্রেরণ)**:
+  (1) FONT_TYPE_v3 (ফন্ট-সাইজ/লাইন-উচ্চতা ধরন, সুইচ FONTTYPEFIX): a17, a10, a19, a05, a07, a04 ফাইল মিলিয়ে প্রম্পট ও বান্ডেল (22.7MB) তৈরি; a14 টেবিল-প্রস্থ রাউন্ডিং নোট যুক্ত।
+  (2) SHORT_TYPE_v1 (লাইনব্রেক/লাইনপ্রস্থ ধরন, সুইচ LINEWIDTHFIX): a17, a04, a10, a19, a11, f2 ফাইল মিলিয়ে প্রম্পট ও বান্ডেল (19.6MB) তৈরি।
+  (3) Fayzar Pro Bridge হাবে প্রেরণ: FONT_TYPE_v3 (Task ID 2610220601-2b860c, desktop-cjdueh1:acc3 working) এবং SHORT_TYPE_v1 (Task ID 2610220603-c2f82e, pending)।
+  (4) ক্যাপচা/রোবট শব্দ বাদ রাখার নির্দেশ সতর্কতার সাথে অনুসৃত; কোনো js ফাইল সম্পাদনা বা git push করা হয়নি।
+
 0. **2026-10-18 রাত ১১:৫০ — রিস্টার্টের পরে ৪ ট্যাব**: পিসি রিস্টার্ট; send-টাইমআউট সমস্যা মিটল। নতুন চ্যাটে প্রথমে Flash/Chat-এ যাওয়ায় জিপ পড়া যায়নি ⇒ সমাধান: লোডের পরে switch-mode Argon + send --force। u/0–u/3-এ F3_REBASE_v10, D_E2E_v10, ROWCHECK_FLAKY_v10, ASIS_SCORE_v10 চলছে। শিক্ষা: চলমান ট্যাবে navigate নয়।
 0. **2026-10-18 গভীর রাত — হুবহু স্কোর-মাপ**: f1 (একমাত্র মূল PDF যা আছে, Downloads-এ) ক্যাশ-ক্যাপচারে Word দিয়ে: ৬৯.০→৮০.৭ (লেআউট ৭৪, পাতা ৩/৩)। asis-score-এ লাগে `serve.js` (3008) + `ASIS_DIR`। "AS it IS" ফোল্ডার নেই ⇒ বাকি ২০টি মাপা যায়নি; পুরোনো ২১টির গড় ৭৭.১। WORK_PLAN টিক কোড দেখে হালনাগাদ। B_TABLE_REBASE_v9 বসানো (push 75ad34f; zip-এর README প্রজেক্ট README-তে নয়, ব্যাকআপে)। F3 v10 send ব্যর্থ (u/1, u/5 টাইমআউট/attachment) — bridge/Chrome সমস্যা।
 0. **2026-10-18 শেষ রাত — সেশন বন্ধ (কনটেক্সট বড়)**: আজ push: ক্লাসিফায়ার প্যাড-নিয়ম+C1/C3 স্কোর (ae4a4ca), B8 বর্ডার (d7cd498), B7 ফন্ট, D+G3, G প্রক্সি-স্ট্রিম (deploy বাকি), EXAM রেজিস্ট্রি; টেস্ট ২৩৪৭/০। ফেরানো/বাকি: F3 (rebase দরকার), B টেবিল (u/7 চলছে), F1 FIX, F2_WIRE FIX — ক্রম HANDOFF-এ। শিক্ষা: একই ফাইলে সমান্তরাল Gemini-কাজ একে অপরকে মোছে ⇒ builder/studio-controller-এ ক্রমানুসারে।
@@ -652,3 +664,39 @@
 
 - 2026-10-22: Fayzar Pro Bridge সোর্স (Downloads জিপ) দেখা হলো — Electron index.js + worker.js (firebase-admin, Playwright headless Chrome প্রোফাইল, `requests`→`responses`, temporary chat, শুধু ছবি→টেক্সট, ২৪০s)। ৩-পিসির বাধা: কাজ দাবি/লক নেই (সব পিসি একই কাজ ধরবে), একটাই status/desktop, ফাইল ফেরত নেই, Task-মোড নেই। প্রস্তাব দেওয়া: নতুন `tasks/` সারি (transaction-দাবি), `pcs/<id>` heartbeat, RTDB-তে জিপ টুকরো, worker-এ gemini_task (Task+Argon, download ধরা), আমাদের দিকে tools/bridge_task.mjs। কোড এখনো লেখা হয়নি।
 - 2026-10-22 (২): সিদ্ধান্ত Firebase বাদ → Cloudflare। ব্রিজ-অ্যাপ ২.০ Gemini-কে (BRIDGE_APP_v1, u/1 ট্যাব4) — পূর্ণ স্পেক+হাব API চুক্তি। হাব আমি লিখে deploy: fayzar-bridge-hub (DO SQLite: tasks/blobs/pcs/cmds; দাবি অ্যাটমিক, sent-এর পরে release নিষেধ, বন্ধ পিসির claimed→pending/sent→orphan, কমান্ড heartbeat-এ)। শিক্ষা: PowerShell পাইপে `wrangler secret put` ভুল মান বসায় → node spawnSync input দিয়ে; বডিহীন POST-এ req.json() ভাঙে। smoke ৮/৮ PASS। ব্যবহারকারীকে Google-শর্তের ঝুঁকি জানানো হয়েছে; তিনি সীমার মধ্যে চালাতে চান।
+- 2026-10-22 (৩): BRIDGE_APP_v1 এল (২০ ফাইল, হাব-পথ মিলেছে, firebase নেই)। selftest ৬/৯, ব্যর্থগুলো এলোমেলো (সময়-রেস; cancel-এ done-এর পরে পাতা বন্ধ)। বিল্ড-ফোল্ডার ..\fayzar-pro-bridge-v2: hubUrl ডিফল্ট, pcId=hostname, stealth/playwright-extra বাদ, টেমপ্লেট config.json বাদ। electron-builder আইকন-টুল OOM → নিজে 256px PNG-in-ICO বানিয়ে win.icon। ইনস্টলার 2.0.0 (109MB) তৈরি; বাস্তব Gemini-পরীক্ষা বাকি।
+- 2026-10-22 (৪): এই পিসিতে ইনস্টল (ব্যবহারকারী ২ অ্যাকাউন্ট লগইন; টোকেন আমি userData config-এ বসালাম)। প্রথম পরীক্ষায় Task/Argon/আপলোড কাজ করল কিন্তু "preview not seen" — কারণ পাতাজোড়া [role=progressbar] সবসময় থাকে; Close-<ফাইলনাম> চেক আগে + শুধু ইনপুট-এলাকার দৃশ্যমান স্পিনার। এরপর BRIDGE_TEST1 পুরো চক্র ৩ মিনিটে সফল, জিপ ঠিক। release→reclaim, restart_before_sent আচরণও বাস্তবে ঠিক দেখা গেল।
+- nozip ফাঁক: retained পাতা থাকলেও অ্যাকাউন্ট ১৫s-এ নতুন কাজ নিত → পাতা বন্ধ, ask_zip অসম্ভব ⇒ holdUntil ১৫ মিনিট। মাপ: প্রোফাইল ~১৫০MB ডিস্ক, ২ অ্যাকাউন্ট ~১.৭GB RAM (পিসি ৭.৮GB) ⇒ ৮GB পিসিতে ২ অ্যাকাউন্ট। এক প্রোফাইলে বহু অ্যাকাউন্ট সম্ভব কিন্তু লাভ কম/ঝুঁকি বেশি — সুপারিশ নয়। চূড়ান্ত ইনস্টলার ০৯:৪৩।
+
+- 2026-10-22 ভোর: ধরন-ভিত্তিক ৬ সুইচ ডিফল্টে + push (INDENTFIX 3e32d54, VGAPFIX 9e25512, SERIALFIX 8bf335a, MISSINGFIX v2 189e0db, SHORTFIX 0c2b369, RULESFIX v2 edda801; a02 ৪৬→৯৫); run-all 7438/0, ১২ ফাইলে খারাপ ০। MISSING v1 (a06 −৬১) ও RULES v1 (a03 −১৪, a18 ছবি −৩০) বাতিল → এখনকার js + ফল-টেবিলসহ v2 → দুটোই সফল। merge3 KEEP_OURS সুইচ-OR লাইন হারায় → scratch/lostdiff.mjs + লাইন-নির্দিষ্ট port স্ক্রিপ্ট। ব্রিজে /close-tab যোগ (RAM)। FONT v1 ৫ ঘণ্টা আটকে → FONT_TYPE_v2 (FONTTYPEFIX) u/0-তে।
+
+- 2026-10-22 সকাল: Antigravity Flash Agent রুটিন পরীক্ষা test2 সফল (run-all 7438/0, result_test2.md DONE)। FONT_TYPE_v2 প্রয়োগ সম্পন্ন: gemini-inbox থেকে Downloads-এ কপি → chk_FONT_TYPE_v2 এক্সট্র্যাক্ট → addcheck পরিষ্কার বাংলা-লিটারাল → apply_reply ৩ ফাইলে ok (faithful-docx-builder, layout-ir, line-fit, 0 conflict) → lostdiff ০ লাইন হারানো → run-all 7924 pass, 2 fail (fontfix ও fonttypefix-এ a14 পাতা 2 IR ছক: colWidthsPt যোগফল 457.3 == widthPt 456.5)। FAIL > 0 হওয়ায় asis-ab স্কিপ। ফলাফল result_FONT_APPLY.md-এ DONE সহ লিপিবদ্ধ।
+
+- 2026-10-22 দুপুর: FONT_TYPE_v2 বসানো (a14 ছক-প্রস্থ ২ টেস্ট ব্যর্থ → v3); Flash যাচাই ২/২ মিলেছে, এখন ভরসা; ধরন-বিশ্লেষণ (font/short/missing/vgap/indent); পিসি ধীর = Pro Bridge ৪ Chrome; BRIDGE_APP_v2 (অলস Chrome+লিন ফ্ল্যাগ+park) বসানো, RAM ২→৪.৩GB; ভুয়া captcha = প্রম্পটের শব্দ regex-এ মেলে; SEND2 (FONT v3 + SHORT v1) Flash দিয়ে হাবে।
+- 2026-10-22 দুপুর (২): FONT_TYPE_v3 প্রয়োগ ও A/B পরীক্ষা সম্পন্ন (Flash Agent, task_FONT3_APPLY)। gemini-inbox থেকে Downloads-এ কপি → chk_FONT_TYPE_v3 এক্সট্র্যাক্ট → addcheck কোনো বিকৃত বাংলা-লিটারাল পায়নি → apply_reply.ps1 সফল (layout-ir.js theirs=9, fonttypefix.test.mjs কপি, 0 conflict, 0 lost line) → run-all 8335 pass, 0 fail (v2-এর a14 ছক-প্রস্থের ব্যর্থতা দূর, fontfix 282 ও fonttypefix 691 পাস) → asis-ab ১২ ফাইলে গড় ৯১.৩→৯১.৩, খারাপ ০ (কোনো ফাইল খারাপ হয়নি, a03/a06 +0.1)। ফল result_FONT3_APPLY.md-এ DONE সহ লিপিবদ্ধ। FONTTYPEFIX ডিফল্টে অন করা ও পুশ করার সিদ্ধান্ত বাকি।
+- 2026-10-22 দুপুর (৩): task_SHORT_APPLY চালানো হলো (Flash Agent)। bridge_task.mjs status যাচাইয়ে দেখা গেল SHORT_TYPE_v1 (id 2610220603-c2f82e) হাবে failed/failed (Something went wrong)। নিয়ম অনুযায়ী (`failed/... → STOP and report`) সাথে সাথে থেমে রিপোর্ট result_SHORT_APPLY.md-এ FAILED সহ জমা দেওয়া হলো।
+- 2026-10-22 দুপুর (৪): task_FONT3_TARGET চালানো হলো (Flash Agent)। FONTTYPEFIX-এর টার্গেট ৬টি ফাইলে (a17,a10,a19,a05,a04,a11) asis-ab.mjs চালানো হয়। স্থানীয় ড্রাইভে এই ফাইলগুলোর উৎস PDF না থাকায় ("উৎস নেই") প্রতিটি বাদ পড়ে। ফলাফল result_FONT3_TARGET.md-এ DONE সহ সংরক্ষিত।
+- 2026-10-22 বিকেল: SHORT_TYPE_v1 প্রয়োগ ও A/B পরীক্ষা সম্পন্ন (Flash Agent, Downloads\SHORT_TYPE_v1.zip)। chk_SHORT_TYPE_v1 এক্সট্র্যাক্ট → addcheck পরিষ্কার → apply_reply.ps1 সফল (layout-ir/line-fit theirs=9, linewidthfix.test.mjs কপি; 0 conflict, 0 lost line) → run-all 8435 pass, 0 fail (linewidthfix 100/0) → asis-ab ১২ ফাইলে গড় ৯১.৩→৯১.৪, ভালো ০, খারাপ ৫ (a02 −১.৩, a06 −২.৬, a13 −৪.২, a14 −৩.১, a18 −৯.৭)। ৫টি ফাইলে রিগ্রেশন থাকায় LINEWIDTHFIX বন্ধ রেখে v2 তৈরি/পাঠানো প্রয়োজন। ফল result_SHORT_APPLY.md-এ DONE সহ সংরক্ষিত।
+- 2026-10-22 রাত: ব্যবহারকারী জানালেন TEST22-এর ২৮টি ফাইলই অব্যবহারযোগ্য। Claude ৬টি (T01,T05,T10,T17,T24,T02_pdf) Word-এ রেন্ডার করে দেখলেন — ঠিক। মূল কারণ: capture = ব্লকের ধরন+পিক্সেল-বক্স+fs(s/m/l/xl)+b/i/u+লেখা; measures এই পিক্সেল থেকেই মার্জিন/ফাঁক/ফন্ট/বোল্ড/ফ্রেম বানায়। ফোনের ছবিতে কাগজের কিনারা→পাতার বর্ডার, টেবিলের পটভূমি→উপরে বড় ফাঁকা, কালির ঘনত্ব→ভুল বোল্ড/ধূসর শেড, সিল/রিসিভ-স্ট্যাম্প→ওভারল্যাপ করা লেখা, দুই কলাম (T24) ভেঙে এলোমেলো, বড় টেবিল (T02) গ্রিড/কলাম-প্রস্থ ছাড়া সরু। কাঠামো (ভূমিকা: লেটারহেড/তারিখ/প্রাপক/বিষয়/মূল অংশ/স্বাক্ষর/ফুটার; কলাম; টেবিল গ্রিড; একই ভূমিকা=একই স্টাইল) ধরা হয় না। প্রস্তাব: "কাঠামো-আগে" — ভূমিকা-ভিত্তিক স্কিমা + পরিষ্কার স্টাইল, পিক্সেল-মাপ শুধু ইঙ্গিত। ব্যবহারকারীর সিদ্ধান্তের অপেক্ষা; কোনো কোড বদল হয়নি।
+- 2026-10-23: ব্যবহারকারী প্রজেক্ট বাতিলের কথা তুললেন এবং ছবি সোজা করা আর মাপের তারতম্য (A4/A5) নিয়ে প্রশ্ন করলেন। Claude-এর সিদ্ধান্ত: বাতিল নয় — লেখা পড়া (OCR), বিজয়/.doc রপ্তানি আর ফরম-ছাঁচ ঠিকমতো চলছে; শুধু হুবহু পথের পিক্সেল-নকলের দর্শন ভুল। নতুন পথ চার ধাপে: page-rectify → নকশা-পত্র → স্টাইল-ছাঁচ দিয়ে Word তৈরি → চেকলিস্ট দিয়ে যাচাই। মাপ পিক্সেল থেকে নয়, এক লাইনে কত অক্ষর আর পাতায় কত লাইন থেকে। পুরোনো FIX-সুইচের টিউনিং বন্ধ। অনুমোদনের অপেক্ষা।
+- 2026-10-23: নতুন qa/auto-batch-e2e.mjs দিয়ে স্বয়ংক্রিয় মোডে ৪টি ফাইল চালানো হলো (T01, T02-pdf, T05, T24)। ফল হুবহুর চেয়ে অনেক ভালো। T05 আর T24 প্রায় ব্যবহারযোগ্য; T02-এর টেবিল নিখুঁত কিন্তু ১ম পাতা ফাঁকা। T01 PROTTOYON ভুল করে আড়াআড়ি সনদ-ছাঁচে গেছে। সাধারণ দোষ: স্বাক্ষর/সিল/ফুটার এক অনুচ্ছেদে জুড়ে যায়। ব্যবহারকারী ফন্ট-নিয়ম দিলেন (মূল লেখা ১২/১১, ঘন হলে ১০, হেডিং আমাদের নির্ধারিত)। সিদ্ধান্ত: কাঠামো-পথ তৈরি হবে স্বয়ংক্রিয় মোডের ওপর, নতুন ইঞ্জিন লাগবে না।
+- 2026-10-23: ব্যবহারকারী পুরো কর্মপ্রবাহের পুনর্নকশা চাইলেন। আরও ৬টি নমুনা দেখা হলো: T08 (টেবিল ও বুলেটসহ চিঠি), T10 (৯০° ঘোরানো বই), T12 (পাশাপাশি দুই পাতা), T17 (কভার), T19 (হাতে লেখা রেজিস্টার), T21 (কম রেজোলিউশনের ফরম)। এরপর docs/REDESIGN_PLAN.md লেখা হলো। ব্যবহারকারী এটা Gemini-কে দিয়ে রিভিউ করাবেন; রিভিউয়ের আগে কোনো কোড-কাজ নয়।
+- 2026-10-23: দুটি রিভিউ এল। Claude কোডে মিলিয়ে দেখলেন, তারপর docs/FINAL_WORK_PLAN.md লিখলেন (ডেস্কটপেও কপি)। যা পাওয়া গেল:
+  - কারণ: T01 → certificate-layout.js:104-110; T02 → application-layout.js:429 (keepNext ১৮০, tblHeader ০); T24 → প্রশ্ন-ইঞ্জিন (a)(b) ভাঙে আর "8" বসায়।
+  - নমুনা-হেডার ইচ্ছাকৃত (ai-ocr-engine.js:181)। অচেনা ধরন যায় generateGenericDocx-এ।
+  - ক্যাপচারে আগে থেকেই ১৫ রকম ভূমিকা আছে; ক্যাপচার আর OCR-এর লেখা ৯৪–৯৮.৫% মেলে। PDF দুটোয় লেখা-স্তর নেই।
+  - রিভিউয়ারদের যে প্রস্তাব আগেই করা আছে: বাংলা-ইংরেজি রান আলাদা করা, clean-composer, Word-রেন্ডার।
+  - সিদ্ধান্ত: আগে কাঠামো; পর্ব ০–৮ (২৩–৩১ দিন); গেট (নিরাপত্তা ১০০%, চেহারা ৮০%, ২ মিনিট)।
+  - মালিকের সিদ্ধান্ত D1–D6 বাকি।
+- 2026-10-23: v2-এর ওপর আরও দুটি রিভিউ এল (M1–M8, S1–S7, আর অন্যজনের ৪টি প্রস্তাব)। FINAL_WORK_PLAN v3 লেখা হলো, ডেস্কটপেও কপি।
+  - নেওয়া হয়েছে: doc-model.js আর অ্যাডাপ্টার; প্রথম ডাকেই হালকা ভূমিকা-চিহ্ন; ঘোরানো আর ভাগের বোতাম পর্ব ১গ-এ; চেক ১ শুধু রাখা ভূমিকায়; স্কোর দুই ভাগে (✔/◐); "পুরোনো পদ্ধতি" সুইচ।
+  - যাচাই হয়েছে: Worker ছবি বা লেখা জমা রাখে না; একাধিক ছবির সুবিধা আগে থেকেই আছে।
+  - নেওয়া হয়নি: মূল লেখার সর্বনিম্ন ১০.৫ বা ১১ (মালিকের "১০ পর্যন্ত" নিয়ম বহাল)।
+  - সিদ্ধান্ত D1–D12 বাকি।
+- 2026-10-23: মালিক জানালেন T02-এর নম্বর ইংরেজি অঙ্কে, কালপুরুষ ফন্ট আছে; বাকি সিদ্ধান্ত Claude নিলেন। সাপ্তাহিক টোকেন ৮০% → Opus কোড লিখবে না।
+  - পর্ব ০ করেছে Sonnet সাব-এজেন্ট (প্রায় ৬২K + ৬৫K টোকেন): গোল্ডেন সেট, usability-score, বেসলাইন। c6 চেক Claude ধরিয়ে দেওয়ার পরে ঠিক হয়েছে।
+  - পর্ব ১ক দেওয়া হয়েছে Sonnet-কে (ব্রিফ docs/tasks/PHASE1A_BRIEF.md); নতুন চ্যাটে যাওয়া হচ্ছে।
+
+
+
+

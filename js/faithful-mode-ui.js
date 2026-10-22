@@ -343,7 +343,7 @@
     box.innerHTML = `<div style="font-weight:700;font-size:13px;color:#334155;margin-bottom:8px">লেআউট কেমন চান?</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         ${card('template', '📐', 'আমাদের সাজানো ফরম্যাট', 'প্রশ্নপত্র/ডকুমেন্ট আমাদের নিয়মে সুন্দর করে সাজানো')}
-        ${card('faithful', '📄', 'মূল ফাইলের মতো হুবহু', 'যেভাবে আছে সেভাবেই — অবস্থান, আকার, পাশাপাশি অংশ, চিত্র (পরীক্ষামূলক)')}
+        ${card('faithful', '📄', 'মূল ফাইলের মতো হুবহু', 'যেভাবে আছে সেভাবেই — অবস্থান, আকার, পাশাপাশি অংশ, চিত্র (পরীক্ষামূলক — শুধু পরিষ্কার স্ক্যানের জন্য)')}
       </div>`;
     container.insertBefore(box, container.firstChild);
     box.addEventListener('click', (e) => { const b = e.target.closest('[data-fz-mode]'); if (b) setMode(b.getAttribute('data-fz-mode')); });

@@ -426,8 +426,9 @@
         '<w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>' +
         widths.map((w) => '<w:gridCol w:w="' + w + '"/>').join('') + '</w:tblGrid>';
       b.rows.forEach((row, ri) => {
-        const keep = ri < b.rows.length - 1 ? '<w:keepNext/>' : '';   // টেবিল এক পাতায় একসাথে
-        x += '<w:tr><w:trPr><w:cantSplit/></w:trPr>';
+        const short = b.rows.length <= 15;   // ছোট টেবিল এক পাতায় একসাথে; লম্বা হলে keepNext নয়, হেডার প্রতি পাতায় পুনরাবৃত্ত
+        const keep = short && ri < b.rows.length - 1 ? '<w:keepNext/>' : '';
+        x += '<w:tr><w:trPr><w:cantSplit/>' + (!short && ri === 0 ? '<w:tblHeader/>' : '') + '</w:trPr>';
         for (let ci = 0; ci < widths.length; ci++) {
           const parts = String(row[ci] == null ? '' : row[ci]).split(/<br\s*\/?>/i).map((p) => p.trim());
           x += '<w:tc><w:tcPr><w:tcW w:w="' + widths[ci] + '" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>';
@@ -527,8 +528,9 @@
       const brd = '\\clvertalc\\clbrdrt\\brdrs\\brdrw10\\clbrdrl\\brdrs\\brdrw10\\clbrdrb\\brdrs\\brdrw10\\clbrdrr\\brdrs\\brdrw10';
       let out = '';
       b.rows.forEach((row, ri) => {
-        const keep = ri < b.rows.length - 1 ? '\\keepn' : '';
-        let defs = '\\trowd\\trgaph80\\trleft' + left + '\\trkeep';
+        const short = b.rows.length <= 15;
+        const keep = short && ri < b.rows.length - 1 ? '\\keepn' : '';
+        let defs = '\\trowd\\trgaph80\\trleft' + left + (short ? '\\trkeep' : '') + (!short && ri === 0 ? '\\trhdr' : '');
         let x = left;
         for (const w of widths) { x += w; defs += brd + '\\cellx' + x; }
         let cells = '';
