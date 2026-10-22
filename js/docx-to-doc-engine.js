@@ -1571,6 +1571,7 @@
 
       const stats = { paragraphs: 0, runs: 0 };
       const rowsHtml = [];
+      const hdrHtml = []; let hdrCount = 0;
       model.forEach((cells, r) => {
         const cellsHtml = [];
         cells.forEach((c) => {
@@ -1639,10 +1640,20 @@
             trStyle = ` style="height:${hPt}pt;mso-height-rule:${isExact ? 'exactly' : 'at-least'}"`;
           }
         }
-        rowsHtml.push('<tr' + trStyle + '>' + cellsHtml.join('') + '</tr>');
+        // টেবিল-হেডার পুনরাবৃত্তি (w:tblHeader) ও সারি-না-ভাঙা (w:cantSplit): Word-HTML-এ <thead> + page-break-inside:avoid
+        const trPr2 = kid(rows[r], 'trPr');
+        const isHdr = !!(trPr2 && kid(trPr2, 'tblHeader'));
+        const noSplit = !!(trPr2 && kid(trPr2, 'cantSplit'));
+        if (noSplit) {
+          trStyle = trStyle
+            ? trStyle.replace(/style="/, 'style="page-break-inside:avoid;')
+            : ' style="page-break-inside:avoid"';
+        }
+        const trHtml = '<tr' + trStyle + '>' + cellsHtml.join('') + '</tr>';
+        if (isHdr && hdrCount === r) { hdrCount++; hdrHtml.push(trHtml); } else rowsHtml.push(trHtml);
       });
 
-      const html = '<table class="MsoNormalTable"' + alignAttr + ' border=0 cellspacing=0 cellpadding=0 style="' + tblStyles.join(';') + '">' + rowsHtml.join('\n') + '</table>';
+      const html = '<table class="MsoNormalTable"' + alignAttr + ' border=0 cellspacing=0 cellpadding=0 style="' + tblStyles.join(';') + '">' + (hdrHtml.length ? '<thead>' + hdrHtml.join('\n') + '</thead>' : '') + rowsHtml.join('\n') + '</table>';
       return { html, stats };
     }
 

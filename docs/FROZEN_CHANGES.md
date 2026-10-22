@@ -4,3 +4,4 @@
 
 | তারিখ | ফাইল | পরিবর্তন | যাচাই | জানানো |
 |---|---|---|---|---|
+| 2026-10-23 | js/docx-to-doc-engine.js (_parseTable) | w:tblHeader সারি `<thead>`-এ (প্রতি পাতায় হেডার পুনরাবৃত্তি), w:cantSplit সারিতে page-break-inside:avoid; .doc আসলে Word-HTML, তাই sprm নয় | tests ৮৩৪৪ পাস ০ ব্যর্থ; T02 p2 শুরুতে হেডার সারি (Word রেন্ডার); math ফিক্সচারে thead ০ ⇒ অপরিবর্তিত | না |
