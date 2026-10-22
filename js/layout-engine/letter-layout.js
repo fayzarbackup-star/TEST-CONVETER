@@ -103,16 +103,28 @@
       const RM = getRM();
       const ex = RM ? RM.extract(norm(rawText), (l) => cleanLine(l)) : { text: norm(rawText), marks: {}, count: 0 };
       const marks = ex.count ? ex.marks : null;
-      const src = ex.text.replace(/^\s*---[\s\S]*?---\s*/, '').split('\n');
+      const src = [];
+      for (const ln of ex.text.replace(/^\s*---[\s\S]*?---\s*/, '').split('\n')) {
+        // Phase 1B-iii: লাইনের মাঝে আটকে থাকা `---` আলাদা লাইনে ভাঙো (টেবিল-সারি বাদে)
+        const m = !/^\s*\|/.test(ln) && ln.match(/^(.*\S)\s+-{3,}\s+(\S.*)$/);
+        if (m) src.push(m[1], '---', m[2]); else src.push(ln);
+      }
       const items = [];
       for (const raw of src) {
         const t = cleanLine(raw);
-        if (t) items.push({ t, h: /^\s*#{1,6}\s/.test(raw) });
+        if (t) items.push({ t, h: /^\s*#{1,6}\s/.test(raw), hr: /^-{3,}$/.test(t) });
       }
       const blocks = [];
 
       // ---- ১. প্যাড-শিরোনাম ----
-      const head = this._takeLetterhead(items);
+      // `---` (রুল) প্রথম ১০ লাইনের মধ্যে এলে তার আগের সব লাইন শিরোনাম; রুলটাই শিরোনামের শেষ
+      let head = null;
+      const hrAt = items.findIndex((x) => x.hr);
+      if (hrAt >= 2 && hrAt <= 10 && !items.slice(0, hrAt).some((x) => RX.headStop.test(x.t) || RX.tableRow.test(x.t) || x.t.length > 120)) {
+        const hh = this._takeLetterhead(items.slice(0, hrAt), true);
+        if (hh.lines.length) head = { lines: hh.lines, used: hrAt + 1 };
+      }
+      if (!head) head = this._takeLetterhead(items);
       if (head.lines.length) blocks.push({ kind: 'letterhead', lines: head.lines });
       let rest = items.slice(head.used).map((x) => x.t);
 
@@ -169,10 +181,11 @@
      * উপরের ≤৮টি ছোট লাইন, প্রথম চিঠি-চিহ্নের আগ পর্যন্ত। প্রতিষ্ঠানের নাম = "#" শিরোনাম-লাইন (Gemini-র নিয়ম),
      * না থাকলে প্রথম "top"-নয় এমন লাইন; নামের আগের লাইনগুলো ছোট (top), পরেরগুলো ঠিকানা/তথ্য।
      */
-    _takeLetterhead(items) {
+    _takeLetterhead(items, forced) {
       const cand = [];
-      for (let i = 0; i < items.length && i < 8; i++) {
+      for (let i = 0; i < items.length && i < (forced ? 10 : 8); i++) {
         const { t } = items[i];
+        if (forced) { cand.push(items[i]); continue; }   // `---` আগেই শিরোনামের সীমা ঠিক করেছে
         if (RX.headStop.test(t) || RX.tableRow.test(t) || t.length > 90) break;
         if (RX.title.test(t) && !RX.notTitle.test(t) && t.length <= 40 && cand.length) break;
         if (RX.sentenceEnd.test(t) && t.length > 60) break;

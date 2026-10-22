@@ -3694,8 +3694,11 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     const auditNote = extractAuditNote(unicodeText);
     window.lastAuditNote = auditNote;
     const cleaned = cleanOcrResponse(unicodeText);
-    state.unicodeText = cleaned;
-    if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = cleaned;
+    // Phase 1B-iii: ভূমিকা-চিহ্ন ব্যবহারকারীকে দেখানো হয় না; ভেতরের কপিতে থাকে, এক্সপোর্টে আবার জোড়া হয়
+    const _hid = (typeof FayzarRoleMarks !== 'undefined') ? FayzarRoleMarks.hide(cleaned) : { visible: cleaned, tagged: null };
+    state.roleHidden = _hid.tagged ? _hid : null;
+    state.unicodeText = _hid.visible;
+    if (elements.outputUnicodeArea) elements.outputUnicodeArea.value = _hid.visible;
     recalculateBijoyFromUnicode();
 
     if (elements.auditNotesBox) {
@@ -4563,7 +4566,8 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
     isDownloadingDocument = true;
 
     try {
-      const text = (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText || state.bijoyText;
+      let text = (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText || state.bijoyText;
+      if (text && typeof FayzarRoleMarks !== 'undefined') text = FayzarRoleMarks.reattach(text, state.roleHidden);   // Phase 1B-iii
       if (!text || !text.trim()) {
         showToast('ডাউনলোড করার মতো কোনো টেক্সট নেই', 'warning');
         return;
@@ -4850,6 +4854,7 @@ ${rpr('Times New Roman', fontSizeHalfPt)}
    */
   async function openStudioPreviewEditor(customText, customName) {
     let text = customText || (elements.outputUnicodeArea && elements.outputUnicodeArea.value) || state.unicodeText;
+    if (text && !customText && typeof FayzarRoleMarks !== 'undefined') text = FayzarRoleMarks.reattach(text, state.roleHidden);   // Phase 1B-iii
     if (!text || !text.trim()) {
       showToast('স্টুডিওতে ওপেন করার মতো কোনো টেক্সট নেই', 'warning');
       return;

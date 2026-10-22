@@ -64,6 +64,19 @@
       return { text: out.join('\n'), marks, count };
     },
 
+    /** Phase 1B-iii: ব্যবহারকারীকে চিহ্ন-ছাড়া লেখা দেখাও; চিহ্ন-সহ কপি ভেতরে রাখো → { visible, tagged|null } */
+    hide(text) {
+      const s = String(text == null ? '' : text);
+      return this.has(s) ? { visible: this.strip(s), tagged: s } : { visible: s, tagged: null };
+    },
+
+    /** এক্সপোর্টের আগে: লেখা অপরিবর্তিত থাকলে চিহ্ন-সহ কপি ফেরত; ব্যবহারকারী বদলালে (বা কপি নেই) লেখা যেমন আছে */
+    reattach(current, hidden) {
+      const cur = String(current == null ? '' : current);
+      if (!hidden || !hidden.tagged || this.has(cur)) return cur;
+      return cur === hidden.visible ? hidden.tagged : cur;
+    },
+
     /** ai-ocr-engine: doc_type ফ্রন্টম্যাটার দেখে চিহ্ন রাখা বা মুছা */
     gate(text) {
       let s = String(text == null ? '' : text);
