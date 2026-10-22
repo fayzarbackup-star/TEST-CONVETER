@@ -182,6 +182,7 @@
      * If address is missing, write address in subtitle or next line: "ঠিকানা লিখুন"
      * If exam name is missing, write: exam: "পরীক্ষার নাম লিখুন"
      * Ensure grade (শ্রেণি), subject (বিষয়), time (সময়), fullMarks (পূর্ণমান) are included in frontmatter or top header.
+   - ROLE MARKS (ONLY when doc_type is OFFICE_PAD, PROTTOYON or GOVT_APP; optional, never change the text): append at the END of a line an HTML comment <!--r:TAG--> (several tags comma-joined, e.g. <!--r:sig,sideR-->). TAG: stamp (seal/stamp text), sig (signature/name/designation block lines), note (marginal side note), sideL / sideR (block shares one row with another block, left/right), aL / aC / aR (only if alignment is clearly visible). Never on [[FIG]] or table lines; omit when unsure; never use for other doc types.
    - MULTI-CATEGORY SECTIONING MANDATE (FOR EVERY MIXED QUESTION PAPER):
      * Whenever the source clearly switches category (short/সংক্ষিপ্ত, creative/সৃজনশীল, MCQ/বহুনির্বাচনি, etc.), emit a separate Markdown level-2 heading immediately before each category. Examples: ## ক-বিভাগ (সংক্ষিপ্ত প্রশ্ন), ## সৃজনশীল প্রশ্ন, ## গ-বিভাগ (বহুনির্বাচনি প্রশ্ন).
      * Preserve any printed section letter/name and wording. If the category switch is clear but the source has no printed heading, add only a neutral category label (for example ## সংক্ষিপ্ত প্রশ্ন); never invent a ক/খ/গ label or question content.
@@ -3893,6 +3894,10 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
   function cleanOcrResponse(rawText) {
     if (!rawText) return '';
     let text = sanitizeMathBengaliSeparation(rawText.trim());
+
+    // Phase 1B-ii: ভূমিকা-চিহ্ন <!--r:..--> শুধু OFFICE_PAD/PROTTOYON/GOVT_APP-এ থাকে; বাকি সব ধরনে এখানেই মুছে যায়
+    if (typeof FayzarRoleMarks !== 'undefined') text = FayzarRoleMarks.gate(text);
+    else text = text.replace(/[ \t]*<!--\s*r:[A-Za-z,\s]+?-->[ \t]*/g, '');
 
     // Extract audit note for UI badge before stripping
     const detectedNote = extractAuditNote(text);

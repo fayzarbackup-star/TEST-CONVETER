@@ -93,7 +93,7 @@
     },
 
     _lines(rawText) {
-      return norm(rawText).replace(/^\s*---\n[\s\S]*?\n---\s*/, '').split('\n')
+      return norm(global.FayzarRoleMarks ? global.FayzarRoleMarks.strip(rawText) : rawText).replace(/^\s*---\n[\s\S]*?\n---\s*/, '').split('\n')
         .map((raw) => ({ t: cleanLine(raw), h: /^\s*#{1,6}\s/.test(raw), hr: RX.hr.test(raw.trim()) }))
         .filter((x) => x.t || x.hr);
     },
@@ -134,6 +134,14 @@
     },
 
     parse(rawText) {
+      // Phase 1B-ii: ভূমিকা-চিহ্ন (sig/stamp/sideL/sideR) — সিঙ্ক্রোনাস, তাই সাময়িক ক্ষেত্রে রাখা নিরাপদ
+      const RM = global.FayzarRoleMarks || null;
+      const ex = RM ? RM.extract(norm(rawText), (l) => cleanLine(l)) : null;
+      this._marks = ex && ex.count ? ex.marks : null;
+      try { return this._parseInner(ex ? ex.text : rawText); } finally { this._marks = null; }
+    },
+
+    _parseInner(rawText) {
       const items = this._lines(rawText);
       const two = this._split(items);
       if (!two) return { kind: 'CERT_LAYOUT', version: 1, variant: 'single', parts: [this._parsePart(items.filter((x) => !x.hr), 'single')] };
@@ -186,7 +194,7 @@
       if (ti >= 0 && ti <= 3) { part.title = rest[ti]; rest = rest.slice(0, ti).concat(rest.slice(ti + 1)); }
 
       // শেষের তারিখ + স্বাক্ষর
-      let sig = LL ? LL._takeSignature(rest) : null;
+      let sig = LL ? LL._takeSignature(rest, this._marks) : null;
       let sign = sig ? [].concat(...sig.groups) : [];
       let body = sig ? rest.slice(0, sig.at) : rest.slice();
       let date = '';

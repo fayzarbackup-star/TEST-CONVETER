@@ -29,7 +29,7 @@ const normWord = w => w.replace(/^[\p{P}\p{S}]+|[\p{P}\p{S}]+$/gu, '').normalize
 // ---------- c1 ----------
 function c1() {
   if (!ocrPath || !fs.existsSync(ocrPath)) return { pass: true, value: 'skipped (no ocr-text.md)' };
-  let t = fs.readFileSync(ocrPath, 'utf8').replace(/^---[\s\S]*?\n---\s*\n/, '');
+  let t = fs.readFileSync(ocrPath, 'utf8').replace(/^---[\s\S]*?\n---\s*\n/, '').replace(/[ \t]*<!--\s*r:[A-Za-z,\s]+?-->/g, '');   // 1B-ii: ভূমিকা-চিহ্ন লেখা নয়
   const lines = t.split(/\r?\n/).filter(l => {
     const s = l.trim();
     if (!s) return false;

@@ -27,6 +27,11 @@
     if (P && typeof P.measure === 'function') return P.measure(str, sz);
     return Math.round(String(str || '').length * (sz / 2) * 20 * 0.55);
   }
+  function getRM() {
+    if (global.FayzarRoleMarks) return global.FayzarRoleMarks;
+    if (typeof require === 'function') { try { return require('./role-marks.js'); } catch (e) { } }
+    return null;
+  }
   function norm(text) {
     return String(text == null ? '' : text)
       .replace(/\u09AF\u09BC/g, '\u09DF').replace(/\u09A1\u09BC/g, '\u09DC').replace(/\u09A2\u09BC/g, '\u09DD')
@@ -95,7 +100,10 @@
      */
     parse(rawText, variant) {
       const v = variant === 'prottoyon' ? 'prottoyon' : 'pad';
-      const src = norm(rawText).replace(/^\s*---[\s\S]*?---\s*/, '').split('\n');
+      const RM = getRM();
+      const ex = RM ? RM.extract(norm(rawText), (l) => cleanLine(l)) : { text: norm(rawText), marks: {}, count: 0 };
+      const marks = ex.count ? ex.marks : null;
+      const src = ex.text.replace(/^\s*---[\s\S]*?---\s*/, '').split('\n');
       const items = [];
       for (const raw of src) {
         const t = cleanLine(raw);
@@ -113,8 +121,15 @@
       const tail = tailAt >= 0 ? rest.slice(tailAt) : [];
       if (tailAt >= 0) rest = rest.slice(0, tailAt);
 
+      // ---- ২ক. মার্জিন-নোট (চিহ্ন থাকলে): মূল লেখা থেকে আলাদা, ছোট মাপে ----
+      let notes = [];
+      if (marks) {
+        notes = rest.filter((t) => marks[t] && marks[t].note && !marks[t].signature);
+        if (notes.length) rest = rest.filter((t) => !(marks[t] && marks[t].note && !marks[t].signature));
+      }
+
       // ---- ৩. স্বাক্ষর-ব্লক (শেষ থেকে) ----
-      const sig = this._takeSignature(rest);
+      const sig = this._takeSignature(rest, marks);
       const body = sig ? rest.slice(0, sig.at) : rest;
 
       // ---- ৪. মূল অংশ ----
@@ -127,6 +142,7 @@
       }
       if (!bodyBlocks) bodyBlocks = this._parseFree(body);
       blocks.push(...bodyBlocks);
+      if (notes.length) blocks.push({ kind: 'fields', lines: notes, small: true });
       if (sig) blocks.push({ kind: 'signature', groups: sig.groups });
       blocks.push(...this._parseTail(tail));
       return { kind: 'LETTER_LAYOUT', version: 1, variant: v, blocks };
@@ -138,7 +154,8 @@
      */
     hasLetterhead(rawText) {
       const items = [];
-      for (const raw of norm(rawText).replace(/^\s*---[\s\S]*?---\s*/, '').split('\n')) {
+      const RM0 = getRM();
+      for (const raw of norm(RM0 ? RM0.strip(rawText) : rawText).replace(/^\s*---[\s\S]*?---\s*/, '').split('\n')) {
         const t = cleanLine(raw);
         if (t) items.push({ t, h: /^\s*#{1,6}\s/.test(raw) });
       }
@@ -169,9 +186,31 @@
     },
 
     /** শেষের ছোট লাইনগুলোর মধ্যে নাম/পদবি থেকে স্বাক্ষর-ব্লক; দুই-তিনজন হলে আলাদা দল */
-    _takeSignature(lines) {
+    _takeSignature(lines, marks) {
       const n = lines.length;
       if (!n) return null;
+      // Phase 1B-ii: OCR-র ভূমিকা-চিহ্ন (sig/stamp) থাকলে সেটাই প্রথম — শেষের সারি থেকে ব্লক, sideL/sideR হলে পাশাপাশি
+      if (marks) {
+        const isSig = (t) => marks[t] && (marks[t].signature || marks[t].stamp);
+        let first = -1;
+        for (let i = n - 1; i >= 0 && n - i <= 14; i--) if (isSig(lines[i])) first = i;
+        if (first >= 0 && !lines.slice(first).some((t) => RX.tableRow.test(t))) {
+          let at = first;
+          if (at - 1 >= 0 && RX.sigLabel.test(lines[at - 1])) at--;
+          const seg = lines.slice(at);
+          const hasSide = seg.some((t) => marks[t] && marks[t].side);
+          let groups;
+          if (hasSide) {
+            const L = [], R = [];
+            let cur = L;
+            for (const t of seg) { const s = marks[t] && marks[t].side; if (s === 'L') cur = L; else if (s === 'R') cur = R; cur.push(t); }
+            groups = [L, R].filter((x) => x.length);
+            // পাশাপাশি টেবিল শুধু দুই পক্ষেই স্বাক্ষর (sig) থাকলে; সিল/মোবাইল-সারি একা হলে একই কলামে
+            if (groups.length === 2 && !groups.every((gr) => gr.some((t) => marks[t] && marks[t].signature))) groups = [seg];
+          } else groups = [seg];
+          return { at, groups };
+        }
+      }
       // (ক) মার্কডাউন টেবিল-আকারে পাশাপাশি স্বাক্ষর
       if (RX.tableRow.test(lines[n - 1])) {
         let k = n;
@@ -393,7 +432,7 @@
             xml += P(R(b.text), '<w:jc w:val="right"/>');
             break;
           case 'fields':
-            for (const l of b.lines) xml += P(R(l), '<w:jc w:val="left"/>');
+            for (const l of b.lines) xml += P(b.small ? h.runs(l, { sz: 20 }) : R(l), '<w:jc w:val="left"/>');
             break;
           case 'signature':
             xml += this._docxSignature(b, h, g, P);
@@ -460,7 +499,7 @@
             break;
           case 'title': rtf += P(T(b.text, { b: true, u: true }), '\\qc', 50, 240); break;
           case 'date': rtf += P(T(b.text), '\\qr'); break;
-          case 'fields': for (const l of b.lines) rtf += P(T(l), '\\ql'); break;
+          case 'fields': for (const l of b.lines) rtf += P(T(l), '\\ql', b.small ? 20 : undefined); break;
           case 'signature': rtf += this._rtfSignature(b, h, g, P, T); break;
           default: break;
         }
@@ -508,7 +547,7 @@
             break;
           case 'title': html += '<div style="text-align: center; font-weight: 700; text-decoration: underline; line-height: 1.3; ' + pt(50) + '">' + esc(b.text) + '</div>'; break;
           case 'date': html += p(esc(b.text), 'text-align: right;'); break;
-          case 'fields': for (const l of b.lines) html += p(esc(l)); break;
+          case 'fields': for (const l of b.lines) html += p(esc(l), b.small ? pt(20) : ''); break;
           case 'signature': {
             const cell = (gr) => gr.map((l) => '<div>' + esc(l) + '</div>').join('');
             if (b.groups.length === 1) {

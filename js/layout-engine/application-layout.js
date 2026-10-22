@@ -81,7 +81,8 @@
 
     /** উৎস-লেখা → ক্রমানুসারী ব্লক-তালিকা */
     parse(rawText) {
-      const lines = norm(rawText).split('\n').map(cleanLine);
+      // Phase 1B-ii: OCR-র ভূমিকা-চিহ্ন এখানে ব্যবহার হয় না — শুধু মুছে দেওয়া (স্বাক্ষর-ব্লক closing-এ ঠিকই যায়)
+      const lines = norm(global.FayzarRoleMarks ? global.FayzarRoleMarks.strip(rawText) : rawText).split('\n').map(cleanLine);
       const blocks = [];
       let state = 'head';          // head → body → closing → attach/copy
       let seenSalutation = false;

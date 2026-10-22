@@ -60,6 +60,7 @@
 |---|---|---|
 | আবেদনপত্র (GOVT_APP) | `js/layout-engine/application-layout.js` | `FayzarApplicationLayout` (`estimateHeight`, `_docxTable`, `_rtfTable`) |
 | প্যাড/অফিস চিঠি, প্রত্যয়নপত্র | `js/layout-engine/letter-layout.js` | `FayzarLetterLayout` |
+| OCR হালকা ভূমিকা-চিহ্ন `<!--r:sig,sideR-->` (stamp/sig/note/side/align; 1B-ii) | `js/layout-engine/role-marks.js` (gate ⚙️ `ai-ocr-engine.cleanOcrResponse`) | `FayzarRoleMarks` (`extract`, `strip`, `gate`); ব্যবহার letter `_takeSignature(lines, marks)`, certificate `parse` |
 | সাজানো ল্যান্ডস্কেপ সনদ/প্রশংসাপত্র (single + মুড়িসহ stub; `wants` = page_orientation বা মুড়ি) | `js/layout-engine/certificate-layout.js` | `FayzarCertificateLayout` (`wants`, `_split`, `_parsePart`, `_paras`, `_docxSide`, `renderDocx/Rtf/Html`) |
 | ক্যাশমেমো ১-আপ (A5)/২-আপ/৩-আপ (CASH_MEMO; `copies` ফ্রন্টম্যাটার; ইউনিকোডে লাইন ×০.৭২) | `js/layout-engine/cash-memo-layout.js` | `FayzarCashMemoLayout` (`parse`, `geometry`, `_fill`, `_hsz`, `renderDocx/Rtf/Html`) |
 | টাকা প্রাপ্তির রসিদ / খরচের ভাউচার (CASH_MEMO + ছাঁচের `memo_kind`; নমুনা ছাড়া নকশা) | `js/layout-engine/receipt-layout.js` | `FayzarReceiptLayout` (`wants`, `parse`, `_segments`, `_signParts`, `_table`, `renderDocx/Rtf/Html`); রাউটিং export-dual-engine `_receiptDocx/_receiptRtf`, pipeline `CASH_MEMO` case |
