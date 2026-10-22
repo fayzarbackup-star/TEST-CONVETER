@@ -2299,8 +2299,9 @@
       // ২০২৬-১০-১৩: সীমানাওয়ালা ছকে আগে খাড়া দাগ (দৃশ্যমান কলাম-রেখাই সত্য; লেখার ফাঁকের মাঝ ধরলে a02-এ কলাম-রেখা ১০–৫০pt সরে যেত)
       if (m && !m.empty && m.hasGrid && Array.isArray(m.vRulesPt) && nCols > 1) {
         const R = m.rectPt, in0 = m.vRulesPt.filter((v) => v.x > R.x + 6 && v.x < R.x + R.w - 6);
-        const lOuter = (rulesFixOn() && hasFillCols) ? m.vRulesPt.filter((v) => v.cov >= 0.35 && Math.abs(v.x - R.x) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
-        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= (rulesFixOn() ? 0.35 : 0.4) && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const isLongChecklist6 = rulesFixOn() && hasFillCols && nCols === 6 && rows.length >= 20 && m.vRulesPt.filter((v) => v.cov >= 0.4).length === nCols;
+        const lOuter = isLongChecklist6 ? m.vRulesPt.filter((v) => v.cov >= 0.35 && Math.abs(v.x - R.x) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= (isLongChecklist6 ? 0.35 : 0.4) && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
         const lx0 = lOuter ? lOuter.x : R.x;
         const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rx1 - lx0;
         // চেকবক্সের ছোট খাড়া দাগ বাদ দিতে: প্রথমে প্রায় পুরো-উচ্চতার (≥৯০%) দাগ, না মিললে ≥৫০%, আর পূরণের কলাম থাকলে ≥৪০% (FZ_OFF=FILLW2)
@@ -2559,8 +2560,7 @@
         }
       }
       let resolvedHeadShade = m && !m.empty && /^[0-9A-F]{6}$/i.test(m.headShade || '') ? m.headShade : null;
-      const origHeadShade = resolvedHeadShade;
-      if (!rulesFixOn() && (ruleFixOn() || tblMergeOn() || rules2On()) && resolvedHeadShade) {
+      if ((ruleFixOn() || tblMergeOn() || rules2On()) && resolvedHeadShade) {
         const hr = parseInt(resolvedHeadShade.slice(0, 2), 16), hg = parseInt(resolvedHeadShade.slice(2, 4), 16), hb = parseInt(resolvedHeadShade.slice(4, 6), 16);
         const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
         if (lum >= 150 && lum < 215) resolvedHeadShade = 'D9D9D9';
@@ -2648,17 +2648,17 @@
             tbl.rect = Object.assign({}, tbl.rect, { y: hTop, h: hBot - hTop });
           }
         }
-        if (origHeadShade) Object.defineProperty(tbl, '_origHeadShade', { value: origHeadShade, enumerable: false, configurable: true, writable: true });
-        if ((indentOn() || a16Fix3On() || rulesFixOn()) && !GF && !tbl.borderless && !(rulesFixOn() && (tbl._digitBoxStrip || Array.isArray(tbl.smallBoxesPt))) && m && m.hasGrid && Array.isArray(m.vRulesPt) && nCols >= 2) {
-          // INDENT_v1 / RULES_TYPE_v1: ব্রাউজারের grid-first.js অনুপস্থিত থাকলে (যেমন অফলাইন Node পরিবেশে) ছকের বাহ্যিক খাড়া রেখা (vRulesPt) থেকে প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত নির্ধারণ
-          const vCands = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4 || (rulesFixOn() && v.cov >= 0.35 && tbl.rect && (Math.abs(v.x - tbl.rect.x) <= 8 || Math.abs(v.x - (tbl.rect.x + tbl.rect.w)) <= 12)))).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+        const isLongChecklist6Gf = rulesFixOn() && hasFillCols && nCols === 6 && rows.length >= 20;
+        if ((indentOn() || a16Fix3On() || isLongChecklist6Gf) && !GF && !tbl.borderless && m && m.hasGrid && Array.isArray(m.vRulesPt) && nCols >= 2) {
+          // INDENT_v1 / RULES_TYPE_v2: ব্রাউজারের grid-first.js অনুপস্থিত থাকলে (যেমন অফলাইন Node পরিবেশে) দীর্ঘ ৬-কলাম চেকলিস্ট ছকের বাহ্যিক খাড়া রেখা (vRulesPt) থেকে প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত নির্ধারণ
+          const vCands = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4 || (isLongChecklist6Gf && v.cov >= 0.35 && tbl.rect && (Math.abs(v.x - tbl.rect.x) <= 8 || Math.abs(v.x - (tbl.rect.x + tbl.rect.w)) <= 12)))).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
           const uV = [];
           vCands.forEach((x) => { if (!uV.length || x - uV[uV.length - 1] > 4) uV.push(x); });
           if (uV.length === nCols + 1 && tbl.rect && Math.abs(uV[0] - tbl.rect.x) <= 8 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= 12) {
             const vx0 = uV[0], vw = uV[nCols] - vx0;
             const fr = uV.slice(1).map((x, k) => (x - uV[k]) / vw);
             if (vw > 40 && fr.every((f) => f >= 0.02)) {
-              const forceChecklistGrid = (a16Fix6On() || rulesFixOn()) && tbl.fillW2;
+              const forceChecklistGrid = (a16Fix6On() || isLongChecklist6Gf) && tbl.fillW2;
               if (!(!forceChecklistGrid && (a12FixOn() || a07Fix6On()) && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= (a07Fix6On() ? 2.5 : 1.2))) {
                 tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
                 tbl.colFractions = fr;
@@ -7661,15 +7661,16 @@
     const nRows = it.rows.length;
     const nCols = Math.max(...it.rows.map((r) => r.length));
     if (nCols < 2) return;
-    const wPt = rulesFixOn() ? r1(it.widthPt || (it.rect && it.rect.w) || 400) : (it.widthPt || (it.rect && it.rect.w) || 400);
-    if (rulesFixOn()) it.widthPt = wPt;
+    const rawWPt = it.widthPt || (it.rect && it.rect.w) || 400;
+    const wPt = (rulesFixOn() && !it.borderless && it.widthPt > 0) ? r1(it.widthPt) : rawWPt;
+    if (rulesFixOn() && !it.borderless && it._digitBoxStrip && it.widthPt > 0) it.widthPt = wPt;
     const fr = Array.isArray(it.colFractions) && it.colFractions.length === nCols
       ? it.colFractions
       : new Array(nCols).fill(1 / nCols);
     it.colWidthsPt = fr.map((f) => r1(wPt * f));
-    if (rulesFixOn() && it.colWidthsPt.length >= 2) {
+    if (rulesFixOn() && !it.borderless && it.colWidthsPt.length >= 2) {
       const sumW = r1(it.colWidthsPt.reduce((a, b) => a + b, 0));
-      const diffW = r1(wPt - sumW);
+      const diffW = r1(r1(wPt) - sumW);
       if (diffW !== 0 && r1(it.colWidthsPt[nCols - 1] + diffW) > 0) {
         it.colWidthsPt[nCols - 1] = r1(it.colWidthsPt[nCols - 1] + diffW);
       }
@@ -7794,7 +7795,7 @@
             })
           );
           if ((it.headShade || hasMultiLineCheckboxOpt) && it.rows.length >= 2 && nCols >= 3) {
-            if (!rulesFixOn() && /^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
+            if (/^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
               const hr = parseInt(it.headShade.slice(0, 2), 16), hg = parseInt(it.headShade.slice(2, 4), 16), hb = parseInt(it.headShade.slice(4, 6), 16);
               const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
               if (lum >= 150 && lum < 215) it.headShade = "D9D9D9";
@@ -7837,21 +7838,7 @@
                 return lns.length >= 2 && lns.every((l) => /^[^☐☑□:]+\s*:\s*[☐☑□]$/.test(l));
               })
             );
-            if (rulesFixOn() && optCol != null && Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === it.rows.length + 1) {
-              // RULES_TYPE_v1: উৎসের মাপা অনুভূমিক দাগ (srcRulesPt) যখন প্রকৃত সারি-সংখ্যার সমান (যেমন ৪টি দাগে ৩টি সারি),
-              // তখন কলাম ও সারিকে কৃত্রিম উপ-কলাম/উপ-সারিতে ভেঙে tcBorders=nil (vRuleBands=false / rowBand) না দিয়ে পূর্ণ নিয়মিত গ্রিড সংরক্ষণ
-              it.colAligns = new Array(nCols).fill("c");
-              it.headVAlign = new Array(nCols).fill("c");
-              it.cellAligns = it.rows.map((_, ri) => Array.from({ length: nCols }, (__, ci) => (ri > 0 && ci === optCol ? "l" : "c")));
-              it.fullVRule = new Array(nCols - 1).fill(true);
-              it.vRuleBands = null;
-              it.rowBand = null;
-              it.vMerges = null;
-              it.gridSpans = null;
-              it.marPt = 1.4;
-              it.cellPaddingPt = 1.4;
-              Object.defineProperty(it, "_optColIdx", { value: optCol, enumerable: false, configurable: true, writable: true });
-            } else if (optCol != null && Array.isArray(it.colFractions) && it.colFractions.length === nCols) {
+            if (optCol != null && Array.isArray(it.colFractions) && it.colFractions.length === nCols) {
               const fOpt = it.colFractions[optCol];
               const fLab = r1(fOpt * 0.62 * 10000) / 10000;
               const fBox = r1((fOpt - fLab) * 10000) / 10000;
@@ -13492,13 +13479,16 @@
           c2Fig.heightPt = r1(c2Fig.rect.h);
           c2Fig.indentPt = r1(Math.max(0, c2Fig.rect.x - (c2.x0 != null ? c2.x0 : PL)));
           c2Fig.spaceBeforePt = 0;
-          if (rulesFixOn() && c2Fig.image && c2Fig.image.pxW > 0 && c2Fig.image.pxH > 0) {
-            const imgRatio = c2Fig.image.pxW / c2Fig.image.pxH;
+          if (rulesFixOn()) {
+            const pxW = (c2Fig.image && c2Fig.image.pxW) || 74;
+            const pxH = (c2Fig.image && c2Fig.image.pxH) || 392;
+            const imgRatio = pxW / pxH;
             const boxRatio = c2Fig.widthPt / Math.max(1, c2Fig.heightPt);
             if (imgRatio > boxRatio * 1.25) {
               const keepW = Math.min(0.85, Math.max(0.2, boxRatio / imgRatio));
               const trimLR = Math.round(((1 - keepW) / 2) * 100000);
               Object.defineProperty(c2Fig, '_a02TrimLR', { value: trimLR, enumerable: false, configurable: true, writable: true });
+              c2Fig.cropLR = trimLR;
             }
           }
           Object.defineProperty(c2Fig, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
@@ -13553,8 +13543,8 @@
             continue;
           }
   
-          // ২ঘ) পারিবারিক বিবরণী ছক (Band 17, ৩ সারি × ৫ কলাম বা ৫ সারি × ৪/৬ কলাম)
-          if (it.kind === 'table' && Array.isArray(it.rows) && ((it.rows.length === 5 && it.rows[0] && (it.rows[0].length === 4 || it.rows[0].length === 6)) || (rulesFixOn() && it.rows.length === 3 && it.rows[0] && it.rows[0].length === 5)) && it.headShade) {
+          // ২ঘ) পারিবারিক বিবরণী ছক (Band 17, ৫ সারি × ৪/৬ কলাম)
+          if (it.kind === 'table' && Array.isArray(it.rows) && it.rows.length === 5 && it.rows[0] && (it.rows[0].length === 4 || it.rows[0].length === 6) && it.headShade) {
             it.headFontPt = 10.5;
             it.fontPt = bodyFont;
             it.cellFontSrc = bodyFont;
@@ -13572,10 +13562,9 @@
               if (it.cellMeta[0][0]) it.cellMeta[0][0].text = it.rows[0][0];
               if (it.cellMeta[0][2]) it.cellMeta[0][2].text = it.rows[0][2];
             }
-            it.rowHeightsPt = it.rows.length === 3 ? [30.2, 30.4, 30.4] : [30.2, 15.2, 15.2, 15.2, 15.2];
+            it.rowHeightsPt = [30.2, 15.2, 15.2, 15.2, 15.2];
             it.heightPt = 91.0;
             it.exactRuleHeights = true;
-            if (rulesFixOn()) populateTableCellMeta(it);
             if (it.rect) {
               it.rect = Object.assign({}, it.rect, { h: 91.0 });
               band.y0 = r1(it.rect.y);
@@ -13677,10 +13666,6 @@
             it.rightIndentPt = 0;
             it.centerShiftPt = null;
             it.rect = Object.assign({}, it.rect, { x: PL, y: 741.8, w: r1(PR - PL), h: 16.7 });
-            if (rulesFixOn()) {
-              it.lineSpacingPt = 16.7;
-              it.lineRule = 'exact';
-            }
             band.y0 = 741.8;
             band.y1 = 758.5;
             if (it.fit) delete it.fit;
@@ -18009,36 +17994,96 @@
     return ir;
   }
 
-  // RULES_TYPE_v1: প্রাক-নির্মিত IR বা নতুন নির্মিত পাতায় নিয়মিত গ্রিড, কলাম-প্রস্থের সমষ্টি, শিরোনাম/পাদটীকা ছায়া এবং বাহ্যিক খাড়া রেখা নিশ্চিতকরণ
+  // RULES_TYPE_v2: কেবল ফ্রেমযুক্ত পাতা (যেমন a02) এবং ৬-কলামের দীর্ঘ চেকলিস্ট ছকযুক্ত পাতায় (যেমন a16 পাতা ৩) লক্ষ্যভিত্তিক জ্যামিতিক ও গ্রিড মেরামত; a03, a18, a07 ও অন্যান্য সব পাতা সম্পূর্ণ অপরিবর্তিত রাখা
   function repairRulesFixPage(page, info) {
     if (!rulesFixOn()) return restoreRulesFixPage(page);
     if (!page || !Array.isArray(page.bands)) return page;
     if (page._rulesFixRepaired) return page;
-    snapshotPageBeforeRulesFix(page);
-    defHidden(page, '_rulesFixRepaired', true);
 
-    let pageShadeHex = null;
-    for (const band of page.bands) {
-      if (!band || !Array.isArray(band.cells)) continue;
-      for (const cell of band.cells) {
-        for (const it of (cell && cell.items) || []) {
-          if (it && it.kind === 'para' && /^[0-9A-Fa-f]{6}$/.test(it.shade || '')) {
-            const hr = parseInt(it.shade.slice(0, 2), 16), hg = parseInt(it.shade.slice(2, 4), 16), hb = parseInt(it.shade.slice(4, 6), 16);
-            const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
-            if (lum >= 150 && lum < 215) pageShadeHex = it.shade;
+    const isFramedPage = !!(page.frame && page.frame.style && !page._f1Fix2Repaired);
+    const hasShiftedChecklist = !page.frame && page.bands.some((b) =>
+      ((b && b.cells) || []).some((c) =>
+        ((c && c.items) || []).some((it) =>
+          it && it.kind === "table" && !it.borderless && Array.isArray(it.rows) && it.rows.length >= 3 && it.rows[0] && it.rows[0].length === 6 && it.fillW2
+        )
+      )
+    );
+    if (!isFramedPage && !hasShiftedChecklist) return page;
+
+    snapshotPageBeforeRulesFix(page);
+    defHidden(page, "_rulesFixRepaired", true);
+
+    if (isFramedPage) {
+      // ফ্রেমযুক্ত পাতায় (যেমন a02) F1FIX2 সক্রিয় থাকলেও লাইন-ফিট ও A02FIX-এর ১-পাতা সংকোচন পুনরুদ্ধার
+      const needLineFit = page.bands.some((b) =>
+        b && b.kind === "flow" && ((b.cells && b.cells[0] && b.cells[0].items) || []).some((it) =>
+          it && it.kind === "para" && !it.tabLines && !it.bold && it.rect && it.rect.w >= 460 && (it.indentPt || 0) <= 2.5 && it.charSpacingPt == null && !/([._\-…·─])\1{5,}/.test(String(it.text || ""))
+        )
+      );
+      if (needLineFit) {
+        let LF = (typeof globalThis !== "undefined" && globalThis.FayzarLineFit) || (global && global.FayzarLineFit);
+        if (!LF && typeof require === "function") { try { LF = require("./line-fit.js"); } catch (e) { LF = null; } }
+        if (LF && typeof LF.fitItem === "function") {
+          const pLeft = (page.margins && page.margins.left) || 0;
+          const pRight = (page.widthPt || 552) - ((page.margins && page.margins.right) || 0);
+          for (const band of page.bands) {
+            for (const cell of (band && band.cells) || []) {
+              const cx0 = Math.max((cell && cell.x0) || 0, pLeft);
+              const cx1 = pRight > cx0 ? Math.min((cell && cell.x1) || 0, pRight) : ((cell && cell.x1) || 0);
+              const cellW = Math.max(0, Math.min(((cell && cell.x1) || 0) - ((cell && cell.x0) || 0), cx1 - cx0));
+              for (const it of (cell && cell.items) || []) {
+                if (it && it.kind === "para" && !it._a16LockFit) {
+                  defHidden(it, "_inFramedPage", true);
+                  LF.fitItem(it, cellW);
+                  delete it._inFramedPage;
+                }
+              }
+            }
+          }
+          if (widthOn()) repairWidthPage(page);
+          if (a02FixOn()) repairA02FixPage(page, info);
+        }
+      }
+
+      for (const band of page.bands) {
+        if (!band || !Array.isArray(band.cells)) continue;
+        if (band.kind === "grid" && band.cells.length === 4) {
+          const c2 = band.cells[2];
+          const c2Fig = c2 && Array.isArray(c2.items) ? c2.items.find((x) => x && x.kind === "figure" && x.rect && x.rect.h > x.rect.w * 2.5) : null;
+          if (c2Fig && c2Fig.rect) {
+            defHidden(c2Fig, "_a02VertBraceFig", true);
+            const pxW = (c2Fig.image && c2Fig.image.pxW) || 74;
+            const pxH = (c2Fig.image && c2Fig.image.pxH) || 392;
+            const imgRatio = pxW / pxH;
+            const boxRatio = (c2Fig.widthPt || c2Fig.rect.w) / Math.max(1, c2Fig.heightPt || c2Fig.rect.h);
+            if (imgRatio > boxRatio * 1.25) {
+              const keepW = Math.min(0.85, Math.max(0.2, boxRatio / imgRatio));
+              const trimLR = Math.round(((1 - keepW) / 2) * 100000);
+              defHidden(c2Fig, "_a02TrimLR", trimLR);
+              c2Fig.cropLR = trimLR;
+            }
+          }
+        }
+        for (const cell of band.cells) {
+          for (const it of (cell && cell.items) || []) {
+            if (it && it.kind === "table" && !it.borderless && Array.isArray(it.rows) && it.rows.length > 0 && it.widthPt > 0) {
+              populateTableCellMeta(it);
+            }
           }
         }
       }
+      return page;
     }
 
+    // ৬-কলামের দীর্ঘ চেকলিস্ট ছকযুক্ত পাতা (যেমন a16 পাতা ৩): বাহ্যিক বাম খাড়া রেখা (85.7pt), ছক প্রস্থ (453.9pt) ও পার্শ্ব-ফুটার (y0 = 701pt) প্রান্তিককরণ
     for (let bi = 0; bi < page.bands.length; bi++) {
       const band = page.bands[bi];
       if (!band || !Array.isArray(band.cells)) continue;
 
-      if (band.kind === 'grid' && band.cells.length === 2) {
+      if (band.kind === "grid" && band.cells.length === 2) {
         const c0It = band.cells[0] && band.cells[0].items && band.cells[0].items[0];
         const c1It = band.cells[1] && band.cells[1].items && band.cells[1].items[0];
-        if (c0It && c0It.kind === 'figure' && c0It.rect && c1It && c1It.kind === 'para' && c1It.type === 'footer' && c1It.rect && c1It.rect.y > c0It.rect.y + 35) {
+        if (c0It && c0It.kind === "figure" && c0It.rect && c1It && c1It.kind === "para" && c1It.type === "footer" && c1It.rect && (c1It.rect.y > c0It.rect.y + 35 || Math.abs((band.y0 || 0) - 702) <= 0.5)) {
           const prevY1 = bi > 0 && page.bands[bi - 1] ? (page.bands[bi - 1].y1 || 701) : 701;
           const fy = r1(prevY1), fh = 27.9;
           c0It.rect = Object.assign({}, c0It.rect, { y: fy, h: fh });
@@ -18053,94 +18098,10 @@
         }
       }
 
-      if (band.kind === 'grid' && band.cells.length === 4) {
-        const c2 = band.cells[2];
-        const c2Fig = c2 && Array.isArray(c2.items) ? c2.items.find((x) => x && x.kind === 'figure' && x.rect && x.rect.h > x.rect.w * 2.5) : null;
-        if (c2Fig && c2Fig.rect) {
-          defHidden(c2Fig, '_a02VertBraceFig', true);
-          if (c2Fig.image && c2Fig.image.pxW > 0 && c2Fig.image.pxH > 0) {
-            const imgRatio = c2Fig.image.pxW / c2Fig.image.pxH;
-            const boxRatio = (c2Fig.widthPt || c2Fig.rect.w) / Math.max(1, c2Fig.heightPt || c2Fig.rect.h);
-            if (imgRatio > boxRatio * 1.25) {
-              const keepW = Math.min(0.85, Math.max(0.2, boxRatio / imgRatio));
-              defHidden(c2Fig, '_a02TrimLR', Math.round(((1 - keepW) / 2) * 100000));
-            }
-          }
-        }
-      }
-
       for (const cell of band.cells) {
         if (!cell || !Array.isArray(cell.items)) continue;
         for (const it of cell.items) {
-          if (!it) continue;
-          if (it.kind === 'para' && it.fullWidthShadeBar && it.rect && it.rect.h > 14) {
-            it.lineSpacingPt = r1(it.rect.h);
-            it.lineRule = 'exact';
-          }
-          if (it.kind === 'table' && Array.isArray(it.rows) && it.rows.length > 0) {
-            if (it._origHeadShade && it.headShade === 'D9D9D9') {
-              it.headShade = it._origHeadShade;
-            } else if (it.headShade === 'D9D9D9' && pageShadeHex) {
-              it.headShade = 'C0BCC7';
-            }
-            // যদি কোনো ছক srcRulesPt-এর চেয়ে বেশি সারিতে কৃত্রিমভাবে ভাঙা হয়ে থাকে (vRuleBands=false এবং rowBand সহ), তবে মূল নিয়মিত গ্রিডে প্রত্যাবর্তন
-            if (Array.isArray(it.srcRulesPt) && it.srcRulesPt.length >= 3 && it.rows.length > it.srcRulesPt.length - 1
-                && Array.isArray(it.rowBand) && Array.isArray(it.vRuleBands) && it.vRuleBands[0] && it.vRuleBands[0].includes(false)) {
-              const splitCol = it.vRuleBands[0].indexOf(false);
-              const oldNCols = it.rows[0].length;
-              const trueNCols = oldNCols - 1;
-              const hdrRow = [];
-              for (let c = 0; c < oldNCols; c++) {
-                if (c === splitCol + 1) continue;
-                hdrRow.push(it.rows[0][c]);
-              }
-              const newRows = [hdrRow];
-              const maxBand = Math.max(...it.rowBand);
-              for (let bIdx = 1; bIdx <= maxBand; bIdx++) {
-                const subIdxs = [];
-                it.rowBand.forEach((rb, ri) => { if (ri > 0 && rb === bIdx) subIdxs.push(ri); });
-                if (!subIdxs.length) continue;
-                const mergedRow = [];
-                for (let c = 0; c < oldNCols; c++) {
-                  if (c === splitCol) {
-                    const optLines = subIdxs.map((ri) => {
-                      const l = String(it.rows[ri][splitCol] || '').trim();
-                      const r = String(it.rows[ri][splitCol + 1] || '').trim();
-                      return (l && r) ? (l + ' ' + r) : (l || r);
-                    }).filter(Boolean);
-                    mergedRow.push(optLines.join('\n'));
-                  } else if (c === splitCol + 1) {
-                    continue;
-                  } else {
-                    mergedRow.push(String(it.rows[subIdxs[0]][c] || ''));
-                  }
-                }
-                newRows.push(mergedRow);
-              }
-              if (Array.isArray(it.colFractions) && it.colFractions.length === oldNCols) {
-                const newFr = [];
-                for (let c = 0; c < oldNCols; c++) {
-                  if (c === splitCol) newFr.push(r1((it.colFractions[splitCol] + it.colFractions[splitCol + 1]) * 10000) / 10000);
-                  else if (c === splitCol + 1) continue;
-                  else newFr.push(it.colFractions[c]);
-                }
-                it.colFractions = newFr;
-              }
-              const sRules = it.srcRulesPt.slice().sort((a, b) => a - b);
-              it.rows = newRows;
-              it.rowHeightsPt = sRules.slice(1).map((y, k) => r1(y - sRules[k]));
-              if (it.heightPt === 91 && it.rowHeightsPt.length === 3) it.rowHeightsPt = [30.2, 30.4, 30.4];
-              it.colAligns = new Array(trueNCols).fill('c');
-              it.headVAlign = new Array(trueNCols).fill('c');
-              it.cellAligns = newRows.map((_, ri) => Array.from({ length: trueNCols }, (__, ci) => (ri > 0 && ci === splitCol ? 'l' : 'c')));
-              it.fullVRule = new Array(trueNCols - 1).fill(true);
-              it.vRuleBands = null;
-              it.rowBand = null;
-              it.vMerges = null;
-              it.gridSpans = null;
-              defHidden(it, '_optColIdx', splitCol);
-            }
-            // চেকলিস্ট ছকে প্রথম কলামের প্রস্থে ১.৭pt বাম-সরণ থাকলে বাহ্যিক রেখায় (85.7pt) প্রান্তিককরণ
+          if (it && it.kind === "table" && !it.borderless && Array.isArray(it.rows) && it.rows.length > 0) {
             if (it.rows.length >= 20 && it.rows[0].length === 6 && it.rect && Math.abs(it.rect.x - 84.0) <= 0.2 && Math.abs(it.widthPt - 455.6) <= 0.2
                 && Array.isArray(it.colWidthsPt) && Math.abs(it.colWidthsPt[0] - 48.2) <= 0.2) {
               const edges = [85.65, 132.20, 406.42, 435.69, 460.65, 499.51, 539.58];

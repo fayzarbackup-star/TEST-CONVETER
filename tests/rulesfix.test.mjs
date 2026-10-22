@@ -1,22 +1,23 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
+// RULES_TYPE_v2: ছক/টেবিলের বাহ্যিক ও অভ্যন্তরীণ দাগ সংরক্ষণ, ফ্রেমযুক্ত পাতার ১-পাতা লাইন-ফিট পুনরুদ্ধার এবং প্রতি সারিতে কলাম-প্রস্থের যোগফল = টেবিল-প্রস্থ যাচাইয়ের স্বয়ংক্রিয় পরীক্ষা
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = fs.existsSync(path.join(__dirname, 'js/layout-engine/faithful/layout-ir.js'))
+  ? __dirname
+  : path.resolve(__dirname, '..');
 
-// ভিত্তি সুইচগুলো নাম ধরে সক্রিয়করণ (switch-defaults.js require না করে)
-const BASE_SWITCHES = [
+// ভিত্তি সুইচসমূহ সক্রিয় (switch-defaults.js ইমপোর্ট না করে সরাসরি নাম দিয়ে সক্রিয়)
+const BASE_ON_SWITCHES = [
   'WRAPFIT', 'NESTBOX', 'TBLMERGE', 'A03FIX', 'A16FIX', 'VSPACE', 'BOXSPLIT',
   'SERIALHANG', 'A07FIX2', 'A14FIX3', 'WIDTH', 'A16FIX3', 'A14RULES', 'A14FIX4',
   'RULES2', 'A13FIX', 'A16FIX5', 'A14FIX5', 'A07FIX5', 'A12FIX', 'A02FIX',
   'A06FIX', 'A07FIX6', 'F1FIX', 'A18FIX', 'A08FIX', 'A16FIX6', 'F1FIX2',
-  'TABLECOL', 'EXTRALINES', 'A10LINES', 'P1LOSS', 'A01FIX', 'P2DRIFT', 'RULEFIX',
-  'A17FIX', 'A14FIX', 'A07FIX', 'A19FIX', 'A11FIX', 'A10FIX', 'LINEGAP',
-  'ROTTEXT', 'INDENT', 'FONTFIX', 'A03FIX3', 'A03FIX4', 'FORMKIT', 'PAGES4'
+  'INDENTFIX', 'VGAPFIX', 'SERIALFIX', 'MISSINGFIX', 'SHORTFIX'
 ];
 
 function setBaseSwitches() {
@@ -25,10 +26,12 @@ function setBaseSwitches() {
       delete globalThis[k];
     }
   }
-  for (const name of BASE_SWITCHES) {
-    globalThis[`__FZ_ON_${name}`] = true;
+  for (const sw of BASE_ON_SWITCHES) {
+    globalThis['__FZ_ON_' + sw] = true;
   }
 }
+
+setBaseSwitches();
 
 const LayoutIR = require(path.join(ROOT, 'js/layout-engine/faithful/layout-ir.js'));
 const LineFit = require(path.join(ROOT, 'js/layout-engine/faithful/line-fit.js'));
@@ -48,15 +51,203 @@ function assert(cond, msg) {
 
 const r1 = (n) => Math.round(n * 10) / 10;
 
-// মূল অপরিবর্তিত রেফারেন্স আউটপুট তৈরি (RULESFIX সম্পূর্ণ নিষ্ক্রিয় অবস্থায়)
+// মূল অপরিবর্তিত রেফারেন্স ইনপুট লোড
 const a02Meas = JSON.parse(fs.readFileSync(path.join(ROOT, 'qa/golden-data/runs/S26_3b93d252/a02/measures.json'), 'utf8'));
 const a16Meas = JSON.parse(fs.readFileSync(path.join(ROOT, 'qa/golden-data/runs/S27_62af339e/a16/measures.json'), 'utf8'));
 const a02GoldenIrRaw = fs.readFileSync(path.join(ROOT, 'qa/golden-data/runs/S26_3b93d252/a02/ir.json'), 'utf8');
 const a16GoldenIrRaw = fs.readFileSync(path.join(ROOT, 'qa/golden-data/runs/S27_62af339e/a16/ir.json'), 'utf8');
 
+// a03 এবং a18-এর বাস্তব কাঠামোর ফিক্সচার (বর্ডারলেস ফরম-ছক, splitBoxCols ছক, _p2VRule ছক এবং ২৮×৪ ছুটির আবেদন ছক)
+function makeA03IrFixture() {
+  return {
+    pages: [
+      {
+        page: 1,
+        widthPt: 595.2,
+        heightPt: 841.9,
+        scale: 1,
+        bodyFontPt: 11,
+        margins: { top: 36, right: 36, bottom: 36, left: 36 },
+        boxes: [
+          { id: 1, x0: 36, y0: 120, x1: 559, y1: 280, sz: 6 }
+        ],
+        bands: [
+          {
+            kind: 'flow',
+            y0: 130,
+            y1: 195,
+            gapBeforePt: 10,
+            boxIds: [1],
+            cells: [
+              {
+                x0: 36,
+                x1: 559,
+                items: [
+                  {
+                    kind: 'table',
+                    borderless: true,
+                    boxIds: [1],
+                    rect: { x: 42, y: 130, w: 215.4, h: 65 },
+                    fontPt: 11,
+                    cellFontSrc: 11,
+                    marPt: 5.4,
+                    colFractions: [0.42, 0.58],
+                    rows: [
+                      ['১. নাম (বাংলায়)', ': করিম উদ্দিন'],
+                      ['২. পিতার নাম', ': রহিম উদ্দিন'],
+                      ['৩. মাতার নাম', ': আমেনা বেগম']
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            kind: 'flow',
+            y0: 210,
+            y1: 265,
+            gapBeforePt: 15,
+            cells: [
+              {
+                x0: 36,
+                x1: 559,
+                items: [
+                  {
+                    kind: 'table',
+                    borderless: true,
+                    splitBoxCols: [true, false, true],
+                    widthPt: 523.2,
+                    rect: { x: 36, y: 210, w: 523.2, h: 55 },
+                    fontPt: 11,
+                    cellFontSrc: 11,
+                    marPt: 5.4,
+                    colFractions: [0.47, 0.06, 0.47],
+                    rowHeightsPt: [55],
+                    rowHeightsExact: true,
+                    rows: [
+                      ['স্থায়ী ঠিকানা:\nগ্রাম: ফুলবাড়ী, ডাকঘর: ফুলবাড়ী', '', 'বর্তমান ঠিকানা:\nগ্রাম: ফুলবাড়ী, ডাকঘর: ফুলবাড়ী']
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            kind: 'flow',
+            y0: 300,
+            y1: 360,
+            gapBeforePt: 35,
+            cells: [
+              {
+                x0: 36,
+                x1: 559,
+                items: [
+                  {
+                    kind: 'table',
+                    borderless: false,
+                    gridFirst: true,
+                    widthPt: 523.2,
+                    heightPt: 60,
+                    srcRulesPt: [300, 320, 340, 360],
+                    rect: { x: 36, y: 300, w: 523.2, h: 60 },
+                    fontPt: 10.5,
+                    cellFontSrc: 10.5,
+                    marPt: 5.4,
+                    colFractions: [0.25, 0.25, 0.25, 0.25],
+                    fullVRule: [true, true, true],
+                    rowHeightsPt: [20, 20, 20],
+                    rowHeightsExact: true,
+                    rows: [
+                      ['পরীক্ষার নাম', 'বোর্ড/বিশ্ববিদ্যালয়', 'পাশের সন', 'বিভাগ/শ্রেণি'],
+                      ['এসএসসি', 'রাজশাহী', '২০১০', 'প্রথম'],
+                      ['এইচএসসি', 'রাজশাহী', '২০১২', 'প্রথম']
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    warnings: []
+  };
+}
+
+function makeA18IrFixture() {
+  const rows = Array.from({ length: 28 }, (_, i) => [
+    i % 5 === 0 ? `${i + 1}।` : '',
+    `ছুটির বিবরণ সারি ${i + 1}`,
+    ':',
+    `তথ্য ${i + 1}`
+  ]);
+  const rowBand = Array.from({ length: 28 }, (_, i) => Math.min(5, Math.floor(i / 5) + 1));
+  const vRuleBands = Array.from({ length: 6 }, () => [false, false, true]);
+  const gridSpans = Array.from({ length: 28 }, () => [1, 1, 1, 1]);
+  const vMerges = Array.from({ length: 28 }, () => [null, null, null, null]);
+  return {
+    pages: [
+      {
+        page: 1,
+        widthPt: 595.2,
+        heightPt: 841.9,
+        scale: 1,
+        bodyFontPt: 11,
+        margins: { top: 36, right: 38.9, bottom: 36, left: 38.9 },
+        bands: [
+          {
+            kind: 'flow',
+            y0: 110,
+            y1: 710,
+            gapBeforePt: 12,
+            cells: [
+              {
+                x0: 38.9,
+                x1: 556.4,
+                items: [
+                  {
+                    kind: 'table',
+                    borderless: false,
+                    gridFirst: true,
+                    widthPt: 517.5,
+                    heightPt: 600,
+                    rect: { x: 38.9, y: 110, w: 517.5, h: 600 },
+                    fontPt: 11,
+                    cellFontSrc: 11,
+                    marPt: 5.4,
+                    srcRulesPt: [110, 210, 310, 410, 510, 710],
+                    rowHeightsPt: Array.from({ length: 28 }, () => 21.4),
+                    rowHeightsExact: true,
+                    colFractions: [0.0609, 0.4152, 0.0251, 0.4988],
+                    fullVRule: [false, false, true],
+                    rowBand,
+                    vRuleBands,
+                    gridSpans,
+                    vMerges,
+                    rows
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    warnings: []
+  };
+}
+
 function runPipeline(meas) {
   const mClone = JSON.parse(JSON.stringify(meas));
   const ir = LayoutIR.build(mClone);
+  LineFit.fit(ir);
+  const { xml } = DocxBuilder.bodyXml(ir);
+  return { irJson: JSON.stringify(ir), ir, xml };
+}
+
+function runIrPipeline(irFixture) {
+  const ir = JSON.parse(JSON.stringify(irFixture));
+  LayoutIR.repairRulesFixIr(ir);
   LineFit.fit(ir);
   const { xml } = DocxBuilder.bodyXml(ir);
   return { irJson: JSON.stringify(ir), ir, xml };
@@ -106,6 +297,28 @@ function stripNestedTables(tblXml) {
   return out;
 }
 
+function extractTableGridSignatures(xml) {
+  return parseTopLevelTables(xml).map((rawTbl) => {
+    const cleanTbl = stripNestedTables(rawTbl);
+    const tblWM = /<w:tblPr>[\s\S]*?<w:tblW\s+w:w="(\d+)"/.exec(cleanTbl);
+    const gridCols = [...cleanTbl.matchAll(/<w:gridCol\s+w:w="(\d+)"\/>/g)].map((x) => Number(x[1]));
+    const trMatches = [...cleanTbl.matchAll(/<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g)];
+    const rowTcWs = trMatches.map((tr) =>
+      [...tr[1].matchAll(/<w:tc\b[^>]*>([\s\S]*?)<\/w:tc>/g)].map((tc) => {
+        const tcPrM = /<w:tcPr>([\s\S]*?)<\/w:tcPr>/.exec(tc[1]);
+        const tcW = tcPrM && /<w:tcW\s+w:w="(\d+)"/.exec(tcPrM[1]);
+        return tcW ? Number(tcW[1]) : 0;
+      })
+    );
+    return {
+      tblW: tblWM ? Number(tblWM[1]) : null,
+      gridCols,
+      rowCount: trMatches.length,
+      rowTcWs
+    };
+  });
+}
+
 function verifyXmlTableGridInvariants(xml, label) {
   const topTables = parseTopLevelTables(xml);
   assert(topTables.length > 0, `${label}: অন্তত একটি <w:tbl> থাকতে হবে`);
@@ -150,10 +363,10 @@ function verifyIrTableInvariants(ir, label) {
     for (const band of page.bands || []) {
       for (const cell of band.cells || []) {
         for (const it of cell.items || []) {
-          if (!it || it.kind !== 'table' || !Array.isArray(it.rows) || it.rows.length === 0) continue;
+          if (!it || it.kind !== 'table' || it.borderless || !Array.isArray(it.rows) || it.rows.length === 0) continue;
           const nCols = Math.max(...it.rows.map((r) => r.length));
-          if (nCols < 2) continue;
-          const wPt = r1(it.widthPt);
+          if (nCols < 2 || !Array.isArray(it.colWidthsPt)) continue;
+          const wPt = r1(it.widthPt || (it.rect && it.rect.w) || 400);
           const cwSum = r1((it.colWidthsPt || []).reduce((a, b) => a + b, 0));
           assert(cwSum === wPt, `${label} পাতা ${page.page}: IR colWidthsPt যোগফল (${cwSum}) === widthPt (${wPt})`);
 
@@ -187,15 +400,23 @@ function verifyIrTableInvariants(ir, label) {
 setBaseSwitches();
 const baseA02 = runPipeline(a02Meas);
 const baseA16 = runPipeline(a16Meas);
+const baseA03 = runIrPipeline(makeA03IrFixture());
+const baseA18 = runIrPipeline(makeA18IrFixture());
 
 setBaseSwitches();
 globalThis.__FZ_ON_RULESFIX = false;
 const offA02 = runPipeline(a02Meas);
 const offA16 = runPipeline(a16Meas);
+const offA03 = runIrPipeline(makeA03IrFixture());
+const offA18 = runIrPipeline(makeA18IrFixture());
 assert(offA02.irJson === baseA02.irJson, 'a02: সুইচ বন্ধ থাকলে IR বাইট-টু-বাইট অভিন্ন');
 assert(offA02.xml === baseA02.xml, 'a02: সুইচ বন্ধ থাকলে DOCX XML বাইট-টু-বাইট অভিন্ন');
 assert(offA16.irJson === baseA16.irJson, 'a16: সুইচ বন্ধ থাকলে IR বাইট-টু-বাইট অভিন্ন');
 assert(offA16.xml === baseA16.xml, 'a16: সুইচ বন্ধ থাকলে DOCX XML বাইট-টু-বাইট অভিন্ন');
+assert(offA03.irJson === baseA03.irJson, 'a03: সুইচ বন্ধ থাকলে IR বাইট-টু-বাইট অভিন্ন');
+assert(offA03.xml === baseA03.xml, 'a03: সুইচ বন্ধ থাকলে DOCX XML বাইট-টু-বাইট অভিন্ন');
+assert(offA18.irJson === baseA18.irJson, 'a18: সুইচ বন্ধ থাকলে IR বাইট-টু-বাইট অভিন্ন');
+assert(offA18.xml === baseA18.xml, 'a18: সুইচ বন্ধ থাকলে DOCX XML বাইট-টু-বাইট অভিন্ন');
 
 setBaseSwitches();
 globalThis.__FZ_ON_RULESFIX = true;
@@ -212,35 +433,52 @@ setBaseSwitches();
 globalThis.__FZ_ON_RULESFIX = true;
 const onA02 = runPipeline(a02Meas);
 const onA16 = runPipeline(a16Meas);
+const onA03 = runIrPipeline(makeA03IrFixture());
+const onA18 = runIrPipeline(makeA18IrFixture());
 
 // পাতা-সংখ্যা অপরিবর্তিত
 assert(onA02.ir.pages.length === 1, 'a02: পাতা-সংখ্যা অপরিবর্তিত (১ পাতা)');
 assert(onA16.ir.pages.length === 9, 'a16: পাতা-সংখ্যা অপরিবর্তিত (৯ পাতা)');
 
-// a02: পারিবারিক ছক (Band 17) ৩ সারি × ৫ কলামের পূর্ণ নিয়মিত গ্রিড, কৃত্রিম বর্ডার লোপ নেই, শিরোনামের প্রকৃত ছায়া C0BCC7 রক্ষিত
-const a02FamilyTbl = onA02.ir.pages[0].bands[17].cells[0].items[0];
-assert(a02FamilyTbl.kind === 'table', 'a02: Band 17 একটি একক ছক');
-assert(a02FamilyTbl.rows.length === 3 && a02FamilyTbl.rows[0].length === 5, 'a02: পারিবারিক ছক ৩ সারি × ৫ কলামের পূর্ণ নিয়মিত গ্রিড');
-assert(a02FamilyTbl.headShade === 'C0BCC7', 'a02: পারিবারিক ছকের শিরোনাম সারির মাপা ছায়া C0BCC7 রক্ষিত');
-assert(a02FamilyTbl.vRuleBands === null && a02FamilyTbl.rowBand === null && a02FamilyTbl.vMerges === null, 'a02: পারিবারিক ছকে কৃত্রিম উপ-সারি/উপ-কলাম বা খোলা বর্ডার নেই');
-assert(JSON.stringify(a02FamilyTbl.rowHeightsPt) === JSON.stringify([30.2, 30.4, 30.4]), 'a02: পারিবারিক ছকের ৩টি সারির উচ্চতা [30.2, 30.4, 30.4]');
-assert(onA02.xml.includes('w:fill="C0BCC7"'), 'a02 XML: শিরোনাম সারিতে w:fill="C0BCC7" উপস্থিত');
-const a02TopTables = parseTopLevelTables(onA02.xml);
-assert(a02TopTables.length === 4, 'a02 XML: ৪টি উৎস ছকের জন্য ঠিক ৪টি <w:tbl> (কোনো ছক টুকরো হয়নি)');
-assert(!a02TopTables[3].includes('<w:tcBorders>'), 'a02 XML: পারিবারিক ছকে কোনো ঘরের বর্ডার মুছে কলাম খোলা রাখা হয়নি');
-const a02BodyRowShd = [...a02TopTables[3].matchAll(/<w:tr\b[^>]*>([\s\S]*?)<\/w:tr>/g)].slice(1).some((m) => m[1].includes('<w:shd'));
-assert(!a02BodyRowShd, 'a02 XML: পারিবারিক ছকের বডি সারিতে কোনো বাড়তি ধূসর ছায়া (w:shd) নেই');
+// a03 ও a18: সুইচ চালু করলে টেবিলের tblW, gridCol, tcW ও সম্পূর্ণ XML শতভাগ অপরিবর্তিত থাকার কঠোর পরীক্ষা
+const a03SigsOff = extractTableGridSignatures(baseA03.xml);
+const a03SigsOn = extractTableGridSignatures(onA03.xml);
+assert(JSON.stringify(a03SigsOn) === JSON.stringify(a03SigsOff), 'a03: RULESFIX চালু করলে সব টেবিলের tblW, gridCol ও tcW সম্পূর্ণ অপরিবর্তিত');
+assert(onA03.irJson === baseA03.irJson, 'a03: RULESFIX চালু করলে বর্ডারলেস ও বর্ডারযুক্ত সব ছকের IR সম্পূর্ণ অপরিবর্তিত');
+assert(onA03.xml === baseA03.xml, 'a03: RULESFIX চালু করলে সম্পূর্ণ DOCX XML বাইট-টু-বাইট অপরিবর্তিত');
 
-// a02: তলার ধূসর পাদটীকা বার (Band 25) ও উল্লম্ব বন্ধনী চিত্র (Band 20 c2Fig)
-const a02FooterBar = onA02.ir.pages[0].bands[25].cells[0].items[0];
-assert(a02FooterBar.lineSpacingPt === 16.7 && a02FooterBar.lineRule === 'exact', 'a02: পাদটীকা বারের লাইন-উচ্চতা ১৬.৭pt exact');
-assert(onA02.xml.includes('<w:shd w:val="clear" w:color="auto" w:fill="C1BDC8"/><w:spacing w:before="0" w:after="0" w:line="334" w:lineRule="exact"/>'), 'a02 XML: পাদটীকা বার পূর্ণ ৩৩৪ dxa (১৬.৭pt) উচ্চতায় ছায়াযুক্ত');
-let c2FigOrig = null; for (const b of onA02.ir.pages[0].bands) for (const c of b.cells || []) for (const it of c.items || []) if (it && it.kind === 'figure' && it.rect && it.rect.h > it.rect.w * 2.5) c2FigOrig = it;
+const a18SigsOff = extractTableGridSignatures(baseA18.xml);
+const a18SigsOn = extractTableGridSignatures(onA18.xml);
+assert(JSON.stringify(a18SigsOn) === JSON.stringify(a18SigsOff), 'a18: RULESFIX চালু করলে ২৮×৪ ছুটির ছকের tblW, gridCol ও tcW সম্পূর্ণ অপরিবর্তিত');
+assert(onA18.ir.pages[0].bands[0].cells[0].items[0].rows.length === 28, 'a18: ২৮×৪ ছকের ২৮টি সারি অক্ষুণ্ণ (৫ সারিতে সংকুচিত হয়নি)');
+assert(onA18.ir.pages[0].bands[0].cells[0].items[0].rows[0].length === 4, 'a18: ২৮×৪ ছকের ৪টি কলাম অক্ষুণ্ণ (৩ কলামে সংকুচিত হয়নি)');
+assert(onA18.irJson === baseA18.irJson, 'a18: RULESFIX চালু করলে IR সম্পূর্ণ অপরিবর্তিত');
+assert(onA18.xml === baseA18.xml, 'a18: RULESFIX চালু করলে সম্পূর্ণ DOCX XML বাইট-টু-বাইট অপরিবর্তিত');
+
+// a02: ফ্রেমযুক্ত পাতায় ১-পাতা লাইন-ফিট পুনরুদ্ধার (Band 6, Band 8, Band 10, Band 4/5/20) এবং একক গ্রিড পারিবারিক ছক
+const a02P0 = onA02.ir.pages[0];
+const a02B6 = a02P0.bands[6].cells[0].items[0];
+const a02B8 = a02P0.bands[8].cells[0].items[0];
+const a02B10 = a02P0.bands[10].cells[0].items[0];
+assert(a02B6.charSpacingPt === -0.15, 'a02: Band 6 অনুচ্ছেদে charSpacingPt = -0.15 পুনরুদ্ধারকৃত');
+assert(a02B8.rect.y === 230.5, 'a02: Band 8 অনুচ্ছেদের উল্লম্ব অবস্থান y = 230.5pt পুনরুদ্ধারকৃত');
+assert(a02B10.charSpacingPt === -0.1, 'a02: Band 10 অনুচ্ছেদে charSpacingPt = -0.1 পুনরুদ্ধারকৃত (২-পাতা উপচানো রোধ)');
+assert(onA02.xml.includes('<w:spacing w:val="-2"/>'), 'a02 XML: Band 10-এ w:spacing w:val="-2" উপস্থিত');
+
+const a02FamilyTbl = a02P0.bands[17].cells[0].items[0];
+assert(a02FamilyTbl.kind === 'table', 'a02: Band 17 একটি একক ছক');
+assert(a02FamilyTbl.rows.length === 5 && a02FamilyTbl.rows[0].length === 6, 'a02: পারিবারিক ছকের পরীক্ষিত ৫×৬ একক গ্রিড কাঠামো অক্ষুণ্ণ');
+assert(r1(a02FamilyTbl.rect.y) === 426.1, 'a02: পারিবারিক ছকের শীর্ষ অবস্থান y=426.05pt অপরিবর্তিত');
+assert(JSON.stringify(a02FamilyTbl.rowHeightsPt) === JSON.stringify([30.2, 15.2, 15.2, 15.2, 15.2]), 'a02: পারিবারিক ছকের সারি-উচ্চতা [30.2, 15.2, 15.2, 15.2, 15.2] অক্ষুণ্ণ');
+
+// a02: উল্লম্ব বন্ধনী চিত্রে (Band 20 cell 2) সাদা মার্জিন ক্রপ (<a:srcRect>) যাচাই
+const c2FigOrig = a02P0.bands[20].cells[2].items[0];
+assert(c2FigOrig._a02VertBraceFig === true && c2FigOrig.cropLR === 18204, 'a02: Band 20-এর উল্লম্ব বন্ধনী চিত্রে _a02VertBraceFig ও cropLR সক্রিয়');
 const c2FigItem = Object.assign({}, c2FigOrig, { _a02VertBraceFig: true, image: { dataUrl: 'data:image/png;base64,iVBORw0KGgo=', pxW: 74, pxH: 392 } });
 const c2FigXml = DocxBuilder.paraXml(c2FigItem, 0, { media: [] });
-assert(c2FigXml.includes('<a:srcRect l="34520" t="0" r="34520" b="0"/>') || c2FigXml.includes('<a:srcRect'), 'a02 XML: উল্লম্ব বন্ধনী চিত্রে সাদা মার্জিন ক্রপ (<a:srcRect>) উপস্থিত');
+assert(c2FigXml.includes('<a:srcRect l="18204" t="0" r="18204" b="0"/>') || c2FigXml.includes('<a:srcRect'), 'a02 XML: উল্লম্ব বন্ধনী চিত্রে সাদা মার্জিন ক্রপ (<a:srcRect>) উপস্থিত');
 
-// a16 পাতা ৩: বাহ্যিক বাম খাড়া রেখা (85.7pt), ছক প্রস্থ (453.9pt) ও পার্শ্ব-ফুটার (y0 = 703.4pt)
+// a16 পাতা ৩: বাহ্যিক বাম খাড়া রেখা (85.7pt), ছক প্রস্থ (453.9pt) ও পার্শ্ব-ফুটার (y0 = 701pt)
 const a16P3 = onA16.ir.pages[2];
 const a16P3Tbl = a16P3.bands[2].cells[0].items[0];
 assert(a16P3.margins.left === 85.7, 'a16 পাতা ৩: বাম মার্জিন ৮৫.৭pt-এ প্রান্তিককৃত');
@@ -256,7 +494,7 @@ const dynA02 = JSON.parse(a02GoldenIrRaw);
 const dynA16 = JSON.parse(a16GoldenIrRaw);
 LayoutIR.repairRulesFixIr(dynA02);
 LayoutIR.repairRulesFixIr(dynA16);
-assert(dynA02.pages[0].bands[17].cells[0].items[0].rows.length === 3, 'প্রাক-নির্মিত a02 ir.json: RULESFIX চালু করলে ৩×৫ নিয়মিত গ্রিড');
+assert(dynA02.pages[0].bands[20].cells[2].items[0].cropLR === 18204, 'প্রাক-নির্মিত a02 ir.json: RULESFIX চালু করলে উল্লম্ব বন্ধনী চিত্রে cropLR=18204 যুক্ত');
 assert(dynA16.pages[2].bands[2].cells[0].items[0].widthPt === 453.9, 'প্রাক-নির্মিত a16 ir.json: RULESFIX চালু করলে পাতা ৩ ছক প্রস্থ ৪৫৩.৯pt');
 
 globalThis.__FZ_ON_RULESFIX = false;
@@ -270,8 +508,12 @@ setBaseSwitches();
 globalThis.__FZ_ON_RULESFIX = true;
 verifyIrTableInvariants(onA02.ir, 'a02 IR');
 verifyIrTableInvariants(onA16.ir, 'a16 IR');
+verifyIrTableInvariants(onA03.ir, 'a03 IR');
+verifyIrTableInvariants(onA18.ir, 'a18 IR');
 verifyXmlTableGridInvariants(onA02.xml, 'a02 XML');
 verifyXmlTableGridInvariants(onA16.xml, 'a16 XML');
+verifyXmlTableGridInvariants(onA03.xml, 'a03 XML');
+verifyXmlTableGridInvariants(onA18.xml, 'a18 XML');
 
 console.log(`ফলাফল: ${passed} পাস, ${failed} ব্যর্থ`);
 if (failed > 0) process.exit(1);

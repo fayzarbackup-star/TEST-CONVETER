@@ -1266,7 +1266,7 @@
                   });
                 }
               } else if (it.headShade && it.rows.length >= 2 && nCols >= 3) {
-                if (!isRulesFixOn() && /^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
+                if (/^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
                   const hr = parseInt(it.headShade.slice(0, 2), 16), hg = parseInt(it.headShade.slice(2, 4), 16), hb = parseInt(it.headShade.slice(4, 6), 16);
                   const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
                   if (lum >= 150 && lum < 215) it.headShade = 'D9D9D9';
@@ -1365,7 +1365,7 @@
                   });
                 }
               } else if (it.headShade && it.rows.length >= 2 && nCols >= 3) {
-                if (!isRulesFixOn() && /^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
+                if (/^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
                   const hr = parseInt(it.headShade.slice(0, 2), 16), hg = parseInt(it.headShade.slice(2, 4), 16), hb = parseInt(it.headShade.slice(4, 6), 16);
                   const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
                   if (lum >= 150 && lum < 215) it.headShade = 'D9D9D9';
@@ -1621,7 +1621,7 @@
   /** একটি অংশ আঁটানো; বদল হলে { needPt, availPt, fontFrom } ফেরত, নইলে null */
   function fitItem(it, cellW, measure) {
     const wdOn = isWidthOn(), a01On = isA01FixOn(), a14On = isA14FixOn(), a19On = isA19FixOn(), a11On = isA11FixOn() && !(it && (it._a11SkipItem || it._inNestBoxPage || (Array.isArray(it.boxIds) && it.boxIds.length))), wfOn = isWrapFitOn() || a01On, p4On = isPages4On(), a07On = isA07FixOn() || isVSpaceOn() || wdOn, a16On = isA16FixOn() || wdOn, indOn = isIndentOn();
-    if ((a07On && it && it._a07FixedSig) || isF1Fix2On() || ((isA07Fix3On() || isA07Fix5On() || isA07Fix6On()) && it && (it._a07FixedSig || it._a07LockFit)) || ((a16On || isA14Fix3On() || isA16Fix3On() || isA16Fix4On() || isA14Fix4On() || isA16Fix5On() || isA09FixOn() || isA14Fix5On() || isA12FixOn() || isA03Fix3On() || isA06FixOn() || isA03Fix4On() || isA08FixOn() || isF1FixOn() || isA16Fix6On() || isA18FixOn() || isIndentFixOn() || isVGapFixOn()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
+    if ((a07On && it && it._a07FixedSig) || (isF1Fix2On() && !(isRulesFixOn() && it && it._inFramedPage)) || ((isA07Fix3On() || isA07Fix5On() || isA07Fix6On()) && it && (it._a07FixedSig || it._a07LockFit)) || ((a16On || isA14Fix3On() || isA16Fix3On() || isA16Fix4On() || isA14Fix4On() || isA16Fix5On() || isA09FixOn() || isA14Fix5On() || isA12FixOn() || isA03Fix3On() || isA06FixOn() || isA03Fix4On() || isA08FixOn() || isF1FixOn() || isA16Fix6On() || isA18FixOn() || isIndentFixOn() || isVGapFixOn()) && it && it._a16LockFit) || (indOn && it && it._indentLockFit)) return null;
     if ((wfOn || p4On || a14On || a19On || a11On || indOn || wdOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (a11On && it && it.kind === 'para' && !it.tabLines && (it.lines || []).length === 1 && FILL.test((it.lines && it.lines[0]) || it.text || '')) return null;
     // A04_PAGES_v1: গদ্য অনুচ্ছেদে ভুলবশত বসে যাওয়া ট্যাব-কলাম পরিষ্কার এবং বহু-লাইনের প্রবাহী অনুচ্ছেদে ১-লাইনের সংকোচন রোধ
@@ -2937,7 +2937,7 @@
     if (rfxOn || (ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._preRulesFixSnap))) repairRulesFixIr(ir);
     const nbRepaired = nbOn && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._nestBoxRepaired);
     const a16Repaired = a16On && ir && Array.isArray(ir.pages) && ir.pages.some((p) => p && p._a16Repaired);
-    if ((wfOn || indFixOn || sfOn || f1f2On || sfxOn || mfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On || a09fOn || a14f5On || a07f5On || a12fOn || a03f3On || a02fOn || a06fOn || a03f4On || a07f6On || a08fOn || f1fOn || a16f6On || a18fOn || vgapOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
+    if ((wfOn || rfxOn || indFixOn || sfOn || f1f2On || sfxOn || mfOn || p4On || elOn || a10On || p1On || rfOn || r2On || a03On || nbRepaired || a17On || a14On || a07On || a19On || a16Repaired || a11On || rotOn || indOn || wdOn || a14f3On || ffOn || a16f3On || a14rOn || a16f4On || a14f4On || a13fOn || a16f5On || a09fOn || a14f5On || a07f5On || a12fOn || a03f3On || a02fOn || a06fOn || a03f4On || a07f6On || a08fOn || f1fOn || a16f6On || a18fOn || vgapOn) && typeof measure !== 'function') measure = defaultWrapMeasure;
     if (!ir || !ir.pages || typeof measure !== 'function') return 0;
     const prevFont = _activeFitFont;
     if (isFontPickOn()) {
@@ -2959,10 +2959,13 @@
         const cx0 = Math.max(cell.x0 || 0, pLeft), cx1 = pRight > cx0 ? Math.min(cell.x1 || 0, pRight) : (cell.x1 || 0);
         cellW = Math.max(0, Math.min(cellW, cx1 - cx0));
       }
+      const inFramedPage = rfxOn && !!(page.frame && page.frame.style && !page._f1Fix2Repaired);
       for (const it of cell.items || []) {
         if (p4On && it && page.bodyFontPt) it._pageBodyFont = page.bodyFontPt;
+        if (inFramedPage && it) Object.defineProperty(it, '_inFramedPage', { value: true, enumerable: false, configurable: true, writable: true });
         if (it && it.kind === 'table' ? fitTable(it, measure) : fitItem(it, cellW, measure)) n++;
         if (p4On && it && it._pageBodyFont) delete it._pageBodyFont;
+        if (inFramedPage && it && it._inFramedPage) delete it._inFramedPage;
       }
     }
     // বহু-পাতার চেকলিস্ট ছকে (≥৪ কলাম, যেমন a16) fitTable-এর পর ফন্টের সমতা রক্ষা; ২-কলামের ছোট ছকে (a03) নয় (FZ_OFF=TSYNC30)
@@ -3113,6 +3116,7 @@
       repairShortFixIr(ir);
     }
     if (rfxOn && ir && Array.isArray(ir.pages)) {
+      ir.pages.forEach((p) => { if (p) delete p._rulesFixRepaired; });
       repairRulesFixIr(ir);
     }
     return n;

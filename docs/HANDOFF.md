@@ -9,9 +9,9 @@
 - **VGAPFIX ✅ ডিফল্টে, push 9e25512** (a03 +১.৫, f1 +১.৭; 4846/0)। merge3 KEEP_OURS সুইচ-OR লাইন হারায় → scratchpad lostdiff.mjs (খোঁজ) + port*.mjs (লাইন-নির্দিষ্ট বসানো)।
 - **SERIALFIX ✅ ডিফল্টে, push 8bf335a** (a03/a08/a14/a13 বাড়ল, খারাপ ০; 4900/0; serialfix টেস্টে INDENT/VGAP বন্ধ রাখা)।
 - **MISSINGFIX v2 ✅ ডিফল্টে, push 189e0db** (v1-এর a06/a13 ধস সারানো; a16 +০.৩; 5611/0)। শিক্ষা: ফলো-আপ বান্ডেলে এখনকার js দাও → মার্জ পরিষ্কার।
-- **SHORTFIX ডিফল্টে যোগ (এখনো push হয়নি)** — A/B a07 +০.৪, f1 +০.২, খারাপ ০; run-all 5662/0 (বন্ধ অবস্থায়)।
-- **RULES_TYPE_v1 বসানো (ডিফল্ট-বন্ধ RULESFIX):** পোর্ট scratchpad portrules.mjs (cw-ব্লকে totalTargetTw), rulesfix 1168/0। run-all + A/B চলছে → scratch\ab_RULESFIX.txt; তারপর SHORT+RULES একসাথে push। টেবিল-ফাইল (a02/a16) ছবি দেখো — টেবিল ভাঙলে বাতিল।
-- **বাকি শুধু FONT_TYPE_v1** (u/3, id 342328174, চলছে ০১টা থেকে; পাহারা watchids.ps1)।
+- **SHORTFIX ✅ ডিফল্টে, push 0c2b369** (a07 +০.৪, f1 +০.২; 6830/0)।
+- **RULESFIX ✗ ডিফল্ট-বন্ধ** (a03 −১৩.৯, a18 ছবি −৩০, a02 −০.৫) ⇒ RULES_TYPE_v2 পাঠানো u/6 (id 342328231), বান্ডেল = এখনকার js (base = scratch\bundles\RULES_TYPE_v2_bundle.zip)।
+- **চলছে:** FONT_TYPE_v1 (u/3, id 342328174, ০১টা থেকে) · RULES_TYPE_v2 (u/6)। পাহারা watchids.ps1। FONT-এর base পুরোনো → পোর্ট লাগবে (lostdiff + port স্ক্রিপ্ট নকশা)।
 - **ট্যাব (০৪:৪০):** u/3 FONT_TYPE_v1 (id 342328174) · u/4 MISSING_TYPE_v2 (id 342328222) · u/6 RULES_TYPE_v1 (id 342328226; u/7-এ usage limit, ০৫:১২-তে খোলে) · u/1 BRIDGE_APP_v1 (অন্য সেশনের)। পাহারা: scratchpad watchids.ps1 "id=TASK,..." (background; zip/থামা/limit-এ বের হয়)। SHORT zip রাখা। ক্রম: RULES → MISSING v2 → SHORT → FONT বসাও।
 - **নজর:** প্রতি ~১০–১৫ মিনিটে read-tab; zip দেখলে `agent_manager fetch --tab N --name <TASK>`; zip-ছাড়া উত্তর হলে পড়ে ব্যবস্থা ("জিপ দিন"); ~৬০ মিনিট পার হলে পাতা পড়ে কারণ দেখো।
 - **INDENT_TYPE_v1 (পরের কাজ, এখনই):** Downloads\gemini-inbox\INDENT_TYPE_v1.zip; ফাইল: faithful-docx-builder.js(+56/-23), layout-ir.js(+437), line-fit.js(+62), switch-defaults.js (INDENTFIX ডিফল্টে যোগ — **নিও না**, A/B পরে ঠিক করো), tests/indentfix.test.mjs। বাংলা-লিটারাল চেক ✅ পরিষ্কার (শুধু টেস্ট-বার্তা)। এখন বসানোর চক্র চালাও।

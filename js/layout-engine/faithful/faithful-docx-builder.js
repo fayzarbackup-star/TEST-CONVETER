@@ -2945,9 +2945,9 @@
         srcRectXml = `<a:srcRect l="${trimLR}" t="${trimTop}" r="${trimLR}" b="0"/>`;
       } else if ((a14Fix5On() || indentFixOn()) && item._a14CropTop > 0) {
         srcRectXml = `<a:srcRect l="0" t="${item._a14CropTop}" r="0" b="0"/>`;
-      } else if (rulesFixOn() && (item._a02VertBraceFig || (item.rect && item.rect.h > item.rect.w * 2.5 && img.pxW > 0 && img.pxH > 0 && (img.pxW / img.pxH) > (wPt / Math.max(1, hPt)) * 1.25))) {
+      } else if (rulesFixOn() && (item._a02VertBraceFig || item.cropLR > 0 || (item.rect && item.rect.h > item.rect.w * 2.5 && img.pxW > 0 && img.pxH > 0 && (img.pxW / img.pxH) > (wPt / Math.max(1, hPt)) * 1.25))) {
         const keepW = Math.min(0.85, Math.max(0.2, (wPt / Math.max(1, hPt)) / (img.pxW / Math.max(1, img.pxH))));
-        const trimLR = item._a02TrimLR != null ? item._a02TrimLR : Math.round(((1 - keepW) / 2) * 100000);
+        const trimLR = item._a02TrimLR != null ? item._a02TrimLR : (item.cropLR > 0 ? item.cropLR : Math.round(((1 - keepW) / 2) * 100000));
         srcRectXml = `<a:srcRect l="${trimLR}" t="0" r="${trimLR}" b="0"/>`;
       }
       const drawing = `<w:r>${tiny}<w:drawing>${open}<wp:docPr id="${1000 + id}" name="fig${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${1000 + id}" name="fig${id}.${ext}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdFimg${id}"/>${srcRectXml}<a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(wPt)}" cy="${emu(hPt)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic>${fa ? '</wp:anchor>' : '</wp:inline>'}</w:drawing></w:r>`;
@@ -3547,10 +3547,6 @@
           : runsFor(rawTxt, item)));
     const useEnter = !globalThis.__FZ_OFF_ENTERGAP && (globalThis.__FZ_ON_ENTERGAP || mathHOn() || (typeof process !== 'undefined' && process.env.FZ_ON && process.env.FZ_ON.includes('ENTERGAP')));
     const totalBefore = (item.spaceBeforePt || 0) + (extraBeforePt || 0);
-    if (rulesFixOn() && item.fullWidthShadeBar && totalBefore > 1 && !useEnter) {
-      const noBeforeItem = keepInternalProps(item, Object.assign({}, item, { spaceBeforePt: 0 }));
-      return `${spacer(totalBefore)}<w:p>${markParaRpr(pPr(noBeforeItem, 0), rawTxt, false)}${body}</w:p>`;
-    }
     const enterLead = useEnter && !(mathHOn() && item.pageBreakBefore) ? enterGapXml(totalBefore) : '';
     return `${enterLead}<w:p>${markParaRpr(pPr(item, extraBeforePt), rawTxt, false)}${body}</w:p>`;
   }
@@ -3968,15 +3964,6 @@
           const runs = runsFor('**○**', circleIt) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + (restTxt ? runsFor(restTxt, restIt) : '');
           return `<w:p><w:pPr>${pShd}${tabXml}<w:spacing w:before="${befTw}" w:after="${aftTw}"${tblLineXml}/>${radIndXml}<w:jc w:val="left"/><w:rPr><w:sz w:val="${pMarkSz}"/><w:szCs w:val="${pMarkSz}"/></w:rPr></w:pPr>${runs}</w:p>`;
         }
-        if (rulesFixOn() && ri > 0 && nL >= 2 && t && /^([^☐☑□:]+?\s*:)\s*([☐☑□])$/.test(String(t).trim())) {
-          const mOpt = /^([^☐☑□:]+?\s*:)\s*([☐☑□])$/.exec(String(t).trim());
-          const tabPosTw = Math.max(200, Math.round((cellWTw || colW) * 0.56));
-          const tabXml = `<w:tabs><w:tab w:val="left" w:pos="${tabPosTw}"/></w:tabs>`;
-          const optLineTw = Math.max(200, Math.round(((curRowH - BA) / nL) * 20));
-          const optLineXml = ` w:line="${optLineTw}" w:lineRule="exact"`;
-          const runs = runsFor(mOpt[1], lineCellItem) + `<w:r><w:rPr><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:tab/></w:r>` + runsFor(mOpt[2], lineCellItem);
-          return `<w:p><w:pPr>${pShd}${tabXml}<w:spacing w:before="${befTw}" w:after="${aftTw}"${optLineXml}/><w:jc w:val="left"/><w:rPr><w:sz w:val="${pMarkSz}"/><w:szCs w:val="${pMarkSz}"/></w:rPr></w:pPr>${runs}</w:p>`;
-        }
         const a18WordGapPt = a18FixOn() && item._a18CellWordGapPt && item._a18CellWordGapPt[ri + ':' + k] > 0 ? item._a18CellWordGapPt[ri + ':' + k] : 0;
         const bodyRunsXml = t ? (a18WordGapPt > 0
           ? String(t).split(/\s+/).filter(Boolean).map((w) => runsFor(w, lineCellItem)).join(`<w:r><w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/><w:spacing w:val="${tw(a18WordGapPt)}"/><w:sz w:val="${defSz}"/><w:szCs w:val="${defSz}"/></w:rPr><w:t xml:space="preserve"> </w:t></w:r>`)
@@ -4087,7 +4074,7 @@
     })();
     const cw = (() => {
       if (!fr) return () => colW;
-      const totalTargetTw = (rulesFixOn() && item.widthPt > 0) ? tw(item.widthPt) : colW * nCols;
+      const totalTargetTw = colW * nCols;
       const ws = Array.from({ length: nCols }, (_, k) => Math.round(totalTargetTw * fr[k]));
       if ((rulesFixOn() || a12FixOn() || indentFixOn() || f1Fix2On() || a03Fix3On() || a03Fix4On() || a07Fix6On() || a08FixOn() || f1FixOn() || a18FixOn()) && nCols >= 2) {
         const diff = totalTargetTw - ws.reduce((a, b) => a + b, 0);
