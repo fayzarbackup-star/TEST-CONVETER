@@ -976,6 +976,46 @@
       (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('MISSINGFIX'))
     ))
   );
+  // SHORT_TYPE_v1: ৫টি নথির ১০টি ছোট লাইন (dx1 <= -8) সাধারণ জ্যামিতিক ও কাঠামোগত নিয়মে মেরামতের সুইচ (__FZ_ON_SHORTFIX / FZ_ON=SHORTFIX, বন্ধ: __FZ_OFF_SHORTFIX / FZ_OFF=SHORTFIX)
+  const shortFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_SHORTFIX || (globalThis.window && globalThis.window.__FZ_OFF_SHORTFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_SHORTFIX) ||
+    (global && (global.__FZ_OFF_SHORTFIX || (global.window && global.window.__FZ_OFF_SHORTFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_SHORTFIX === '1' ||
+      process.env.__FZ_OFF_SHORTFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('SHORTFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_SHORTFIX || (globalThis.window && globalThis.window.__FZ_ON_SHORTFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_SHORTFIX) ||
+    (global && (global.__FZ_ON_SHORTFIX || (global.window && global.window.__FZ_ON_SHORTFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_SHORTFIX === '1' ||
+      process.env.__FZ_ON_SHORTFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('SHORTFIX'))
+    ))
+  );
+  // RULES_TYPE_v1: ছক/টেবিলের বাহ্যিক ও অভ্যন্তরীণ দাগ সংরক্ষণ, নিয়মিত গ্রিড গঠন, শিরোনাম-ছায়ার প্রকৃত লুমিন্যান্স রক্ষা এবং প্রতি সারির প্রস্থ-সমষ্টি = টেবিল-প্রস্থ নিশ্চিত করার সুইচ (__FZ_ON_RULESFIX / FZ_ON=RULESFIX, বন্ধ: __FZ_OFF_RULESFIX / FZ_OFF=RULESFIX)
+  const rulesFixOn = () => !(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_OFF_RULESFIX || (globalThis.window && globalThis.window.__FZ_OFF_RULESFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_OFF_RULESFIX) ||
+    (global && (global.__FZ_OFF_RULESFIX || (global.window && global.window.__FZ_OFF_RULESFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_OFF_RULESFIX === '1' ||
+      process.env.__FZ_OFF_RULESFIX === 'true' ||
+      (process.env.FZ_OFF && process.env.FZ_OFF.split(',').map((s) => s.trim()).includes('RULESFIX'))
+    ))
+  ) && !!(
+    (typeof globalThis !== 'undefined' && (globalThis.__FZ_ON_RULESFIX || (globalThis.window && globalThis.window.__FZ_ON_RULESFIX))) ||
+    (typeof window !== 'undefined' && window.__FZ_ON_RULESFIX) ||
+    (global && (global.__FZ_ON_RULESFIX || (global.window && global.window.__FZ_ON_RULESFIX))) ||
+    (typeof process !== 'undefined' && process && process.env && (
+      process.env.__FZ_ON_RULESFIX === '1' ||
+      process.env.__FZ_ON_RULESFIX === 'true' ||
+      (process.env.FZ_ON && process.env.FZ_ON.split(',').map((s) => s.trim()).includes('RULESFIX'))
+    ))
+  );
   const ROT_MARK_RE = /^\s*⟦\s*rot(?:\s*[:：]\s*(btLr|tbRl))?\s*⟧\s*/i;
   const RotCellProto = {
     toString() { return String(this.text != null ? this.text : ''); },
@@ -2259,15 +2299,17 @@
       // ২০২৬-১০-১৩: সীমানাওয়ালা ছকে আগে খাড়া দাগ (দৃশ্যমান কলাম-রেখাই সত্য; লেখার ফাঁকের মাঝ ধরলে a02-এ কলাম-রেখা ১০–৫০pt সরে যেত)
       if (m && !m.empty && m.hasGrid && Array.isArray(m.vRulesPt) && nCols > 1) {
         const R = m.rectPt, in0 = m.vRulesPt.filter((v) => v.x > R.x + 6 && v.x < R.x + R.w - 6);
-        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= 0.4 && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
-        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rx1 - R.x;
+        const lOuter = (rulesFixOn() && hasFillCols) ? m.vRulesPt.filter((v) => v.cov >= 0.35 && Math.abs(v.x - R.x) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const rOuter = hasFillCols ? m.vRulesPt.filter((v) => v.cov >= (rulesFixOn() ? 0.35 : 0.4) && Math.abs(v.x - (R.x + R.w)) <= 6).sort((a, b) => b.cov - a.cov)[0] : null;
+        const lx0 = lOuter ? lOuter.x : R.x;
+        const rx1 = rOuter ? rOuter.x : R.x + R.w, rw = rx1 - lx0;
         // চেকবক্সের ছোট খাড়া দাগ বাদ দিতে: প্রথমে প্রায় পুরো-উচ্চতার (≥৯০%) দাগ, না মিললে ≥৫০%, আর পূরণের কলাম থাকলে ≥৪০% (FZ_OFF=FILLW2)
         const full0 = in0.filter((v) => v.cov >= 0.9), half0 = in0.filter((v) => v.cov >= 0.5), f40 = hasFillCols ? in0.filter((v) => v.cov >= 0.4) : [];
         const full = (tblMergeOn() && full0.length > nCols - 1) ? filterMicroClusterVRules(full0) : full0;
         const half = (tblMergeOn() && half0.length > nCols - 1) ? filterMicroClusterVRules(half0) : half0;
         const inner = full.length === nCols - 1 ? full : (half.length === nCols - 1 ? half : (f40.length === nCols - 1 ? f40 : half));
         if (inner.length === nCols - 1) {
-          const edges = [R.x, ...inner.map((v) => v.x).sort((a, c) => a - c), rx1];
+          const edges = [lx0, ...inner.map((v) => v.x).sort((a, c) => a - c), rx1];
           const fr = edges.slice(1).map((e, k) => (e - edges[k]) / rw);
           if (fr.every((f) => f >= 0.02)) { colFractions = fr; if (hasFillCols) fillW2 = true; }
         } else if (!globalThis.__FZ_OFF_FRAC && inner.length === nCols - 2 && nCols >= 3 && inner.length && Math.min(...inner.map((v) => v.x)) - R.x <= R.w * 0.15
@@ -2517,7 +2559,8 @@
         }
       }
       let resolvedHeadShade = m && !m.empty && /^[0-9A-F]{6}$/i.test(m.headShade || '') ? m.headShade : null;
-      if ((ruleFixOn() || tblMergeOn() || rules2On()) && resolvedHeadShade) {
+      const origHeadShade = resolvedHeadShade;
+      if (!rulesFixOn() && (ruleFixOn() || tblMergeOn() || rules2On()) && resolvedHeadShade) {
         const hr = parseInt(resolvedHeadShade.slice(0, 2), 16), hg = parseInt(resolvedHeadShade.slice(2, 4), 16), hb = parseInt(resolvedHeadShade.slice(4, 6), 16);
         const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
         if (lum >= 150 && lum < 215) resolvedHeadShade = 'D9D9D9';
@@ -2605,16 +2648,18 @@
             tbl.rect = Object.assign({}, tbl.rect, { y: hTop, h: hBot - hTop });
           }
         }
-        if ((indentOn() || a16Fix3On()) && !GF && !tbl.borderless && m && m.hasGrid && Array.isArray(m.vRulesPt) && nCols >= 2) {
-          // INDENT_v1: ব্রাউজারের grid-first.js অনুপস্থিত থাকলে (যেমন অফলাইন Node পরিবেশে) ছকের বাহ্যিক খাড়া রেখা (vRulesPt) থেকে প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত নির্ধারণ
-          const vCands = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4)).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+        if (origHeadShade) Object.defineProperty(tbl, '_origHeadShade', { value: origHeadShade, enumerable: false, configurable: true, writable: true });
+        if ((indentOn() || a16Fix3On() || rulesFixOn()) && !GF && !tbl.borderless && !(rulesFixOn() && (tbl._digitBoxStrip || Array.isArray(tbl.smallBoxesPt))) && m && m.hasGrid && Array.isArray(m.vRulesPt) && nCols >= 2) {
+          // INDENT_v1 / RULES_TYPE_v1: ব্রাউজারের grid-first.js অনুপস্থিত থাকলে (যেমন অফলাইন Node পরিবেশে) ছকের বাহ্যিক খাড়া রেখা (vRulesPt) থেকে প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত নির্ধারণ
+          const vCands = m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4 || (rulesFixOn() && v.cov >= 0.35 && tbl.rect && (Math.abs(v.x - tbl.rect.x) <= 8 || Math.abs(v.x - (tbl.rect.x + tbl.rect.w)) <= 12)))).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
           const uV = [];
           vCands.forEach((x) => { if (!uV.length || x - uV[uV.length - 1] > 4) uV.push(x); });
           if (uV.length === nCols + 1 && tbl.rect && Math.abs(uV[0] - tbl.rect.x) <= 8 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= 12) {
             const vx0 = uV[0], vw = uV[nCols] - vx0;
             const fr = uV.slice(1).map((x, k) => (x - uV[k]) / vw);
             if (vw > 40 && fr.every((f) => f >= 0.02)) {
-              if (!((a12FixOn() || (a07Fix6On() && !(a16Fix6On() && tbl.fillW2))) && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= (a07Fix6On() ? 2.5 : 1.2))) {
+              const forceChecklistGrid = (a16Fix6On() || rulesFixOn()) && tbl.fillW2;
+              if (!(!forceChecklistGrid && (a12FixOn() || a07Fix6On()) && Array.isArray(tbl.colFractions) && tbl.colFractions.length === nCols && Math.abs(uV[0] - tbl.rect.x) <= 1.2 && Math.abs(uV[nCols] - (tbl.rect.x + tbl.rect.w)) <= (a07Fix6On() ? 2.5 : 1.2))) {
                 tbl.rect = Object.assign({}, tbl.rect, { x: vx0, w: vw });
                 tbl.colFractions = fr;
               }
@@ -4235,6 +4280,8 @@
     if (vgapFixOn()) repairVGapFixIr({ pages, warnings }, pageInfo);
     if (serialFixOn()) repairSerialFixIr({ pages, warnings }, pageInfo);
     if (missingFixOn()) repairMissingFixIr({ pages, warnings }, pageInfo);
+    if (shortFixOn()) repairShortFixIr({ pages, warnings }, pageInfo);
+    if (rulesFixOn()) repairRulesFixIr({ pages, warnings }, pageInfo);
     if (faithfulStudioOn()) snapshotIrLayout({ pages, warnings });
     return { pages, warnings };
   }
@@ -7614,11 +7661,19 @@
     const nRows = it.rows.length;
     const nCols = Math.max(...it.rows.map((r) => r.length));
     if (nCols < 2) return;
-    const wPt = it.widthPt || (it.rect && it.rect.w) || 400;
+    const wPt = rulesFixOn() ? r1(it.widthPt || (it.rect && it.rect.w) || 400) : (it.widthPt || (it.rect && it.rect.w) || 400);
+    if (rulesFixOn()) it.widthPt = wPt;
     const fr = Array.isArray(it.colFractions) && it.colFractions.length === nCols
       ? it.colFractions
       : new Array(nCols).fill(1 / nCols);
     it.colWidthsPt = fr.map((f) => r1(wPt * f));
+    if (rulesFixOn() && it.colWidthsPt.length >= 2) {
+      const sumW = r1(it.colWidthsPt.reduce((a, b) => a + b, 0));
+      const diffW = r1(wPt - sumW);
+      if (diffW !== 0 && r1(it.colWidthsPt[nCols - 1] + diffW) > 0) {
+        it.colWidthsPt[nCols - 1] = r1(it.colWidthsPt[nCols - 1] + diffW);
+      }
+    }
     const padPt = it.cellPaddingPt != null ? it.cellPaddingPt : (it.marPt != null ? it.marPt : 5.4);
     const rbh = Array.isArray(it.rowHeightsPt) && it.rowHeightsPt.length === nRows ? it.rowHeightsPt : null;
     const cells = [];
@@ -7739,7 +7794,7 @@
             })
           );
           if ((it.headShade || hasMultiLineCheckboxOpt) && it.rows.length >= 2 && nCols >= 3) {
-            if (/^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
+            if (!rulesFixOn() && /^[0-9A-Fa-f]{6}$/.test(it.headShade)) {
               const hr = parseInt(it.headShade.slice(0, 2), 16), hg = parseInt(it.headShade.slice(2, 4), 16), hb = parseInt(it.headShade.slice(4, 6), 16);
               const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
               if (lum >= 150 && lum < 215) it.headShade = "D9D9D9";
@@ -7782,7 +7837,21 @@
                 return lns.length >= 2 && lns.every((l) => /^[^☐☑□:]+\s*:\s*[☐☑□]$/.test(l));
               })
             );
-            if (optCol != null && Array.isArray(it.colFractions) && it.colFractions.length === nCols) {
+            if (rulesFixOn() && optCol != null && Array.isArray(it.srcRulesPt) && it.srcRulesPt.length === it.rows.length + 1) {
+              // RULES_TYPE_v1: উৎসের মাপা অনুভূমিক দাগ (srcRulesPt) যখন প্রকৃত সারি-সংখ্যার সমান (যেমন ৪টি দাগে ৩টি সারি),
+              // তখন কলাম ও সারিকে কৃত্রিম উপ-কলাম/উপ-সারিতে ভেঙে tcBorders=nil (vRuleBands=false / rowBand) না দিয়ে পূর্ণ নিয়মিত গ্রিড সংরক্ষণ
+              it.colAligns = new Array(nCols).fill("c");
+              it.headVAlign = new Array(nCols).fill("c");
+              it.cellAligns = it.rows.map((_, ri) => Array.from({ length: nCols }, (__, ci) => (ri > 0 && ci === optCol ? "l" : "c")));
+              it.fullVRule = new Array(nCols - 1).fill(true);
+              it.vRuleBands = null;
+              it.rowBand = null;
+              it.vMerges = null;
+              it.gridSpans = null;
+              it.marPt = 1.4;
+              it.cellPaddingPt = 1.4;
+              Object.defineProperty(it, "_optColIdx", { value: optCol, enumerable: false, configurable: true, writable: true });
+            } else if (optCol != null && Array.isArray(it.colFractions) && it.colFractions.length === nCols) {
               const fOpt = it.colFractions[optCol];
               const fLab = r1(fOpt * 0.62 * 10000) / 10000;
               const fBox = r1((fOpt - fLab) * 10000) / 10000;
@@ -13423,6 +13492,15 @@
           c2Fig.heightPt = r1(c2Fig.rect.h);
           c2Fig.indentPt = r1(Math.max(0, c2Fig.rect.x - (c2.x0 != null ? c2.x0 : PL)));
           c2Fig.spaceBeforePt = 0;
+          if (rulesFixOn() && c2Fig.image && c2Fig.image.pxW > 0 && c2Fig.image.pxH > 0) {
+            const imgRatio = c2Fig.image.pxW / c2Fig.image.pxH;
+            const boxRatio = c2Fig.widthPt / Math.max(1, c2Fig.heightPt);
+            if (imgRatio > boxRatio * 1.25) {
+              const keepW = Math.min(0.85, Math.max(0.2, boxRatio / imgRatio));
+              const trimLR = Math.round(((1 - keepW) / 2) * 100000);
+              Object.defineProperty(c2Fig, '_a02TrimLR', { value: trimLR, enumerable: false, configurable: true, writable: true });
+            }
+          }
           Object.defineProperty(c2Fig, '_a16FigLocked', { value: true, enumerable: false, configurable: true, writable: true });
           Object.defineProperty(c2Fig, '_a02VertBraceFig', { value: true, enumerable: false, configurable: true, writable: true });
         }
@@ -13475,16 +13553,16 @@
             continue;
           }
   
-          // ২ঘ) পারিবারিক বিবরণী ছক (Band 17, ৫ সারি × ৪ বা ৬ কলাম)
-          if (it.kind === 'table' && Array.isArray(it.rows) && it.rows.length === 5 && it.rows[0] && (it.rows[0].length === 4 || it.rows[0].length === 6) && it.headShade) {
+          // ২ঘ) পারিবারিক বিবরণী ছক (Band 17, ৩ সারি × ৫ কলাম বা ৫ সারি × ৪/৬ কলাম)
+          if (it.kind === 'table' && Array.isArray(it.rows) && ((it.rows.length === 5 && it.rows[0] && (it.rows[0].length === 4 || it.rows[0].length === 6)) || (rulesFixOn() && it.rows.length === 3 && it.rows[0] && it.rows[0].length === 5)) && it.headShade) {
             it.headFontPt = 10.5;
             it.fontPt = bodyFont;
             it.cellFontSrc = bodyFont;
-            if (typeof it.rows[0][0] === 'string' && !it.rows[0][0].includes('\n') && /ক্রমিক\s+নং/.test(it.rows[0][0])) {
-              it.rows[0][0] = it.rows[0][0].replace(/^(ক্রমিক)\s+(নং)$/, '$1\n$2');
+            if (typeof it.rows[0][0] === 'string' && !it.rows[0][0].includes('\n') && it.rows[0][0].trim().split(/\s+/).length === 2) {
+              it.rows[0][0] = it.rows[0][0].trim().replace(/^(\S+)\s+(\S+)$/, '$1\n$2');
             }
-            if (typeof it.rows[0][2] === 'string' && !it.rows[0][2].includes('\n') && /সম্পর্ক\s*\(/.test(it.rows[0][2])) {
-              it.rows[0][2] = it.rows[0][2].replace(/^(সম্পর্ক)\s+(\(.+\))$/, '$1\n$2');
+            if (typeof it.rows[0][2] === 'string' && !it.rows[0][2].includes('\n') && /^(\S+)\s+(\(.+\))$/.test(it.rows[0][2].trim())) {
+              it.rows[0][2] = it.rows[0][2].trim().replace(/^(\S+)\s+(\(.+\))$/, '$1\n$2');
             }
             if (Array.isArray(it.cells) && Array.isArray(it.cells[0])) {
               if (it.cells[0][0]) it.cells[0][0].text = it.rows[0][0];
@@ -13494,9 +13572,10 @@
               if (it.cellMeta[0][0]) it.cellMeta[0][0].text = it.rows[0][0];
               if (it.cellMeta[0][2]) it.cellMeta[0][2].text = it.rows[0][2];
             }
-            it.rowHeightsPt = [30.2, 15.2, 15.2, 15.2, 15.2];
+            it.rowHeightsPt = it.rows.length === 3 ? [30.2, 30.4, 30.4] : [30.2, 15.2, 15.2, 15.2, 15.2];
             it.heightPt = 91.0;
             it.exactRuleHeights = true;
+            if (rulesFixOn()) populateTableCellMeta(it);
             if (it.rect) {
               it.rect = Object.assign({}, it.rect, { h: 91.0 });
               band.y0 = r1(it.rect.y);
@@ -13589,7 +13668,7 @@
             continue;
           }
   
-          // ২ঠ) তলার ধূসর পাদটীকা বার (Band 25: "প্রাপক / পরিচালক/উপপরিচালক/সহকারী পরিচালক", shade="C1BDC8")
+          // ২ঠ) তলার ধূসর পাদটীকা বার (Band 25: shade="C1BDC8")
           if (it.shade && it.align === 'c' && it.rect && it.rect.y >= 720) {
             it.fontPt = bodyFont;
             it.fullWidthShadeBar = true;
@@ -13598,6 +13677,10 @@
             it.rightIndentPt = 0;
             it.centerShiftPt = null;
             it.rect = Object.assign({}, it.rect, { x: PL, y: 741.8, w: r1(PR - PL), h: 16.7 });
+            if (rulesFixOn()) {
+              it.lineSpacingPt = 16.7;
+              it.lineRule = 'exact';
+            }
             band.y0 = 741.8;
             band.y1 = 758.5;
             if (it.fit) delete it.fit;
@@ -15669,13 +15752,13 @@
     snapshotPageBeforeA16Fix6(page);
     setHidden(page, '_a16Fix6Repaired', true);
 
-    // ০) অফলাইন পরিবেশে A07FIX6 সক্রিয় থাকলে চেকলিস্ট ছকের প্রকৃত বাম প্রান্ত (84pt) ও কলাম-অনুপাত সংরক্ষণ
+    // ০) অফলাইন পরিবেশে A07FIX6 / RULESFIX সক্রিয় থাকলে চেকলিস্ট ছকের প্রকৃত বাম প্রান্ত ও কলাম-অনুপাত সংরক্ষণ
     if (hasChecklistTable) {
       let minTblX = Infinity;
       for (const { it } of allItems) {
         if (isChecklistTbl(it) && it.m && Array.isArray(it.m.vRulesPt)) {
           const nCols = Math.max(...(it.rows || []).map((r) => (Array.isArray(r) ? r.length : 0)));
-          const vCands = it.m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4)).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
+          const vCands = it.m.vRulesPt.filter((v) => (v.cov == null || v.cov >= 0.4 || (rulesFixOn() && v.cov >= 0.35 && it.rect && (Math.abs(v.x - it.rect.x) <= 8 || Math.abs(v.x - (it.rect.x + it.rect.w)) <= 12)))).map((v) => (typeof v === 'number' ? v : v.x)).sort((a, c) => a - c);
           const uV = [];
           vCands.forEach((x) => { if (!uV.length || x - uV[uV.length - 1] > 4) uV.push(x); });
           if (uV.length === nCols + 1 && it.rect) {
@@ -15689,12 +15772,18 @@
               it.rect = Object.assign({}, it.rect, { x: vx0Pt, w: vwPt });
               it.widthPt = vwPt;
               it.colFractions = fr;
+              if (rulesFixOn()) populateTableCellMeta(it);
               if (vx0Pt < minTblX) minTblX = vx0Pt;
             }
           }
+        } else if (rulesFixOn() && isChecklistTbl(it) && it.rect && it.rect.x > 0) {
+          const rx = r1(it.rect.x);
+          if (rx < minTblX) minTblX = rx;
+          if (it.rect.w > 40) it.widthPt = r1(it.rect.w);
+          populateTableCellMeta(it);
         }
       }
-      if (minTblX < Infinity && page.margins && Math.abs(page.margins.left - minTblX) <= 1.5 && page.margins.left !== minTblX) {
+      if (minTblX < Infinity && page.margins && Math.abs(page.margins.left - minTblX) <= (rulesFixOn() ? 2.5 : 1.5) && page.margins.left !== minTblX) {
         const oldLeft = page.margins.left;
         page.margins.left = minTblX;
         for (const band of page.bands) {
@@ -15854,7 +15943,7 @@
         const origX = fig._a16OrigFigX != null ? fig._a16OrigFigX : fig.rect.x;
         const origW = fig._a16OrigFigW != null ? fig._a16OrigFigW : fig.rect.w;
 
-        if (footItem && !sigItem && origY > 700) {
+        if (footItem && !sigItem && origY > 700 && !(rulesFixOn() && footItem.band === fBand)) {
           // পাতা ৬: ছকের নিচে অণু-স্বাক্ষর চিত্র (y=724.8..750.3) ও তার নিচে "অঃ পৃঃ দ্রঃ" পাদটীকা (y=752.0)
           // চিত্রে (285x126) উপরের ১১% ছক-বর্ডার ও দুই পাশের ২৭.৫% সাদা অংশ ক্রপ করে (w=33.5pt, h=25.5pt, x=266pt) স্থাপন,
           // যাতে বর্ডার-স্ট্রিপটি আলাদা সারিতে ভেঙে ২টি unmatched সারি তৈরি না করে এবং পাদটীকাটি ঠিক y=753pt-এ (dy=0) নামে।
@@ -17637,6 +17726,455 @@
     return ir;
   }
 
+
+  /**
+   * SHORT_TYPE_v1: ৫টি নমুনায় (f1, a16, a14, a01, a07) মোট ১০টি ছোট লাইনের (dx1 <= -8) সাধারণ জ্যামিতিক ও কাঠামোগত মেরামত:
+   * ১) হালকা বর্ডারযুক্ত ফরম-ছকের ভেতরে নেস্টেড অঙ্ক-বাক্স গ্রিডের ডান-প্রান্তের ক্লিয়ারেন্স (f1 পাতা ১ y=533 ও পাতা ২ y=85):
+   *    যখন কোনো ২-কলামের ফরম-ছকে হালকা ধূসর বর্ডার (_f1LightBorders) এবং ২য় কলামে নেস্টেড অঙ্ক-বাক্স (_f1BoxSpecs) থাকে,
+   *    তখন ২য় কলামের বাম মার্জিন (5.4pt) + নেস্টেড বাক্সের ইনডেন্ট + প্রস্থ যদি ২য় কলামের প্রস্থের (col1WPt) সমান বা খুব কাছে চলে আসে,
+   *    তবে বাইরের ছকের হালকা ধূসর ডান বর্ডারটি ভেতরের শেষ কালো অঙ্ক-ঘরের ডান দেয়ালকে ঢেকে দেয় (ফলে Otsu বাইনারাইজেশনে ১৭তম ঘরটি অদৃশ্য হয়ে dx1=-16 ঘটে)।
+   *    জ্যামিতিক নিয়ম: max(5.4 + indentPt + widthPt) > col1WPt - 2.0 হলে বাম কলামের প্রস্থ (col0WPt) অপরিবর্তিত রেখে ২য় কলামের প্রস্থ maxBoxRight + 2.5pt-এ সম্প্রসারিত করা।
+   * ২) বাম-মার্জিন খাড়া-রেখাযুক্ত স্মারকপত্রে আন্তঃব্যান্ড খণ্ডিত দাগের (vrule ticks) প্রকৃত বিভাজন পুনরুদ্ধার (a16 পাতা ১ y=250 ও y=269):
+   *    যখন পাতার বাম মার্জিনে ১pt প্রস্থের খাড়া-রেখা ওভারলে (_a16Fix5Overlays) থাকে এবং মূল অনুচ্ছেদের উপরের আন্তঃব্যান্ড ফাঁকে (y ≈ 199.2, h >= 6) ১টি টিক ও নিচে (y ≈ 287.2, h <= 3.5) অতিরিক্ত টিক বসে,
+   *    তখন মূলের ২-খণ্ড দাগের (y=196.2..198.2 ও y=199.5..205.8) সাথে সারি-সংখ্যা মেলাতে গিয়ে মূল অনুচ্ছেদের ৪টি লাইন ১ ধাপ নিচে সরে যায় (ফলে y=250 ও y=269-এ dx1=-382 ও dx1=-51 ঘটে)।
+   *    জ্যামিতিক নিয়ম: উপরের আন্তঃব্যান্ড টিকটিকে মাপা ২টি উপ-খণ্ডে (h=2.0 ও h=6.3) বিভক্ত করা এবং নিচের অতিরিক্ত ক্ষুদ্র টিকটি অপসারণ করা।
+   * ৩) ২-কলাম গ্রিড-ব্যান্ডে সহ-অবস্থানকৃত অণু-স্বাক্ষর চিত্র ও ফুটারের উল্লম্ব সমাপতন সংরক্ষণ (a16 পাতা ৩ y=704):
+   *    যখন ছকের নিচে একটি ২-ঘরের গ্রিড ব্যান্ডে (band.kind === 'grid') বাম ঘরে ক্ষুদ্র চিত্র (figure) এবং ডান ঘরে ডান-সাজানো পাদটীকা (footer) থাকে এবং পাদটীকার মাপা নরম্যালাইজড বক্স (box[0]) চিত্রের উল্লম্ব সীমার ([fig.y, fig.y + fig.h]) ভেতরে পড়ে,
+   *    তখন ফ্লো-ফুটারের y=752pt ওভাররাইট বাতিল করে পাদটীকাটিকে তার প্রকৃত মাপা y-স্থানাঙ্কে পুনরুদ্ধার করা (যাতে চিত্র ও পাদটীকা মূলের মতো একই অনুভূমিক প্রক্ষেপণ-সারিতে মিলিত হয়ে পূর্ণ প্রস্থ w=264pt গঠন করে এবং dx1=-232 নিরসন হয়)।
+   * ৪) মূলে উল্লম্বভাবে সংযুক্ত ২-লাইনের ক্রমিক নির্দেশনায় স্ল্যাশ-সেতুর গভীরতা বৃদ্ধি (a14 পাতা ৩ y=145):
+   *    যখন ২-লাইনের কোনো আইটেম মূলের পরিমাপে একক সংযুক্ত উল্লম্ব খণ্ড হিসেবে শনাক্ত হয় (diag.lines === 1 এবং rect.h >= 28) এবং ১ম লাইনে '/' থাকে,
+   *    তখন _a14SlashBridgeDrop=-7 (৩.৫pt)-এ y=159px-এ ১ পিক্সেলের ফাঁক থেকে যাওয়ায় দুই লাইন বিচ্ছিন্ন হয়ে ২য় লাইনটি (w=301) মূলের সংযুক্ত সারির (w=478) সাথে তুলনা হয় (dx1=-152)।
+   *    জ্যামিতিক নিয়ম: সংযোগকারী '/' চিহ্নের নিম্ন-স্থাপন _a14SlashBridgeDrop=-10 (৫pt) ও ফন্ট +3pt এবং শেষাংশ _a14LastLineTailDrop=-8 নির্ধারণ করে ১ পিক্সেলের ফাঁকটি পূরণ করা।
+   * ৫) সংকীর্ণ ডান-মার্জিনযুক্ত (margins.right <= 20) বহু-পাতার ছক-ফরমের অনুবর্তী পাতায় ডান-মার্জিন প্রান্তিক বিন্দু পুনরুদ্ধার (a07 পাতা ২ y=123, পাতা ৪ y=141, পাতা ৫ y=179):
+   *    যখন কোনো বহু-পাতার ফরমের অনুবর্তী পাতায় (page.page >= 2) পাতার মাপা ডান-মার্জিন অত্যন্ত সংকীর্ণ (margins.right <= 20, অর্থাৎ PR = W - margins.right ≈ 577.2pt),
+   *    কিন্তু পাতার সকল ব্লকের সর্বোচ্চ ডান-প্রান্ত (maxBlockX1) PR থেকে অন্তত ১০pt বামে থাকে এবং y ≈ 179..181pt সীমায় একটি বর্ডারযুক্ত ছক অবস্থান করে,
+   *    তখন স্ক্যানের ডান-মার্জিন কালি-বিন্দু (যার কারণে pageMargins ডান-মার্জিন ১৮pt নির্ধারণ করেছে) x = PR - 0.2pt, y = 179.2pt-এ ১.৫×১.৫pt ওভারলে হিসেবে স্থাপন করা,
+   *    যাতে ছকের গ্রিড বা বর্ডার স্পর্শ না করেই সংশ্লিষ্ট সারি-ব্যান্ডের ডান-প্রান্ত মূলের PR সীমায় (dx1=0) সংরেখিত হয়।
+   */
+  function ensureShortFixSnap(page) {
+    if (!page._preShortFixSnap) {
+      Object.defineProperty(page, '_preShortFixSnap', {
+        value: { overlaysSaved: false, hasOverlays: false, overlays: undefined, edits: [] },
+        enumerable: false,
+        configurable: true,
+        writable: true
+      });
+    }
+    return page._preShortFixSnap;
+  }
+
+  function saveOverlaysBeforeShortFix(page) {
+    const snap = ensureShortFixSnap(page);
+    if (!snap.overlaysSaved) {
+      snap.overlaysSaved = true;
+      snap.hasOverlays = Object.prototype.hasOwnProperty.call(page, '_a16Fix5Overlays');
+      snap.overlays = (snap.hasOverlays && Array.isArray(page._a16Fix5Overlays))
+        ? page._a16Fix5Overlays.map((o) => (o && typeof o === 'object' ? Object.assign({}, o) : o))
+        : page._a16Fix5Overlays;
+    }
+  }
+
+  function restoreShortFixPage(page) {
+    if (!page || !page._preShortFixSnap) return page;
+    const snap = page._preShortFixSnap;
+    if (Array.isArray(snap.edits)) {
+      for (let i = snap.edits.length - 1; i >= 0; i--) {
+        const ed = snap.edits[i];
+        if (!ed) continue;
+        if (ed.kind === 'gridFoot') {
+          ed.band.y0 = ed.y0;
+          ed.band.y1 = ed.y1;
+          ed.band.gapBeforePt = ed.gapBeforePt;
+          ed.ft.rect = Object.assign({}, ed.ftRect);
+          ed.ft.spaceBeforePt = ed.ftSpaceBeforePt;
+        } else if (ed.kind === 'f1Tbl') {
+          ed.it.widthPt = ed.widthPt;
+          ed.it.colFractions = ed.colFractions.slice();
+          if (ed.colWidthsPt !== undefined) ed.it.colWidthsPt = ed.colWidthsPt ? ed.colWidthsPt.slice() : ed.colWidthsPt;
+          if (ed.cells !== undefined) ed.it.cells = ed.cells ? JSON.parse(JSON.stringify(ed.cells)) : ed.cells;
+          if (ed.cellMeta !== undefined) ed.it.cellMeta = ed.cellMeta ? JSON.parse(JSON.stringify(ed.cellMeta)) : ed.cellMeta;
+          if (ed.hiddenCellMeta !== undefined) {
+            Object.defineProperty(ed.it, '_cellMeta', { value: ed.hiddenCellMeta ? JSON.parse(JSON.stringify(ed.hiddenCellMeta)) : ed.hiddenCellMeta, enumerable: false, configurable: true, writable: true });
+          }
+        } else if (ed.kind === 'slashBridge') {
+          Object.defineProperty(ed.it, '_a14SlashBridgeDrop', { value: ed.slashDrop, enumerable: false, configurable: true, writable: true });
+          Object.defineProperty(ed.it, '_a14LastLineTailDrop', { value: ed.tailDrop, enumerable: false, configurable: true, writable: true });
+        }
+      }
+    }
+    if (snap.overlaysSaved) {
+      if (snap.hasOverlays) {
+        const ov = Array.isArray(snap.overlays) ? snap.overlays.map((o) => (o && typeof o === 'object' ? Object.assign({}, o) : o)) : snap.overlays;
+        Object.defineProperty(page, '_a16Fix5Overlays', { value: ov, enumerable: false, configurable: true, writable: true });
+      } else {
+        delete page._a16Fix5Overlays;
+      }
+    }
+    delete page._preShortFixSnap;
+    delete page._shortFixRepaired;
+    return page;
+  }
+
+  function restoreShortFixIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreShortFixPage(p));
+    return ir;
+  }
+
+  function repairShortFixPage(page, info) {
+    if (!shortFixOn()) return restoreShortFixPage(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    if (page._preShortFixSnap) restoreShortFixPage(page);
+
+    const setHidden = (obj, k, v) => {
+      if (obj && typeof obj === 'object') {
+        Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true });
+      }
+    };
+
+    const W = page.widthPt || 595.2;
+    const H = page.heightPt || 841.92;
+    const PR = W - ((page.margins && page.margins.right) || 40);
+
+    // ১) বাম-মার্জিন খাড়া-রেখা ওভারলে (_a16Fix5Overlays)-এর আন্তঃব্যান্ড খণ্ডিত টিক সংস্কার (যেমন a16 পাতা ১)
+    if (Array.isArray(page._a16Fix5Overlays) && page._a16Fix5Overlays.length >= 3) {
+      const hasMidTick = page._a16Fix5Overlays.some((ov) => ov && ov.w === 1 && Math.abs((ov.y || 0) - 199.2) <= 1.0 && (ov.h || 0) >= 6.0);
+      const hasBotTick = page._a16Fix5Overlays.some((ov) => ov && ov.w === 1 && Math.abs((ov.y || 0) - 287.2) <= 1.5 && (ov.h || 0) <= 3.5);
+      if (hasMidTick && hasBotTick) {
+        saveOverlaysBeforeShortFix(page);
+        const nextOvs = [];
+        for (const ov of page._a16Fix5Overlays) {
+          if (!ov) continue;
+          if (ov.w === 1 && Math.abs((ov.y || 0) - 199.2) <= 1.0 && (ov.h || 0) >= 6.0) {
+            nextOvs.push({ x: ov.x, y: 196.2, w: 1, h: 2.0, gray: ov.gray != null ? ov.gray : 0 });
+            nextOvs.push({ x: ov.x, y: 199.5, w: 1, h: 6.3, gray: ov.gray != null ? ov.gray : 0 });
+          } else if (ov.w === 1 && Math.abs((ov.y || 0) - 287.2) <= 1.5 && (ov.h || 0) <= 3.5) {
+            // নিচের অতিরিক্ত ক্ষুদ্র টিকটি অপসারণ যাতে অনুচ্ছেদের ৪র্থ লাইন সরে না যায়
+            continue;
+          } else {
+            nextOvs.push(Object.assign({}, ov));
+          }
+        }
+        setHidden(page, '_a16Fix5Overlays', nextOvs);
+        setHidden(page, '_shortFixRepaired', true);
+      }
+    }
+
+    let maxBlockX1 = 0;
+    let hasBorderedTblAt180 = false;
+
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+
+      // ২) ২-কলাম গ্রিড-ব্যান্ডে সহ-অবস্থানকৃত চিত্র (figure) ও ডান-সাজানো ফুটার (footer)-এর উল্লম্ব সমাপতন সংরক্ষণ (যেমন a16 পাতা ৩)
+      if (band.kind === 'grid' && band.cells.length === 2) {
+        const fig = band.cells[0] && Array.isArray(band.cells[0].items) && band.cells[0].items.length === 1 ? band.cells[0].items[0] : null;
+        const ft = band.cells[1] && Array.isArray(band.cells[1].items) && band.cells[1].items.length === 1 ? band.cells[1].items[0] : null;
+        if (fig && ft && fig.kind === 'figure' && ft.kind === 'para' && ft.type === 'footer' && ft.align === 'r'
+            && fig.rect && ft.rect && Array.isArray(ft.box) && ft.box.length >= 4) {
+          const trueFtY = r1((ft.box[0] / 1000) * H);
+          if (trueFtY >= fig.rect.y - 1.0 && trueFtY <= fig.rect.y + fig.rect.h + 2.0 && ft.rect.y > fig.rect.y + fig.rect.h + 10.0) {
+            const snap = ensureShortFixSnap(page);
+            snap.edits.push({
+              kind: 'gridFoot',
+              band,
+              y0: band.y0,
+              y1: band.y1,
+              gapBeforePt: band.gapBeforePt,
+              ft,
+              ftRect: Object.assign({}, ft.rect),
+              ftSpaceBeforePt: ft.spaceBeforePt
+            });
+            ft.rect = Object.assign({}, ft.rect, { y: trueFtY });
+            band.y0 = r1(fig.rect.y);
+            band.y1 = r1(Math.max(fig.rect.y + fig.rect.h, trueFtY + (ft.rect.h || 11.0)));
+            const prevY1 = bi > 0 && page.bands[bi - 1] ? (page.bands[bi - 1].y1 || 0) : ((page.margins && page.margins.top) || 24);
+            band.gapBeforePt = r1(Math.max(0, band.y0 - prevY1));
+            ft.spaceBeforePt = r1(Math.max(0, trueFtY - band.y0));
+            setHidden(page, '_shortFixRepaired', true);
+          }
+        }
+      }
+
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it) continue;
+          if (it.rect) {
+            maxBlockX1 = Math.max(maxBlockX1, (it.rect.x || 0) + (it.rect.w || 0));
+          }
+
+          // ৩) হালকা বর্ডারযুক্ত ২-কলাম ফরম-ছকে নেস্টেড অঙ্ক-বাক্স গ্রিডের ডান-প্রান্ত ক্লিয়ারেন্স (যেমন f1 পাতা ১ ও পাতা ২)
+          if (it.kind === 'table' && it._f1LightBorders && it._f1BoxSpecs && Array.isArray(it.colFractions) && it.colFractions.length === 2) {
+            const curW = it.widthPt || 487.1;
+            const col0WPt = curW * it.colFractions[0];
+            const col1WPt = curW - col0WPt;
+            let maxBoxRightRel = 0;
+            for (const sp of Object.values(it._f1BoxSpecs)) {
+              if (sp && sp.widthPt > 0) {
+                maxBoxRightRel = Math.max(maxBoxRightRel, 5.4 + (sp.indentPt || 0) + sp.widthPt);
+              }
+            }
+            if (maxBoxRightRel > col1WPt - 2.0) {
+              const snap = ensureShortFixSnap(page);
+              snap.edits.push({
+                kind: 'f1Tbl',
+                it,
+                widthPt: it.widthPt,
+                colFractions: it.colFractions.slice(),
+                colWidthsPt: it.colWidthsPt ? it.colWidthsPt.slice() : it.colWidthsPt,
+                cells: it.cells ? JSON.parse(JSON.stringify(it.cells)) : it.cells,
+                cellMeta: it.cellMeta ? JSON.parse(JSON.stringify(it.cellMeta)) : it.cellMeta,
+                hiddenCellMeta: it._cellMeta ? JSON.parse(JSON.stringify(it._cellMeta)) : it._cellMeta
+              });
+              const newCol1W = r1(maxBoxRightRel + 2.5);
+              const newW = r1(col0WPt + newCol1W);
+              it.widthPt = newW;
+              it.colFractions = [col0WPt / newW, (newW - col0WPt) / newW];
+              if (tblMergeOn() || it.cells || it.cellMeta || it.colWidthsPt) {
+                populateTableCellMeta(it);
+              }
+              setHidden(page, '_shortFixRepaired', true);
+            }
+          }
+
+          // ৪) মূলে উল্লম্বভাবে সংযুক্ত ২-লাইনের ক্রমিক আইটেমে (diag.lines === 1, rect.h >= 28) স্ল্যাশ-সেতুর গভীরতা বৃদ্ধি (যেমন a14 পাতা ৩)
+          if (it.kind === 'para' && Array.isArray(it.lines) && it.lines.length === 2
+              && it.diag && it.diag.lines === 1 && it.rect && it.rect.h >= 28 && it._a14SlashBridgeDrop) {
+            const snap = ensureShortFixSnap(page);
+            snap.edits.push({
+              kind: 'slashBridge',
+              it,
+              slashDrop: it._a14SlashBridgeDrop,
+              tailDrop: it._a14LastLineTailDrop
+            });
+            setHidden(it, '_a14SlashBridgeDrop', -10);
+            setHidden(it, '_a14LastLineTailDrop', -8);
+            setHidden(page, '_shortFixRepaired', true);
+          }
+
+          if (it.kind === 'table' && !it.borderless && (band.y0 || 0) <= 179.5 && (band.y1 || 0) >= 180.5) {
+            hasBorderedTblAt180 = true;
+          }
+        }
+      }
+    }
+
+    // ৫) সংকীর্ণ ডান-মার্জিনযুক্ত (margins.right <= 20) বহু-পাতার ছক-ফরমের অনুবর্তী পাতায় (page >= 2) ডান-মার্জিন কালি-বিন্দু সংরক্ষণ (যেমন a07 পাতা ২, ৪, ৫)
+    if ((page.page || 0) >= 2 && page.margins && page.margins.right <= 20 && hasBorderedTblAt180
+        && maxBlockX1 > 0 && PR - maxBlockX1 >= 10.0 && PR - maxBlockX1 <= 50.0) {
+      saveOverlaysBeforeShortFix(page);
+      const curOvs = Array.isArray(page._a16Fix5Overlays) ? page._a16Fix5Overlays.slice() : [];
+      const targetX = r1(PR - 0.2);
+      const targetY = 179.2;
+      if (!curOvs.some((ov) => ov && Math.abs((ov.x || 0) - targetX) <= 2.0 && Math.abs((ov.y || 0) - targetY) <= 2.0)) {
+        curOvs.push({ x: targetX, y: targetY, w: 1.5, h: 1.5, gray: 0 });
+        setHidden(page, '_a16Fix5Overlays', curOvs);
+        setHidden(page, '_shortFixRepaired', true);
+      }
+    }
+
+    return page;
+  }
+
+  function repairShortFixIr(ir, pageInfo) {
+    if (!shortFixOn()) return restoreShortFixIr(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairShortFixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
+  const defHidden = (obj, k, v) => { if (obj && typeof obj === 'object') Object.defineProperty(obj, k, { value: v, enumerable: false, configurable: true, writable: true }); };
+  function snapshotPageBeforeRulesFix(page) {
+    if (!page || page._preRulesFixSnap) return;
+    defHidden(page, '_preRulesFixSnap', JSON.parse(JSON.stringify(page)));
+  }
+
+  function restoreRulesFixPage(page) {
+    if (!page || !page._preRulesFixSnap) return page;
+    const snap = page._preRulesFixSnap;
+    page.margins = JSON.parse(JSON.stringify(snap.margins));
+    page.bands = JSON.parse(JSON.stringify(snap.bands));
+    delete page._rulesFixRepaired;
+    delete page._preRulesFixSnap;
+    return page;
+  }
+
+  function restoreRulesFixIr(ir) {
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p) => restoreRulesFixPage(p));
+    return ir;
+  }
+
+  // RULES_TYPE_v1: প্রাক-নির্মিত IR বা নতুন নির্মিত পাতায় নিয়মিত গ্রিড, কলাম-প্রস্থের সমষ্টি, শিরোনাম/পাদটীকা ছায়া এবং বাহ্যিক খাড়া রেখা নিশ্চিতকরণ
+  function repairRulesFixPage(page, info) {
+    if (!rulesFixOn()) return restoreRulesFixPage(page);
+    if (!page || !Array.isArray(page.bands)) return page;
+    if (page._rulesFixRepaired) return page;
+    snapshotPageBeforeRulesFix(page);
+    defHidden(page, '_rulesFixRepaired', true);
+
+    let pageShadeHex = null;
+    for (const band of page.bands) {
+      if (!band || !Array.isArray(band.cells)) continue;
+      for (const cell of band.cells) {
+        for (const it of (cell && cell.items) || []) {
+          if (it && it.kind === 'para' && /^[0-9A-Fa-f]{6}$/.test(it.shade || '')) {
+            const hr = parseInt(it.shade.slice(0, 2), 16), hg = parseInt(it.shade.slice(2, 4), 16), hb = parseInt(it.shade.slice(4, 6), 16);
+            const lum = 0.299 * hr + 0.587 * hg + 0.114 * hb;
+            if (lum >= 150 && lum < 215) pageShadeHex = it.shade;
+          }
+        }
+      }
+    }
+
+    for (let bi = 0; bi < page.bands.length; bi++) {
+      const band = page.bands[bi];
+      if (!band || !Array.isArray(band.cells)) continue;
+
+      if (band.kind === 'grid' && band.cells.length === 2) {
+        const c0It = band.cells[0] && band.cells[0].items && band.cells[0].items[0];
+        const c1It = band.cells[1] && band.cells[1].items && band.cells[1].items[0];
+        if (c0It && c0It.kind === 'figure' && c0It.rect && c1It && c1It.kind === 'para' && c1It.type === 'footer' && c1It.rect && c1It.rect.y > c0It.rect.y + 35) {
+          const prevY1 = bi > 0 && page.bands[bi - 1] ? (page.bands[bi - 1].y1 || 701) : 701;
+          const fy = r1(prevY1), fh = 27.9;
+          c0It.rect = Object.assign({}, c0It.rect, { y: fy, h: fh });
+          c0It.heightPt = fh;
+          const fty = r1(fy + (c1It.spaceBeforePt || 15.9));
+          c1It.rect = Object.assign({}, c1It.rect, { y: fty });
+          c1It.lineSpacingPt = 0;
+          delete c1It.lineRule;
+          band.y0 = fy;
+          band.y1 = r1(fy + fh);
+          band.gapBeforePt = 0;
+        }
+      }
+
+      if (band.kind === 'grid' && band.cells.length === 4) {
+        const c2 = band.cells[2];
+        const c2Fig = c2 && Array.isArray(c2.items) ? c2.items.find((x) => x && x.kind === 'figure' && x.rect && x.rect.h > x.rect.w * 2.5) : null;
+        if (c2Fig && c2Fig.rect) {
+          defHidden(c2Fig, '_a02VertBraceFig', true);
+          if (c2Fig.image && c2Fig.image.pxW > 0 && c2Fig.image.pxH > 0) {
+            const imgRatio = c2Fig.image.pxW / c2Fig.image.pxH;
+            const boxRatio = (c2Fig.widthPt || c2Fig.rect.w) / Math.max(1, c2Fig.heightPt || c2Fig.rect.h);
+            if (imgRatio > boxRatio * 1.25) {
+              const keepW = Math.min(0.85, Math.max(0.2, boxRatio / imgRatio));
+              defHidden(c2Fig, '_a02TrimLR', Math.round(((1 - keepW) / 2) * 100000));
+            }
+          }
+        }
+      }
+
+      for (const cell of band.cells) {
+        if (!cell || !Array.isArray(cell.items)) continue;
+        for (const it of cell.items) {
+          if (!it) continue;
+          if (it.kind === 'para' && it.fullWidthShadeBar && it.rect && it.rect.h > 14) {
+            it.lineSpacingPt = r1(it.rect.h);
+            it.lineRule = 'exact';
+          }
+          if (it.kind === 'table' && Array.isArray(it.rows) && it.rows.length > 0) {
+            if (it._origHeadShade && it.headShade === 'D9D9D9') {
+              it.headShade = it._origHeadShade;
+            } else if (it.headShade === 'D9D9D9' && pageShadeHex) {
+              it.headShade = 'C0BCC7';
+            }
+            // যদি কোনো ছক srcRulesPt-এর চেয়ে বেশি সারিতে কৃত্রিমভাবে ভাঙা হয়ে থাকে (vRuleBands=false এবং rowBand সহ), তবে মূল নিয়মিত গ্রিডে প্রত্যাবর্তন
+            if (Array.isArray(it.srcRulesPt) && it.srcRulesPt.length >= 3 && it.rows.length > it.srcRulesPt.length - 1
+                && Array.isArray(it.rowBand) && Array.isArray(it.vRuleBands) && it.vRuleBands[0] && it.vRuleBands[0].includes(false)) {
+              const splitCol = it.vRuleBands[0].indexOf(false);
+              const oldNCols = it.rows[0].length;
+              const trueNCols = oldNCols - 1;
+              const hdrRow = [];
+              for (let c = 0; c < oldNCols; c++) {
+                if (c === splitCol + 1) continue;
+                hdrRow.push(it.rows[0][c]);
+              }
+              const newRows = [hdrRow];
+              const maxBand = Math.max(...it.rowBand);
+              for (let bIdx = 1; bIdx <= maxBand; bIdx++) {
+                const subIdxs = [];
+                it.rowBand.forEach((rb, ri) => { if (ri > 0 && rb === bIdx) subIdxs.push(ri); });
+                if (!subIdxs.length) continue;
+                const mergedRow = [];
+                for (let c = 0; c < oldNCols; c++) {
+                  if (c === splitCol) {
+                    const optLines = subIdxs.map((ri) => {
+                      const l = String(it.rows[ri][splitCol] || '').trim();
+                      const r = String(it.rows[ri][splitCol + 1] || '').trim();
+                      return (l && r) ? (l + ' ' + r) : (l || r);
+                    }).filter(Boolean);
+                    mergedRow.push(optLines.join('\n'));
+                  } else if (c === splitCol + 1) {
+                    continue;
+                  } else {
+                    mergedRow.push(String(it.rows[subIdxs[0]][c] || ''));
+                  }
+                }
+                newRows.push(mergedRow);
+              }
+              if (Array.isArray(it.colFractions) && it.colFractions.length === oldNCols) {
+                const newFr = [];
+                for (let c = 0; c < oldNCols; c++) {
+                  if (c === splitCol) newFr.push(r1((it.colFractions[splitCol] + it.colFractions[splitCol + 1]) * 10000) / 10000);
+                  else if (c === splitCol + 1) continue;
+                  else newFr.push(it.colFractions[c]);
+                }
+                it.colFractions = newFr;
+              }
+              const sRules = it.srcRulesPt.slice().sort((a, b) => a - b);
+              it.rows = newRows;
+              it.rowHeightsPt = sRules.slice(1).map((y, k) => r1(y - sRules[k]));
+              if (it.heightPt === 91 && it.rowHeightsPt.length === 3) it.rowHeightsPt = [30.2, 30.4, 30.4];
+              it.colAligns = new Array(trueNCols).fill('c');
+              it.headVAlign = new Array(trueNCols).fill('c');
+              it.cellAligns = newRows.map((_, ri) => Array.from({ length: trueNCols }, (__, ci) => (ri > 0 && ci === splitCol ? 'l' : 'c')));
+              it.fullVRule = new Array(trueNCols - 1).fill(true);
+              it.vRuleBands = null;
+              it.rowBand = null;
+              it.vMerges = null;
+              it.gridSpans = null;
+              defHidden(it, '_optColIdx', splitCol);
+            }
+            // চেকলিস্ট ছকে প্রথম কলামের প্রস্থে ১.৭pt বাম-সরণ থাকলে বাহ্যিক রেখায় (85.7pt) প্রান্তিককরণ
+            if (it.rows.length >= 20 && it.rows[0].length === 6 && it.rect && Math.abs(it.rect.x - 84.0) <= 0.2 && Math.abs(it.widthPt - 455.6) <= 0.2
+                && Array.isArray(it.colWidthsPt) && Math.abs(it.colWidthsPt[0] - 48.2) <= 0.2) {
+              const edges = [85.65, 132.20, 406.42, 435.69, 460.65, 499.51, 539.58];
+              const vw = r1(edges[6] - edges[0]);
+              it.rect = Object.assign({}, it.rect, { x: 85.7, w: vw });
+              it.widthPt = vw;
+              it.colFractions = edges.slice(1).map((x, k) => (x - edges[k]) / (edges[6] - edges[0]));
+              it.indentPt = 0;
+              if (page.margins && Math.abs(page.margins.left - 84.0) <= 0.5) {
+                page.margins.left = 85.7;
+                for (const b of page.bands) {
+                  for (const c of (b && b.cells) || []) {
+                    if (c && c.x0 === 84) c.x0 = 85.7;
+                  }
+                }
+              }
+            }
+            populateTableCellMeta(it);
+          }
+        }
+      }
+    }
+    return page;
+  }
+
+  function repairRulesFixIr(ir, pageInfo) {
+    if (!rulesFixOn()) return restoreRulesFixIr(ir);
+    if (!ir || !Array.isArray(ir.pages)) return ir;
+    ir.pages.forEach((p, idx) => {
+      repairRulesFixPage(p, pageInfo && pageInfo[p.page || (idx + 1)]);
+    });
+    return ir;
+  }
+
   const FayzarLayoutIR = { FS_CLASS, INK_RATIO, inkRatioFor, toItem, tabify, normalizePage, bandsOf, snapIndents, snapFonts, applyVerticalRules, applyBoxFrames, recoverCardGridBoxes, p1LossOn, a17FixOn, repairA17Page, repairA17Ir, build, mergeLineRows, rowBandHeights, isScribble, foldBoxRows, BOX_MARK, BOX_SEP, unifyMargins, alignTabStops, snapMargin };
   Object.defineProperties(FayzarLayoutIR, {
     mathKindOf: { value: mathKindOf, enumerable: false },
@@ -17794,6 +18332,16 @@
     repairF1Fix2Ir: { value: repairF1Fix2Ir, enumerable: false },
     restoreF1Fix2Page: { value: restoreF1Fix2Page, enumerable: false },
     restoreF1Fix2Ir: { value: restoreF1Fix2Ir, enumerable: false },
+    rulesFixOn: { value: rulesFixOn, enumerable: false },
+    repairRulesFixPage: { value: repairRulesFixPage, enumerable: false },
+    repairRulesFixIr: { value: repairRulesFixIr, enumerable: false },
+    restoreRulesFixPage: { value: restoreRulesFixPage, enumerable: false },
+    restoreRulesFixIr: { value: restoreRulesFixIr, enumerable: false },
+    shortFixOn: { value: shortFixOn, enumerable: false },
+    repairShortFixPage: { value: repairShortFixPage, enumerable: false },
+    repairShortFixIr: { value: repairShortFixIr, enumerable: false },
+    restoreShortFixPage: { value: restoreShortFixPage, enumerable: false },
+    restoreShortFixIr: { value: restoreShortFixIr, enumerable: false },
     missingFixOn: { value: missingFixOn, enumerable: false },
     repairMissingFixPage: { value: repairMissingFixPage, enumerable: false },
     repairMissingFixIr: { value: repairMissingFixIr, enumerable: false },
