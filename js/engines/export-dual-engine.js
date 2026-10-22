@@ -942,7 +942,26 @@
         return await this.generateCVDocx(parsed, options);
       }
 
+      // Phase 1B (1.6): অচেনা ধরন ⇒ ক্লিন-কম্পোজার (Kalpurush ১২pt, শিরোনাম, ছক অক্ষত); ব্যর্থ হলে পুরোনো সাধারণ পথ
+      const cleanRes = this._cleanComposerGeneric(rawText, docType, options);
+      if (cleanRes) return await cleanRes;
       return await this.generateGenericDocx(rawText, docType, options);
+    },
+
+    _cleanComposerGeneric(rawText, docType, options) {
+      try {
+        if (docType === 'STAMP_DEED' || this.isBijoyFont(options)) return null;
+        const CC = (typeof globalThis !== 'undefined' && globalThis.FayzarCleanComposer) ||
+          (typeof require === 'function' ? (() => { try { return require('../layout-engine/clean-composer.js'); } catch (e) { return null; } })() : null);
+        if (!CC || typeof CC.bodyXml !== 'function') return null;
+        const { xml } = CC.bodyXml(rawText);
+        if (!xml || !xml.trim()) return null;
+        const P = CC.PAGE;
+        const bodyXml = xml + this._auditSectionDocx(options);
+        const sectPr = `<w:sectPr><w:pgSz w:w="${P.w}" w:h="${P.h}"/><w:pgMar w:top="${P.margin}" w:right="${P.margin}" w:bottom="${P.margin}" w:left="${P.margin}" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>`;
+        if (options.returnInnerXml) return Promise.resolve({ bodyXml, sectPr });
+        return this._packageDocx(bodyXml + sectPr, 'Kalpurush').catch(() => this.generateGenericDocx(rawText, docType, options));
+      } catch (e) { return null; }
     },
 
     _getQuestionEngine() {

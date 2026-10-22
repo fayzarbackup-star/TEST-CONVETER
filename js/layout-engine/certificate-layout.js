@@ -101,13 +101,26 @@
     /** মুড়ি + মূল: (ক) একা "***"/"---" লাইন, (খ) প্রথম লাইন আবার এলে, (গ) "#" প্রতিষ্ঠান-লাইন দুবার */
     _split(items) {
       const ok = (a, b) => a.filter((x) => !x.hr).length >= 4 && b.filter((x) => !x.hr).length >= 4;
-      const hr = items.findIndex((x) => x.hr);
-      if (hr > 0 && ok(items.slice(0, hr), items.slice(hr + 1))) return [items.slice(0, hr), items.slice(hr + 1)];
       const key = (s) => s.replace(/\s+/g, '');
+      // Phase 1B: কড়া মোড়ক-শর্ত — শুধু `---` বা দুবার নাম যথেষ্ট নয় (লেটারহেড + সনদ ≠ মুড়ি+মূল);
+      // দুই অংশ প্রায় সমান মাপের হতে হবে, অথবা দ্বিতীয় অংশ প্রথম অংশের শিরোনাম-লাইন দিয়েই শুরু হতে হবে
+      const firstOf = (arr) => arr.find((x) => !x.hr);
+      const strict = (a, b, byTitle) => {
+        const na = a.filter((x) => !x.hr).length, nb = b.filter((x) => !x.hr).length;
+        const fa = firstOf(a), fb = firstOf(b);
+        // দ্বিতীয় অংশে অন্তত ৪টি নতুন লাইন থাকতে হবে; শুধু প্রথম অংশের নাম/ঠিকানা-ব্লক (স্বাক্ষর) আবার এলে মুড়ি নয়
+        const seen = new Set(a.filter((x) => !x.hr).map((x) => key(x.t)));
+        const hasProse = b.some((x) => /[।]\s*$/.test(x.t) && x.t.length > 60);
+        if (!hasProse && b.filter((x) => !x.hr && !seen.has(key(x.t))).length < 4) return false;
+        if (byTitle && fa && fb && key(fa.t) === key(fb.t)) return true;   // `---` + একই শিরোনামে দ্বিতীয় অংশ
+        return Math.min(na, nb) / Math.max(na, nb) >= 0.6;
+      };
+      const hr = items.findIndex((x) => x.hr);
+      if (hr > 0 && ok(items.slice(0, hr), items.slice(hr + 1)) && strict(items.slice(0, hr), items.slice(hr + 1), true)) return [items.slice(0, hr), items.slice(hr + 1)];
       const first = items.find((x) => !x.hr);
       if (first) {
         const j = items.findIndex((x, i) => i >= 4 && !x.hr && key(x.t) === key(first.t));
-        if (j > 0 && ok(items.slice(0, j), items.slice(j))) return [items.slice(0, j), items.slice(j)];
+        if (j > 0 && ok(items.slice(0, j), items.slice(j)) && strict(items.slice(0, j), items.slice(j))) return [items.slice(0, j), items.slice(j)];
       }
       const heads = items.map((x, i) => (x.h ? i : -1)).filter((i) => i >= 0);
       if (heads.length >= 2 && key(items[heads[0]].t) === key(items[heads[1]].t)) {

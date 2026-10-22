@@ -185,10 +185,10 @@
           result.header.location = cleanLine;
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
-        } else if (/^(?:time|duration)\s*[:\-]|\b(?:full|total)\s*marks?\s*[:\-]/i.test(cleanLine) && (!result.header.time || !result.header.marks)) {
+        } else if (/^(?:time|duration)\s*[:\-]|\b(?:(?:full|total)\s*)?marks?\s*[:\-]/i.test(cleanLine) && !/^part\b/i.test(cleanLine) && (!result.header.time || !result.header.marks)) {
           // ইংরেজি মেট্রিক্স-লাইন: `Time: 2 hours   Full Marks: 50`
-          const tM = cleanLine.match(/\b(?:time|duration)\s*[:\-]\s*(.+?)(?=\s{2,}|\s*[|;]|\s*\b(?:full|total)\s*marks?\b|$)/i);
-          const mM = cleanLine.match(/\b(?:full|total)\s*marks?\s*[:\-]\s*([\d\u09E6-\u09EF.]+)/i);
+          const tM = cleanLine.match(/\b(?:time|duration)\s*[:\-]\s*(.+?)(?=\s{2,}|\t|\s*[|;]|\s*\b(?:(?:full|total)\s*)?marks?\b|$)/i);
+          const mM = cleanLine.match(/\b(?:(?:full|total)\s*)?marks?\s*[:\-]\s*([\d\u09E6-\u09EF.]+)/i);
           if (tM && !result.header.time) result.header.time = tM[1].trim();
           if (mM && !result.header.marks) result.header.marks = mM[1].trim();
           bodyStartIndex = Math.max(bodyStartIndex, i + 1);
@@ -475,6 +475,14 @@
           }
         }
 
+        // Phase 1B: চলমান অনুচ্ছেদের ভেতরের ইনলাইন (a)(b)… (লাইন (a)-দিয়ে শুরু নয়, ≥২টি ইংরেজি মার্কার)
+        // আলাদা উপ-প্রশ্ন/অপশন নয় — প্রশ্নের স্টিমুলাসে একটি অনুচ্ছেদ হিসেবে থাকে
+        if (!_isMcqCtx && currentQuestion && (currentQuestion.options || []).length === 0 && currentQuestion.subQuestions.length === 0 &&
+            !/^\(?\s*[a-zA-Zক-ঘ]\s*[\).]/.test(line) && (line.match(/(?:^|[\s,;])\(?[a-j]\)(?=\s|\.{2,}|$)/g) || []).length >= 2 && /[A-Za-z]{3,}/.test(line)) {
+          currentQuestion.stimulus = (currentQuestion.stimulus ? currentQuestion.stimulus + '\n' : '') + line.trim();
+          continue;
+        }
+
         // 2. MCQ Options Detection
         const mcqOpts = this.parseMcqOptions(line);
         // If they end with marks (১, ২, ৩, ৪) or text is very long, they might be merged CQ subquestions
@@ -515,7 +523,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
             currentQuestion.subQuestions.push({
               label: opt.label,
               text: text,
-              mark: mark || (opt.label === 'ক' ? '১' : opt.label === 'খ' ? '২' : opt.label === 'গ' ? '৩' : '৪')
+              mark: mark    // Phase 1B: কল্পিত নম্বর (ক→১ … ৪) বাদ — উৎসে না থাকলে খালি
             });
           }
           continue;
@@ -527,7 +535,7 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
           currentQuestion.subQuestions.push({
             label: subMatch[1],
             text: subMatch[2].trim(),
-            mark: subMatch[3] || (subMatch[1] === 'ক' ? '১' : subMatch[1] === 'খ' ? '২' : subMatch[1] === 'গ' ? '৩' : '৪')
+            mark: subMatch[3] || (/[a-dA-D]/.test(subMatch[1]) ? '' : subMatch[1] === 'ক' ? '১' : subMatch[1] === 'খ' ? '২' : subMatch[1] === 'গ' ? '৩' : '৪')
           });
           continue;
         }
@@ -605,10 +613,10 @@ const isMergedCqSub = !isMcqDoc && mcqOpts.length >= 2 && mcqOpts.some(o => /[\s
       const t = String(line || '').replace(/^[>*\-#\s]+/, '').trim();
       if (!t || t.length > 90) return null;
       const TIME = '(?:\u09b8\u09ae(?:\u09df|\u09af\u09bc)|time|duration)';
-      const MARKS = '(?:\u09aa\u09c2\u09b0\u09cd\u09a3\\s*\u09ae\u09be\u09a8|\u09ae\u09be\u09a8|(?:full|total)\\s*marks?)';
+      const MARKS = '(?:\u09aa\u09c2\u09b0\u09cd\u09a3\\s*\u09ae\u09be\u09a8|\u09ae\u09be\u09a8|(?:(?:full|total)\\s*)?marks?)';
       if (new RegExp('^(?:\u09aa\u09c2\u09b0\u09cd\u09a3|\u09aa\u09c2\u09b0\u09cd\u09a3\\s*\u09ae\u09be\u09a8|' + TIME + ')\\s*[:\u0983\\-]?$', 'i').test(t)) return { time: '', marks: '' };
       if (!new RegExp('^(?:' + TIME + '|' + MARKS + ')\\s*[:\u0983\\-]', 'i').test(t)) return null;
-      const tm = t.match(new RegExp(TIME + '\\s*[:\u0983\\-]\\s*(.+?)(?=\\s*[|;,]|\\s{2,}|\\s*' + MARKS + '\\s*[:\u0983\\-]|$)', 'i'));
+      const tm = t.match(new RegExp(TIME + '\\s*[:\u0983\\-]\\s*(.+?)(?=\\s*[|;,]|\\s{2,}|\\t|\\s*' + MARKS + '\\s*[:\u0983\\-]|$)', 'i'));
       const mm = t.match(new RegExp(MARKS + '\\s*[:\u0983\\-]\\s*([\u09E6-\u09EF\\d.]+)', 'i'));
       if (!tm && !mm) return null;
       return { time: tm ? tm[1].trim() : '', marks: mm ? mm[1].trim() : '' };

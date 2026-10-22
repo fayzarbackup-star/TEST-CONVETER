@@ -3,7 +3,8 @@
 - এডিট-পয়েন্ট খোঁজা: docs/PROJECT_MAP.md (কাজ → ফাইল → ফাংশন) → docs/CODE_INDEX.md-এ Grep (নাম@লাইন) → শুধু ওই অংশ Read। পুরো প্রজেক্ট/বড় ফাইল কখনো পুরোটা পড়বে না
 - ফাইল যোগ/নাম-বদল/মোছার পরে `node tools/gen-map.mjs`; নতুন কাজ/মডিউল হলে PROJECT_MAP-এ এক লাইন
 - উদ্দেশ্য: যে ইঞ্জিন এখন ঠিক ফল দিচ্ছে আর বড় কাজ সামলাচ্ছে, তাতে আমার অজান্তে বড় পরিবর্তন বা মূল কাঠামোর ক্ষতি যেন না হয়
-  - মূল ইঞ্জিন (যেকোনো বদলের আগে অনুমতি): js/docx-to-doc-engine.js, js/bangla-converter-engine.js, js/equation-converter.js, js/doc-binary-engine.js
+  - ২০২৬-১০-২৩ থেকে: সব ইঞ্জিন আর সব ফাইল অনুমতি ছাড়াই বদলানো যাবে। ফ্রোজেন বা মূল ফাইলে বদল হলে docs/FROZEN_CHANGES.md-এ নোট রাখতে হবে, আর পরে মালিককে জানাতে হবে।
+  - মূল ইঞ্জিন (বদলালে নোট রাখা বাধ্যতামূলক): js/docx-to-doc-engine.js, js/bangla-converter-engine.js, js/equation-converter.js, js/doc-binary-engine.js
   - চালু বড় ইঞ্জিন (export-dual-engine, question-engine, ai-ocr-engine, fayzar-pipeline, doc-classifier, docx-handler, text-run-processor, প্ল্যানারগুলো): ছোট যোগ (রাউটিং লাইন, নতুন case, আলাদা মডিউল ডাকা) করে পরে জানাও; চালু আচরণ বা কাঠামো বদলালে আগে অনুমতি
   - বাকি সাধারণ ফাইল (নিজের নতুন মডিউল, টেস্ট, qa, ডক): বদলে পরে জানাও
 - নতুন doc_type: কোন কোন জায়গায় হাত দেবে, তা তুমি ঠিক করবে (সাধারণত ai-ocr-engine প্রম্পট, doc-classifier, fayzar-pipeline, export-dual-engine, HTML script ট্যাগ); যত কম জায়গায় সম্ভব
