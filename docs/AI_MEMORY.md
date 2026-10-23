@@ -712,3 +712,14 @@
   - `generateModernDocx` এখন `_selfCheckGate` দিয়ে: ব্যর্থ → GENERAL_CLEAN পুনর্নির্মাণ → ভালোটা + বাংলা তালিকা (`showNotice`); EXAM/STAMP/CASH_MEMO/বিজয় গেটের বাইরে; ছাঁচওয়ালা চেনা ধরনে শুধু c1,c2,c5,c6,c8,c9।
   - `FZ_SELFCHECK_RECAPTURE` শুধু হুক (ডিফল্ট বন্ধ)। বন্ধ-সুইচ: `FZ_OFF_SELFCHECK`, `FZ_OFF_GENERAL_CLEAN`, options.selfCheck=false।
   - নতুন: tests/self-check.test.js (24 গেট), qa/route-2b-compare.mjs। run-all 0 ব্যর্থ, regression 33/33।
+- **২০২৬-১০-২৩ রাত (Opus সমন্বয়, কোড Sonnet):**
+  - পুরো তালিকা push হয়েছে:
+    - ১খ-i e19fc8f: T01 লম্বা পাতা; T24 (a)(b); অচেনা ধরন → clean-composer
+    - tblHeader b1d86b9: docx-to-doc `_parseTable` thead; FROZEN_CHANGES-এ নোট
+    - ১খ-ii 6c7b074: role-marks.js; স্বাক্ষর ডানে
+    - ১খ-iii b669771: প্যাডের হেডার; ট্যাগ লুকানো
+    - ১গ 02ec0e0: image-tools.js; ঘোরানো আর ভাগ
+    - ২ক e07090e: doc-model, অ্যাডাপ্টার, general-clean-layout; doc_type-লিক মোছা
+    - ২খ+৩ 35c6475
+  - শিক্ষা: c1/c3-এর ব্যর্থতা ছিল স্কোরারের ত্রুটি (রান-বিভাজন, নকশা-টেবিল), লেখার ভুল নয়; আগে স্কোরার যাচাই করো।
+  - পরের ধাপ: পর্ব ৪ (নকশা-পত্র, ১৫টি Gemini ডাক)।
