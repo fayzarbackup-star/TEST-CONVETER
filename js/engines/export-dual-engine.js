@@ -838,7 +838,100 @@
      * Generates Modern Word (.docx) OpenXML Package.
      * Compatible with Word 2007, 2010, 2013, 2016, 2019, 2021, and Office 365.
      */
+    /** Phase 3: তৈরির পর স্ব-যাচাই (self-check.js) — ব্যর্থ হলে GENERAL_CLEAN-এ পুনর্নির্মাণ; ডাউনলোড কখনো আটকায় না */
     async generateModernDocx(rawText, docType = 'EXAM_CQ', options = {}) {
+      const blob = await this._generateModernDocxCore(rawText, docType, options);
+      return await this._selfCheckGate(blob, rawText, docType, options);
+    },
+
+    _getSelfCheck() {
+      if (typeof globalThis !== 'undefined' && globalThis.FayzarSelfCheck) return globalThis.FayzarSelfCheck;
+      if (typeof require === 'function') { try { return require('../layout-engine/self-check.js'); } catch (e) { } }
+      return null;
+    },
+
+    async _docxParts(blob) {
+      const JSZip = this._getJSZip();
+      if (!JSZip || !blob) return null;
+      const buf = typeof blob.arrayBuffer === 'function' ? await blob.arrayBuffer() : blob;
+      const zip = await JSZip.loadAsync(buf);
+      const d = zip.file('word/document.xml'), s = zip.file('word/styles.xml');
+      if (!d) return null;
+      return { documentXml: await d.async('string'), stylesXml: s ? await s.async('string') : '' };
+    },
+
+    _selfCheckOff(options) {
+      if (options.selfCheck === false || options.returnInnerXml) return true;
+      if (typeof window !== 'undefined' && window.FZ_OFF_SELFCHECK) return true;
+      if (typeof process !== 'undefined' && process.env && process.env.FZ_OFF_SELFCHECK === '1') return true;
+      return false;
+    },
+
+    async _selfCheckGate(blob, rawText, docType, options = {}) {
+      try {
+        if (this._selfCheckOff(options) || !blob || typeof blob !== 'object' || blob.bodyXml !== undefined) return blob;
+        // পরীক্ষা, স্ট্যাম্প, আর এক-পাতায় একাধিক কপি/ঘর সাজানো ধরনে (ক্যাশমেমো, রসিদ) লেখা ইচ্ছে করেই নকল/ভাগ হয় ⇒ c1/c3 অর্থহীন, গেটের বাইরে
+        if (String(docType).indexOf('EXAM') === 0 || docType === 'STAMP_DEED' || docType === 'CASH_MEMO' || this.isBijoyFont(options)) return blob;
+        const SC = this._getSelfCheck();
+        if (!SC) return blob;
+        const text = stripOcrArtifacts(String(rawText || ''));
+        const sopts = { docType, orientation: options.expectOrientation, digits: options.expectDigits };
+        // নিজস্ব ছাঁচওয়ালা চেনা ধরনে ছক/নমুনা-হেডার ইচ্ছাকৃত (সনদের স্টাব, হলুদ নমুনা-হেডার) ⇒ c3/c7 ধরা হয় না; কড়া ব্যর্থতাগুলোই ধরা হয়
+        if (/^(PROTTOYON|OFFICE_PAD|GOVT_APP|CV_RESUME|ADMIT_CARD|SALARY_SLIP|ROUTINE)$/.test(docType)) sopts.only = ['c1', 'c2', 'c5', 'c6', 'c8', 'c9'];
+        const run = async (b) => {
+          const parts = await this._docxParts(b);
+          return parts ? SC.selfCheck(parts, text, sopts) : null;
+        };
+        const r1 = await run(blob);
+        if (!r1) return blob;
+        this.lastSelfCheck = { pass: r1.pass, errors: r1.errors, used: 'template' };
+        if (r1.pass) return blob;
+        let alt = null, r2 = null;
+        try { alt = await this._generalCleanBlob(text, docType, options); r2 = alt ? await run(alt) : null; } catch (e) { alt = null; r2 = null; }
+        // call 2 (capture) — শুধু হুক; ডিফল্ট বন্ধ, কোনো সরাসরি Gemini ডাক নেই
+        const recapOn = (typeof window !== 'undefined' && window.FZ_SELFCHECK_RECAPTURE) || (typeof process !== 'undefined' && process.env && process.env.FZ_SELFCHECK_RECAPTURE === '1');
+        const hook = typeof globalThis !== 'undefined' ? globalThis.FZ_SELFCHECK_RECAPTURE_HOOK : null;
+        if (recapOn && typeof hook === 'function' && !(r2 && r2.pass)) {
+          try { const t2 = await hook({ errors: (r2 || r1).errors, docType }); if (typeof t2 === 'string' && t2) { const a2 = await this._generalCleanBlob(stripOcrArtifacts(t2), docType, options); const q2 = a2 ? await run(a2) : null; if (q2 && (!r2 || q2.passed > r2.passed)) { alt = a2; r2 = q2; } } } catch (e) { }
+        }
+        if (r2 && r2.pass) { this.lastSelfCheck = { pass: true, errors: [], used: 'GENERAL_CLEAN' }; return alt; }
+        const useAlt = !!(r2 && r2.passed > r1.passed);   // সমান হলে টেমপ্লেট থাকে
+        const best = useAlt ? r2 : r1;
+        this.lastSelfCheck = { pass: false, errors: best.errors, used: useAlt ? 'GENERAL_CLEAN' : 'template' };
+        const SCui = SC.showNotice;
+        if (typeof window !== 'undefined' && typeof SCui === 'function') SCui(best.errors);
+        return useAlt ? alt : blob;
+      } catch (e) { return blob; }
+    },
+
+    async _generalCleanBlob(rawText, docType, options) {
+      const R = this._generalCleanRender(rawText, options);
+      if (!R) return null;
+      const CC = this._getCleanComposerMod();
+      return await CC.packDocx(R.bodyXml + this._auditSectionDocx(options), R.sectPr, R.stylesXml);
+    },
+
+    _getCleanComposerMod() {
+      return (typeof globalThis !== 'undefined' && globalThis.FayzarCleanComposer) ||
+        (typeof require === 'function' ? (() => { try { return require('../layout-engine/clean-composer.js'); } catch (e) { return null; } })() : null);
+    },
+
+    /** অচেনা ধরনের উৎপাদন-পথ: OCR Markdown → doc-model → GENERAL_CLEAN; ব্যর্থ হলে null */
+    _generalCleanRender(rawText, options) {
+      try {
+        const g = typeof globalThis !== 'undefined' ? globalThis : {};
+        const ld = (name, p) => g[name] || (typeof require === 'function' ? (() => { try { return require(p); } catch (e) { return null; } })() : null);
+        const AD = ld('FayzarDocModelAdapters', '../layout-engine/doc-model-adapters.js');
+        const GC = ld('FayzarGeneralCleanLayout', '../layout-engine/general-clean-layout.js');
+        if (!AD || !GC || !this._getCleanComposerMod()) return null;
+        const doc = AD.fromOcrMarkdown(rawText);
+        const r = GC.render(doc, { generalClean: true });
+        if (!r || !r.bodyXml || !r.bodyXml.trim()) return null;
+        return r;
+      } catch (e) { return null; }
+    },
+
+    async _generateModernDocxCore(rawText, docType = 'EXAM_CQ', options = {}) {
       rawText = stripOcrArtifacts(String(rawText || ''));
       let qEngine = this._getQuestionEngine();
 
@@ -943,9 +1036,25 @@
       }
 
       // Phase 1B (1.6): অচেনা ধরন ⇒ ক্লিন-কম্পোজার (Kalpurush ১২pt, শিরোনাম, ছক অক্ষত); ব্যর্থ হলে পুরোনো সাধারণ পথ
+      // Phase 2B (4): প্রথম পছন্দ GENERAL_CLEAN (doc-model); না পারলে আগের ক্লিন-কম্পোজার → generateGenericDocx
+      const gcRes = this._generalCleanGeneric(rawText, docType, options);
+      if (gcRes) { try { return await gcRes; } catch (e) { /* পরের ধাপে */ } }
       const cleanRes = this._cleanComposerGeneric(rawText, docType, options);
       if (cleanRes) return await cleanRes;
       return await this.generateGenericDocx(rawText, docType, options);
+    },
+
+    _generalCleanGeneric(rawText, docType, options) {
+      try {
+        if (docType === 'STAMP_DEED' || this.isBijoyFont(options)) return null;
+        if (typeof window !== 'undefined' && window.FZ_OFF_GENERAL_CLEAN) return null;
+        if (typeof process !== 'undefined' && process.env && process.env.FZ_OFF_GENERAL_CLEAN === '1') return null;
+        const R = this._generalCleanRender(rawText, options);
+        if (!R) return null;
+        const bodyXml = R.bodyXml + this._auditSectionDocx(options);
+        if (options.returnInnerXml) return Promise.resolve({ bodyXml, sectPr: R.sectPr });
+        return this._getCleanComposerMod().packDocx(bodyXml, R.sectPr, R.stylesXml);
+      } catch (e) { return null; }
     },
 
     _cleanComposerGeneric(rawText, docType, options) {

@@ -706,3 +706,9 @@
 
 
 
+
+- 2026-10-23 পর্ব ২খ+৩ (Sonnet): scorer ঠিক (c1 রান-জোড়া + OMML, c3 লেআউট-ছক বাদ) → কোড একটাই `self-check.js`।
+  - সিদ্ধান্ত: T01/T05 টাই → টেমপ্লেট; অচেনা ধরন → GENERAL_CLEAN (ডিফল্ট রাউটিং, `_generalCleanGeneric`)।
+  - `generateModernDocx` এখন `_selfCheckGate` দিয়ে: ব্যর্থ → GENERAL_CLEAN পুনর্নির্মাণ → ভালোটা + বাংলা তালিকা (`showNotice`); EXAM/STAMP/CASH_MEMO/বিজয় গেটের বাইরে; ছাঁচওয়ালা চেনা ধরনে শুধু c1,c2,c5,c6,c8,c9।
+  - `FZ_SELFCHECK_RECAPTURE` শুধু হুক (ডিফল্ট বন্ধ)। বন্ধ-সুইচ: `FZ_OFF_SELFCHECK`, `FZ_OFF_GENERAL_CLEAN`, options.selfCheck=false।
+  - নতুন: tests/self-check.test.js (24 গেট), qa/route-2b-compare.mjs। run-all 0 ব্যর্থ, regression 33/33।
