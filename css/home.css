@@ -234,6 +234,10 @@ body.ws-on .fz-foot { display: none; }
 .pg-num { position: absolute; top: 6px; left: 6px; z-index: 1; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; display: grid; place-items: center; font-size: .78rem; font-weight: 700; color: var(--white); background: var(--g-900); }
 .pg-del { position: absolute; top: 6px; right: 6px; z-index: 1; width: 28px; height: 28px; border-radius: 50%; border: 0; background: #fff; color: #B42318; font-size: .9rem; font-weight: 700; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.2); opacity: 0; transition: opacity .15s; }
 .pg:hover .pg-del, .pg-del:focus-visible { opacity: 1; }
+.pg-tools { display: flex; gap: 6px; margin-top: 8px; justify-content: center; flex-wrap: wrap; }
+.pg-tool { border: 1px solid #D5DDD9; background: #fff; color: var(--ink-2); font: inherit; font-size: .72rem; font-weight: 600; padding: 4px 8px; border-radius: 8px; cursor: pointer; }
+.pg-tool:hover { border-color: var(--g-700); color: var(--g-900); }
+.ws-locked .pg-tools { display: none; }
 .pg.dragging { opacity: .4; }
 .pg.drop-target { outline: 2px dashed var(--g-700); outline-offset: 4px; }
 .ws-locked .pg { cursor: default; }

@@ -149,6 +149,18 @@
       const cap = document.createElement('figcaption');
       cap.textContent = (item.name || '').replace(/\s*\(পৃষ্ঠা[^)]*\)\s*$/, '') + (item.pdfPage ? ' · পৃষ্ঠা ' + bn(item.pdfPage) : '');
       c.append(num, del, img, cap);
+      if (W.FayzarImageTools && (item.base64 || (item.file && !item.isPdf))) {   // ১গ: ঘোরান / ২ পাতা ভাগ
+        const tools = document.createElement('div');
+        tools.className = 'pg-tools';
+        [['rot', '৯০° ঘোরান', 'rotate'], ['split', '২ পাতা ভাগ করুন', 'split']].forEach(([k, label, act]) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'pg-tool pg-' + k; b.textContent = label;
+          b.addEventListener('click', (e) => { e.stopPropagation(); editImage(i, act); });
+          b.addEventListener('mousedown', (e) => e.stopPropagation());
+          tools.appendChild(b);
+        });
+        c.appendChild(tools);
+      }
       c.addEventListener('dragstart', (e) => { dragFrom = i; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
       c.addEventListener('dragend', () => { c.classList.remove('dragging'); dragFrom = -1; });
       c.addEventListener('dragover', (e) => { if (dragFrom >= 0) { e.preventDefault(); c.classList.add('drop-target'); } });
@@ -167,6 +179,16 @@
     const q = queue();
     if (q.length <= 1) { toast('অন্তত একটি পাতা থাকতে হবে — নতুন ফাইল দিতে "নতুন ফাইল" চাপুন', 'info'); return; }
     q.splice(i, 1); syncSelected(); render();
+  }
+  async function editImage(i, act) {   // প্রক্রিয়াজাত ছবিই OCR-এ যায় (queue-র আইটেম বদলে)
+    if (busy) return;
+    const q = queue(), it = q[i];
+    if (!it) return;
+    try {
+      if (act === 'rotate') q.splice(i, 1, await W.FayzarImageTools.rotate90(it));
+      else q.splice(i, 1, ...(await W.FayzarImageTools.splitTwo(it)));
+      syncSelected(); render();
+    } catch (e) { console.error(e); toast('ছবি বদলানো যায়নি: ' + ((e && e.message) || e), 'error'); }
   }
   function moveItem(from, to) {
     if (busy) return;
