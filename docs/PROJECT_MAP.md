@@ -101,7 +101,7 @@
 | ডায়াগনস্টিক / "সমস্যা জানান" | `js/diag-log.js` | `FayzarDiag` |
 | হুবহু-মোড UI | `js/faithful-mode-ui.js` | `FayzarFaithfulUI` |
 | স্টুডিও (এডিটর) | `studio.html` + `js/studio-controller.js` | `StudioEditBridge`, `StudioFigurePipeline` |
-| ছবি প্রস্তুতি (পর্ব ১গ ও ৫: ঘোরানো, ভাগ, ৪ কোণা টানা/স্বয়ংক্রিয়, Homography, আলো সমান, ঝাপসা-চেনা) | `js/image-tools.js`, `js/image-prep/homography.js`, `js/image-prep/light-blur.js`, `js/image-prep/corners.js` (+ `home-app.js` UI) | `FayzarImageTools`, `FayzarHomography`, `FayzarLightBlur`, `FayzarCorners`; টেস্ট `tests/image-prep.test.mjs`, `tests/image-tools.test.mjs` |
+| ছবি প্রস্তুতি (পর্ব ১গ, ৫ ও AUTOPREP: স্বয়ংক্রিয় ঘোরানো, ভাগ, ৪ কোণা টানা/স্বয়ংক্রিয়, Homography, আলো সমান, ঝাপসা-চেনা) | `js/image-tools.js`, `js/image-prep/homography.js`, `js/image-prep/light-blur.js`, `js/image-prep/corners.js`, `js/image-prep/auto-prep.js` (+ `home-app.js` UI) | `FayzarImageTools`, `FayzarHomography`, `FayzarLightBlur`, `FayzarCorners`, `FayzarAutoPrep`; টেস্ট `tests/image-prep.test.mjs`, `tests/image-tools.test.mjs`, `tests/auto-prep.test.mjs`; QA `qa/auto-prep-real.mjs`, `qa/image-tools-e2e.mjs` |
 | পুরোনো OCR পাতা (লিংকহীন) | `ocr-classic.html` + `js/main.js` | — |
 
 ## ৩. টেস্ট ও যাচাই

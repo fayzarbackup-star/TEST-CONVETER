@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12",
-    "jszip": "^3.10.2"
+    "jszip": "^3.10.2",
+    "puppeteer": "^25.16.0"
   },
   "scripts": {
     "test:layout": "node tests/run-regression.js",

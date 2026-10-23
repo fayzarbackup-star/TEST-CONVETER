@@ -111,7 +111,33 @@
     grid.setAttribute('data-msg', 'পাতা প্রস্তুত হচ্ছে…');
     try {
       await E.handleFiles(files);                 // ইঞ্জিন queue নতুন করে বানায়
-      E.state.filesQueue = prev.concat(queue());  // যোগ করার সময় আগের পাতা সামনে রাখি
+      let newItems = queue();
+      const offAuto = !!(W.__FZ_OFF_AUTOPREP || W.__FZ_OFF_IMAGEPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_AUTOPREP') === '1' || localStorage.getItem('FZ_OFF_IMAGEPREP') === '1')));
+      if (!offAuto && W.FayzarAutoPrep && W.FayzarAutoPrep.autoPrep) {
+        const preppedNew = [];
+        const total = newItems.length;
+        for (let j = 0; j < total; j++) {
+          const it = newItems[j];
+          if (it.isPdf && !it.base64) {
+            preppedNew.push(it);
+          } else {
+            grid.setAttribute('data-msg', `পাতা সোজা করা হচ্ছে… ${bn(j + 1)}/${bn(total)}`);
+            try {
+              const res = await W.FayzarAutoPrep.autoPrep(it);
+              if (Array.isArray(res) && res.length) {
+                preppedNew.push(...res);
+              } else {
+                preppedNew.push(it);
+              }
+            } catch (err) {
+              console.warn('autoPrep item error:', err);
+              preppedNew.push(it);
+            }
+          }
+        }
+        newItems = preppedNew;
+      }
+      E.state.filesQueue = prev.concat(newItems);  // যোগ করার সময় আগের পাতা সামনে রাখি
       syncSelected();
     } catch (e) { console.error(e); toast('ফাইল পড়া যায়নি: ' + ((e && e.message) || e), 'error'); }
     grid.classList.remove('loading');
@@ -149,35 +175,13 @@
       const cap = document.createElement('figcaption');
       cap.textContent = (item.name || '').replace(/\s*\(পৃষ্ঠা[^)]*\)\s*$/, '') + (item.pdfPage ? ' · পৃষ্ঠা ' + bn(item.pdfPage) : '');
       c.append(num, del, img, cap);
-      if (W.FayzarImageTools && (item.base64 || (item.file && !item.isPdf))) {   // ১গ: ঘোরান / ২ পাতা ভাগ
-        const offPrep = !!(W.__FZ_OFF_IMAGEPREP || (typeof localStorage !== 'undefined' && localStorage.getItem('FZ_OFF_IMAGEPREP') === '1'));
-        const tools = document.createElement('div');
-        tools.className = 'pg-tools';
-        const toolList = [
-          ['rot', '৯০° ঘোরান', 'rotate'],
-          ['rotl', 'বাঁয়ে ঘোরান', 'rotateLeft'],
-          ['split', '২ পাতা ভাগ করুন', 'split']
-        ];
-        if (!offPrep && W.FayzarCorners) {
-          toolList.push(['prep', 'সোজা/ক্রপ', 'prep']);
-          if (item.rawOriginal) toolList.push(['orig', 'মূল ছবি', 'orig']);
-        }
-        toolList.forEach(([k, label, act]) => {
-          const b = document.createElement('button');
-          b.type = 'button'; b.className = 'pg-tool pg-' + k; b.textContent = label;
-          b.addEventListener('click', (e) => { e.stopPropagation(); editImage(i, act); });
-          b.addEventListener('mousedown', (e) => e.stopPropagation());
-          tools.appendChild(b);
-        });
-        c.appendChild(tools);
-
-        // ঝাপসা-চেনা (Laplacian variance ও উজ্জ্বলতা) সতর্কতা
-        if (!offPrep && W.FayzarLightBlur && item.isBlurry) {
-          const blurBadge = document.createElement('div');
-          blurBadge.style.cssText = 'position:absolute;bottom:30px;left:4px;right:4px;background:#dc2626;color:#fff;font-size:10px;padding:2px 4px;border-radius:4px;text-align:center;font-weight:bold;z-index:4;pointer-events:none;';
-          blurBadge.textContent = '✘ ছবি ঝাপসা — আবার ছবি তুলুন';
-          c.appendChild(blurBadge);
-        }
+      // ঝাপসা-সতর্কতা ব্যাজ (Laplacian variance ও উজ্জ্বলতা)
+      const offPrep = !!(W.__FZ_OFF_IMAGEPREP || W.__FZ_OFF_AUTOPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_IMAGEPREP') === '1' || localStorage.getItem('FZ_OFF_AUTOPREP') === '1')));
+      if (!offPrep && W.FayzarLightBlur && item.isBlurry) {
+        const blurBadge = document.createElement('div');
+        blurBadge.style.cssText = 'position:absolute;bottom:8px;left:4px;right:4px;background:#dc2626;color:#fff;font-size:10px;padding:2px 4px;border-radius:4px;text-align:center;font-weight:bold;z-index:4;pointer-events:none;';
+        blurBadge.textContent = '✘ ছবি ঝাপসা — আবার ছবি তুলুন';
+        c.appendChild(blurBadge);
       }
       c.addEventListener('dragstart', (e) => { dragFrom = i; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
       c.addEventListener('dragend', () => { c.classList.remove('dragging'); dragFrom = -1; });
@@ -197,32 +201,6 @@
     const q = queue();
     if (q.length <= 1) { toast('অন্তত একটি পাতা থাকতে হবে — নতুন ফাইল দিতে "নতুন ফাইল" চাপুন', 'info'); return; }
     q.splice(i, 1); syncSelected(); render();
-  }
-  async function editImage(i, act) {   // প্রক্রিয়াজাত ছবিই OCR-এ যায় (queue-র আইটেম বদলে)
-    if (busy) return;
-    const q = queue(), it = q[i];
-    if (!it) return;
-    try {
-      if (act === 'rotate') q.splice(i, 1, await W.FayzarImageTools.rotate90(it));
-      else if (act === 'rotateLeft') q.splice(i, 1, await W.FayzarImageTools.rotateLeft90(it));
-      else if (act === 'split') q.splice(i, 1, ...(await W.FayzarImageTools.splitTwo(it)));
-      else if (act === 'prep') {
-        if (W.FayzarCorners && W.FayzarCorners.openCornerEditor) {
-          W.FayzarCorners.openCornerEditor(it, (prepped) => {
-            q.splice(i, 1, prepped);
-            syncSelected(); render();
-          });
-          return;
-        }
-      } else if (act === 'orig') {
-        const orig = it.rawOriginal || it;
-        delete orig.rawOriginal;
-        q.splice(i, 1, orig);
-        syncSelected(); render();
-        return;
-      }
-      syncSelected(); render();
-    } catch (e) { console.error(e); toast('ছবি বদলানো যায়নি: ' + ((e && e.message) || e), 'error'); }
   }
   function moveItem(from, to) {
     if (busy) return;

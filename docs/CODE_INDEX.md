@@ -96,8 +96,11 @@
 - `js/handoff-receiver.js` (31) — OCR পাতা (index.html): হোম-পাতা (converter.html) থেকে ?from=home দিয়ে এলে IndexedDB-র ফাইলগুলো
   run@9, onupgradeneeded@11, onsuccess@12
 
-- `js/home-app.js` (765) — ফয়জার এআই কম্পোজ — হোম (index.html): ফাইল দেওয়া → ওয়ার্কস্পেস।
-  toast@12, baseOf@14, Eng@15, queue@16, view@26, openWorkspace@37, closeWorkspace@38, side@39, mode@42, applyMode@43, setTpl@57, renderGallery@63, card@66, getQueue@84, baseName@85, busy@86, setBusy@87, onSelect@88, onReadymade@94, acceptFiles@101, syncSelected@121, srcOf@127, render@133, removeAt@195, editImage@201, moveItem@227, ring@235, progress@240, procReset@252, fail@257, convert@268, bindDownloads@336, setText@362, reOcr@363, setCols@370, setStyle@384, resultText@398, cleanDownload@399, textOut@416, showText@436, resetAll@441, pick@453, saveBlob@498, faithfulDownload@504, persist@515, run@518, notice@535, restore@536, openReport@584, closeReport@592, makeThumb@630, onload@636, onerror@644, recordHistory@648, ago@660, updateHistCount@666, openHistory@671, closeHistory@707, openEntry@713, downloadEntry@738
+- `js/home-app.js` (743) — ফয়জার এআই কম্পোজ — হোম (index.html): ফাইল দেওয়া → ওয়ার্কস্পেস।
+  toast@12, baseOf@14, Eng@15, queue@16, view@26, openWorkspace@37, closeWorkspace@38, side@39, mode@42, applyMode@43, setTpl@57, renderGallery@63, card@66, getQueue@84, baseName@85, busy@86, setBusy@87, onSelect@88, onReadymade@94, acceptFiles@101, syncSelected@147, srcOf@153, render@159, removeAt@199, moveItem@205, ring@213, progress@218, procReset@230, fail@235, convert@246, bindDownloads@314, setText@340, reOcr@341, setCols@348, setStyle@362, resultText@376, cleanDownload@377, textOut@394, showText@414, resetAll@419, pick@431, saveBlob@476, faithfulDownload@482, persist@493, run@496, notice@513, restore@514, openReport@562, closeReport@570, makeThumb@608, onload@614, onerror@622, recordHistory@626, ago@638, updateHistCount@644, openHistory@649, closeHistory@685, openEntry@691, downloadEntry@716
+
+- `js/image-prep/auto-prep.js` (986) [FayzarAutoPrep] — ফয়জার এআই কম্পোজ — পাতা-প্রস্তুতি পুরো স্বয়ংক্রিয় (AUTOPREP)
+  otsuThreshold@11, toGray@46, getInkMask@110, detectOrientation@152, calcVariance@328, detectSpread@354, detectSkew@467, varianceForAngle@493, contentBox@546, isReliableQuad@617, defaultCanvasToItem@668, autoPrep@695, onload@722, edgeHasInk@837
 
 - `js/image-prep/corners.js` (409) [FayzarCorners] — ফয়জার এআই কম্পোজ — ছবি-প্রস্তুতি (পর্ব ৫): ৪ কোণা টানা ও স্বয়ংক্রিয় কোণা-খোঁজা।
   detectCorners@12, toOrig@130, openCornerEditor@141, onload@148, onclick@196, redraw@288, getPos@340
@@ -324,8 +327,8 @@
 
 ## tools/
 
-- `tools/ag-agent.ps1` (92) — ag-agent.ps1 - drive the Gemini Agent panel of Antigravity IDE (screen automation)
-  Shot@24, Focus-Antigravity@34, Click@42, Paste-Enter@47
+- `tools/ag-agent.ps1` (99) — ag-agent.ps1 - drive the Gemini Agent panel of Antigravity IDE (screen automation)
+  Shot@25, Focus-Antigravity@35, Click@47, Paste-Enter@52
 
 - `tools/agent_manager.mjs` (229) — tools/agent_manager.mjs
   getArg@23, checkStatus@28, createBundle@56, sendTask@95, reloadTabs@134, readTab@147, fetchFiles@167, main@197
@@ -379,6 +382,9 @@
 
 - `qa/auto-batch-e2e.mjs` (78) — QA: স্বয়ংক্রিয় মোডের ব্যাচ — অনেক আসল ছবি/PDF → আসল Gemini OCR (startUnifiedOcr) → downloadWordDocument।
   log@15
+
+- `qa/auto-prep-real.mjs` (184) — qa/auto-prep-real.mjs — আসল ছবিতে স্বয়ংক্রিয় পাতা-প্রস্তুতি যাচাই ও লেবেল মিল
+  loadImg@63, onload@65
 
 - `qa/baseline.mjs` (61) — Usage: node qa/baseline.mjs
   mark@30, val@31, section@37
@@ -558,7 +564,7 @@
 - `qa/home-mcq-sample.mjs` (37) — QA/হোম-পাতা: চিত্রসহ গণিত MCQ নমুনা (qa/samples/16-mcq-math-figure.md) → একক রপ্তানি-পথে .doc / .docx
   enc@22
 
-- `qa/image-tools-e2e.mjs` (108) — QA (পর্ব ১গ): ঘোরান / ২ পাতা ভাগ বোতাম — ইউআই ধাপ নিজেই চালিয়ে দেখে।
+- `qa/image-tools-e2e.mjs` (106) — QA (পর্ব ১গ): ঘোরান / ২ পাতা ভাগ বোতাম — ইউআই ধাপ নিজেই চালিয়ে দেখে।
   sleep@14, check@17, openAndUpload@19, cards@27, click@28
 
 - `qa/inspect-doc-fields.mjs` (79) — `.doc` ইকুয়েশন-ইনস্পেক্টর — v3 (Part-9i: ক্লিন-ফিল্ড সাপোর্ট)
@@ -693,6 +699,8 @@
 
 - `qa/usability-score.mjs` (29) — Usage: node qa/usability-score.mjs <docx> <expected.json> [ocr-text.md]
 
+- `qa/verify-labels-test.mjs` (194)
+
 - `qa/word-measure-figures.ps1` (26) — QA: Word (COM) দিয়ে ফাইল খুলে প্রতিটি ছবির প্রকৃত মাপ (ইঞ্চি) ও অবস্থান মাপা।
   foreach@8
 
@@ -706,15 +714,15 @@
 - `fayzar-ocr-proxy/ledger.js` (393) — Fayzar OCR Proxy — KeyLedger (pure logic, no I/O)
   maskKey@24, parseRetryDelay@33, nextMidnightPT@45, todayPT@68, classifyGeminiError@78, createEntry@158, ensureEntry@173, ensureModel@190, isAvailable@196, recordSuccess@207, recordFailure@222, scoreKey@251, rankKeys@268, migrateLedger@288, buildAttemptPlan@306, buildStatus@326
 
-## tests/ (155)
+## tests/ (156)
 
-`a01-regress.test.mjs` · `a02-rulefix.test.mjs` · `a02fix.test.mjs` · `a03-fix.test.mjs` · `a03fix3.test.mjs` · `a03fix4.test.mjs` · `a04-pages.test.mjs` · `a06fix.test.mjs` · `a07-fix.test.mjs` · `a07-fix2.test.mjs` · `a07-fix3.test.mjs` · `a07fix5.test.mjs` · `a07fix6.test.mjs` · `a08fix.test.mjs` · `a09fix.test.mjs` · `a10-fix.test.mjs` · `a10-lines.test.mjs` · `a11-fix.test.mjs` · `a12fix.test.mjs` · `a13fix.test.mjs` · `a14-fix.test.mjs` · `a14-fix3.test.mjs` · `a14-rules.test.mjs` · `a14fix4.test.mjs` · `a14fix5.test.mjs` · `a16-fix.test.mjs` · `a16-fix3.test.mjs` · `a16fix4.test.mjs` · `a16fix5.test.mjs` · `a16fix6.test.mjs` · `a17-fix.test.mjs` · `a17-p1loss.test.mjs` · `a18fix.test.mjs` · `a19-extralines.test.mjs` · `a19-fix.test.mjs` · `asis-score-util.test.mjs` · `audit-page.test.mjs` · `b5-line-fit.test.js` · `b6-gemini-blocks.test.js` · `boxsplit.test.mjs` · `classify-score.test.mjs` · `cls-pad-v5.test.mjs` · `cq-layout.test.mjs` · `cq-marks-integrity.test.mjs` · `cq-parse-coverage.test.mjs` · `design-sheet.test.js` · `docx-preview-render.test.mjs` · `engine-model-order.test.mjs` · `eq-code-italic.test.mjs` · `eq-hardening.test.mjs` · `equation-render.test.mjs` · `exam-renumber.test.mjs` · `f1-pagefit.test.mjs` · `f1fix.test.mjs` · `f1fix2.test.mjs` · `f2-wire.test.mjs` · `f3-faithful-studio.test.mjs` · `faithful-row-realign.test.js` · `fontfix.test.mjs` · `fontpick.test.mjs` · `fonttypefix.test.mjs` · `formkit.test.mjs` · `forms-faithful.test.mjs` · `g41-faithful-format.test.mjs` · `general-clean.test.js` · `golden-compare.test.mjs` · `image-prep.test.mjs` · `image-tools.test.mjs` · `indent.test.mjs` · `indentfix.test.mjs` · `key-ledger.test.js` · `layout-registry.test.mjs` · `layout-score.test.mjs` · `line-rebreak.test.mjs` · `linegap.pending.mjs` · `linewidthfix.test.mjs` · `math-height.test.mjs` · `mcq-layout.test.mjs` · `missingfix.test.mjs` · `nestbox.test.mjs` · `ocr-chunk.test.mjs` · `otsu-threshold.test.mjs` · `p2-drift.test.mjs` · `page-marker-strip.test.mjs` · `page-range.test.mjs` · `part-14.2-regression.test.js` · `part-14.3-mixed-sections-and-header.test.js` · `part-15.0-layout-profile-fixes.test.js` · `part-15.1-eq-field-bijoy.test.js` · `part-15.2-ocr-doc-path.test.js` · `part-15.3-degree-and-indent.test.js` · `part-16.0-export-and-mhtml.test.js` · `part-16.1-figure-extractor.test.js` · `part-16.2-figure-handoff.test.js` · `part-17.0-bijoy-mixed-run.test.js` · `part-17.2-faithful-capture.test.js` · `part-17.3-doc-converter.test.mjs` · `part-17.5-faithful-layout.test.js` · `part-18.6-layout-facts.test.js` · `part-18.9-application-layout.test.mjs` · `part-18.9-one-column.test.mjs` · `part-18.9-primary-and-parity.test.mjs` · `part-19.0-letter-layout.test.mjs` · `part-19.1-cv-layout.test.mjs` · `part-19.2-certificate-layout.test.mjs` · `part-19.3-real-ocr-fixes.test.mjs` · `part-19.4-cash-memo.test.mjs` · `part-19.4-kalpurush-exam.test.mjs` · `part12-hardening.test.mjs` · `part13-3-layout-fixes.test.mjs` · `part13-4-fixes.test.mjs` · `part14-0-studio-figure.test.mjs` · `part14-1-fixes.test.mjs` · `pgborder.test.mjs` · `phase1b-fixes.test.mjs` · `phase1b3-pad-header.test.mjs` · `proxy-failure-policy.test.js` · `proxy-stream.test.mjs` · `proxy-worker.test.mjs` · `registry-e2-cashmemo.test.mjs` · `registry-e3.test.mjs` · `registry-exam.test.mjs` · `result-relayout-e2e.test.mjs` · `result-relayout.test.mjs` · `reviewer-fixes.test.js` · `role-marks.test.mjs` · `rottext.test.mjs` · `row-check.test.mjs` · `rules2.test.mjs` · `rulesfix.test.mjs` · `run-all.mjs` · `run-regression.js` · `self-check.test.js` · `serial-hang-v2.pending.mjs` · `serial-hang.test.mjs` · `serialfix.test.mjs` · `shortfix.test.mjs` · `source-fidelity.test.mjs` · `studio-edit-bridge.test.mjs` · `studio-edit-e2e.test.mjs` · `studio-layout-parity.test.mjs` · `t1-clean-composer.test.js` · `t2-template-composer.test.mjs` · `t3a-template-store.test.mjs` · `t3b-sample-template.test.mjs` · `t3c-sample-map.test.mjs` · `tablecol.test.mjs` · `tablegrid.test.mjs` · `tblmerge.test.mjs` · `vgapfix.test.mjs` · `vspace.test.mjs` · `width.test.mjs` · `word2003-doc-artifact.test.mjs` · `word2003-font-metric.test.mjs` · `wrapfit.test.mjs`
+`a01-regress.test.mjs` · `a02-rulefix.test.mjs` · `a02fix.test.mjs` · `a03-fix.test.mjs` · `a03fix3.test.mjs` · `a03fix4.test.mjs` · `a04-pages.test.mjs` · `a06fix.test.mjs` · `a07-fix.test.mjs` · `a07-fix2.test.mjs` · `a07-fix3.test.mjs` · `a07fix5.test.mjs` · `a07fix6.test.mjs` · `a08fix.test.mjs` · `a09fix.test.mjs` · `a10-fix.test.mjs` · `a10-lines.test.mjs` · `a11-fix.test.mjs` · `a12fix.test.mjs` · `a13fix.test.mjs` · `a14-fix.test.mjs` · `a14-fix3.test.mjs` · `a14-rules.test.mjs` · `a14fix4.test.mjs` · `a14fix5.test.mjs` · `a16-fix.test.mjs` · `a16-fix3.test.mjs` · `a16fix4.test.mjs` · `a16fix5.test.mjs` · `a16fix6.test.mjs` · `a17-fix.test.mjs` · `a17-p1loss.test.mjs` · `a18fix.test.mjs` · `a19-extralines.test.mjs` · `a19-fix.test.mjs` · `asis-score-util.test.mjs` · `audit-page.test.mjs` · `auto-prep.test.mjs` · `b5-line-fit.test.js` · `b6-gemini-blocks.test.js` · `boxsplit.test.mjs` · `classify-score.test.mjs` · `cls-pad-v5.test.mjs` · `cq-layout.test.mjs` · `cq-marks-integrity.test.mjs` · `cq-parse-coverage.test.mjs` · `design-sheet.test.js` · `docx-preview-render.test.mjs` · `engine-model-order.test.mjs` · `eq-code-italic.test.mjs` · `eq-hardening.test.mjs` · `equation-render.test.mjs` · `exam-renumber.test.mjs` · `f1-pagefit.test.mjs` · `f1fix.test.mjs` · `f1fix2.test.mjs` · `f2-wire.test.mjs` · `f3-faithful-studio.test.mjs` · `faithful-row-realign.test.js` · `fontfix.test.mjs` · `fontpick.test.mjs` · `fonttypefix.test.mjs` · `formkit.test.mjs` · `forms-faithful.test.mjs` · `g41-faithful-format.test.mjs` · `general-clean.test.js` · `golden-compare.test.mjs` · `image-prep.test.mjs` · `image-tools.test.mjs` · `indent.test.mjs` · `indentfix.test.mjs` · `key-ledger.test.js` · `layout-registry.test.mjs` · `layout-score.test.mjs` · `line-rebreak.test.mjs` · `linegap.pending.mjs` · `linewidthfix.test.mjs` · `math-height.test.mjs` · `mcq-layout.test.mjs` · `missingfix.test.mjs` · `nestbox.test.mjs` · `ocr-chunk.test.mjs` · `otsu-threshold.test.mjs` · `p2-drift.test.mjs` · `page-marker-strip.test.mjs` · `page-range.test.mjs` · `part-14.2-regression.test.js` · `part-14.3-mixed-sections-and-header.test.js` · `part-15.0-layout-profile-fixes.test.js` · `part-15.1-eq-field-bijoy.test.js` · `part-15.2-ocr-doc-path.test.js` · `part-15.3-degree-and-indent.test.js` · `part-16.0-export-and-mhtml.test.js` · `part-16.1-figure-extractor.test.js` · `part-16.2-figure-handoff.test.js` · `part-17.0-bijoy-mixed-run.test.js` · `part-17.2-faithful-capture.test.js` · `part-17.3-doc-converter.test.mjs` · `part-17.5-faithful-layout.test.js` · `part-18.6-layout-facts.test.js` · `part-18.9-application-layout.test.mjs` · `part-18.9-one-column.test.mjs` · `part-18.9-primary-and-parity.test.mjs` · `part-19.0-letter-layout.test.mjs` · `part-19.1-cv-layout.test.mjs` · `part-19.2-certificate-layout.test.mjs` · `part-19.3-real-ocr-fixes.test.mjs` · `part-19.4-cash-memo.test.mjs` · `part-19.4-kalpurush-exam.test.mjs` · `part12-hardening.test.mjs` · `part13-3-layout-fixes.test.mjs` · `part13-4-fixes.test.mjs` · `part14-0-studio-figure.test.mjs` · `part14-1-fixes.test.mjs` · `pgborder.test.mjs` · `phase1b-fixes.test.mjs` · `phase1b3-pad-header.test.mjs` · `proxy-failure-policy.test.js` · `proxy-stream.test.mjs` · `proxy-worker.test.mjs` · `registry-e2-cashmemo.test.mjs` · `registry-e3.test.mjs` · `registry-exam.test.mjs` · `result-relayout-e2e.test.mjs` · `result-relayout.test.mjs` · `reviewer-fixes.test.js` · `role-marks.test.mjs` · `rottext.test.mjs` · `row-check.test.mjs` · `rules2.test.mjs` · `rulesfix.test.mjs` · `run-all.mjs` · `run-regression.js` · `self-check.test.js` · `serial-hang-v2.pending.mjs` · `serial-hang.test.mjs` · `serialfix.test.mjs` · `shortfix.test.mjs` · `source-fidelity.test.mjs` · `studio-edit-bridge.test.mjs` · `studio-edit-e2e.test.mjs` · `studio-layout-parity.test.mjs` · `t1-clean-composer.test.js` · `t2-template-composer.test.mjs` · `t3a-template-store.test.mjs` · `t3b-sample-template.test.mjs` · `t3c-sample-map.test.mjs` · `tablecol.test.mjs` · `tablegrid.test.mjs` · `tblmerge.test.mjs` · `vgapfix.test.mjs` · `vspace.test.mjs` · `width.test.mjs` · `word2003-doc-artifact.test.mjs` · `word2003-font-metric.test.mjs` · `wrapfit.test.mjs`
 
 ## HTML পাতা (মূল ফোল্ডার)
 - `converter.html` — ফয়জার এআই কম্পোজ · 0 স্ক্রিপ্ট
 - `doc-converter.html` — ওয়ার্ড ডকুমেন্ট ইউনিকোড ➔ বিজয় কনভার্টার | ফয়জার এআই কম্পোজ · 15 স্ক্রিপ্ট
 - `docx-to-doc.html` — DOCX থেকে DOC (Word 2003) কনভার্টার | ফয়জার এআই কম্পোজ · 6 স্ক্রিপ্ট
-- `index.html` — ফয়জার এআই কম্পোজ — ছবি ও PDF থেকে Editable Word · 89 স্ক্রিপ্ট
+- `index.html` — ফয়জার এআই কম্পোজ — ছবি ও PDF থেকে Editable Word · 90 স্ক্রিপ্ট
 - `layout-studio.html` — লেআউট স্টুডিও — MD থেকে Word | ফয়জার এআই কম্পোজ · 12 স্ক্রিপ্ট
 - `ocr-classic.html` — পুরোনো OCR পাতা (রক্ষণাবেক্ষণ) | ফয়জার এআই কম্পোজ · 77 স্ক্রিপ্ট
 - `samples.html` — নমুনা ও কীভাবে কাজ করে | ফয়জার এআই কম্পোজ · 1 স্ক্রিপ্ট

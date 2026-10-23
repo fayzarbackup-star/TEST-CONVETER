@@ -74,7 +74,7 @@
     return out;
   }
 
-  const api = { rotatedDims: rotatedDims, splitRects: splitRects, suffixName: suffixName, rotate90: rotate90, rotateLeft90: rotateLeft90, splitTwo: splitTwo };
+  const api = { rotatedDims: rotatedDims, splitRects: splitRects, suffixName: suffixName, rotate90: rotate90, rotateLeft90: rotateLeft90, splitTwo: splitTwo, canvasToItem: canvasToItem, loadImg: loadImg };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.FayzarImageTools = api;
 })(typeof window !== 'undefined' ? window : globalThis);
