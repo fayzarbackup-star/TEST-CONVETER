@@ -13,8 +13,12 @@
   'use strict';
 
   const TYPES = ['title', 'heading', 'paragraph', 'list_item', 'question', 'option_row', 'table', 'figure',
-    'caption', 'header', 'footer', 'page_number', 'label_value', 'signature', 'stamp', 'other'];
+    'caption', 'header', 'footer', 'page_number', 'label_value', 'signature', 'stamp', 'other',
+    // Phase 4 (নকশা-পত্র v1): শুধু designSheet প্রম্পটে আসে
+    'date', 'recipient', 'subject', 'salutation', 'marginal_note'];
   const SYNONYM = {
+    to: 'recipient', addressee: 'recipient', greeting: 'salutation', sub: 'subject', margin_note: 'marginal_note', marginalnote: 'marginal_note',
+    side_note: 'marginal_note',
     para: 'paragraph', text: 'paragraph', body: 'paragraph', list: 'list_item', item: 'list_item', bullet: 'list_item',
     image: 'figure', img: 'figure', logo: 'figure', diagram: 'figure', graph: 'figure', photo: 'figure', picture: 'figure', chart: 'figure',
     options: 'option_row', option: 'option_row', mcq_options: 'option_row', subheading: 'heading', section: 'heading',
@@ -43,7 +47,8 @@
     t = t ? t.toLowerCase() : 'other';
     if (formKitOn() && FORMKIT_SYNONYM[t]) t = FORMKIT_SYNONYM[t];
     if (SYNONYM[t]) t = SYNONYM[t];
-    if (TYPES.indexOf(t) === -1 && !(formKitOn() && FORMKIT_TYPES.indexOf(t) !== -1)) t = 'other';
+    let unknownType = null;
+    if (TYPES.indexOf(t) === -1 && !(formKitOn() && FORMKIT_TYPES.indexOf(t) !== -1)) { unknownType = t; t = 'other'; }
     const pm = /\bp(?:age|g)?\s*=\s*(\d+)/i.exec(b);
     const bm = /\bbox\s*=\s*[\[(]?\s*(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)[\s,]+(-?\d+(?:\.\d+)?)/i.exec(b);
     let box = null;
@@ -68,6 +73,20 @@
       fs: fm ? fm[1].toLowerCase() : null,
       bold: bo ? /^(1|true)$/i.test(bo[1]) : null
     };
+    // Phase 4 ঐচ্ছিক ক্ষেত্র — না থাকলে ব্লকে যোগই হয় না (পুরোনো ক্যাপচারের আকৃতি অপরিবর্তিত)
+    if (unknownType) out.unknownType = unknownType;
+    const gm = /\bg(?:roup)?\s*=\s*([A-Za-z0-9_]+)/i.exec(b);
+    if (gm) out.group = gm[1];
+    const hm = /\bhdr\s*=\s*(\d+)/i.exec(b);
+    if (hm) out.hdr = parseInt(hm[1], 10);
+    const cwm = /\bcw\s*=\s*([\d.]+(?:\s*[:,]\s*[\d.]+)*)/i.exec(b);
+    if (cwm) { const cw = cwm[1].split(/\s*[:,]\s*/).map(Number).filter((n) => n > 0); if (cw.length) out.cw = cw; }
+    const mgm = /\bmg\s*=\s*([\d./\s]+)/i.exec(b);
+    if (mgm) {
+      const mg = mgm[1].split('/').map((s) => s.trim().split('.').map(Number)).filter((a) => a.length === 4 && a.every((n) => isFinite(n)))
+        .map((a) => ({ r: a[0], c: a[1], cs: Math.max(1, a[2]), rs: Math.max(1, a[3]) }));
+      if (mg.length) out.merges = mg;
+    }
     if (formKitOn()) {
       const flm = /\b(?:fill|bg|shade)\s*=\s*#?([0-9a-f]{3,6}|[a-z]+)\b/i.exec(b);
       const clm = /\b(?:color|fg)\s*=\s*#?([0-9a-f]{3,6}|[a-z]+)\b/i.exec(b);
@@ -104,9 +123,32 @@
       (m, c, n) => c.repeat(Math.max(1, Math.min(400, parseInt(bn2en(n), 10) || 1))));
   }
 
+  /**
+   * Phase 4: শুরুর `---` ফ্রন্টম্যাটার ({docType,page,orientation,columns,digits}); প্রথম ট্যাগের আগে না থাকলে null।
+   * ফেরত { fm, rest } — rest = ফ্রন্টম্যাটার বাদে লেখা।
+   */
+  function extractFrontmatter(s) {
+    const m = /^\s*(?:```[a-z]*[ \t]*\n)?[ \t]*---[ \t]*\n([\s\S]*?)\n[ \t]*---[ \t]*(?:```[ \t]*)?(?:\n|$)/.exec(s);
+    if (!m || /\[\[\s*B\s*:/.test(m[1]) || !/^[ \t]*[A-Za-z_]+[ \t]*:/m.test(m[1])) return { fm: null, rest: s };
+    const kv = {};
+    m[1].split('\n').forEach((ln) => { const k = /^[ \t]*([A-Za-z_]+)[ \t]*:[ \t]*(.*?)[ \t]*$/.exec(ln); if (k) kv[k[1].toLowerCase()] = k[2].replace(/^["'<]|["'>]$/g, '').trim(); });
+    const pick = (v, allowed) => { const x = String(v || '').toLowerCase(); return allowed.indexOf(x) >= 0 ? x : null; };
+    const fm = {
+      docType: kv.doc_type || kv.doctype || null,
+      page: kv.page || kv.page_size || null,
+      orientation: pick(kv.orientation, ['portrait', 'landscape']),
+      columns: /^[12]$/.test(bn2en(kv.columns || '')) ? parseInt(bn2en(kv.columns), 10) : null,
+      digits: pick(kv.digits, ['bn', 'en', 'mixed'])
+    };
+    return { fm, rest: s.slice(m[0].length) };
+  }
+
   function parse(text) {
     const issues = [];
     let s = expandFill(String(text == null ? '' : text).replace(/\r\n?/g, '\n'));
+    const fmr = extractFrontmatter(s);
+    const frontmatter = fmr.fm;
+    s = fmr.rest;
     let auditNote = null;
     const am = AUDIT_RE.exec(s);
     if (am) { auditNote = am[0].trim(); s = s.slice(0, am.index); }
@@ -143,11 +185,14 @@
       // a05 (২০২৬-১০-১৩): Gemini একই ব্লক (একই পাতা/ধরন/বক্স/লেখা) বারবার লেখে — চারটি ফাঁকা ছক একই বক্সে ⇒ পাতা উপচাত ⇒ পুনরাবৃত্তি বাদ
       const dup = meta.box && blocks.some((p) => p.page === meta.page && p.type === meta.type && p.box && p.box.join() === meta.box.join() && p.text === (meta.type === 'figure' ? '' : txt));
       if (dup) { issues.push({ kind: 'duplicate_block', type: meta.type }); return; }
-      blocks.push(Object.assign({ i: blocks.length }, meta, { text: meta.type === 'figure' ? '' : txt, lines: meta.type === 'figure' || !txt ? [] : txt.split('\n') }));
+      const nq = meta.type === 'figure' ? 0 : (txt.match(/\[\?\]/g) || []).length;
+      blocks.push(Object.assign({ i: blocks.length }, meta, { text: meta.type === 'figure' ? '' : txt, lines: meta.type === 'figure' || !txt ? [] : txt.split('\n') }, nq ? { unreadable: nq } : {}, meta.type === 'figure' && txt ? { figText: txt } : {}));   // figText: নকশা-পত্র অ্যাডাপ্টার হারানো লেখা উদ্ধার করে; হুবহু মোড উপেক্ষা করে
       if (meta.type === 'figure' && txt) issues.push({ kind: 'figure_has_text', block: blocks.length - 1, text: txt.slice(0, 80) });
     });
     if (!tags.length && s.trim()) issues.push({ kind: 'no_tags' });
-    return { blocks, auditNote, issues, truncated };
+    const res = { blocks, auditNote, issues, truncated };
+    if (frontmatter) res.frontmatter = frontmatter;      // শুধু নতুন ফরম্যাটে; পুরোনো ফলে ক্ষেত্রই থাকে না
+    return res;
   }
 
   /** পাতা অনুযায়ী ভাগ: { [page]: blocks[] } */
@@ -195,7 +240,7 @@
     return head.replace(/\s+$/, '') + '\n\n' + tail.replace(/^\s+/, '');
   }
 
-  const FayzarLayoutTags = { TYPES, parseTagBody, parse, expandFill, byPage, needsContinuation, lastBlockInfo, mergeContinuation };
+  const FayzarLayoutTags = { TYPES, parseTagBody, parse, extractFrontmatter, expandFill, byPage, needsContinuation, lastBlockInfo, mergeContinuation };
   Object.defineProperty(FayzarLayoutTags, 'FORMKIT_TYPES', { value: FORMKIT_TYPES, enumerable: false });
   global.FayzarLayoutTags = FayzarLayoutTags;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarLayoutTags;

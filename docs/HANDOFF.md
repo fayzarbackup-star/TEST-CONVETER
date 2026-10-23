@@ -1,25 +1,13 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২৩ শেষ রাত (চূড়ান্ত কর্মপরিকল্পনা v3; পর্ব ০–৩ সম্পন্ন)
-- **একমাত্র পরিকল্পনা:** `docs/FINAL_WORK_PLAN.md`। সিদ্ধান্ত D1–D12 নেওয়া হয়ে গেছে।
-- **push হয়েছে (main):**
-  - ১ক db67760; ১খ-i e19fc8f; tblHeader b1d86b9 (মূল ইঞ্জিন, নোট FROZEN_CHANGES-এ); ১খ-ii 6c7b074; ১খ-iii b669771; ১গ 02ec0e0
-  - ২ক e07090e: doc-model, অ্যাডাপ্টার, GENERAL_CLEAN, doc_type-লিক ঠিক, বাঁয়ে-ঘোরান বোতাম
-  - ২খ+৩ 35c6475: স্কোরার ঠিক; অচেনা ধরন লাইভে GENERAL_CLEAN-এ; `js/layout-engine/self-check.js` + `_selfCheckGate` (ব্যর্থ হলে পুনর্নির্মাণ, তারপর ভালোটা + বাংলা ত্রুটি-তালিকা)
-- **ফলাফলের নথি:** রিপোর্ট `scratch/agent-out/phase2b3_report.md`; তুলনা ও সিদ্ধান্ত `eval/compare-2a.md`-এ (T01, T05 সমান, তাই ছাঁচই থাকল)।
-- **বন্ধের সুইচ:** `FZ_OFF_SELFCHECK`, `FZ_OFF_GENERAL_CLEAN`।
-- **পরের কাজ, পর্ব ৪ (নকশা-পত্র v1):**
-  - ক্যাপচার-প্রম্পটে নতুন ট্যাগ যোগ; অ্যাডাপ্টার `fromDesignSheet()`।
-  - গোল্ডেন সেটের ১৫টি ফাইল আবার ক্যাপচার করতে হবে, ১৫টি Gemini ডাক।
-  - শুরু: ব্রিফ লেখা `docs/tasks/PHASE4_BRIEF.md`, পরিকল্পনার §9-এর "৪" সারি থেকে, তারপর Sonnet-কে দেওয়া।
-- **বাকি ছোট সমস্যা:**
-  - GENERAL_CLEAN-এ শিরোনাম/স্বাক্ষর এখনো সাধারণ অনুচ্ছেদের মতো আসে (T19 দেখো); ভূমিকা-ট্যাগ এলে পর্ব ৪-এ ঠিক হবে।
-  - গেট শুধু .docx পথে আছে।
-  - real Word-এ ২-কলাম পাতা দেখা হয়নি।
-  - aL/aC/aR চিহ্ন কোথাও প্রয়োগ হয় না।
-  - T10-এ MCQ অপশন প্রশ্ন থেকে আলাদা হয়ে যায়।
-- **টোকেন:** ১৯%-এর কম বাকি; রিসেট রবিবার দুপুর ২টায়। কোড আর যাচাই দুটোই Sonnet করবে; Opus পড়বে শুধু রিপোর্ট আর ১–২টি PNG।
-- **সরঞ্জাম:**
-  - `qa/site-chain-download.mjs <outDir> <input.md>`
-  - `qa/usability-score.mjs` (এখন self-check.js ব্যবহার করে)
-  - রেন্ডার: `qa/golden/word-pdf-batch.ps1` → `qa/render-pdf-page.mjs`
-  - `node tests/run-regression.js [--update]`
-- **এজেন্ট মারা গেলে:** `js/`-এর ফাইলের সময় দেখো, তারপর বাকিটুকু চালাও।
+# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (পর্ব ৪ কোড+ক্যাপচার শেষ; push হয়নি)
+- **একমাত্র পরিকল্পনা:** `docs/FINAL_WORK_PLAN.md`। পর্ব ০–৩ push হয়েছে (সর্বশেষ 35c6475)।
+- **পর্ব ৪ (নকশা-পত্র v1) — কোড বসেছে, push বাকি:** রিপোর্ট `scratch/agent-out/phase4_report.md`।
+  - `faithful-prompt.js` (`designSheet:true`), `layout-tags.js` (ফ্রন্টম্যাটার, নতুন ভূমিকা, g/hdr/cw/mg/[?]/figText), `doc-model-adapters.js` (`fromDesignSheet`, `fromCapture`), `doc-model.js` + `general-clean-layout.js` (টেবিল headerRows/colRatios/merges)।
+  - নতুন: `tests/design-sheet.test.js` (৪০ গেট), `qa/design-sheet-capture.mjs`, `qa/design-sheet-gate.mjs`, `eval/golden-set/T01,T05,T08/truth.txt` (খসড়া — মালিকের যাচাই বাকি)।
+  - ক্যাপচার: `scratch/samples/new/2026-10-23/out-p4/<ID>/` (১৫টি Gemini ডাক খরচ হয়ে গেছে)।
+- **মূল ফল:** ট্যাগ ৯৯.৬%, ভূমিকা ≈৯০%, শব্দ-ভুল গড় ২.৫% (ক্রম-নিরপেক্ষ)। লাইভ পথে `designSheet` এখনো চালু নয় (শুধু QA)।
+- **খোলা সমস্যা:**
+  - মডেল অঙ্ক-লিপি মানে না: T02-র ইংরেজি অঙ্ক বাংলা হয়ে আসে।
+  - ৬→৩ ভুল-পড়া (T08)।
+  - নতুন ক্যাপচারে টেবিল-মেরামত ধাপ চলেনি, তাই T08/T20/T24-এ c3 ব্যর্থ।
+- **পরের কাজ:** মালিকের অনুমতিতে push; তারপর পর্ব ৫ (স্টাইল-ছাঁচ), FINAL_WORK_PLAN §9। অঙ্ক-লিপির জন্য আলাদা সিদ্ধান্ত লাগবে।
+- **টোকেন:** কম; কোড/যাচাই Sonnet, Opus শুধু রিপোর্ট পড়বে।

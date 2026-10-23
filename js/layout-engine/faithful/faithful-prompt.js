@@ -19,13 +19,39 @@
   const formKitOn = () => !!(typeof globalThis !== 'undefined' ? globalThis.__FZ_ON_FORMKIT : global.__FZ_ON_FORMKIT);
   const FORMKIT_TYPES = ['box_row', 'form_box', 'photo_box', 'label_box', 'schedule_box', 'radio_list', 'match_col'];
 
+  // Phase 4 (নকশা-পত্র v1): opts.designSheet === true হলে চালু — ফ্রন্টম্যাটার, নতুন ভূমিকা, গ্রুপ-আইডি, টেবিল-ক্ষেত্র, [?], অঙ্ক-লিপি অটুট।
+  // ডিফল্ট প্রম্পট (হুবহু মোড) অপরিবর্তিত; পুরোনো ক্যাপচার/পার্সারও আগের মতো চলে।
+  const DESIGN_ROLES = ['date', 'recipient', 'subject', 'salutation', 'marginal_note'];
+  const DESIGN_SHEET_NOTE = `
+
+DESIGN-SHEET EXTENSIONS (these rules ADD to the rules above; they never relax them):
+D1. FRONTMATTER — the VERY FIRST thing in your output, before any [[B:...]] tag, is exactly this block (nothing else before it):
+---
+doc_type: <letter | application | notice | form | table_sheet | exam | certificate | report | other>
+page: <A4 | Letter | Legal | other>
+orientation: <portrait | landscape>
+columns: <1 | 2>
+digits: <bn | en | mixed>
+---
+   digits = the script of the numerals printed in the source (bn = Bengali digits ০-৯, en = English digits 0-9, mixed = both occur).
+D2. EXTRA BLOCK ROLES for t= (use them instead of paragraph/other when they clearly apply): ${DESIGN_ROLES.join(' | ')}.
+   - date: a printed date line ("তারিখ: ..", "Date: ..", "২৩/১০/২০২৬"). recipient: the addressee block ("বরাবর", "To", "প্রাপক", name/address lines). subject: the subject line ("বিষয়:", "Subject:"). salutation: the greeting ("জনাব,", "Dear Sir,", "সবিনয় নিবেদন এই যে"). marginal_note: small text in a page margin (side notes, stamps-like annotations, page-edge remarks).
+   - The existing roles title, heading, signature, stamp, footer, header, page_number keep their meaning; the title is the document's main heading only, signature is the printed signer block (name/designation/"স্বাক্ষর").
+D3. SIDE-BY-SIDE: add g=<id> to the tag of every block that shares ONE horizontal row with another block (e.g. "স্মারক নং ..." on the left and the date on the right → both get g=1). Blocks that do not share a row get no g. Use a new id (g=2, g=3, ...) for the next shared row.
+D4. TABLE TAG FIELDS (only on t=table): hdr=<N> number of header rows at the top (0 if none); cw=<a:b:c:...> relative column widths measured from the printed table, one number per column, summing to about 100 (e.g. cw=10:40:25:25); mg=<r.c.cs.rs>[/<r.c.cs.rs>...] for every merged cell: r = 0-based row, c = 0-based column of its top-left cell, cs = colspan, rs = rowspan (write the text once in that top-left cell and leave the covered cells empty). Omit mg when nothing is merged.
+D5. UNREADABLE WORDS: if a word or number is physically illegible (smudged, cut off, too faint) write [?] in its place. Never guess. Do NOT use [?] for words you can read.
+D6. DIGITS — KEEP THE SOURCE SCRIPT EXACTLY: copy every numeral in the script it is printed in. English digits (0-9) must stay English digits and Bengali digits (০-৯) must stay Bengali digits, in text, tables, dates, phone numbers, ID numbers, amounts and serial numbers. NEVER convert Bengali to English or English to Bengali, even inside a Bengali sentence or table. One document may mix both scripts; copy each number as printed.
+D7. The frontmatter block is the ONLY text allowed outside block tags (rule 6 "no markdown" does not apply to it).`;
+
   function build(opts) {
     const o = opts || {};
     const pages = o.pageCount || 1;
     const pageNote = pages > 1
       ? `The request contains ${pages} page images in order; page numbers are 1-based in that order (p=1 is the first image).`
       : 'The request contains 1 page image (p=1).';
-    const typesList = formKitOn() ? BLOCK_TYPES.concat(FORMKIT_TYPES).join(' | ') : BLOCK_TYPES.join(' | ');
+    const ds = o.designSheet === true;
+    const dsNote = ds ? DESIGN_SHEET_NOTE + '\n' : '';
+    const typesList = (formKitOn() ? BLOCK_TYPES.concat(FORMKIT_TYPES) : BLOCK_TYPES).concat(ds ? DESIGN_ROLES : []).join(' | ');
     const formKitNote = formKitOn() ? `\n   - FORM & TAB-COLUMN ELEMENTS (when present): use t=box_row for digit/character box strips (e.g. mobile 01 + 11 boxes, 17-box NID), t=photo_box for empty "ছবি" boxes, t=label_box for right-aligned label boxes ("ফরম-৮"), t=schedule_box for centered small "তফসিল" boxes, t=radio_list for ○ radio lists, t=match_col for two-column matching ("দাগ টেনে মিল কর"). Optional tag attributes: fill=<hex>, color=<hex>, bdr=<single|dashed|dotDash>.` : '';
     return `You are an elite Bengali/English document transcriber AND layout analyst. Your output will be rebuilt into an editable Word file that must look EXACTLY like the source pages ("as it is" mode).
 
@@ -68,7 +94,7 @@ ${pageNote}
    - SIMPLE ARITHMETIC (e.g. ২৭÷৯=৩, ×২, ১২+৮=, 45 - 9) is NOT LaTeX: write it as plain text with the SAME digits as printed (Bengali digits stay Bengali, English stay English) and the plain symbols ÷ × + − = .
 
 6. NO EXTRA FORMATTING: no markdown headings (#), no code fences, no commentary. Only the block tags, the text, " | " table rows, $...$ math, **...** for partly-bold text, *...* for partly-italic text, ^{...} for superscript and the fill-line marker below.
-   - FILL-IN LINES (dotted/dashed/underscore blanks such as "নাম : ............" or "______"): NEVER type a long run of the same character. Write any run of 6 or more identical fill characters as the marker ⟦c×N⟧ where c is the character (. _ - … or ─) and N is your estimate of how many are printed, e.g. "নাম : ⟦.×80⟧" or "স্বাক্ষর ⟦_×30⟧". Keep the text before/after the run exactly as printed.
+   - FILL-IN LINES (dotted/dashed/underscore blanks such as "নাম : ............" or "______"): NEVER type a long run of the same character. Write any run of 6 or more identical fill characters as the marker ⟦c×N⟧ where c is the character (. _ - … or ─) and N is your estimate of how many are printed, e.g. "নাম : ⟦.×80⟧" or "স্বাক্ষর ⟦_×30⟧". Keep the text before/after the run exactly as printed.${dsNote}
 
 7. MANDATORY INTERNAL TWO-PHASE SELF-RECHECK BEFORE OUTPUT (একই উত্তরে নিজেই পুনঃযাচাই — সর্বাধিক গুরুত্বপূর্ণ):
    - PHASE 1 (INTERNAL DRAFT — DO NOT PRINT): Silently transcribe the ENTIRE document from the first page to the last page, with all block tags.
@@ -92,10 +118,11 @@ ${pageNote}
 8. CONTINUATION REQUEST (IMPORTANT): A previous response was cut off. Do NOT repeat anything before the cut.
    - The last completed block was on page ${o.lastPage || '?'}${o.lastType ? ' (type ' + o.lastType + ')' : ''}. The output ended with this text:
    """${tail}"""
+   - Do NOT repeat the frontmatter block (--- ... ---) in a continuation; start directly with a [[B:...]] tag.
    - Continue from EXACTLY the next block after that point (if the last block itself was cut, start by re-writing ONLY that one block completely, with its tag), until the end of the last page, with the same tag format, then the audit note.`;
   }
 
-  const FayzarFaithfulPrompt = { BLOCK_TYPES, build, continuation };
+  const FayzarFaithfulPrompt = { BLOCK_TYPES, DESIGN_ROLES, build, continuation };
   Object.defineProperty(FayzarFaithfulPrompt, 'FORMKIT_TYPES', { value: FORMKIT_TYPES, enumerable: false });
   global.FayzarFaithfulPrompt = FayzarFaithfulPrompt;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarFaithfulPrompt;

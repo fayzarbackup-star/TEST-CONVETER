@@ -97,6 +97,93 @@
     return doc;
   }
 
+  // ───────── fromDesignSheet (Phase 4, নকশা-পত্র v1) ─────────
+  // পুরোনো কাঠামো ঠিক রেখে নতুন ভূমিকা: date/recipient/subject/salutation → paragraph-রূপ (marks.variant + সারিবদ্ধতা),
+  // marginal_note → note (v1-এ বাদ)। g=<id> → side_by_side; hdr/cw/mg → টেবিলের headerRows/colRatios/merges।
+  // প্রম্পটের ফরম্যাটে বাইরের '|' নেই; লাইনের শুরুর '|' মানে ফাঁকা প্রথম ঘর (splitRow সেটা গিলে ফেলত ⇒ সব ঘর এক কলাম সরত)।
+  // শুরু ও শেষ দুই দিকেই '|' থাকলে মার্কডাউন-ধাঁচ ধরে বাইরের দুটি বাদ।
+  const dsSplit = (line) => {
+    const t = String(line).trim();
+    const inner = t.length > 1 && t.startsWith('|') && t.endsWith('|') && !t.endsWith('\\|') ? t.slice(1, -1) : t;
+    return inner.split('|').map((c) => c.trim());
+  };
+  const DS_VARIANT = { date: 'date', recipient: 'recipient', subject: 'subject', salutation: 'salutation' };
+
+  function fromDesignSheet(capture, opts) {
+    const D = DM();
+    const o = opts || {};
+    const list = Array.isArray(capture) ? capture : (capture && capture.blocks) || [];
+    const fm = (capture && capture.frontmatter) || {};
+    const doc = D.createDocument({ docType: o.docType || '', source: 'design-sheet' });
+    ['page', 'orientation', 'digits'].forEach((k) => { if (fm[k]) doc.meta[k] = fm[k]; });
+    if (fm.docType) doc.meta.designDocType = fm.docType;
+    const byPage = {};
+    // ফ্রন্টম্যাটারে digits: en ঘোষিত হলে বাংলা অঙ্ক থাকার কথা নয় (মডেল ভুল করে রূপান্তর করলে) ⇒ ইংরেজিতে ফেরানো। opts.keepDigits=true দিলে বন্ধ।
+    const toEn = fm.digits === 'en' && !o.keepDigits;
+    const fixD = (s) => (toEn ? String(s).replace(/[০-৯]/g, (d) => String(d.charCodeAt(0) - 0x09E6)) : s);
+    list.forEach((cb) => {
+      if (toEn) cb = Object.assign({}, cb, { text: fixD(cb.text || ''), lines: Array.isArray(cb.lines) ? cb.lines.map(fixD) : cb.lines });
+      const variant = DS_VARIANT[cb.type] || null;
+      let role = variant ? 'paragraph' : (ROLE_OF[cb.type] || 'paragraph');
+      const lines = Array.isArray(cb.lines) && cb.lines.length ? cb.lines : String(cb.text || '').split('\n');
+      const props = { align: cb.align, size: SIZE_OF[cb.fs] || null, bold: !!cb.bold, italic: !!cb.italic, underline: !!cb.underline,
+        box: Array.isArray(cb.box) && cb.box.length === 4 ? cb.box : null, page: cb.page || 1, lines };
+      if (variant) {
+        props.marks = { variant };
+        if (variant === 'subject') props.bold = true;
+        if (variant === 'date' && (!cb.align || cb.align === 'l') && props.box && props.box[1] >= 500) props.align = 'r';
+      }
+      if (role === 'other' && lines.length === 1 && RULE_RE.test(lines[0])) role = 'rule';
+      if (role === 'table') {
+        const rows = lines.filter((l) => l.trim()).map(dsSplit).filter((c) => !isSep(c) || c.some((x) => x));
+        if (!rows.length) return;
+        props.rows = rows;
+        if (cb.hdr != null) props.headerRows = cb.hdr;
+        if (cb.cw) props.colRatios = cb.cw;
+        if (cb.merges) props.merges = cb.merges;
+      }
+      if (role === 'heading') props.level = (cb.fs === 'xl' || cb.fs === 'l') ? 1 : 2;
+      const b = D.block(role, props);
+      if (cb.group != null) b.group = String(cb.group);
+      (byPage[b.page] = byPage[b.page] || []).push(b);
+      // মডেল ভুলে figure-ট্যাগের পরে লেখা লিখলে (figText) সেটি হারাতে না দিয়ে আলাদা অনুচ্ছেদ
+      if (role === 'figure' && cb.figText && String(cb.figText).trim()) {
+        byPage[b.page].push(D.block('paragraph', { text: fixD(String(cb.figText).trim()), box: b.box, page: b.page, align: cb.align }));
+      }
+    });
+    const groupable = (b) => ['table', 'figure', 'rule', 'side_by_side'].indexOf(b.role) < 0;
+    Object.keys(byPage).map(Number).sort((a, b) => a - b).forEach((pn) => {
+      const pb = byPage[pn];
+      if (fm.columns === 2) doc.columns = 2;
+      else if (fm.columns == null && detectColumns(pb) === 2) doc.columns = 2;
+      const out = [];
+      for (let i = 0; i < pb.length; i++) {
+        const a = pb[i];
+        if (a.group != null && groupable(a) && doc.columns === 1) {
+          const mates = [a];
+          while (i + 1 < pb.length && pb[i + 1].group === a.group && groupable(pb[i + 1])) mates.push(pb[++i]);
+          if (mates.length >= 2) {
+            mates.sort((p, q) => ((p.box ? p.box[1] : 0) - (q.box ? q.box[1] : 0)));
+            const left = [mates[0]], right = mates.slice(1);
+            const bx = mates.filter((m) => m.box).map((m) => m.box);
+            out.push(D.block('side_by_side', { left, right, page: pn,
+              box: bx.length ? [Math.min.apply(null, bx.map((x) => x[0])), Math.min.apply(null, bx.map((x) => x[1])), Math.max.apply(null, bx.map((x) => x[2])), Math.max.apply(null, bx.map((x) => x[3]))] : null }));
+            continue;
+          }
+        }
+        out.push(a);
+      }
+      const pg = D.addPage(doc, out);
+      pg.index = pn;
+    });
+    return doc;
+  }
+
+  /** রাউট: নতুন ফ্রন্টম্যাটার থাকলে fromDesignSheet, নইলে পুরোনো fromCaptureBlocks */
+  function fromCapture(capture, opts) {
+    return capture && !Array.isArray(capture) && capture.frontmatter ? fromDesignSheet(capture, opts) : fromCaptureBlocks(capture, opts);
+  }
+
   // ───────── fromOcrMarkdown ─────────
   function fromOcrMarkdown(md, opts) {
     const D = DM();
@@ -180,7 +267,7 @@
     return doc;
   }
 
-  const FayzarDocModelAdapters = { fromCaptureBlocks, fromOcrMarkdown, detectColumns };
+  const FayzarDocModelAdapters = { fromCaptureBlocks, fromDesignSheet, fromCapture, fromOcrMarkdown, detectColumns };
   global.FayzarDocModelAdapters = FayzarDocModelAdapters;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarDocModelAdapters;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

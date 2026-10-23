@@ -32,7 +32,7 @@ for (const id of ids) {
   const r = { id };
   try {
     const cap = JSON.parse(fs.readFileSync(path.join(capRoot, id, 'capture.json'), 'utf8'));
-    const doc = AD.fromCaptureBlocks(cap);
+    const doc = AD.fromCapture(cap);   // Phase 4: ফ্রন্টম্যাটার থাকলে নকশা-পত্র অ্যাডাপ্টার, নইলে পুরোনোটা
     const errs = DM.validate(doc);
     if (errs.length) throw new Error('validate: ' + errs[0]);
     const out = path.join(outRoot, id);

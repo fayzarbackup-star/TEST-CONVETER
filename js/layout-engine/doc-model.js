@@ -32,6 +32,10 @@
       const n = rows.reduce((m, r) => Math.max(m, r.length), 0);
       b.rows = rows.map((r) => r.concat(Array(n - r.length).fill('')));
       b.header = p.header !== false;
+      // Phase 4 (নকশা-পত্র): ঐচ্ছিক — headerRows (শিরোনাম-সারি সংখ্যা), colRatios (কলামের অনুপাত), merges [{r,c,cs,rs}]। না দিলে আগের আচরণ।
+      if (p.headerRows != null) { b.headerRows = Math.max(0, Math.min(b.rows.length, p.headerRows | 0)); b.header = b.headerRows > 0; }
+      if (Array.isArray(p.colRatios) && p.colRatios.length === n && p.colRatios.every((x) => x > 0)) b.colRatios = p.colRatios.slice();
+      if (Array.isArray(p.merges) && p.merges.length) b.merges = p.merges.filter((m) => m.r >= 0 && m.c >= 0 && m.r < rows.length && m.c < n).map((m) => ({ r: m.r, c: m.c, cs: Math.min(m.cs || 1, n - m.c), rs: Math.min(m.rs || 1, rows.length - m.r) })).filter((m) => m.cs > 1 || m.rs > 1);
       b.text = b.rows.map((r) => r.join(' | ')).join('\n');
     } else if (role === 'side_by_side') {
       b.left = (p.left || []).slice(); b.right = (p.right || []).slice();

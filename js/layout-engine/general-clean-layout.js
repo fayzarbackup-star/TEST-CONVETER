@@ -161,16 +161,35 @@
       let cw = mx.map((m) => Math.max(Math.round(textW * 0.07), Math.round(textW * m / tot)));
       const sum = cw.reduce((a, c) => a + c, 0);
       cw = cw.map((c) => Math.floor(c * textW / sum));
+      // Phase 4 (নকশা-পত্র): উৎসের কলাম-অনুপাত থাকলে সেটাই (সর্বনিম্ন ৫%); না থাকলে উপরের লেখা-দৈর্ঘ্যের হিসাব
+      if (b.colRatios && b.colRatios.length === n) {
+        const rt = b.colRatios.map((v) => Math.max(v, 5)), rs = rt.reduce((a, c) => a + c, 0);
+        cw = rt.map((v) => Math.floor(textW * v / rs));
+      }
+      const hdrRows = b.headerRows != null ? b.headerRows : (b.header ? 1 : 0);
+      const cov = {}, top = {};
+      (b.merges || []).forEach((m) => {
+        top[m.r + ',' + m.c] = m;
+        for (let i = 0; i < m.rs; i++) for (let j = 0; j < m.cs; j++) if (i || j) cov[(m.r + i) + ',' + (m.c + j)] = { m, first: j === 0 };
+      });
       const keep = b.rows.length <= 15;
       const bd = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('');
       let x = `<w:tbl><w:tblPr><w:tblW w:w="${textW}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
         '<w:tblCellMar><w:top w:w="30" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="30" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr>' +
         `<w:tblGrid>${cw.map((c) => `<w:gridCol w:w="${c}"/>`).join('')}</w:tblGrid>`;
       b.rows.forEach((r, ri) => {
-        const hdr = b.header && ri === 0;
-        x += `<w:tr><w:trPr><w:cantSplit/>${hdr ? '<w:tblHeader/>' : ''}</w:trPr>` + r.map((c, j) =>
-          `<w:tc><w:tcPr><w:tcW w:w="${cw[j]}" w:type="dxa"/></w:tcPr><w:p><w:pPr>${keep && ri < b.rows.length - 1 ? '<w:keepNext/>' : ''}<w:spacing w:after="0"/>${hdr ? '<w:jc w:val="center"/>' : ''}</w:pPr>` +
-          `${runs(c.replace(/<br\s*\/?>/gi, ' '), { sz: sz(pt), b: hdr })}</w:p></w:tc>`).join('') + '</w:tr>';
+        const hdr = ri < hdrRows;
+        x += `<w:tr><w:trPr><w:cantSplit/>${hdr ? '<w:tblHeader/>' : ''}</w:trPr>` + r.map((c, j) => {
+          const cv = cov[ri + ',' + j], tp = top[ri + ',' + j];
+          if (cv && !cv.first) return '';                                   // একই সারিতে colspan-এ ঢাকা ঘর
+          const span = tp ? tp.cs : (cv ? cv.m.cs : 1);
+          let wd = 0; for (let k = 0; k < span; k++) wd += cw[j + k] || 0;
+          const tcPr = `<w:tcW w:w="${wd || cw[j]}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ''}` +
+            (tp && tp.rs > 1 ? '<w:vMerge w:val="restart"/>' : (cv ? '<w:vMerge/>' : ''));
+          const cell = cv ? '' : c.replace(/<br\s*\/?>/gi, ' ');
+          return `<w:tc><w:tcPr>${tcPr}</w:tcPr><w:p><w:pPr>${keep && ri < b.rows.length - 1 ? '<w:keepNext/>' : ''}<w:spacing w:after="0"/>${hdr ? '<w:jc w:val="center"/>' : ''}</w:pPr>` +
+            `${cv ? '' : runs(cell, { sz: sz(pt), b: hdr })}</w:p></w:tc>`;
+        }).join('') + '</w:tr>';
       });
       return x + '</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="120" w:lineRule="exact"/></w:pPr></w:p>';
     }

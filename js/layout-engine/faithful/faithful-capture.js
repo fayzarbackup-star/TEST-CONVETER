@@ -70,7 +70,7 @@
     let text = '', continuations = 0;
     try {
       progress(`হুবহু-লেআউট: ${pageCount}টি পাতা একসাথে Gemini-তে পাঠানো হচ্ছে…`, 40);
-      text = String(await request(key, media, o.onStream || null, Prompt.build({ pageCount })) || '');
+      text = String(await request(key, media, o.onStream || null, Prompt.build({ pageCount, designSheet: o.designSheet === true })) || '');
       if (!text.trim()) throw new Error('Gemini থেকে কোনো উত্তর আসেনি (খালি) — রূপান্তর বাতিল হয়েছে বা সংযোগ ব্যর্থ');
       while (Tags.needsContinuation(text) && continuations < o.maxContinuations) {
         if (st && !st.isProcessing) break;          // ব্যবহারকারী বাতিল করেছেন
@@ -81,7 +81,7 @@
         // অপেক্ষা করে আবার (এটিও একটি চেষ্টা হিসেবে গোনা); শেষে still_incomplete
         let cont = '';
         try {
-          cont = String(await request(key, media, null, Prompt.continuation(Object.assign({ pageCount }, info))) || '');
+          cont = String(await request(key, media, null, Prompt.continuation(Object.assign({ pageCount, designSheet: o.designSheet === true }, info))) || '');
         } catch (e) {
           progress(`চালিয়ে-যাওয়া ব্যর্থ (${String(e && e.message || e).slice(0, 80)}) — ${o.retryWaitMs / 1000}s পর আবার…`, 70);
           await new Promise(r => setTimeout(r, o.retryWaitMs));
