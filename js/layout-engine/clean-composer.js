@@ -37,6 +37,9 @@
     let s = String(md == null ? '' : md).replace(/\r\n?/g, '\n').replace(/^﻿/, '');
     s = s.replace(/^---[ \t]*\n[\s\S]*?\n---[ \t]*(\n|$)/, '');
     s = s.replace(AUDIT_RE, '');
+    // Phase 2A: বহু-ছবির ডকুমেন্টে পরের ছবির মেটাডেটা-ব্লক/`doc_type:` লাইন বডিতে ঢুকলে মুছে দেওয়া
+    s = s.replace(/(^|\n)[ \t]*---[ \t]*\n(?:[ \t]*[A-Za-z0-9_]+[ \t]*:[^\n]*\n)*?[ \t]*doc_type[ \t]*:[^\n]*\n(?:[ \t]*[A-Za-z0-9_]+[ \t]*:[^\n]*\n)*[ \t]*---[ \t]*(?=\n|$)/g, '$1')
+      .replace(/^[ \t]*doc_type[ \t]*:[ \t]*[A-Z_]+[ \t]*$\n?/gm, '');
     return s.trim();
   }
 
@@ -166,9 +169,13 @@
    * @returns {Promise<Blob|Buffer>} ইউনিকোড মাস্টার .docx
    */
   async function renderDocx(md) {
+    return packDocx(bodyXml(md).xml, SECT, stylesXml());
+  }
+
+  /** Phase 2A: বডি-XML + sectPr + styles → .docx (GENERAL_CLEAN-ও এটাই ব্যবহার করে) */
+  async function packDocx(xml, sect, styles) {
     const Z = jszip();
     if (!Z) throw new Error('JSZip লোড হয়নি');
-    const { xml } = bodyXml(md);
     const zip = new Z();
     zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
       '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>' +
@@ -178,10 +185,10 @@
       '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
     zip.file('word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
       '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
-    zip.file('word/styles.xml', stylesXml());
+    zip.file('word/styles.xml', styles);
     zip.file('word/document.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" ' +
       'xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>\n' +
-      xml + '\n' + SECT + '</w:body></w:document>');
+      xml + '\n' + sect + '</w:body></w:document>');
     const blobOk = Z.support && Z.support.blob && typeof Blob !== 'undefined';
     return zip.generateAsync(blobOk
       ? { type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }
@@ -205,7 +212,7 @@
     return strip(md).replace(FIG_TAG_RE, '').replace(/[ \t]*QZFIG\d+QZ[ \t]*/g, ' ').replace(/\n{3,}/g, '\n\n').trim() + '\n';
   }
 
-  const FayzarCleanComposer = { STYLE, PAGE, strip, parse, splitCells, bodyXml, stylesXml, renderDocx, plainText, markdown };
+  const FayzarCleanComposer = { STYLE, PAGE, strip, parse, splitCells, bodyXml, stylesXml, renderDocx, packDocx, runsXml, esc, plainText, markdown };
   global.FayzarCleanComposer = FayzarCleanComposer;
   if (typeof module !== 'undefined' && module.exports) module.exports = FayzarCleanComposer;
 })(typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : this));

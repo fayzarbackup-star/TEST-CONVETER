@@ -45,7 +45,7 @@
     });
   }
 
-  async function rotate90(item) {
+  async function rotate90(item, left) {   // left=true: বাঁয়ে (ঘড়ির কাঁটার উল্টো) ৯০°
     const im = await loadImg(item);
     const w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
     const d = rotatedDims(w, h);
@@ -53,10 +53,12 @@
     c.width = d.w; c.height = d.h;
     const ctx = c.getContext('2d');
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-    ctx.translate(d.w, 0); ctx.rotate(Math.PI / 2);   // ঘড়ির কাঁটার দিকে ৯০°
+    if (left) { ctx.translate(0, d.h); ctx.rotate(-Math.PI / 2); }   // −৯০°
+    else { ctx.translate(d.w, 0); ctx.rotate(Math.PI / 2); }          // ঘড়ির কাঁটার দিকে ৯০°
     ctx.drawImage(im, 0, 0);
-    return canvasToItem(c, item.name, '_r90');
+    return canvasToItem(c, item.name, left ? '_l90' : '_r90');
   }
+  function rotateLeft90(item) { return rotate90(item, true); }
 
   async function splitTwo(item) {
     const im = await loadImg(item);
@@ -72,7 +74,7 @@
     return out;
   }
 
-  const api = { rotatedDims: rotatedDims, splitRects: splitRects, suffixName: suffixName, rotate90: rotate90, splitTwo: splitTwo };
+  const api = { rotatedDims: rotatedDims, splitRects: splitRects, suffixName: suffixName, rotate90: rotate90, rotateLeft90: rotateLeft90, splitTwo: splitTwo };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.FayzarImageTools = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -2014,6 +2014,13 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
     return { frontmatter: m[1].trim(), body };
   }
 
+  /** Phase 2A: বডির মাঝে পড়ে থাকা `---`/doc_type…/`---` মেটাডেটা-ব্লক ও একক `doc_type: X` লাইন মুছে দেয় (লেখা অক্ষত) */
+  function stripStrayFrontmatter(text) {
+    return String(text == null ? '' : text)
+      .replace(/(^|\n)[ \t]*---[ \t]*\n(?:[ \t]*[A-Za-z0-9_]+[ \t]*:[^\n]*\n)*?[ \t]*doc_type[ \t]*:[^\n]*\n(?:[ \t]*[A-Za-z0-9_]+[ \t]*:[^\n]*\n)*[ \t]*---[ \t]*(?=\n|$)/g, '$1')
+      .replace(/^[ \t]*doc_type[ \t]*:[ \t]*[A-Z_]+[ \t]*$\n?/gm, '');
+  }
+
   /**
    * ভাগের উত্তর জোড়া:
    * - ফ্রন্টম্যাটার শুধু প্রথম ভাগের রাখা
@@ -2055,7 +2062,7 @@ Output the COMPLETE, FULL document text from start to finish, ending with the ma
         keptFrontmatter = frontmatter;
       }
 
-      let body = rawBody;
+      let body = stripStrayFrontmatter(rawBody);   // Phase 2A: পরের ছবির ফ্রন্টম্যাটার/doc_type লাইন বডিতে ঢুকবে না
 
       // অডিট নোট মাঝপথে না রেখে একত্রে শেষে নেওয়ার জন্য আলাদা করা
       const notes = body.match(auditRegex);
@@ -5322,6 +5329,7 @@ ${bodyContentXml}
     splitMediaIntoChunks,
     planOcrChunks,
     mergeOcrChunks,
+    stripStrayFrontmatter,
     runChunkedOcr,
     formatChunkProgress,
     estimateBase64Bytes,

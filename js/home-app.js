@@ -152,7 +152,7 @@
       if (W.FayzarImageTools && (item.base64 || (item.file && !item.isPdf))) {   // ১গ: ঘোরান / ২ পাতা ভাগ
         const tools = document.createElement('div');
         tools.className = 'pg-tools';
-        [['rot', '৯০° ঘোরান', 'rotate'], ['split', '২ পাতা ভাগ করুন', 'split']].forEach(([k, label, act]) => {
+        [['rot', '৯০° ঘোরান', 'rotate'], ['rotl', 'বাঁয়ে ঘোরান', 'rotateLeft'], ['split', '২ পাতা ভাগ করুন', 'split']].forEach(([k, label, act]) => {
           const b = document.createElement('button');
           b.type = 'button'; b.className = 'pg-tool pg-' + k; b.textContent = label;
           b.addEventListener('click', (e) => { e.stopPropagation(); editImage(i, act); });
@@ -186,6 +186,7 @@
     if (!it) return;
     try {
       if (act === 'rotate') q.splice(i, 1, await W.FayzarImageTools.rotate90(it));
+      else if (act === 'rotateLeft') q.splice(i, 1, await W.FayzarImageTools.rotateLeft90(it));
       else q.splice(i, 1, ...(await W.FayzarImageTools.splitTwo(it)));
       syncSelected(); render();
     } catch (e) { console.error(e); toast('ছবি বদলানো যায়নি: ' + ((e && e.message) || e), 'error'); }
