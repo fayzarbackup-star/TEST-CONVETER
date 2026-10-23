@@ -19,6 +19,7 @@
   }
   const CC = () => mod('FayzarCleanComposer', './clean-composer.js');
   const DM = () => mod('FayzarDocModel', './doc-model.js');
+  const FF = () => mod('FayzarFormFields', './form-fields.js');
 
   const PAGE = { w: 11906, h: 16838 };
   const LADDER = [{ base: 12, margin: 1440 }, { base: 11, margin: 1080 }, { base: 10, margin: 864 }];
@@ -85,17 +86,18 @@
 
   // ───────── রেন্ডার ─────────
   function render(doc, opts) {
-    const D = DM(), C = CC();
+    const F = FF(), D = DM(), C = CC();
     const o = opts || {};
     const errs = D.validate(doc);
     if (errs.length) throw new Error('doc-model অবৈধ: ' + errs[0]);
+    const useFormTpl = !!(F && !F.isOff(o) && F.hasFormFields(doc));
     const pick = choose(doc, o);
-    const base = pick.base, margin = pick.margin;
-    const textW = PAGE.w - 2 * margin;
+    let base = pick.base, margin = pick.margin;
+    let textW = PAGE.w - 2 * margin;
     const runs = o.runs || ((t, st) => C.runsXml(t, st));
     const stats = { base, margin, estPages: pick.est, blocks: 0, dropped: {}, droppedFigures: 0 };
     const sz = (pt) => Math.round(pt * 2);
-    const small = Math.max(10, base - 1);
+    let small = Math.max(10, base - 1);
 
     const wrapped = (lines) => {   // OCR-এর দৃশ্যমান ভাঙা লাইন কি একটি অনুচ্ছেদের অংশ?
       if (lines.length < 2) return true;
@@ -289,13 +291,29 @@
     } else {
       seq.forEach((b) => { b.cols = 1; });
     }
-    const items = seq.map((b, i) => {
-      stats.blocks++;
-      const nx = seq[i + 1];
-      const borderBelow = b.role === 'title' && !(nx && (nx.role === 'rule' || nx.role === 'title'));
-      const cols = b.cols || 1;
-      return { b, xml: renderBlock(b, { borderBelow, cols }) };
-    });
+    let items, formSpacing = null;
+    if (useFormTpl) {
+      const prep = F.prepareFormRender(doc, seq, o);
+      if (prep.plan) {
+        base = prep.plan.base;
+        margin = prep.plan.margin;
+        textW = PAGE.w - 2 * margin;
+        small = Math.max(10, base - 1);
+        stats.base = base;
+        stats.margin = margin;
+        formSpacing = prep.plan.spacing;
+      }
+      stats.blocks = seq.length;
+      items = F.renderFormItems(prep, { base, small, formPt: base, margin, textW, runs, para, lineRuns, style, sz, renderBlock, spacing: formSpacing });
+    } else {
+      items = seq.map((b, i) => {
+        stats.blocks++;
+        const nx = seq[i + 1];
+        const borderBelow = b.role === 'title' && !(nx && (nx.role === 'rule' || nx.role === 'title'));
+        const cols = b.cols || 1;
+        return { b, xml: renderBlock(b, { borderBelow, cols }) };
+      });
+    }
 
     const pgMar = `<w:pgMar w:top="${margin}" w:right="${margin}" w:bottom="${margin}" w:left="${margin}" w:header="720" w:footer="720" w:gutter="0"/>`;
     const pgSz = `<w:pgSz w:w="${PAGE.w}" w:h="${PAGE.h}"/>`;
@@ -345,7 +363,8 @@
       bodyXml = items.map((it) => it.xml).join('\n');
       sectPr = `<w:sectPr>${pgSz}${pgMar}</w:sectPr>`;
     }
-    const styles = C.stylesXml().split('w:val="24"').join(`w:val="${base * 2}"`);
+    let styles = C.stylesXml().split('w:val="24"').join(`w:val="${base * 2}"`);
+    if (useFormTpl && formSpacing) styles = F.adjustStylesXml(styles, formSpacing);
     return { bodyXml, sectPr, stylesXml: styles, stats };
   }
 

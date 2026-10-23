@@ -1,4 +1,32 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (MIXCOL চলছে, push হয়নি)
+# হ্যান্ডঅফ — ২০২৬-১০-২৪ রাত ~১:৫০ (FORMTPL পর্ব ৬ push হয়েছে)
+- **FORMTPL_v1 শেষ:**
+  - কে কী করেছে: কোড লিখেছে Argon u/2, বসিয়েছে Flash।
+  - নতুন ফাইল `js/layout-engine/form-fields.js`; সুইচ `FZ_OFF_FORMTPL`।
+  - যাচাই: form-fields ৮/৮, run-all ৮৪৩৩/০; `scratch/agent-out/formtpl/t21.png` চোখে দেখা হয়েছে, ঠিক আছে (ডট-ঘর, ছবির ঘর, ☐, কাটার রেখা, এক পাতা)।
+- **কাজের পথ এখন:** bundle → `gemini-round send --acct N` (একটি একটি করে) → `watch --stop-on-file` → Flash-এ `task_*_APPLY.md` (শুধু বসানো আর টেস্ট) → Claude যাচাই → push।
+- **পরের কাজ:** পর্ব ৭-এর অটো অংশ (বোতাম নয়) যাবে u/3-তে। পর্ব ৮ আর designSheet লাইভ এখন নয়।
+- নিচের অংশ শুধু ইতিহাস।
+- **MIXCOL_OPTS শেষ:** নতুন t06.png-এ সব অপশন কলামের ভেতরে। টেস্ট ১১/১১, স্ক্যানে ০টি mixed=true, run-all ৮৪২৫/০। নিচের পুরোনো লাইনগুলো শুধু ইতিহাস।
+- **১০-২৪ ~১:১০:** মালিক এক্সটেনশন রিলোড করার পর ব্রিজ ঠিক হয়েছে।
+  - FORMTPL_v1 পাঠানো হয়েছে u/2-তে (Argon কাজ শুরু করেছে); নজরদারি `gemini-round watch --stop-on-file` ব্যাকগ্রাউন্ডে চলছে; উত্তরের জিপ নামবে `Downloads\gemini-inbox`-এ।
+  - নতুন নিয়ম: কোড লিখবে Argon। Flash শুধু টুল চালাবে, টেস্ট-রিপোর্ট দেবে আর জিপ বসাবে।
+  - Flash-এর BROWSER_SEND বাতিল।
+    - ও `gemini-bridge-extension/background.js` বদলেছে (০০:৫৩)। মালিক এক্সটেনশন রিলোড করেছেন তার পরে, তাই এখনকার চালু এক্সটেনশনে এই বদল আছে, আর এটা কাজ করছে।
+    - সমস্যা হলে আগের সংস্করণ GitHub থেকে নামিয়ে মিলিয়ে দেখো।
+  - **Flash-এ চলছে `task_FORMTPL_APPLY.md`** (০১:০০):
+    - জিপের অপেক্ষা → ব্যাকআপ → বসানো → টেস্ট → T21 PNG। কোড লেখা নিষেধ।
+    - ফল আসবে `result_FORMTPL_APPLY.md`-এ।
+    - Claude যাচাই করবে: ছোঁয়া ফাইলের তালিকা, স্ক্যান, run-all, আর `scratch/agent-out/formtpl/t21.png` চোখে দেখা। তারপর push।
+- (পুরোনো) **২০২৬-১০-২৪, ১২:৫০:** ব্রাউজার-কাজ বাতিল।
+  - ব্রিজের সংযোগ বারবার কেটে যাচ্ছে; শুরু হয়েছে Claude সার্ভার কিল করে আবার চালু করার পর।
+  - ঠিক করতে: Profile 7-এ `chrome://extensions` → ↻, তারপর ট্যাব রিফ্রেশ।
+  - ফরম-ছাঁচের কাজ সরাসরি Flash-এ যাবে: `task_FORMTPL.md`, পাঠাও `ag-agent.ps1 run FORMTPL`। মালিক Flash-কে থামানোর পরে পাঠাতে হবে।
+  - Flash ব্রিজের যে ফাইলগুলো বদলেছে, push-এর আগে দেখে নিতে হবে।
+- (পুরোনো) Flash-এ `task_BROWSER_SEND.md`।
+  - কাজ: ব্রিজ এক্সটেনশনকে নতুন Gemini UI-র সাথে মেলানো, তারপর `scratch/bundles/FORMTPL_v1_bundle.zip` (পর্ব ৬, ফরম-ছাঁচ) u/2-এ একবার পাঠানো। ফল আসবে `result_BROWSER_SEND.md`-এ।
+  - এর আগে u/2-তে পাঠানো আর switch-mode দুটোই timeout হয়েছিল, চ্যাট ফাঁকা থেকে গিয়েছিল।
+  - ব্রিজ চলে Chrome-এর Profile 7-এ, port 18765।
+- **পরে:** পর্ব ৭-এর অটো অংশ (বোতাম নয়), ট্যাব একটি একটি করে। পর্ব ৮ (রিলিজ) আর designSheet লাইভে চালু করা এখন নয়; মালিক আগে আরও পরীক্ষা চান।
 - আগে push হয়েছে: AUTOPREP (`js/image-prep/auto-prep.js`) আর AUTOROUTE (`js/auto-route.js`)। run-all ৮৪১৪/০।
 - **মেশানো কলাম (MIXCOL):** `js/layout-engine/column-bands.js`, `doc-model-adapters.js` আর `general-clean-layout.js`-এ বদল এসেছে। সুইচ `FZ_OFF_MIXCOL`। **লোকালে আছে, push হয়নি।**
   - MIXCOL_FIX (Claude যাচাই করেছে):
