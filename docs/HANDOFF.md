@@ -1,13 +1,19 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (AUTOPREP + AUTOROUTE push হয়েছে)
-- **শেষ ১, AUTOPREP:** `js/image-prep/auto-prep.js`। ঘোরানো ২৬/২৬, ভাগ ২১/২১, লেখা-কাটা ০। Claude চালিয়ে আর PNG দেখে যাচাই করেছে। লেবেল `qa/auto-prep-labels.json`, Gemini এতে হাত দেবে না।
-- **শেষ ২, AUTOROUTE:**
-  - মোড-রেডিও সরানো হয়েছে। নতুন `js/auto-route.js` (`FayzarAutoRoute.decide`) সবসময় template পথ বাছে।
-  - হুবহু পথ চলে শুধু `?mode=faithful` বা localStorage `FZ_ON_FAITHFUL=1` দিয়ে।
-  - `index.html`-এ লুকানো `#modeNote` রাখা আছে, faithful-mode-ui-র নোঙর হিসেবে।
-  - যাচাই: run-all ৮৪১৪/০, home-app-e2e ২৭ পাস ০ ব্যর্থ। স্ক্রিপ্টটা শেষে ঝুলে থাকে, কিন্তু ফল ঠিক।
-- **Argon বিকল্প:** `scratch/inbox/AUTOPREP_ARGON/`। ফল ২৫/২৬, তাই বসানো হয়নি। এতে tesseract OSD-র প্রস্তাব আছে।
-- **পরের কাজ, মেশানো কলাম:** পাতার উপরে ১ কলাম, নিচে ২ কলাম।
-  - ধারণা: span চিহ্ন আর continuous section break। নতুন যুক্তি যাবে `js/layout-engine/`-এর আলাদা মডিউলে।
-  - শুরু করবে `scratch/agent-out/task_MIXCOL.md` লিখে, তারপর `tools\ag-agent.ps1 run MIXCOL 90`। আগে কোডে দেখে নেবে কলাম এখন কোথায় ঠিক হয় (`layoutColumns`, home-app.js:261)।
+# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (MIXCOL চলছে, push হয়নি)
+- আগে push হয়েছে: AUTOPREP (`js/image-prep/auto-prep.js`) আর AUTOROUTE (`js/auto-route.js`)। run-all ৮৪১৪/০।
+- **মেশানো কলাম (MIXCOL):** `js/layout-engine/column-bands.js`, `doc-model-adapters.js` আর `general-clean-layout.js`-এ বদল এসেছে। সুইচ `FZ_OFF_MIXCOL`। **লোকালে আছে, push হয়নি।**
+  - MIXCOL_FIX (Claude যাচাই করেছে):
+    - `node scratch/inbox/mixcol-scan.cjs` চালালে ২১টির ২১টিতেই mixed=false।
+    - column-bands টেস্ট ৯/৯ পাস।
+    - T-6 ফিক্সচার `qa/golden-data/mixcol/t06/capture.json`-এ সেকশন বসে [1,2]।
+  - **কিন্তু `scratch/agent-out/mixcol/t06.png`-এ বড় বাগ আছে:** ২-কলাম সেকশনে MCQ অপশন b)/d) পাতার পূর্ণ প্রস্থ ধরে বসে। ফলে সেগুলো ডান কলামের ওপর পড়ে, পাতার কিনারায় কাটা যায়, আর পরের প্রশ্নের ওপর চড়ে বসে।
+  - **এখন চলছে `scratch/agent-out/task_MIXCOL_OPTS.md`** (প্রথমবার পাঠালে Flash তখন ব্যস্ত ছিল, তাই নির্দেশটা হারিয়ে যায়; রাত ১১:৫২-এ আবার পাঠানো হয়েছে, এবার Flash কাজ ধরেছে)। ফল আসবে `result_MIXCOL_OPTS.md`-এ।
+  - নতুন সেশনে আগে `tools\ag-agent.ps1 shot` দিয়ে দেখো কাজ চলছে কিনা।
+- **যাচাই:**
+  - স্ক্যান চালাও, সব mixed=false হতে হবে।
+  - column-bands টেস্ট চালাও।
+  - নতুন t06.png চোখে দেখো: অপশন যেন কলামের ভেতরে থাকে।
+  - তারপর পুরো run-all চালাও। সব ঠিক থাকলে push করো।
+- FIX ব্যর্থ হলে: `FZ_OFF_MIXCOL` ডিফল্ট চালু করো (মেশানো কলাম বন্ধ), তারপর push।
+- **খেয়াল রাখো:** Flash-কে "যাচাই করো" বললে সে নতুন কাজ না করে পুরোনো রিপোর্ট ফেরত দেয়। কাজ সবসময় `ag-agent.ps1 run <NAME>` দিয়ে পাঠাও।
 - **পরে:** AUTOROUTE-এ প্রথম OCR-এর doc_type দেখে পথ বাছার নিয়ম (দরকার হলে)।
 - **নিয়ম:** Gemini-র "১০০%" রিপোর্ট বিশ্বাস করবে না, নিজে চালিয়ে দেখবে।

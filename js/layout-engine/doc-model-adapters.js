@@ -19,6 +19,15 @@
   const DM = () => mod('FayzarDocModel', './doc-model.js');
   const RM = () => mod('FayzarRoleMarks', './role-marks.js');
   const DS = () => mod('FayzarDigitScript', './digit-script.js');
+  const CB = () => mod('FayzarColumnBands', './column-bands.js');
+
+  function isMixColOff() {
+    if (typeof FZ_OFF_MIXCOL !== 'undefined' && FZ_OFF_MIXCOL) return true;
+    if (typeof window !== 'undefined' && window.FZ_OFF_MIXCOL) return true;
+    if (typeof globalThis !== 'undefined' && globalThis.FZ_OFF_MIXCOL) return true;
+    if (typeof process !== 'undefined' && process.env && process.env.FZ_OFF_MIXCOL === '1') return true;
+    return false;
+  }
 
   const RULE_RE = /^\s*⟦[─\-—_=]×\d+⟧\s*$/;
   const OPT_RE = /(?:^|\s)(?:\(?[ক-ঘ]\)|\([কখগঘ]\)|\(?[a-dA-D]\)|\([a-dA-D]\)|[কখগঘ]\.)\s/g;
@@ -77,9 +86,11 @@
       const b = D.block(role, props);
       (byPage[b.page] = byPage[b.page] || []).push(b);
     });
+    let globalBandIdx = 0;
     Object.keys(byPage).map(Number).sort((a, b) => a - b).forEach((pn) => {
       const pb = byPage[pn];
-      if (detectColumns(pb) === 2) doc.columns = 2;
+      const classic2 = detectColumns(pb) === 2;
+      if (classic2) doc.columns = 2;
       const out = [];
       for (let i = 0; i < pb.length; i++) {
         const a = pb[i], c = pb[i + 1];
@@ -92,7 +103,31 @@
         }
         out.push(a);
       }
-      const pg = D.addPage(doc, out);
+      let finalBlocks = out;
+      if (!isMixColOff() && CB()) {
+        const bnds = CB().bands(out);
+        const has2 = bnds.some((b) => b.cols === 2);
+        if (has2) {
+          doc.columns = 2;
+          const classicPure2Col = classic2 && (bnds.length === 1 && bnds[0].cols === 2);
+          if (!classicPure2Col) {
+            doc.mixedColumns = true;
+          }
+        }
+        if (doc.mixedColumns) {
+          const ordered = [];
+          bnds.forEach((bnd) => {
+            const bIdx = globalBandIdx++;
+            bnd.blocks.forEach((b) => {
+              b.band = bIdx;
+              b.cols = bnd.cols;
+              ordered.push(b);
+            });
+          });
+          finalBlocks = ordered;
+        }
+      }
+      const pg = D.addPage(doc, finalBlocks);
       pg.index = pn;
     });
     return doc;
@@ -234,10 +269,11 @@
       }
     });
     const groupable = (b) => ['table', 'figure', 'rule', 'side_by_side'].indexOf(b.role) < 0;
+    let globalBandIdx = 0;
     Object.keys(byPage).map(Number).sort((a, b) => a - b).forEach((pn) => {
       const pb = byPage[pn];
-      if (fm.columns === 2) doc.columns = 2;
-      else if (fm.columns == null && detectColumns(pb) === 2) doc.columns = 2;
+      const classic2 = fm.columns === 2 || (fm.columns == null && detectColumns(pb) === 2);
+      if (classic2) doc.columns = 2;
       const out = [];
       for (let i = 0; i < pb.length; i++) {
         const a = pb[i];
@@ -255,7 +291,31 @@
         }
         out.push(a);
       }
-      const pg = D.addPage(doc, out);
+      let finalBlocks = out;
+      if (!isMixColOff() && CB()) {
+        const bnds = CB().bands(out);
+        const has2 = bnds.some((b) => b.cols === 2);
+        if (has2) {
+          doc.columns = 2;
+          const classicPure2Col = classic2 && (bnds.length === 1 && bnds[0].cols === 2);
+          if (!classicPure2Col) {
+            doc.mixedColumns = true;
+          }
+        }
+        if (doc.mixedColumns) {
+          const ordered = [];
+          bnds.forEach((bnd) => {
+            const bIdx = globalBandIdx++;
+            bnd.blocks.forEach((b) => {
+              b.band = bIdx;
+              b.cols = bnd.cols;
+              ordered.push(b);
+            });
+          });
+          finalBlocks = ordered;
+        }
+      }
+      const pg = D.addPage(doc, finalBlocks);
       pg.index = pn;
     });
     return doc;

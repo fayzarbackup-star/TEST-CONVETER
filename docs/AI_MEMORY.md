@@ -23,7 +23,25 @@
 - **GitHub Repo**: `https://github.com/fayzarbackup-star/TEST-CONVETER/tree/arena/01a0f18b-test-conveter`
 
 ## 3. Recently Implemented Features (DO NOT OVERWRITE)
-- **2026-10-23 রাত ৮:৪০ — task_AUTOPREP_FIX সম্পাদন (অটো-প্রস্তুতির ভুল সারানো)**:
+- **2026-10-23 রাত ১১:২০ — task_MIXCOL_FIX সম্পাদন (মেশানো-কলামের ভুয়া চেনা প্রতিরোধ ও আসল ফিক্সচার)**:
+  (1) `js/layout-engine/column-bands.js` কড়াকড়ি: কেবল লেখার ভূমিকা (paragraph, question, list, option_row) গণনা, w<200 বাদ, ডট-লিডার বাদ, প্রতিটি পাশে >=3 যোগ্য ব্লক ও >=200 অক্ষর, x0 সীমা এবং উল্লম্ব বিস্তার অনুপাত >=50% বাধ্যতামূলক।
+  (2) `js/layout-engine/doc-model-adapters.js`: একক 2-কলাম ব্যান্ডের জন্য classicPure2Col অক্ষত রাখা।
+  (3) নেতিবাচক গেট: `qa/golden-data/asis/` এর ২১টি ক্যাপচারেই `mixed=false` ও columns বেসলাইনের সাথে ১০০% মিলেছে (০টি ভুয়া চেনা)।
+  (4) ইতিবাচক গেট (T06): আসল OCR ক্যাপচার `qa/golden-data/mixcol/t06/capture.json` সম্পন্ন (৮৬ ব্লক), ব্যান্ড [1, 2], Word COM-এ ২ সেকশন [১, ২], PDF ও PNG `scratch/agent-out/mixcol/t06.{docx,pdf,png}` সংরক্ষিত।
+  (5) টেস্ট: `tests/column-bands.test.mjs`-এ নেতিবাচক ও ইতিবাচক গেট যুক্ত ও ৯টি গেটই পাস।
+
+- **2026-10-23 রাত ১০:৪৫ — task_MIXCOL সম্পাদন (মেশানো কলাম: ১-কলাম ও ২-কলাম পালাক্রমে)**:
+  (1) নতুন মডিউল `js/layout-engine/column-bands.js` (`FayzarColumnBands`): জ্যামিতি-ভিত্তিক ব্যান্ডিং (w>=600 বা মাঝরেখা অতিক্রমকারী wide ১-কলাম, x1<=560 বাঁ ও x0>=440 ডান; বাঁ-ডান পড়ার ক্রম; একদিকে <২টি ব্লকে ১-কলামে মার্জ সুরক্ষা)।
+  (2) `js/layout-engine/doc-model-adapters.js`: মেশানো কলাম পাতা শনাক্তকরণ, `doc.mixedColumns=true`, `b.band`/`b.cols` ও ব্যান্ডের ক্রমবিকাশ।
+  (3) `js/layout-engine/general-clean-layout.js`: ব্যান্ডের ভিত্তিতে continuous `<w:pPr><w:sectPr>` অনুচ্ছেদ তৈরি, `estimatePages` হালনাগাদ ও নন-মিক্সড ফাইলে হুবহু আগের বাইট আউটপুট অক্ষুণ্ণ।
+  (4) টেস্ট: `tests/column-bands.test.mjs` ৭টি গেট (ক-ছ) পাস। Word COM দিয়ে `T05_jpeg.docx`-এ ৩টি continuous সেকশন [১, ২, ১] যাচাইকৃত।
+  (5) `index.html` স্ক্রিপ্ট ট্যাগ যুক্ত, `docs/PROJECT_MAP.md` হালনাগাদ, `node tools/gen-map.mjs` নির্বাহ। সুইচকিল `FZ_OFF_MIXCOL` সমর্থিত।
+
+- **2026-10-23 রাত ৯:১৫ — task_AUTOROUTE সম্পাদন (স্বয়ংক্রিয় পথ-বাছাই)**:
+  (1) নতুন মডিউল `js/auto-route.js` (`FayzarAutoRoute`): ডিফল্ট template পথ, ?mode=faithful বা localStorage FZ_ON_FAITHFUL=1 হলে faithful ওভাররাইড।
+  (2) `index.html` ও `home-app.js`-এ রেডিও সরানো ও রাউটার ইন্টিগ্রেশন। টেস্ট `tests/auto-route.test.mjs` ৮টি গেট পাস।
+
+
   (1) `js/image-prep/auto-prep.js` আপডেট: ক্লিন-মাস্ক প্রোফাইল ভ্যারিয়েন্স ও মাঝের গহ্বর যাচাই যোগ। সোজা পাতা (`T-22`, `T-25`) ভুল ঘোরা বন্ধ (০°), উল্টো বই `T-14` সঠিকভাবে ২৭০° ঘুরে ২ পাতায় ভাগ, সার্টিফিকেট `T-3` ৯০° শনাক্ত।
   (2) ক্রপ/ওয়ার্প রক্ষাকবচ: ডিজিটাল/ফ্ল্যাট স্ক্যান শনাক্তকরণে ওয়ার্প বাতিল (সোজা পাতা অক্ষত); চতুর্ভুজের বাহু বরাবর লেখা থাকলে কোণা বাতিল; কালির ≥৯৯.৫% সংরক্ষণ রক্ষাকবচে লেখা কাটা ০ (`T-6` নেপাল অক্ষত)।
   (3) লেবেল-সেট `qa/auto-prep-labels.json` তৈরি; `qa/auto-prep-real.mjs`-এ যাচাই: Rotate ২৬/২৬ (১০০%), Split ২১/২১ (১০০%), Text cut ০।
@@ -770,3 +788,15 @@
   - `ocrMode` রেডিও সরানো হয়েছে। নতুন `js/auto-route.js` ডিফল্টে template পথ বাছে। faithful চলে শুধু `?mode=faithful` বা `FZ_ON_FAITHFUL=1` দিয়ে।
   - `home-app.js`-এর `mode()` এখন রাউটার থেকে আসে, আর Diag-এ `route` যোগ হয়েছে। qa e2e দুটি ঠিক করা হয়েছে।
   - টেস্ট: `tests/auto-route.test.mjs` (৮টি)। run-all ৮৪১৪/০, home e2e ২৭/০।
+- **২০২৬-১০-২৩ রাত — MIXCOL_FIX সম্পন্ন (Flash), push হয়নি:**
+  - প্রথমবার Flash FIX না করে পুরোনো MIXCOL রিপোর্টই আবার দিয়েছিল; Claude রাত ১১:০৫-এ `ag-agent run` দিয়ে আবার পাঠায়।
+  - column-bands.js-এ কড়া নিয়ম এসেছে: প্রস্থ ≥২০০, ডট-লিডার বাদ, প্রতি পাশে ≥৩ ব্লক আর ≥২০০ অক্ষর, উল্লম্ব বিস্তার ≥৫০%।
+  - যাচাই (Claude নিজে চালিয়েছে): স্ক্যানে ২১টিতে mixed=false, টেস্ট ৯/৯ পাস, T-6-এ সেকশন [1,2]।
+  - কিন্তু t06.png-এ দেখা গেল ২-কলাম সেকশনে MCQ অপশন পাতার পূর্ণ প্রস্থে বসছে, ফলে ওভারল্যাপ আর কাটা পড়ছে। ঠিক করতে task_MIXCOL_OPTS পাঠানো হয়েছে।
+  - শিক্ষা: সেকশন সংখ্যা ঠিক মানেই চেহারা ঠিক নয়; PNG চোখে দেখতে হবে।
+- **২০২৬-১০-২৪ রাত — MIXCOL_OPTS সম্পন্ন (Flash), push হয়নি:**
+  - `general-clean-layout.js`-এ ২-কলাম সেকশনের অপশন-সারি ঠিক করা হয়েছে: কলাম-প্রস্থ `curW = (textW - 425)/2` ধরে অপশন স্পেসিং ও ট্যাব হিসাব।
+  - ৪টি অপশন এক লাইনে না আঁটলে ২x২ সাজানো, তাতেও না আঁটলে প্রতি লাইনে একটি। ১-কলাম পাতার আউটপুট বাইট-বাই-বাইট অপরিবর্তিত।
+  - Word COM পরিমাপে `t06.docx`-এর ৫০টি অপশন প্যারাগ্রাফের ওভারফ্লো = ০ (Col 1 max X = 234 pt / সীমা 287 pt; Col 2 max X = 518.4 pt / সীমা 552.1 pt)।
+  - নতুন `t06.pdf` ও `scratch/agent-out/mixcol/t06.png` রেন্ডার করা হয়েছে।
+  - টেস্ট: `tests/column-bands.test.mjs` ১১/১১ পাস (গেটস ক-ট), `tests/run-regression.js` ৩৩/৩৩ পাস, ২১ capture স্ক্যানে mixed=false বহাল।
