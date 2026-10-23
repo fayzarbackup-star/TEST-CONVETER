@@ -43,6 +43,7 @@
 | ছাঁচ-গ্যালারি (ব্যবহারকারী ছাঁচ বাছেন → ফ্রন্টম্যাটার তালা `layout_lock`/`layout_profile`) — T2 | `js/layout-engine/template-composer.js` (+ `home-app.js` `renderGallery`, `setTpl`; ⚙️ classifier `classify` তালা-লাইন, ⚙️ cq-booklet-planner `layoutKey`, ⚙️ ai-ocr-engine `state.templateHint`) | `FayzarTemplateComposer` (`REGISTRY`, `enforce`, `promptHint`, `check`); QA `qa/template-e2e.mjs` |
 | নিজের নমুনা থেকে ছাঁচ (হুবহু-নকশা → স্লট → খসড়া বসানো) — T3b, `docs/T3_PLAN.md` | `js/layout-engine/sample-template.js` | `FayzarSampleTemplate` (`fromIR`, `splitContent`, `matchLocal`, `fill`, `fillTable`, `toTemplate`, `compose`, `slimIR`; T3c Gemini-ম্যাপ `needsRemote`, `buildMapPrompt`, `parseMap`, `mapWithGemini`, `composeAsync`) |
 | .doc-এ ছবি (MHTML) | `js/layout-engine/doc-mhtml-packager.js` | `FayzarDocMhtml`, `sizeImgTags` |
+| স্বয়ংক্রিয় পথ-বাছাই (ডিফল্ট template, লুকানো faithful ওভাররাইড) | `js/auto-route.js` | `FayzarAutoRoute` (`decide`, `checkOverride`) |
 | HTML script ট্যাগ | `index.html`, `ocr-classic.html`, `studio.html` | CODE_INDEX-এর "HTML পাতা" অংশ |
 
 ### প্রশ্নপত্র লেআউট

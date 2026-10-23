@@ -102,12 +102,7 @@
         <!-- সেটিংস -->
         <div class="st" id="stReady">
           <p class="ws-info" id="wsInfo">পাতার ক্রম ঠিক আছে কিনা দেখুন — টেনে ক্রম বদলাতে পারেন, ✕ দিয়ে বাদ দিতে পারেন।</p>
-          <p class="ws-label">লেআউট কেমন চান?</p>
-          <div class="seg" role="radiogroup" aria-label="লেআউট কেমন চান">
-            <label><input type="radio" name="ocrMode" value="template" checked><span>আমাদের সাজানো ফরম্যাট</span></label>
-            <label><input type="radio" name="ocrMode" value="faithful"><span>মূলের মতো হুবহু</span></label>
-          </div>
-          <p class="seg-note" id="modeNote">প্রশ্নপত্র/নথি আমাদের নিয়মে সুন্দর করে সাজানো হবে</p>
+          <p class="seg-note" id="modeNote" hidden></p>
           <div id="tplBox">
             <p class="ws-label">ছাঁচ (ঐচ্ছিক)</p>
             <div class="tpl-grid" id="tplGallery" role="radiogroup" aria-label="ছাঁচ"></div>
@@ -337,6 +332,7 @@
   <script src="js/image-prep/corners.js"></script>
   <script src="js/image-prep/auto-prep.js"></script>
   <script src="js/image-tools.js"></script>
+  <script src="js/auto-route.js"></script>
   <script src="js/home-app.js"></script>
 </body>
 </html>

@@ -67,10 +67,16 @@ try {
   await page.evaluate(() => document.querySelectorAll('#wsGrid .pg-del')[1].click());
   await page.waitForFunction(() => document.querySelectorAll('#wsGrid .pg').length === 1);
   ok('✕ দিয়ে পাতা বাদ → ১ পাতা', (await page.evaluate(() => window.FayzarAiOcrEngine.state.filesQueue.length)) === 1);
-  // হুবহু মোড বাছলে নির্দেশনা-ঘর লুকায়
-  await page.click('input[name="ocrMode"][value="faithful"]');
+  // হুবহু মোড বাছলে নির্দেশনা-ঘর লুকায় (লুকানো সুইচ / FZ_ON_FAITHFUL)
+  await page.evaluate(() => {
+    localStorage.setItem('FZ_ON_FAITHFUL', '1');
+    if (window.FayzarHome) window.FayzarHome.applyMode();
+  });
   ok('হুবহু মোডে নির্দেশনা-ঘর লুকায়', await page.$eval('#ai-custom-directive-input', (e) => e.hidden));
-  await page.click('input[name="ocrMode"][value="template"]');
+  await page.evaluate(() => {
+    localStorage.removeItem('FZ_ON_FAITHFUL');
+    if (window.FayzarHome) window.FayzarHome.applyMode();
+  });
 
   // রূপান্তর
   await page.click('#btnConvert');

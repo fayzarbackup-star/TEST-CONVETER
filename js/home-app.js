@@ -38,19 +38,23 @@
   const closeWorkspace = () => view('hero');
   const side = () => view('ws');
 
-  // ---------- মোড ----------
-  const mode = () => { const r = document.querySelector('input[name="ocrMode"]:checked'); return r ? r.value : 'template'; };
+  // ---------- মোড (স্বয়ংক্রিয় রাউটার js/auto-route.js) ----------
+  const mode = () => (W.FayzarAutoRoute ? W.FayzarAutoRoute.decide({}).mode : 'template');
   function applyMode() {
     const faithful = mode() === 'faithful';
     if (W.FayzarFaithfulUI) W.FayzarFaithfulUI.setMode(faithful ? 'faithful' : 'template');
-    $('modeNote').textContent = faithful
-      ? 'বর্ডার, টেবিল, লোগো ও অবস্থান যতটা সম্ভব মূলের মতো রাখা হবে (পরীক্ষামূলক)'
-      : 'প্রশ্নপত্র/নথি আমাদের নিয়মে সুন্দর করে সাজানো হবে';
+    const mn = $('modeNote');
+    if (mn) {
+      mn.textContent = faithful
+        ? 'বর্ডার, টেবিল, লোগো ও অবস্থান যতটা সম্ভব মূলের মতো রাখা হবে (পরীক্ষামূলক)'
+        : 'প্রশ্নপত্র/নথি আমাদের নিয়মে সুন্দর করে সাজানো হবে';
+    }
     $('dirLabel').hidden = faithful;
     $('ai-custom-directive-input').hidden = faithful;
     if ($('tplBox')) $('tplBox').hidden = faithful;   // ছাঁচ শুধু সাজানো-ফরম্যাটে
     if (typeof persist === 'function') persist();
   }
+  W.FayzarHome = { applyMode, mode };
 
   // ---------- T2: ছাঁচ-গ্যালারি (js/layout-engine/template-composer.js) ----------
   const TC = () => W.FayzarTemplateComposer;
@@ -93,8 +97,6 @@
     },
     onReadymade: (id) => { setTpl(id); persist(); }
   });
-  document.querySelectorAll('input[name="ocrMode"]').forEach((r) => r.addEventListener('change', applyMode));
-  if (/[?&]mode=faithful\b/.test(location.search)) { const r = document.querySelector('input[name="ocrMode"][value="faithful"]'); if (r) r.checked = true; }
   applyMode();
 
   // ---------- ফাইল নেওয়া ----------
@@ -254,7 +256,8 @@
     // ডায়াগনস্টিক খতিয়ান (js/diag-log.js) — পরীক্ষামূলক সময়ের জরিপ
     const files = []; const seenF = new Set();
     q.forEach((it) => { const f = it.file; if (f && !seenF.has(f)) { seenF.add(f); files.push({ name: f.name, size: f.size, type: f.type }); } });
-    if (W.FayzarDiag) W.FayzarDiag.begin({ mode: mode(), pages: q.length, files, directive: $('ai-custom-directive-input').value.trim().slice(0, 200) });
+    const routeDecide = W.FayzarAutoRoute ? W.FayzarAutoRoute.decide({ files, pages: q.length }) : { mode: mode(), reason: 'default' };
+    if (W.FayzarDiag) W.FayzarDiag.begin({ mode: routeDecide.mode, route: routeDecide.reason, pages: q.length, files, directive: $('ai-custom-directive-input').value.trim().slice(0, 200) });
     if (E.state) E.state.layoutColumns = 'auto';   // Part-18.9: নতুন ফাইলে কলাম আবার স্বয়ংক্রিয়
     progress('এআই প্রসেসিং শুরু হচ্ছে…', 2);
     $('wizardPreviewContent').value = '';
@@ -520,8 +523,6 @@
       const E = Eng();
       E.state.filesQueue = rec.items.map((it) => Object.assign({}, it));
       syncSelected();
-      const r = document.querySelector(`input[name="ocrMode"][value="${rec.mode === 'faithful' ? 'faithful' : 'template'}"]`);
-      if (r) r.checked = true;
       applyMode();
       $('ai-custom-directive-input').value = rec.directive || '';
       setTpl(rec.tpl || '');

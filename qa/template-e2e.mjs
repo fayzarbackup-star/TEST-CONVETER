@@ -54,9 +54,11 @@ try {
     const pick = cards.find((c) => c.dataset.tpl === 'exam-mcq');
     if (pick) pick.click();
     const checked = cards.filter((c) => c.getAttribute('aria-checked') === 'true').map((c) => c.dataset.tpl);
-    const f = document.querySelector('input[name="ocrMode"][value="faithful"]'); f.checked = true; f.dispatchEvent(new Event('change'));
+    localStorage.setItem('FZ_ON_FAITHFUL', '1');
+    if (window.FayzarHome) window.FayzarHome.applyMode();
     const hiddenInFaithful = document.getElementById('tplBox').hidden;
-    const t = document.querySelector('input[name="ocrMode"][value="template"]'); t.checked = true; t.dispatchEvent(new Event('change'));
+    localStorage.removeItem('FZ_ON_FAITHFUL');
+    if (window.FayzarHome) window.FayzarHome.applyMode();
     document.querySelector('#tplGallery .tpl-card[data-tpl=""]').click();
     return { n: cards.length, svgs: document.querySelectorAll('#tplGallery svg').length, groups: document.querySelectorAll('#tplGallery .tpl-group').length,
       checked, hiddenInFaithful, note: document.getElementById('tplNote').textContent };

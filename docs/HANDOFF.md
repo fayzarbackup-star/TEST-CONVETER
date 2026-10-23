@@ -1,13 +1,13 @@
-# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (AUTOPREP শেষ, push হয়েছে)
-- **শেষ:** ছবির অটো-প্রস্তুতি (`js/image-prep/auto-prep.js`, Flash-এর লেখা; FIX আর FIX2 দুই দফা)।
-  - Claude আমাদের পিসিতে নিজে চালিয়েছে। ঘোরানো ২৬/২৬, ভাগ ২১/২১, লেখা-কাটা ০।
-  - চোখে দেখা: T-3, T-14, T-22, T-6 সব ঠিক।
-  - run-all-এ ৮৪০৬ পাস, ০ ব্যর্থ। push হয়েছে main-এ।
-- **লেবেল:** `qa/auto-prep-labels.json`। T-3 = ২৭০° (Claude ঠিক করেছে)। Gemini-কে কখনো লেবেল বদলাতে দেবে না।
-- **Argon বিকল্প:** `scratch/inbox/AUTOPREP_ARGON/`-এ আছে। ফল ২৫/২৬, তাই বসানো হয়নি। এতে `__FZ_USE_OSD` tesseract ফলব্যাকের প্রস্তাব আছে, দরকার হলে দেখো।
-- **দুর্বলতা:** দিক-চেনার কৌশল মাত্র ২৬টি ছবিতে মেলানো, তাই অতিরিক্ত-মানানোর ঝুঁকি আছে। নতুন নমুনা এলে `node qa/auto-prep-real.mjs`-এ যোগ করে যাচাই করবে।
-- **পরের কাজ AUTOROUTE** (নির্দেশ এখনো লেখা হয়নি):
-  - মোড-বাছাই (`ocrMode`, home-app.js:42) সরিয়ে স্বয়ংক্রিয় রাউটার বসানো।
-  - তারপর মেশানো কলাম।
-  - শুরু করবে `scratch/agent-out/task_AUTOROUTE.md` লিখে, তারপর `tools\ag-agent.ps1 run AUTOROUTE 90`।
-- **নিয়ম:** Gemini-র "১০০%" রিপোর্ট বিশ্বাস নয়। লেবেল আর PNG সবসময় নিজে দেখবে।
+# হ্যান্ডঅফ — ২০২৬-১০-২৩ রাত (AUTOPREP + AUTOROUTE push হয়েছে)
+- **শেষ ১, AUTOPREP:** `js/image-prep/auto-prep.js`। ঘোরানো ২৬/২৬, ভাগ ২১/২১, লেখা-কাটা ০। Claude চালিয়ে আর PNG দেখে যাচাই করেছে। লেবেল `qa/auto-prep-labels.json`, Gemini এতে হাত দেবে না।
+- **শেষ ২, AUTOROUTE:**
+  - মোড-রেডিও সরানো হয়েছে। নতুন `js/auto-route.js` (`FayzarAutoRoute.decide`) সবসময় template পথ বাছে।
+  - হুবহু পথ চলে শুধু `?mode=faithful` বা localStorage `FZ_ON_FAITHFUL=1` দিয়ে।
+  - `index.html`-এ লুকানো `#modeNote` রাখা আছে, faithful-mode-ui-র নোঙর হিসেবে।
+  - যাচাই: run-all ৮৪১৪/০, home-app-e2e ২৭ পাস ০ ব্যর্থ। স্ক্রিপ্টটা শেষে ঝুলে থাকে, কিন্তু ফল ঠিক।
+- **Argon বিকল্প:** `scratch/inbox/AUTOPREP_ARGON/`। ফল ২৫/২৬, তাই বসানো হয়নি। এতে tesseract OSD-র প্রস্তাব আছে।
+- **পরের কাজ, মেশানো কলাম:** পাতার উপরে ১ কলাম, নিচে ২ কলাম।
+  - ধারণা: span চিহ্ন আর continuous section break। নতুন যুক্তি যাবে `js/layout-engine/`-এর আলাদা মডিউলে।
+  - শুরু করবে `scratch/agent-out/task_MIXCOL.md` লিখে, তারপর `tools\ag-agent.ps1 run MIXCOL 90`। আগে কোডে দেখে নেবে কলাম এখন কোথায় ঠিক হয় (`layoutColumns`, home-app.js:261)।
+- **পরে:** AUTOROUTE-এ প্রথম OCR-এর doc_type দেখে পথ বাছার নিয়ম (দরকার হলে)।
+- **নিয়ম:** Gemini-র "১০০%" রিপোর্ট বিশ্বাস করবে না, নিজে চালিয়ে দেখবে।
