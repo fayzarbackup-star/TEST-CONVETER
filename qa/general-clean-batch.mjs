@@ -32,7 +32,12 @@ for (const id of ids) {
   const r = { id };
   try {
     const cap = JSON.parse(fs.readFileSync(path.join(capRoot, id, 'capture.json'), 'utf8'));
-    const doc = AD.fromCapture(cap);   // Phase 4: ফ্রন্টম্যাটার থাকলে নকশা-পত্র অ্যাডাপ্টার, নইলে পুরোনোটা
+    let ocrText = null;
+    for (const od of ['out-1b3', 'out-1b2', 'out-1b']) {
+      const op = path.join(ROOT, 'scratch/samples/new/2026-10-22', od, id, 'ocr-text.md');
+      if (fs.existsSync(op)) { ocrText = fs.readFileSync(op, 'utf8'); break; }
+    }
+    const doc = AD.fromCapture(cap, { ocrText });   // Phase 4/4B: ফ্রন্টম্যাটার থাকলে নকশা-পত্র অ্যাডাপ্টার + অঙ্ক-লিপি + টেবিল-মেরামত
     const errs = DM.validate(doc);
     if (errs.length) throw new Error('validate: ' + errs[0]);
     const out = path.join(outRoot, id);

@@ -132,5 +132,70 @@ const check = (cond, name) => { assert.ok(cond, name); gates++; };
   check(!/gridSpan|vMerge/.test(oldXml) && (oldXml.match(/<w:tblHeader\/>/g) || []).length === 1, 'render: পুরোনো টেবিল অপরিবর্তিত (১ header সারি, মার্জ নেই)');
   void body;
 
+  // ৬) Phase 4B: digit-script.js & reconcileDigits
+  const DS = require(path.join(ROOT, 'js/layout-engine/digit-script.js'));
+  check(typeof DS.reconcileDigits === 'function', 'digit-script: reconcileDigits এক্সপোর্ট আছে');
+  check(DS.reconcileDigits('রোল ২৫', null) === 'রোল ২৫', 'digit-script: ocrText না থাকলে অপরিবর্তিত');
+
+  // T02 ক্যাশ টেস্ট: ইংরেজি অঙ্ক ≥৯৫%
+  const fs = require('node:fs');
+  const t02CapPath = path.join(ROOT, 'scratch/samples/new/2026-10-23/out-p4/T02_pdf/capture.json');
+  const t02OcrPath = path.join(ROOT, 'scratch/samples/new/2026-10-22/out-1b3/T02_pdf/ocr-text.md');
+  if (fs.existsSync(t02CapPath) && fs.existsSync(t02OcrPath)) {
+    const t02Cap = JSON.parse(fs.readFileSync(t02CapPath, 'utf8'));
+    const t02Ocr = fs.readFileSync(t02OcrPath, 'utf8');
+    const rec02 = DS.reconcileDigits(t02Cap.text, t02Ocr);
+    const en02 = (rec02.match(/[0-9]/g) || []).length;
+    const bn02 = (rec02.match(/[০-৯]/g) || []).length;
+    const pct02 = en02 / (en02 + bn02);
+    check(pct02 >= 0.95, `digit-script: T02 ইংরেজি অঙ্ক ${(pct02 * 100).toFixed(1)}% >= 95%`);
+  }
+
+  // T01 ও T05 ক্যাশ টেস্ট: বাংলা অঙ্ক অক্ষত
+  const t01CapPath = path.join(ROOT, 'scratch/samples/new/2026-10-23/out-p4/T01_jpeg/capture.json');
+  const t01OcrPath = path.join(ROOT, 'scratch/samples/new/2026-10-22/out-1b3/T01_jpeg/ocr-text.md');
+  if (fs.existsSync(t01CapPath) && fs.existsSync(t01OcrPath)) {
+    const t01Cap = JSON.parse(fs.readFileSync(t01CapPath, 'utf8'));
+    const t01Ocr = fs.readFileSync(t01OcrPath, 'utf8');
+    const rec01 = DS.reconcileDigits(t01Cap.text, t01Ocr);
+    const bn01 = (rec01.match(/[০-৯]/g) || []).length;
+    check(bn01 >= 45, `digit-script: T01 বাংলা অঙ্ক অক্ষত (${bn01})`);
+  }
+
+  // ৭) Phase 4B: টেবিল-মেরামত (T08, T24, T20)
+  // T08 টেবিল-মেরামত: ৭ সারি → ৩ সারি (hdr: 2)
+  const t08CapPath = path.join(ROOT, 'scratch/samples/new/2026-10-23/out-p4/T08_jpeg/capture.json');
+  if (fs.existsSync(t08CapPath)) {
+    const t08Cap = JSON.parse(fs.readFileSync(t08CapPath, 'utf8'));
+    const doc08 = AD.fromCapture(t08Cap);
+    const t08Blk = DM.flat(doc08).find((b) => b.role === 'table');
+    check(t08Blk && t08Blk.rows.length === 3, 'table-repair: T08 টেবিল ৭ সারি থেকে ৩ সারিতে মেরামত');
+  }
+
+  // T24 টেবিল-মেরামত: টেবিল ১ ৯ সারি → ৫ সারি
+  const t24CapPath = path.join(ROOT, 'scratch/samples/new/2026-10-23/out-p4/T24_jpeg/capture.json');
+  if (fs.existsSync(t24CapPath)) {
+    const t24Cap = JSON.parse(fs.readFileSync(t24CapPath, 'utf8'));
+    const doc24 = AD.fromCapture(t24Cap);
+    const tbls24 = DM.flat(doc24).filter((b) => b.role === 'table');
+    check(tbls24.length === 2 && tbls24[1].rows.length === 5, 'table-repair: T24 টেবিল ১ ৯ সারি থেকে ৫ সারিতে মেরামত');
+  }
+
+  // ৮) Phase 4B: FZ_ON_DESIGNSHEET সুইচ
+  const ede = g.ExportDualEngine;
+  if (ede && typeof ede._generalCleanRender === 'function') {
+    const fakeCap = { frontmatter: { docType: 'letter' }, blocks: [{ type: 'paragraph', text: 'টেস্ট নকশাপত্র' }] };
+    // ডিফল্ট বন্ধ অবস্থায় fromOcrMarkdown চলবে
+    delete process.env.FZ_ON_DESIGNSHEET;
+    delete g.__FZ_ON_DESIGNSHEET;
+    const rOff = ede._generalCleanRender('সাধারণ টেক্সট', { capture: fakeCap });
+    check(rOff && rOff.bodyXml.includes('সাধারণ টেক্সট'), 'switch: FZ_ON_DESIGNSHEET বন্ধে fromOcrMarkdown');
+    // চালু অবস্থায় fromCapture চলবে
+    process.env.FZ_ON_DESIGNSHEET = '1';
+    const rOn = ede._generalCleanRender('সাধারণ টেক্সট', { capture: fakeCap });
+    check(rOn && rOn.bodyXml.includes('টেস্ট নকশাপত্র'), 'switch: FZ_ON_DESIGNSHEET চালুর পরে fromCapture');
+    delete process.env.FZ_ON_DESIGNSHEET;
+  }
+
   console.log(`design-sheet: ${gates} gates PASS`);
 })().catch((e) => { console.error('FAIL', e && e.message || e); process.exit(1); });

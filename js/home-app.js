@@ -150,9 +150,19 @@
       cap.textContent = (item.name || '').replace(/\s*\(পৃষ্ঠা[^)]*\)\s*$/, '') + (item.pdfPage ? ' · পৃষ্ঠা ' + bn(item.pdfPage) : '');
       c.append(num, del, img, cap);
       if (W.FayzarImageTools && (item.base64 || (item.file && !item.isPdf))) {   // ১গ: ঘোরান / ২ পাতা ভাগ
+        const offPrep = !!(W.__FZ_OFF_IMAGEPREP || (typeof localStorage !== 'undefined' && localStorage.getItem('FZ_OFF_IMAGEPREP') === '1'));
         const tools = document.createElement('div');
         tools.className = 'pg-tools';
-        [['rot', '৯০° ঘোরান', 'rotate'], ['rotl', 'বাঁয়ে ঘোরান', 'rotateLeft'], ['split', '২ পাতা ভাগ করুন', 'split']].forEach(([k, label, act]) => {
+        const toolList = [
+          ['rot', '৯০° ঘোরান', 'rotate'],
+          ['rotl', 'বাঁয়ে ঘোরান', 'rotateLeft'],
+          ['split', '২ পাতা ভাগ করুন', 'split']
+        ];
+        if (!offPrep && W.FayzarCorners) {
+          toolList.push(['prep', 'সোজা/ক্রপ', 'prep']);
+          if (item.rawOriginal) toolList.push(['orig', 'মূল ছবি', 'orig']);
+        }
+        toolList.forEach(([k, label, act]) => {
           const b = document.createElement('button');
           b.type = 'button'; b.className = 'pg-tool pg-' + k; b.textContent = label;
           b.addEventListener('click', (e) => { e.stopPropagation(); editImage(i, act); });
@@ -160,6 +170,14 @@
           tools.appendChild(b);
         });
         c.appendChild(tools);
+
+        // ঝাপসা-চেনা (Laplacian variance ও উজ্জ্বলতা) সতর্কতা
+        if (!offPrep && W.FayzarLightBlur && item.isBlurry) {
+          const blurBadge = document.createElement('div');
+          blurBadge.style.cssText = 'position:absolute;bottom:30px;left:4px;right:4px;background:#dc2626;color:#fff;font-size:10px;padding:2px 4px;border-radius:4px;text-align:center;font-weight:bold;z-index:4;pointer-events:none;';
+          blurBadge.textContent = '✘ ছবি ঝাপসা — আবার ছবি তুলুন';
+          c.appendChild(blurBadge);
+        }
       }
       c.addEventListener('dragstart', (e) => { dragFrom = i; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
       c.addEventListener('dragend', () => { c.classList.remove('dragging'); dragFrom = -1; });
@@ -187,7 +205,22 @@
     try {
       if (act === 'rotate') q.splice(i, 1, await W.FayzarImageTools.rotate90(it));
       else if (act === 'rotateLeft') q.splice(i, 1, await W.FayzarImageTools.rotateLeft90(it));
-      else q.splice(i, 1, ...(await W.FayzarImageTools.splitTwo(it)));
+      else if (act === 'split') q.splice(i, 1, ...(await W.FayzarImageTools.splitTwo(it)));
+      else if (act === 'prep') {
+        if (W.FayzarCorners && W.FayzarCorners.openCornerEditor) {
+          W.FayzarCorners.openCornerEditor(it, (prepped) => {
+            q.splice(i, 1, prepped);
+            syncSelected(); render();
+          });
+          return;
+        }
+      } else if (act === 'orig') {
+        const orig = it.rawOriginal || it;
+        delete orig.rawOriginal;
+        q.splice(i, 1, orig);
+        syncSelected(); render();
+        return;
+      }
       syncSelected(); render();
     } catch (e) { console.error(e); toast('ছবি বদলানো যায়নি: ' + ((e && e.message) || e), 'error'); }
   }

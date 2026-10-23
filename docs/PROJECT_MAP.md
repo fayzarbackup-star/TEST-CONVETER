@@ -36,7 +36,7 @@
 | টেক্সট-রান (বিজয় ফন্ট, ইংরেজি/চিহ্ন আলাদা) | ⚙️ `export-dual-engine.js` / `js/layout-engine/text-run-processor.js` | `renderDocxRuns`, `isBijoyFont`, `TextRunProcessor` |
 | পাইপলাইন (পার্স → HTML প্রিভিউ → .doc) | ⚙️ `js/layout-engine/fayzar-pipeline.js` | `_parseByDocType`, `_renderHtml`, `exportDoc` |
 | একক রপ্তানি-পথ (মাস্টার → বিজয় → .doc) | `js/layout-engine/fayzar-export.js` | `FayzarExport.produce` |
-| নকশা-পত্র v1 (পর্ব ৪): ক্যাপচার-প্রম্পট `designSheet:true` + ট্যাগ-পার্সার (ফ্রন্টম্যাটার/ভূমিকা/g/hdr/cw/mg/[?]) → `fromDesignSheet`/`fromCapture` | `js/layout-engine/faithful/faithful-prompt.js`, `layout-tags.js`, `doc-model-adapters.js`, `doc-model.js`, `general-clean-layout.js` (tableXml); QA `qa/design-sheet-capture.mjs`, `qa/design-sheet-gate.mjs`, `tests/design-sheet.test.js` |
+| নকশা-পত্র v1 (পর্ব ৪): ক্যাপচার-প্রম্পট `designSheet:true` + ট্যাগ-পার্সার (ফ্রন্টম্যাটার/ভূমিকা/g/hdr/cw/mg/[?]) + অঙ্ক-লিপি মেলানো → `fromDesignSheet`/`fromCapture` | `js/layout-engine/faithful/faithful-prompt.js`, `layout-tags.js`, `digit-script.js`, `doc-model-adapters.js`, `doc-model.js`, `general-clean-layout.js` (tableXml); QA `qa/design-sheet-capture.mjs`, `qa/design-sheet-gate.mjs`, `tests/design-sheet.test.js` |
 | স্ব-যাচাই c1–c9 (পর্ব ৩; scorer-ও একই কোড) + অচেনা ধরন → GENERAL_CLEAN রাউটিং | `js/layout-engine/self-check.js` (selfCheck/computeChecks/showNotice), `export-dual-engine.js` (`generateModernDocx` → `_selfCheckGate`, `_generalCleanGeneric`), `qa/usability-score.mjs`, `qa/route-2b-compare.mjs`, `tests/self-check.test.js` |
 | GENERAL_CLEAN (পর্ব ২ক; ২খ থেকে অচেনা ধরনের ডিফল্ট পথ): doc-model → লেআউট | `js/layout-engine/doc-model.js`, `doc-model-adapters.js` (fromCaptureBlocks/fromOcrMarkdown), `general-clean-layout.js`; QA `qa/general-clean-batch.mjs`, `tests/general-clean.test.js` |
 | ক্লিন ওয়ার্ড (১-কলাম, টেবিল/সমীকরণ অক্ষত) + কপি/.txt/.md লেখা — T1 | `js/layout-engine/clean-composer.js` (+ `home-app.js` `cleanDownload`, `setStyle`) | `FayzarCleanComposer` (`parse`, `renderDocx`, `plainText`, `markdown`); QA `qa/clean-e2e.mjs` |
@@ -101,6 +101,7 @@
 | ডায়াগনস্টিক / "সমস্যা জানান" | `js/diag-log.js` | `FayzarDiag` |
 | হুবহু-মোড UI | `js/faithful-mode-ui.js` | `FayzarFaithfulUI` |
 | স্টুডিও (এডিটর) | `studio.html` + `js/studio-controller.js` | `StudioEditBridge`, `StudioFigurePipeline` |
+| ছবি প্রস্তুতি (পর্ব ১গ ও ৫: ঘোরানো, ভাগ, ৪ কোণা টানা/স্বয়ংক্রিয়, Homography, আলো সমান, ঝাপসা-চেনা) | `js/image-tools.js`, `js/image-prep/homography.js`, `js/image-prep/light-blur.js`, `js/image-prep/corners.js` (+ `home-app.js` UI) | `FayzarImageTools`, `FayzarHomography`, `FayzarLightBlur`, `FayzarCorners`; টেস্ট `tests/image-prep.test.mjs`, `tests/image-tools.test.mjs` |
 | পুরোনো OCR পাতা (লিংকহীন) | `ocr-classic.html` + `js/main.js` | — |
 
 ## ৩. টেস্ট ও যাচাই

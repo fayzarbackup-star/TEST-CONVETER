@@ -924,7 +924,19 @@
         const AD = ld('FayzarDocModelAdapters', '../layout-engine/doc-model-adapters.js');
         const GC = ld('FayzarGeneralCleanLayout', '../layout-engine/general-clean-layout.js');
         if (!AD || !GC || !this._getCleanComposerMod()) return null;
-        const doc = AD.fromOcrMarkdown(rawText);
+        const dsOn = (typeof process !== 'undefined' && process.env && process.env.FZ_ON_DESIGNSHEET) ||
+          g.__FZ_ON_DESIGNSHEET || (options && options.designSheet);
+        const cap = options && (options.capture || options.designSheetCapture);
+        let doc = null;
+        if (dsOn && cap && cap.frontmatter && typeof AD.fromCapture === 'function') {
+          doc = AD.fromCapture(cap, options);
+        } else if (dsOn && typeof rawText === 'string' && /^\s*---[\s\S]*?---\s*\n/m.test(rawText) && rawText.includes('[[B:t=')) {
+          const LT = ld('FayzarLayoutTags', '../layout-engine/faithful/layout-tags.js');
+          const parsed = LT && typeof LT.parse === 'function' ? LT.parse(rawText) : null;
+          doc = parsed && parsed.frontmatter ? AD.fromCapture(parsed, options) : AD.fromOcrMarkdown(rawText);
+        } else {
+          doc = AD.fromOcrMarkdown(rawText);
+        }
         const r = GC.render(doc, { generalClean: true });
         if (!r || !r.bodyXml || !r.bodyXml.trim()) return null;
         return r;
