@@ -347,7 +347,7 @@
     const rightInner = `<w:p><w:pPr><w:spacing w:before="0" w:after="0"/><w:jc w:val="center"/></w:pPr>${photoLabel}</w:p>`;
 
     return `<w:tbl><w:tblPr><w:tblW w:w="${effW}" w:type="dxa"/><w:tblBorders>${nilBorders}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
-      '<w:tblCellMar><w:top w:w="20" w:type="dxa"/><w:left w:w="0" w:type="dxa"/><w:bottom w:w="20" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar></w:tblPr>' +
+      '<w:tblCellMar><w:top w:w="20" w:type="dxa"/><w:left w:w="0" w:type="dxa"/><w:bottom w:w="20" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tblCellMar><w:tblCaption w:val="fz-layout"/></w:tblPr>' +   // লেআউট-ছকের স্থায়ী চিহ্ন
       `<w:tblGrid><w:gridCol w:w="${leftW}"/><w:gridCol w:w="${photoW}"/></w:tblGrid>` +
       `<w:tr><w:trPr><w:cantSplit/><w:trHeight w:val="${photoH}" w:hRule="atLeast"/></w:trPr>` +
       `<w:tc><w:tcPr><w:tcW w:w="${leftW}" w:type="dxa"/><w:tcBorders>${leftCellBorders}</w:tcBorders><w:vAlign w:val="center"/></w:tcPr>${leftInner}</w:tc>` +

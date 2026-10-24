@@ -43,14 +43,40 @@
   const JC = { l: 'left', c: 'center', r: 'right' };
 
   // ───────── ঘনত্ব → ফন্ট/মার্জিন ─────────
-  function estimatePages(doc, base, margin) {
+  // FZ_OFF_FIT1: এক-পাতার উৎসে লাইন-ফাঁক কমিয়ে আঁটানোর ধাপ বন্ধ (বন্ধ থাকলে আচরণ আগের মতো)
+  function isFit1Off() {
+    if (typeof FZ_OFF_FIT1 !== 'undefined' && FZ_OFF_FIT1) return true;
+    if (typeof window !== 'undefined' && window.FZ_OFF_FIT1) return true;
+    if (typeof globalThis !== 'undefined' && globalThis.FZ_OFF_FIT1) return true;
+    if (typeof process !== 'undefined' && process.env && process.env.FZ_OFF_FIT1 === '1') return true;
+    // ডিফল্ট বন্ধ (২০২৬-১০-২৪): T21 Word-এ এক পাতাতেই আঁটে, তবু ঘন লাইনে মাত্রা গায়ে লাগে — চালু শুধু FZ_ON_FIT1-এ
+    const on = (typeof window !== 'undefined' && window.FZ_ON_FIT1) || (typeof globalThis !== 'undefined' && globalThis.FZ_ON_FIT1) ||
+      (typeof process !== 'undefined' && process.env && process.env.FZ_ON_FIT1 === '1');
+    return !on;
+  }
+  // লাইন-ফাঁকের ধাপ (w:line ২৪০ = ১.০); ফন্ট ১০-এর নিচে নামে না
+  const FIT_TIERS = [{ line: 240, after: 40 }, { line: 215, after: 20 }, { line: 200, after: 0 }, { line: 200, after: 0, margin: 720 }];
+
+  // এক-পাতার উৎস ১০pt/০.৬" ধাপেও না আঁটলে: লাইন-ফাঁক (শেষে মার্জিন ০.৫") কমিয়ে প্রথম যে ধাপে আঁটে সেটি; কোনোটিতে না আঁটলে সবচেয়ে ঘনটি
+  function fitSpacing(doc, base, margin) {
+    let best = null;
+    for (let i = 0; i < FIT_TIERS.length; i++) {
+      const t = FIT_TIERS[i], m = t.margin || margin;
+      best = { spacing: { line: t.line, after: t.after }, margin: m, est: +estimatePages(doc, base, m, t).toFixed(2) };
+      if (best.est <= 1.05) break;
+    }
+    return best;
+  }
+
+  function estimatePages(doc, base, margin, sp) {
     const isMixed = doc.mixedColumns && !isMixColOff();
     const cols = doc.columns === 2 ? 2 : 1;
     const textW = PAGE.w - 2 * margin;
     const cpl1 = Math.max(10, Math.floor(textW / 1 / (base * 10)));
     const cpl2 = Math.max(10, Math.floor(textW / 2 / (base * 10)));
     const cpl = cols === 2 ? cpl2 : cpl1;
-    const lineH = base * 20 * 1.15 * 1.35;
+    const lineH = sp ? base * 20 * 1.35 * sp.line / 240 : base * 20 * 1.15 * 1.35;
+    const gap = sp ? sp.after : 80;   // sp না থাকলে আগের হিসাব
     const pageH = (PAGE.h - 2 * margin) * cols;
     let h = 0;
     const lines = (t, c) => String(t).split('\n').reduce((n, l) => n + Math.max(1, Math.ceil(l.length / c)), 0);
@@ -64,7 +90,7 @@
         const cc = Math.max(4, Math.floor(curCpl / n));
         b.rows.forEach((r) => { bh += Math.max.apply(null, r.map((c) => lines(c, cc))) * lineH + 100; });
       } else if (b.role === 'rule' || b.role === 'figure') bh += lineH;
-      else bh += lines(b.text, b.role === 'title' ? Math.floor(curCpl * 0.6) : curCpl) * lineH + 80;
+      else bh += lines(b.text, b.role === 'title' ? Math.floor(curCpl * 0.6) : curCpl) * lineH + gap;
 
       if (isMixed) {
         h += (curCols === 2 ? bh / 2 : bh);
@@ -79,7 +105,14 @@
     const n = Math.max(1, doc.pages.length);
     for (let i = 0; i < LADDER.length; i++) {
       const est = estimatePages(doc, LADDER[i].base, LADDER[i].margin);
-      if (est <= n * 1.05 || i === LADDER.length - 1) return Object.assign({ est: +est.toFixed(2) }, LADDER[i]);
+      if (est <= n * 1.05 || i === LADDER.length - 1) {
+        const res = Object.assign({ est: +est.toFixed(2) }, LADDER[i]);
+        if (n === 1 && est > 1.05 && !isFit1Off()) {   // ত্রুটি ২: এক পাতার উৎস, তবু >১ পাতা
+          const f = fitSpacing(doc, res.base, res.margin);
+          res.spacing = f.spacing; res.margin = f.margin; res.est = f.est;
+        }
+        return res;
+      }
     }
     return Object.assign({ est: null }, LADDER[0]);
   }
@@ -264,7 +297,7 @@
       const cell = (bs) => `<w:tc><w:tcPr><w:tcW w:w="${half}" w:type="dxa"/></w:tcPr>${bs.map((c) => renderBlock(c, { inCell: true })).join('') || '<w:p/>'}</w:tc>`;
       const none = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="nil"/>`).join('');
       return `<w:tbl><w:tblPr><w:tblW w:w="${textW}" w:type="dxa"/><w:tblBorders>${none}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
-        '<w:tblCellMar><w:left w:w="60" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tblCellMar></w:tblPr>' +
+        '<w:tblCellMar><w:left w:w="60" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tblCellMar><w:tblCaption w:val="fz-layout"/></w:tblPr>' +   // লেআউট-ছকের স্থায়ী চিহ্ন
         `<w:tblGrid><w:gridCol w:w="${half}"/><w:gridCol w:w="${textW - half}"/></w:tblGrid><w:tr><w:trPr><w:cantSplit/></w:trPr>${cell(b.left)}${cell(b.right)}</w:tr></w:tbl>` +
         '<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="120" w:lineRule="exact"/></w:pPr></w:p>';
     }
@@ -302,6 +335,16 @@
         stats.base = base;
         stats.margin = margin;
         formSpacing = prep.plan.spacing;
+        if (formSpacing && formSpacing.compact && doc.pages.length === 1 && !isFit1Off() && estimatePages(doc, base, margin, formSpacing) > 1.05) {
+          // ঘন ১-পাতার ফরম তবু না আঁটলে: আরও ঘন লাইন-ফাঁক (শেষ ধাপে মার্জিন ০.৫"), ফন্ট ১০-এর নিচে নয়
+          for (let i = 0; i < FIT_TIERS.length; i++) {
+            const t = FIT_TIERS[i];
+            if (t.line >= formSpacing.line && !t.margin) continue;
+            formSpacing = { after: t.after, line: t.line, compact: true };
+            if (t.margin) { margin = t.margin; textW = PAGE.w - 2 * margin; stats.margin = margin; }
+            if (estimatePages(doc, base, margin, formSpacing) <= 1.05) break;
+          }
+        }
       }
       stats.blocks = seq.length;
       items = F.renderFormItems(prep, { base, small, formPt: base, margin, textW, runs, para, lineRuns, style, sz, renderBlock, spacing: formSpacing });
@@ -364,7 +407,10 @@
       sectPr = `<w:sectPr>${pgSz}${pgMar}</w:sectPr>`;
     }
     let styles = C.stylesXml().split('w:val="24"').join(`w:val="${base * 2}"`);
-    if (useFormTpl && formSpacing) styles = F.adjustStylesXml(styles, formSpacing);
+    if (useFormTpl && formSpacing) {
+      styles = F.adjustStylesXml(styles, formSpacing);
+      if (!isFit1Off() && doc.pages.length === 1) stats.estPages = +estimatePages(doc, base, margin, formSpacing).toFixed(2);   // ফরমের আসল লাইন-ফাঁক ধরে হিসাব
+    } else if (pick.spacing && F) styles = F.adjustStylesXml(styles, pick.spacing);   // এক-পাতা আঁটানোর লাইন-ফাঁক
     return { bodyXml, sectPr, stylesXml: styles, stats };
   }
 

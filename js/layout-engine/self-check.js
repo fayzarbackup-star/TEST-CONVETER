@@ -85,6 +85,8 @@
   const hasRealBorder = (s) => [...s.matchAll(/w:val="(\w+)"/g)].some((m) => !/^(nil|none)$/.test(m[1]));
   // লেআউট-ছক = সব বর্ডার nil/none (যেমন পাশাপাশি বসানোর ২-ঘরের ছক); c3 এগুলো গোনে না
   function isLayoutTable(xml) {
+    const pr = xml.match(/<w:tblPr>[\s\S]*?<\/w:tblPr>/);   // বাইরের ছকের নিজের tblPr-এ লেআউট-চিহ্ন থাকলে গোনা হবে না
+    if (pr && /<w:tblCaption\s+w:val="fz-layout"\s*\/>/.test(pr[0])) return true;
     const tb = xml.match(/<w:tblBorders>[\s\S]*?<\/w:tblBorders>/);
     const tc = xml.match(/<w:tcBorders>[\s\S]*?<\/w:tcBorders>/g) || [];
     if (tb && hasRealBorder(tb[0])) return false;

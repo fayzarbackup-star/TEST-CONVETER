@@ -809,3 +809,8 @@
   - Word COM পরিমাপে `t06.docx`-এর ৫০টি অপশন প্যারাগ্রাফের ওভারফ্লো = ০ (Col 1 max X = 234 pt / সীমা 287 pt; Col 2 max X = 518.4 pt / সীমা 552.1 pt)।
   - নতুন `t06.pdf` ও `scratch/agent-out/mixcol/t06.png` রেন্ডার করা হয়েছে।
   - টেস্ট: `tests/column-bands.test.mjs` ১১/১১ পাস (গেটস ক-ট), `tests/run-regression.js` ৩৩/৩৩ পাস, ২১ capture স্ক্যানে mixed=false বহাল।
+- **২০২৬-১০-২৪ সকাল — পর্ব ৭ (CONTROL7):**
+  - রাত ১:৫০-এর push-এর পর সেশন থেমে যায়, সারারাত কাজ হয়নি। শিক্ষা: push-এর পরে সঙ্গে সঙ্গে পরের কাজ পাঠাতে হবে।
+  - u/3 Argon OCR-ক্যাশ (হ্যাশ, FZ_OFF_OCRCACHE) আর লুকানো legacy সুইচ (?engine=legacy) বানিয়েছে। ব্রিজ timeout দেখালেও বান্ডেল পৌঁছেছিল।
+  - Claude বসিয়েছে আর টেস্ট চালিয়েছে, ফল: control7 ৯/৯, run-all ৮৪৪২/০। push: 2a68f63।
+  - legacy ফ্ল্যাগ ইঞ্জিন পর্যন্ত পৌঁছাত না। Claude home-app syncLegacyFlags-এ এক লাইন যোগ করেছে, এখন FZ_OFF_MIXCOL, FZ_OFF_FORMTPL আর __FZ_OFF_AUTOPREP-ও চালু হয়। push: 890812b।
