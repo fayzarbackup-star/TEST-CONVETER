@@ -38,10 +38,25 @@
   const closeWorkspace = () => view('hero');
   const side = () => view('ws');
 
-  // ---------- মোড (স্বয়ংক্রিয় রাউটার js/auto-route.js) ----------
-  const mode = () => (W.FayzarAutoRoute ? W.FayzarAutoRoute.decide({}).mode : 'template');
+  // ---------- মোড ও পুরোনো পদ্ধতি (স্বয়ংক্রিয় রাউটার js/auto-route.js) ----------
+  const decideRoute = (sig) => (W.FayzarAutoRoute ? W.FayzarAutoRoute.decide(sig || {}) : { mode: 'template', reason: 'default', legacy: false });
+  const mode = () => decideRoute({}).mode;
+  const isLegacy = () => !!decideRoute({}).legacy;
+  const isCacheOff = () => !!(W.FayzarSession && W.FayzarSession.isOcrCacheOff ? W.FayzarSession.isOcrCacheOff() : (W.__FZ_OFF_OCRCACHE || (typeof localStorage !== 'undefined' && localStorage.getItem('FZ_OFF_OCRCACHE') === '1')));
+  function syncLegacyFlags(leg) {
+    const on = leg !== undefined ? !!leg : isLegacy();
+    W.__FZ_LEGACY = on;
+    if (Eng() && Eng().state) {
+      Eng().state.legacy = on;
+      Eng().state.skipNewEngines = on;
+      Eng().state.designSheet = !on;
+    }
+    return on;
+  }
   function applyMode() {
-    const faithful = mode() === 'faithful';
+    const dec = decideRoute({});
+    const faithful = dec.mode === 'faithful';
+    syncLegacyFlags(dec.legacy);
     if (W.FayzarFaithfulUI) W.FayzarFaithfulUI.setMode(faithful ? 'faithful' : 'template');
     const mn = $('modeNote');
     if (mn) {
@@ -54,7 +69,16 @@
     if ($('tplBox')) $('tplBox').hidden = faithful;   // ছাঁচ শুধু সাজানো-ফরম্যাটে
     if (typeof persist === 'function') persist();
   }
-  W.FayzarHome = { applyMode, mode };
+  W.FayzarHome = {
+    applyMode,
+    mode,
+    isLegacy,
+    syncLegacyFlags,
+    convert: () => convert(),
+    acceptFiles: (l, a) => acceptFiles(l, a),
+    openEntry: (id) => openEntry(id),
+    downloadEntry: (id, fmt) => downloadEntry(id, fmt)
+  };
 
   // ---------- T2: ছাঁচ-গ্যালারি (js/layout-engine/template-composer.js) ----------
   const TC = () => W.FayzarTemplateComposer;
@@ -112,9 +136,10 @@
     grid.classList.add('loading');
     grid.setAttribute('data-msg', 'পাতা প্রস্তুত হচ্ছে…');
     try {
+      syncLegacyFlags();
       await E.handleFiles(files);                 // ইঞ্জিন queue নতুন করে বানায়
       let newItems = queue();
-      const offAuto = !!(W.__FZ_OFF_AUTOPREP || W.__FZ_OFF_IMAGEPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_AUTOPREP') === '1' || localStorage.getItem('FZ_OFF_IMAGEPREP') === '1')));
+      const offAuto = !!(isLegacy() || W.__FZ_OFF_AUTOPREP || W.__FZ_OFF_IMAGEPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_AUTOPREP') === '1' || localStorage.getItem('FZ_OFF_IMAGEPREP') === '1')));
       if (!offAuto && W.FayzarAutoPrep && W.FayzarAutoPrep.autoPrep) {
         const preppedNew = [];
         const total = newItems.length;
@@ -178,7 +203,7 @@
       cap.textContent = (item.name || '').replace(/\s*\(পৃষ্ঠা[^)]*\)\s*$/, '') + (item.pdfPage ? ' · পৃষ্ঠা ' + bn(item.pdfPage) : '');
       c.append(num, del, img, cap);
       // ঝাপসা-সতর্কতা ব্যাজ (Laplacian variance ও উজ্জ্বলতা)
-      const offPrep = !!(W.__FZ_OFF_IMAGEPREP || W.__FZ_OFF_AUTOPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_IMAGEPREP') === '1' || localStorage.getItem('FZ_OFF_AUTOPREP') === '1')));
+      const offPrep = !!(isLegacy() || W.__FZ_OFF_IMAGEPREP || W.__FZ_OFF_AUTOPREP || (typeof localStorage !== 'undefined' && (localStorage.getItem('FZ_OFF_IMAGEPREP') === '1' || localStorage.getItem('FZ_OFF_AUTOPREP') === '1')));
       if (!offPrep && W.FayzarLightBlur && item.isBlurry) {
         const blurBadge = document.createElement('div');
         blurBadge.style.cssText = 'position:absolute;bottom:8px;left:4px;right:4px;background:#dc2626;color:#fff;font-size:10px;padding:2px 4px;border-radius:4px;text-align:center;font-weight:bold;z-index:4;pointer-events:none;';
@@ -256,30 +281,74 @@
     // ডায়াগনস্টিক খতিয়ান (js/diag-log.js) — পরীক্ষামূলক সময়ের জরিপ
     const files = []; const seenF = new Set();
     q.forEach((it) => { const f = it.file; if (f && !seenF.has(f)) { seenF.add(f); files.push({ name: f.name, size: f.size, type: f.type }); } });
-    const routeDecide = W.FayzarAutoRoute ? W.FayzarAutoRoute.decide({ files, pages: q.length }) : { mode: mode(), reason: 'default' };
-    if (W.FayzarDiag) W.FayzarDiag.begin({ mode: routeDecide.mode, route: routeDecide.reason, pages: q.length, files, directive: $('ai-custom-directive-input').value.trim().slice(0, 200) });
+    const routeDecide = decideRoute({ files, pages: q.length });
+    const legacy = syncLegacyFlags(routeDecide.legacy);
+    if (W.FayzarDiag) W.FayzarDiag.begin({ mode: routeDecide.mode, route: routeDecide.reason, legacy, pages: q.length, files, directive: $('ai-custom-directive-input').value.trim().slice(0, 200) });
     if (E.state) E.state.layoutColumns = 'auto';   // Part-18.9: নতুন ফাইলে কলাম আবার স্বয়ংক্রিয়
     progress('এআই প্রসেসিং শুরু হচ্ছে…', 2);
     $('wizardPreviewContent').value = '';
     showText(false);
     try {
-      if (mode() === 'faithful') {
-        const res = await W.FayzarFaithfulUI.runWizard({ fileName: baseName });
-        lastRun = { mode: 'faithful', ir: res && res.ir, cap: res && res.cap, baseName };
-        const pages = res && res.ir ? res.ir.pages.length : q.length;
-        const incomplete = res && res.cap && (res.cap.issues || []).some((i) => i.kind === 'still_incomplete');
+      const offCache = isCacheOff();
+      if (routeDecide.mode === 'faithful') {
+        if (!offCache && W.FayzarSession && typeof W.FayzarSession.runWithOcrCache === 'function') {
+          const cRes = await W.FayzarSession.runWithOcrCache({
+            items: q,
+            mode: 'faithful',
+            directive: $('ai-custom-directive-input').value,
+            autoSave: false,
+            runOcr: async () => W.FayzarFaithfulUI.runWizard({ fileName: baseName, legacy })
+          });
+          let ir = cRes.ir, cap = cRes.cap;
+          if (cRes.hit && cap && W.FayzarFaithful && typeof W.FayzarFaithful.layout === 'function') {
+            progress('আগের OCR ক্যাশ থেকে লেআউট তৈরি হচ্ছে…', 80);
+            ir = await W.FayzarFaithful.layout(cap, q, { legacy });
+          }
+          lastRun = { mode: 'faithful', ir, cap, baseName, cacheKey: cRes.cacheKey, contentHash: cRes.contentHash, promptVersion: cRes.promptVersion, legacy };
+        } else {
+          const res = await W.FayzarFaithfulUI.runWizard({ fileName: baseName, legacy });
+          lastRun = { mode: 'faithful', ir: res && res.ir, cap: res && res.cap, baseName, legacy };
+        }
+        const pages = lastRun.ir && lastRun.ir.pages ? lastRun.ir.pages.length : q.length;
+        const incomplete = lastRun.cap && (lastRun.cap.issues || []).some((i) => i.kind === 'still_incomplete');
         $('doneTitle').textContent = 'আপনার হুবহু-লেআউট Word ফাইল প্রস্তুত!';
         $('doneMeta').textContent = bn(pages) + ' পাতা' + (incomplete ? ' · কিছু অংশ অসম্পূর্ণ (Gemini থেমেছে)' : '');
       } else {
         // T2: বাছা ছাঁচ ⇒ প্রম্পটে ইঙ্গিত (ইঞ্জিনের state.templateHint), ফলাফলে ফ্রন্টম্যাটার তালাবদ্ধ
         // T3d: "আমার টেমপ্লেট" বাছা থাকলে সাধারণ OCR-এর লেখা ছাঁচে বসে (হুবহু-নকশা ⇒ হুবহু-ডাউনলোড পথ)
-        const myTpl = MT() ? MT().selectedId() : '';
-        const tpl = !myTpl && tplId && TC() ? TC().byId(tplId) : null;
+        // CONTROL7: legacy চালু থাকলে নতুন পর্ব (FORMTPL) এড়িয়ে আগের পথে চলে
+        const myTpl = !legacy && MT() ? MT().selectedId() : '';
+        const tpl = !legacy && !myTpl && tplId && TC() ? TC().byId(tplId) : null;
         if (E.state) E.state.templateHint = tpl ? TC().promptHint(tpl) : '';
-        let res;
-        try { res = await E.startUnifiedOcr('none', (t, p) => progress(t, p), (chunk) => { $('wizardPreviewContent').value = chunk; }); }
-        finally { if (E.state) E.state.templateHint = ''; }
-        let text = (res && res.unicode) || (E.state && E.state.unicodeText) || '';
+        let text = '', rawText = '', cacheKey = '', contentHash = '', promptVersion = '';
+        if (!offCache && W.FayzarSession && typeof W.FayzarSession.runWithOcrCache === 'function') {
+          try {
+            const cRes = await W.FayzarSession.runWithOcrCache({
+              items: q,
+              mode: 'template',
+              directive: $('ai-custom-directive-input').value,
+              autoSave: false,
+              runOcr: async () => {
+                const res = await E.startUnifiedOcr('none', (t, p) => progress(t, p), (chunk) => { $('wizardPreviewContent').value = chunk; });
+                const u = (res && res.unicode) || (E.state && E.state.unicodeText) || '';
+                return { unicode: u, text: u, ocrText: u };
+              }
+            });
+            rawText = cRes.ocrText || cRes.text || (E.state && E.state.unicodeText) || '';
+            text = rawText;
+            cacheKey = cRes.cacheKey || '';
+            contentHash = cRes.contentHash || '';
+            promptVersion = cRes.promptVersion || '';
+            if (cRes.hit) progress('আগের OCR ক্যাশ থেকে লেআউট প্রস্তুত হচ্ছে…', 90);
+            if (E.state) E.state.unicodeText = text;
+          } finally { if (E.state) E.state.templateHint = ''; }
+        } else {
+          let res;
+          try { res = await E.startUnifiedOcr('none', (t, p) => progress(t, p), (chunk) => { $('wizardPreviewContent').value = chunk; }); }
+          finally { if (E.state) E.state.templateHint = ''; }
+          text = (res && res.unicode) || (E.state && E.state.unicodeText) || '';
+          rawText = text;
+        }
         if (!text.trim()) throw new Error('লেখা পাওয়া যায়নি — ফাইলটি পরিষ্কার কিনা দেখুন');
         let warn = [];
         if (tpl) {
@@ -290,12 +359,12 @@
         $('wizardPreviewContent').value = text;
         if (myTpl) {
           const r = await MT().composeFromText(text, { id: myTpl, onProgress: (t, p) => progress(t, p) });
-          lastRun = { mode: 'faithful', ir: r.ir, baseName, custom: myTpl };
+          lastRun = { mode: 'faithful', ir: r.ir, baseName, custom: myTpl, ocrText: rawText, cacheKey, contentHash, promptVersion, legacy };
           $('doneTitle').textContent = 'আপনার ছাঁচের Word ফাইল প্রস্তুত!';
           $('doneMeta').textContent = bn(r.ir.pages.length) + ' পাতা · আমার টেমপ্লেট: ' + r.tpl.name;
           MT().warnings(r.report).forEach((w) => toast(w, 'warning'));
         } else {
-          lastRun = { mode: 'template', baseName, tpl: tpl ? tpl.id : '' };
+          lastRun = { mode: 'template', baseName, tpl: tpl ? tpl.id : '', ocrText: rawText, cacheKey, contentHash, promptVersion, legacy };
           $('doneTitle').textContent = 'আপনার Word ফাইল প্রস্তুত!';
           $('doneMeta').textContent = bn(q.length) + ' পাতা · ' + (tpl ? 'ছাঁচ: ' + tpl.label : 'তিন ফরম্যাটেই নামাতে পারবেন');
         }
@@ -307,11 +376,11 @@
       if (W.FayzarDiag) {
         const txt = $('wizardPreviewContent').value || '';
         const cls = W.DocClassifier ? W.DocClassifier.classify(txt) : null;
-        W.FayzarDiag.end({ ok: true, mode: lastRun.mode, chars: txt.length, layout: cls && cls.type, reason: cls && cls.reason, frontmatter: (txt.match(/^---\s*[\r\n]([\s\S]*?)[\r\n]---/) || [])[1] || '' });
+        W.FayzarDiag.end({ ok: true, mode: lastRun.mode, legacy: !!lastRun.legacy, chars: txt.length, layout: cls && cls.type, reason: cls && cls.reason, frontmatter: (txt.match(/^---\s*[\r\n]([\s\S]*?)[\r\n]---/) || [])[1] || '' });
       }
       bindDownloads();
       view('result');
-      recordHistory(q, baseName);
+      await recordHistory(q, baseName);
     } catch (e) { fail(e); }
   }
   function bindDownloads() {
@@ -319,12 +388,13 @@
     const map = { wizardDlDocBtn: ['doc', 'doc'], wizardDlDocxBtn: ['bijoy_docx', 'docx-bijoy'], wizardDlUnicodeDocxBtn: ['unicode_docx', 'docx-unicode'] };
     Object.entries(map).forEach(([id, [tplFmt, fFmt]]) => {
       $(id).onclick = async () => {
+        const leg = syncLegacyFlags();
         if (W.FayzarDiag) W.FayzarDiag.note('download', faithful ? fFmt : tplFmt);
         try {
           if (faithful) await faithfulDownload(fFmt);
           else if (cleanStyle) await cleanDownload(fFmt);
-          else if (W.__FZ_ON_RELAYOUT && W.FayzarRelayout && W.FayzarRelayout.hasCustomExport()) await W.FayzarRelayout.download(fFmt);
-          else await Eng().downloadWordDocument(tplFmt);
+          else if (!leg && W.__FZ_ON_RELAYOUT && W.FayzarRelayout && W.FayzarRelayout.hasCustomExport()) await W.FayzarRelayout.download(fFmt);
+          else await Eng().downloadWordDocument(tplFmt, { legacy: leg });
         } catch (e) { toast('ফাইল তৈরি হয়নি: ' + ((e && e.message) || e), 'error'); }
       };
     });
@@ -390,7 +460,7 @@
     }
     toast('ক্লিন Word ফাইল প্রস্তুত হচ্ছে…', 'info');
     const master = await C.renderDocx(body);
-    const res = await X.produce(body, { format: fmt, masterDocx: master, figures: figures || undefined, pageSize: 'a4', margin: 'normal' });
+    const res = await X.produce(body, { format: fmt, masterDocx: master, figures: figures || undefined, pageSize: 'a4', margin: 'normal', legacy: isLegacy() });
     const ext = fmt === 'doc' ? '_ক্লিন_Word2003.doc' : (fmt === 'docx-bijoy' ? '_ক্লিন_Bijoy.docx' : '_ক্লিন_Unicode.docx');
     saveBlob(res.blob, ((lastRun && lastRun.baseName) || 'Document') + ext);
   }
@@ -486,7 +556,7 @@
     const X = W.FayzarFaithful;
     if (!X || !lastRun || !lastRun.ir) throw new Error('হুবহু-লেআউটের ফলাফল পাওয়া যায়নি — আবার কনভার্ট করুন');
     toast('হুবহু-লেআউট ফাইল প্রস্তুত হচ্ছে…', 'info');
-    const res = await X.produce(lastRun.ir, fmt, { pageSize: 'a4', margin: 'normal' });
+    const res = await X.produce(lastRun.ir, fmt, { pageSize: 'a4', margin: 'normal', legacy: isLegacy() });
     const tag = lastRun.custom ? '_ছাঁচ' : '_হুবহু';   // T3d: আমার টেমপ্লেট
     const ext = fmt === 'doc' ? tag + '_Word2003.doc' : (fmt === 'docx-bijoy' ? tag + '_Bijoy.docx' : tag + '_Unicode.docx');
     saveBlob(res.blob, (lastRun.baseName || 'Document') + ext);
@@ -498,7 +568,7 @@
     clearTimeout(saveTimer);
     const run = () => {
       if (current === 'hero' || !queue().length) { W.FayzarSession.clear(); return; }
-      W.FayzarSession.save({
+      const rec = {
         view: busy ? 'proc' : current,
         mode: mode(),
         directive: $('ai-custom-directive-input').value,
@@ -509,7 +579,14 @@
         run: lastRun ? { mode: lastRun.mode, baseName: lastRun.baseName, custom: lastRun.custom || '' } : null,
         done: { title: $('doneTitle').textContent, meta: $('doneMeta').textContent },
         cap: lastRun && lastRun.mode === 'faithful' ? lastRun.cap : undefined
-      });
+      };
+      if (!isCacheOff() && lastRun) {
+        if (lastRun.ocrText) rec.ocrText = lastRun.ocrText;
+        if (lastRun.cacheKey) rec.cacheKey = lastRun.cacheKey;
+        if (lastRun.contentHash) rec.contentHash = lastRun.contentHash;
+        if (lastRun.promptVersion) rec.promptVersion = lastRun.promptVersion;
+      }
+      W.FayzarSession.save(rec);
     };
     if (now) run(); else saveTimer = setTimeout(run, 300);
   }
@@ -532,16 +609,16 @@
       if (rec.done) { $('doneTitle').textContent = rec.done.title || 'আপনার Word ফাইল প্রস্তুত!'; $('doneMeta').textContent = rec.done.meta || ''; }
       if (rec.view === 'result' && rec.run && rec.run.mode === 'template' && (rec.text || '').trim()) {
         E.state.unicodeText = rec.text;
-        lastRun = { mode: 'template', baseName: rec.run.baseName };
+        lastRun = { mode: 'template', baseName: rec.run.baseName, ocrText: rec.ocrText || rec.text, cacheKey: rec.cacheKey, contentHash: rec.contentHash, promptVersion: rec.promptVersion };
         bindDownloads(); view('result');
       } else if (rec.view === 'result' && rec.run && rec.run.custom && MT() && (rec.text || '').trim()) {
         // T3d: আমার টেমপ্লেট — সেভ করা OCR-লেখা আবার ছাঁচে (ম্যাপ ক্যাশে থাকে, নতুন খরচ নেই)
         const r = await MT().composeFromText(rec.text, { id: rec.run.custom });
-        lastRun = { mode: 'faithful', ir: r.ir, baseName: rec.run.baseName, custom: rec.run.custom };
+        lastRun = { mode: 'faithful', ir: r.ir, baseName: rec.run.baseName, custom: rec.run.custom, ocrText: rec.ocrText || rec.text, cacheKey: rec.cacheKey, contentHash: rec.contentHash, promptVersion: rec.promptVersion };
         bindDownloads(); view('result');
       } else if (rec.view === 'result' && rec.run && rec.run.mode === 'faithful' && rec.cap && W.FayzarFaithful) {
-        const ir = await W.FayzarFaithful.layout(rec.cap, queue(), {});
-        lastRun = { mode: 'faithful', ir, cap: rec.cap, baseName: rec.run.baseName };
+        const ir = await W.FayzarFaithful.layout(rec.cap, queue(), { legacy: isLegacy() });
+        lastRun = { mode: 'faithful', ir, cap: rec.cap, baseName: rec.run.baseName, cacheKey: rec.cacheKey, contentHash: rec.contentHash, promptVersion: rec.promptVersion };
         bindDownloads(); view('result');
       } else {
         view('ws');
@@ -608,8 +685,8 @@
   const histPanel = $('histPanel'), histList = $('histList');
   function makeThumb(item) {
     return new Promise((resolve) => {
-      if (!item || (item.isPdf && !item.base64)) { resolve(''); return; }
-      const src = item.base64 || (item.file ? URL.createObjectURL(item.file) : '');
+      if (!item || (item.isPdf && !item.base64) || typeof Image === 'undefined') { resolve(''); return; }
+      const src = item.base64 || (item.file && typeof URL !== 'undefined' && URL.createObjectURL ? URL.createObjectURL(item.file) : '');
       if (!src) { resolve(''); return; }
       const img = new Image();
       img.onload = () => {
@@ -632,7 +709,18 @@
       baseName, pages: q.length, mode: lastRun.mode,
       thumb: await makeThumb(q[0])
     };
-    if (lastRun.mode === 'faithful') entry.ir = lastRun.ir; else entry.text = $('wizardPreviewContent').value;
+    if (lastRun.mode === 'faithful') {
+      entry.ir = lastRun.ir;
+      if (!isCacheOff() && lastRun.cap) entry.cap = lastRun.cap;
+    } else {
+      entry.text = $('wizardPreviewContent').value;
+    }
+    if (!isCacheOff()) {
+      if (lastRun.ocrText) entry.ocrText = lastRun.ocrText;
+      if (lastRun.cacheKey) entry.cacheKey = lastRun.cacheKey;
+      if (lastRun.contentHash) entry.contentHash = lastRun.contentHash;
+      if (lastRun.promptVersion) entry.promptVersion = lastRun.promptVersion;
+    }
     historyId = await W.FayzarSession.historyAdd(entry);
     updateHistCount();
   }
@@ -688,23 +776,26 @@
     document.body.classList.remove('hist-on');
     if (location.hash === '#history') history.replaceState(null, '', location.pathname + location.search);
   }
-  // ইতিহাসের এন্ট্রি → ফলাফল-পাতা (সব ডাউনলোড, লেখা ঠিক করা, স্টুডিও)
+  // ইতিহাসের এন্ট্রি → ফলাফল-পাতা (সব ডাউনলোড, লেখা ঠিক করা, স্টুডিও; Gemini ডাকা হয় না)
   async function openEntry(id) {
     if (busy) { toast('রূপান্তর চলছে — শেষ হলে খুলুন', 'warning'); return; }
     const h = await W.FayzarSession.historyGet(id);
     if (!h) { toast('এন্ট্রিটি পাওয়া যায়নি', 'error'); return; }
-    if (h.mode === 'faithful' && !h.ir) { toast('এই হুবহু-ফাইলের ডেটা রাখা যায়নি — আবার কনভার্ট করুন', 'warning'); return; }
+    if (h.mode === 'faithful' && !h.ir && !(h.cap && W.FayzarFaithful && W.FayzarFaithful.layout)) { toast('এই হুবহু-ফাইলের ডেটা রাখা যায়নি — আবার কনভার্ট করুন', 'warning'); return; }
     const E = Eng();
+    const leg = syncLegacyFlags();
     fromHistory = true; historyId = id;
     if (h.mode === 'faithful') {
-      lastRun = { mode: 'faithful', ir: h.ir, baseName: h.baseName };
+      const ir = h.ir || await W.FayzarFaithful.layout(h.cap, [], { legacy: leg });
+      lastRun = { mode: 'faithful', ir, cap: h.cap, baseName: h.baseName, cacheKey: h.cacheKey, contentHash: h.contentHash, promptVersion: h.promptVersion, legacy: leg };
       $('wizardPreviewContent').value = '';
       $('doneTitle').textContent = 'হুবহু-লেআউট Word ফাইল (ইতিহাস থেকে)';
     } else {
-      E.state.unicodeText = h.text || '';
-      if (!queue().length) E.state.selectedFile = new File([''], h.baseName || 'Document');
-      lastRun = { mode: 'template', baseName: h.baseName };
-      $('wizardPreviewContent').value = h.text || '';
+      const txt = h.text || h.ocrText || '';
+      E.state.unicodeText = txt;
+      if (!queue().length && typeof File !== 'undefined') E.state.selectedFile = new File([''], h.baseName || 'Document');
+      lastRun = { mode: 'template', baseName: h.baseName, ocrText: h.ocrText || txt, cacheKey: h.cacheKey, contentHash: h.contentHash, promptVersion: h.promptVersion, legacy: leg };
+      $('wizardPreviewContent').value = txt;
       $('doneTitle').textContent = 'Word ফাইল (ইতিহাস থেকে)';
     }
     $('doneMeta').textContent = (h.name || '') + ' · ' + bn(h.pages || 1) + ' পাতা · ' + ago(h.at);
@@ -713,20 +804,24 @@
     closeHistory();
     view('result');
   }
-  // প্যানেল থেকে সরাসরি .doc — বর্তমান কাজ না বদলে
+  // প্যানেল থেকে সরাসরি .doc — বর্তমান কাজ না বদলে (Gemini ডাকা হয় না)
   async function downloadEntry(id, fmt) {
     const h = await W.FayzarSession.historyGet(id);
     if (!h) return;
     try {
+      const leg = syncLegacyFlags();
       if (h.mode === 'faithful') {
-        if (!h.ir) throw new Error('এই হুবহু-ফাইলের ডেটা রাখা যায়নি');
-        const keep = lastRun; lastRun = { mode: 'faithful', ir: h.ir, baseName: h.baseName };
+        const ir = h.ir || (h.cap && W.FayzarFaithful && W.FayzarFaithful.layout ? await W.FayzarFaithful.layout(h.cap, [], { legacy: leg }) : null);
+        if (!ir) throw new Error('এই হুবহু-ফাইলের ডেটা রাখা যায়নি');
+        const keep = lastRun; lastRun = { mode: 'faithful', ir, cap: h.cap, baseName: h.baseName, legacy: leg };
         try { await faithfulDownload(fmt === 'doc' ? 'doc' : fmt); } finally { lastRun = keep; }
       } else {
         const E = Eng(), st = E.state;
         const keep = { text: st.unicodeText, sel: st.selectedFile, q: st.filesQueue };
-        st.unicodeText = h.text || ''; st.selectedFile = new File([''], h.baseName || 'Document'); st.filesQueue = [];
-        try { await E.downloadWordDocument(fmt === 'doc' ? 'doc' : fmt); } finally { st.unicodeText = keep.text; st.selectedFile = keep.sel; st.filesQueue = keep.q; }
+        st.unicodeText = h.text || h.ocrText || '';
+        if (typeof File !== 'undefined') st.selectedFile = new File([''], h.baseName || 'Document');
+        st.filesQueue = [];
+        try { await E.downloadWordDocument(fmt === 'doc' ? 'doc' : fmt, { legacy: leg }); } finally { st.unicodeText = keep.text; st.selectedFile = keep.sel; st.filesQueue = keep.q; }
       }
     } catch (e) { toast('ফাইল তৈরি হয়নি: ' + ((e && e.message) || e), 'error'); }
   }

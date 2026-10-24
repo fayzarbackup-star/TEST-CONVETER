@@ -5,6 +5,7 @@
  * (template বনাম faithful) নির্ধারণ করে।
  * বর্তমানে ডিফল্ট: 'template' (সাজানো ফরম্যাট)।
  * লুকানো ওভাররাইড: URL ?mode=faithful অথবা localStorage FZ_ON_FAITHFUL === '1'।
+ * লুকানো পুরোনো পদ্ধতি সুইচ: URL ?engine=legacy অথবা localStorage FZ_ON_LEGACY === '1'।
  *
  * UMD: window.FayzarAutoRoute (ব্রাউজার) ও module.exports (Node)।
  */
@@ -55,20 +56,58 @@
   }
 
   /**
-   * সংকেত (signals) বিশ্লেষণ করে OCR মোড নির্ধারণ করে।
+   * "পুরোনো পদ্ধতি" (legacy) সুইচ সক্রিয় কিনা তা নিরাপদভাবে পরীক্ষা করে।
+   * (১) URL query parameter: ?engine=legacy বা &engine=legacy
+   * (২) localStorage কী: FZ_ON_LEGACY === '1'
+   *
+   * @param {Object} [signals={}]
+   * @returns {boolean}
+   */
+  function checkLegacy(signals) {
+    signals = signals || {};
+
+    // ১. URL প্যারামিটার যাচাই
+    try {
+      const search = signals.search ||
+        (signals.location && signals.location.search) ||
+        (typeof location !== 'undefined' && location && location.search) ||
+        (typeof window !== 'undefined' && window.location && window.location.search) || '';
+      if (search && /[?&]engine=legacy\b/.test(search)) {
+        return true;
+      }
+    } catch (_) {}
+
+    // ২. localStorage যাচাই (try/catch এ সুরক্ষিত)
+    try {
+      const storage = signals.localStorage ||
+        (typeof localStorage !== 'undefined' && localStorage) ||
+        (typeof window !== 'undefined' && window.localStorage) || null;
+      if (storage && typeof storage.getItem === 'function') {
+        if (storage.getItem('FZ_ON_LEGACY') === '1') {
+          return true;
+        }
+      }
+    } catch (_) {}
+
+    return false;
+  }
+
+  /**
+   * সংকেত (signals) বিশ্লেষণ করে OCR মোড ও ইঞ্জিন-পদ্ধতি নির্ধারণ করে।
    *
    * @param {Object} [signals={}]
    *   - doc_type: string (ভবিষ্যতে প্রথম OCR কলের পর নথি-ধরন বিশ্লেষণ করে সিদ্ধান্ত নিতে ব্যবহৃত হবে)
    *   - files: Array (ব্যবহারকারীর দেওয়া ফাইলের তালিকা)
    *   - pages: number (মোট পাতা সংখ্যা)
-   * @returns {{ mode: 'template' | 'faithful', reason: 'override' | 'default' }}
+   * @returns {{ mode: 'template' | 'faithful', reason: 'override' | 'default', legacy: boolean }}
    */
   function decide(signals) {
     signals = signals || {};
+    const legacy = checkLegacy(signals);
 
     // নিয়ম (ক): ওভাররাইড সুইচ চালু থাকলে হুবহু (faithful) মোড
     if (checkOverride(signals)) {
-      return { mode: 'faithful', reason: 'override' };
+      return { mode: 'faithful', reason: 'override', legacy };
     }
 
     // নিয়ম (খ): ভবিষ্যতে এখানে signals.doc_type ও অন্যান্য প্রাক-বিশ্লেষণের
@@ -76,11 +115,12 @@
     // (এখন কোনো নতুন নিয়ম নেই)
 
     // অন্য সব ক্ষেত্রে ডিফল্ট: সাজানো ফরম্যাট (template)
-    return { mode: 'template', reason: 'default' };
+    return { mode: 'template', reason: 'default', legacy };
   }
 
   return {
     decide,
-    checkOverride
+    checkOverride,
+    checkLegacy
   };
 });
