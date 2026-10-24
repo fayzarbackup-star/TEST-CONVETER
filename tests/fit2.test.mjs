@@ -186,7 +186,8 @@ process.env.FZ_OFF_FIT2 = '1';
 const t02Old = GC.render(t02Doc, { generalClean: true });
 delete process.env.FZ_OFF_FIT2;
 const t02New = GC.render(t02Doc, { generalClean: true });
-ck(t02New.stats.estPages <= 1.05 && t02New.stats.estPages < t02Old.stats.estPages, `(খ) T02_pdf নতুন est ≤ ১.০৫ (${t02Old.stats.estPages} → ${t02New.stats.estPages})`);
+// EST3-এর পর: T02 Word-এ সত্যিই ২ পাতা (qa/golden-data/word-pages.json) — তাই শুধু কমেছে কিনা দেখা
+ck(t02New.stats.estPages < t02Old.stats.estPages, `(খ) T02_pdf est কমেছে (${t02Old.stats.estPages} → ${t02New.stats.estPages})`);
 
 const t01Doc = docOf('T01_pdf');
 process.env.FZ_OFF_FIT2 = '1';
@@ -242,7 +243,9 @@ ck(oldSigs.every((v) => v === 600) && t07Old.stylesXml.includes('w:line="215"'),
 // ───────── (চ) tests/gate8.test.mjs পাস ─────────
 const gate8Path = path.join(ROOT, 'tests/gate8.test.mjs');
 if (fs.existsSync(path.join(S, 'T25_jpeg', 'capture.json'))) {
-  const g8 = spawnSync(process.execPath, [gate8Path], { encoding: 'utf8' });
+  // এই টেস্টের সেট করা FZ_* সুইচ যেন gate8-এ না যায়
+const cleanEnv = Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('FZ_')));
+const g8 = spawnSync(process.execPath, [gate8Path], { encoding: 'utf8', env: cleanEnv });
   ck(g8.status === 0 && g8.stdout.includes('0 ব্যর্থ'), `(চ) tests/gate8.test.mjs পাস (${(g8.stdout || '').trim().split('\n').pop()})`);
 } else {
   // একক বান্ডেল পরিবেশে FZ_ON_FIT1 চালু রেখে gate8-এর শর্ত যাচাই

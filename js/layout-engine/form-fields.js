@@ -74,6 +74,17 @@
     return false;
   }
 
+  // FZ_OFF_EST3: ছবির ঘর একত্রীকরণ ও পাতা-অনুমান ক্যালিব্রেশন বন্ধ (চালু থাকলে আচরণ হুবহু আগের মতো)
+  function isEst3Off(opts) {
+    if (opts && opts.FZ_OFF_EST3) return true;
+    if (typeof FZ_OFF_EST3 !== 'undefined' && FZ_OFF_EST3) return true;
+    if (typeof window !== 'undefined' && (window.FZ_OFF_EST3 || window.FZ_ON_FIT1)) return true;
+    if (typeof globalThis !== 'undefined' && (globalThis.FZ_OFF_EST3 || globalThis.FZ_ON_FIT1)) return true;
+    if (global && (global.FZ_OFF_EST3 || global.FZ_ON_FIT1)) return true;
+    if (typeof process !== 'undefined' && process.env && (process.env.FZ_OFF_EST3 === '1' || process.env.FZ_OFF_EST3 === 'true' || process.env.FZ_ON_FIT1 === '1')) return true;
+    return false;
+  }
+
   // ───────── জ্যামিতি ও চিহ্ন শনাক্তকারী ─────────
   // ডট/রেখা লিডার রান: ৩+ বিন্দু/আন্ডারস্কোর অথবা ৪+ ড্যাশ বা সংক্ষিপ্ত ⟦.×N⟧ চিহ্ন
   const LEADER_SRC = '(?:[.\\u2026\\u2024_]{3,}|[-─—–]{4,}|⟦\\s*[.\\u2026\\u2024_\\-─—–]\\s*[×xX*]\\s*[০-৯\\d]+\\s*⟧)';
@@ -358,7 +369,9 @@
 
     // Word-এর ঘর অবশ্যই অনুচ্ছেদে শেষ হবে (ফাঁকা স্ট্রিং বা শেষে ছক থাকলে ফাইল "নষ্ট" দেখায় — T22)
     const leftJoined = leftXmlList.join('');
-    const leftInner = /(<\/w:p>|<w:p\/>)$/.test(leftJoined) ? leftJoined : leftJoined + '<w:p/>';
+    const leftInner = isEst3Off(spacing)
+      ? (/(<\/w:p>|<w:p\/>)$/.test(leftJoined) ? leftJoined : leftJoined + '<w:p/>')
+      : (/(<\/w:p>)$/.test(leftJoined) ? leftJoined : (/(<w:p\/>)$/.test(leftJoined) ? leftJoined.replace(/<w:p\/>$/, '<w:p></w:p>') : leftJoined + '<w:p></w:p>'));
     const photoLabel = photoBlock && photoBlock.role !== 'figure' && String(photoBlock.text || '').trim()
       ? runs(String(photoBlock.text).trim(), { sz: sz(Math.max(10, formPt - 1)), b: false })
       : '';
@@ -378,14 +391,33 @@
   /**
    * একই অনুভূমিক সারিতে থাকা ব্লকগুলো একত্রিত করে ফরমের যৌক্তিক আইটেম তৈরি করে
    */
-  function groupRows(blocks) {
+  function groupRows(blocks, opts) {
     const used = new Array(blocks.length).fill(false);
     const photoGroups = [];
+    const skipPhoto = {};
+    if (!isEst3Off(opts)) {
+      const cands = [];
+      for (let i = 0; i < blocks.length; i++) {
+        if (isPhotoBoxBlock(blocks[i])) cands.push(i);
+      }
+      for (let a = 0; a < cands.length; a++) {
+        for (let c = a + 1; c < cands.length; c++) {
+          const i1 = cands[a], i2 = cands[c];
+          const b1 = blocks[i1].box, b2 = blocks[i2].box;
+          // দুটি সম্ভাব্য ছবির ঘর উল্লম্বভাবে ওভারল্যাপ করলে ছোটটিকে বাদ দিয়ে মূল বড় ছবির ঘরটি রাখা
+          if (Math.min(b1[2], b2[2]) > Math.max(b1[0], b2[0]) - 15) {
+            const area1 = (b1[2] - b1[0]) * (b1[3] - b1[1]);
+            const area2 = (b2[2] - b2[0]) * (b2[3] - b2[1]);
+            skipPhoto[area1 < area2 ? i1 : i2] = true;
+          }
+        }
+      }
+    }
 
     // ধাপ ১: ডান পাশের ছবির ঘর (photo box) এবং তার বাম পাশের সমান্তরাল ব্লকগুলো শনাক্ত করা
     for (let i = 0; i < blocks.length; i++) {
       const b = blocks[i];
-      if (used[i] || !isPhotoBoxBlock(b)) continue;
+      if (used[i] || skipPhoto[i] || !isPhotoBoxBlock(b)) continue;
       const pBox = b.box;
       const leftIndices = [];
       for (let j = 0; j < blocks.length; j++) {
@@ -782,8 +814,8 @@
     if (streamCount <= 22) {
       return { base: 10, margin: 864, spacing: { after: 40, line: 240, compact: false } };
     }
-    // ঘন ১-পাতার ফরম (যেমন T21, T07): ১০pt ফন্ট + অনুচ্ছেদ-ফাঁক কমিয়ে এক পাতায় রাখা; FIT2-তে w:line কখনো ২৪০-এর নিচে নয়
-    return { base: 10, margin: 720, spacing: { after: 16, line: isFit2Off(opts) ? 215 : 240, compact: true } };
+    // ঘন ১-পাতার ফরম (যেমন T21, T07): ১০pt ফন্ট + মার্জিন ০.৬" (৮৬৪ dxa) + অনুচ্ছেদ-ফাঁক কমিয়ে এক পাতায় রাখা; w:line ≥ ২৪০
+    return { base: 10, margin: isEst3Off(opts) ? 720 : 864, spacing: { after: 16, line: isFit2Off(opts) ? 215 : 240, compact: true } };
   }
 
   /**
@@ -828,7 +860,7 @@
    * general-clean-layout থেকে ডাকা মূল এন্ট্রি ফাংশন
    */
   function prepareFormRender(doc, seq, opts) {
-    const stream = groupRows(seq);
+    const stream = groupRows(seq, opts);
     const topRows = [];
     stream.forEach((entry) => {
       if (entry.kind === 'photo_section') {
@@ -879,7 +911,10 @@
         const photoW = Math.max(1680, Math.min(2200, Math.round((ctx.textW * Math.max(80, (it.photoBlock.box ? it.photoBlock.box[3] - it.photoBlock.box[1] : 175))) / 1000)));
         const leftCellW = ctx.textW - photoW - 140;
         const leftXmls = renderLogicalRows(it.leftRows, leftCellW, ctx);
-        const tblXml = renderPhotoBoxTableXml(leftXmls, it.photoBlock, ctx.textW, ctx);
+        const sepXml = (!isEst3Off(ctx && ctx.spacing) && nx && nx.type === 'photo_section')
+          ? '<w:p><w:pPr><w:spacing w:before="0" w:after="60" w:line="120" w:lineRule="exact"/></w:pPr></w:p>'
+          : '';
+        const tblXml = renderPhotoBoxTableXml(leftXmls, it.photoBlock, ctx.textW, ctx) + sepXml;
         out.push({ b: it.photoBlock, xml: tblXml });
       } else {
         if (it.type === 'standard' && it.block) {

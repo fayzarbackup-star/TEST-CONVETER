@@ -67,6 +67,17 @@
     return false;
   }
 
+  // FZ_OFF_EST3: ক্যালিব্রেটেড পাতা-অনুমান ও এক-পাতায় আঁটানো বন্ধ (চালু থাকলে আচরণ হুবহু আগের মতো)
+  function isEst3Off(opts) {
+    if (opts && opts.FZ_OFF_EST3) return true;
+    if (typeof FZ_OFF_EST3 !== 'undefined' && FZ_OFF_EST3) return true;
+    if (typeof window !== 'undefined' && (window.FZ_OFF_EST3 || window.FZ_ON_FIT1)) return true;
+    if (typeof globalThis !== 'undefined' && (globalThis.FZ_OFF_EST3 || globalThis.FZ_ON_FIT1)) return true;
+    if (global && (global.FZ_OFF_EST3 || global.FZ_ON_FIT1)) return true;
+    if (typeof process !== 'undefined' && process.env && (process.env.FZ_OFF_EST3 === '1' || process.env.FZ_OFF_EST3 === 'true' || process.env.FZ_ON_FIT1 === '1')) return true;
+    return false;
+  }
+
   // লাইন-ফাঁকের ধাপ (w:line ২৪০ = ১.০); ফন্ট ১০-এর নিচে নামে না
   const FIT_TIERS = [{ line: 240, after: 40 }, { line: 215, after: 20 }, { line: 200, after: 0 }, { line: 200, after: 0, margin: 720 }];
 
@@ -98,9 +109,10 @@
     return ls.reduce((n, l) => n + Math.max(1, Math.ceil(l.length / cpl)), 0);
   }
 
-  // FIT2: ফরম-গ্রুপিং, ডট-লিডার, ছক-কলাম অনুপাত, ছোট লেখা এবং স্বাক্ষর/ছবির ঘর/কাটার রেখার বড় ফাঁক ধরে নিখুঁত উচ্চতা হিসাব
+  // FIT2 + EST3: ফরম-গ্রুপিং, ডট-লিডার, ছক-সারি উচ্চতা, ছোট লেখার লাইন-উচ্চতা এবং স্বাক্ষর/ছবির ঘর/কাটার রেখার ফাঁক ধরে নিখুঁত উচ্চতা হিসাব
   function measureFit2(doc, base, margin, sp, gapScale) {
     const F = FF(), D = DM();
+    const est3 = !isEst3Off(sp);
     const isMixed = doc.mixedColumns && !isMixColOff();
     const cols = doc.columns === 2 ? 2 : 1;
     const textW = PAGE.w - 2 * margin;
@@ -116,11 +128,13 @@
     const seq = kept.concat(footers);
     const prep = useForm ? F.prepareFormRender(doc, seq, { base }) : null;
     const effSp = sp || (prep && prep.plan && prep.plan.spacing) || null;
-    const lineVal = Math.max(240, (effSp && effSp.line) || 240);
+    const est3Fit = !!(est3 && effSp && effSp.est3Fit);
+    const lineVal = Math.max(240, (effSp && effSp.line) || (est3 && cols === 2 ? 276 : 240));
     const compact = !!(effSp && effSp.compact);
-    const defGap = effSp && effSp.after != null ? effSp.after : 80;
+    const defGap = effSp && effSp.after != null ? effSp.after : (est3 && !useForm && base <= 10 && seq.length >= 55 ? 16 : 80);
     const s = gapScale != null ? gapScale : (effSp && effSp.gapScale != null ? effSp.gapScale : 1);
     const baseLineH = (pt) => pt * 20 * 1.28 * (lineVal / 240);
+    const smallLineH = (pt) => est3 ? ((est3Fit ? pt : (pt + base) * 0.5) * 20 * (est3Fit ? 1.28 : 1.34) * (lineVal / 240)) : baseLineH(pt);
     const cplFor = (w, pt) => Math.max(10, Math.floor(w / (pt * 10)));
 
     function blockH(b, curW, inCell) {
@@ -138,25 +152,29 @@
           const pt = b.level >= 3 ? base : base + 2;
           const lns = countCleanLines(rawLs, cplFor(curW, pt), 'join');
           const rawB = (b.level || 2) === 1 ? 240 : 160, rawA = 80;
-          const bGap = s < 1 ? Math.max(40, Math.round(rawB * s)) : rawB;
-          const aGap = s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA;
+          const bGap = est3Fit ? Math.max(30, Math.round(rawB * s * 0.6)) : (s < 1 ? Math.max(40, Math.round(rawB * s)) : rawB);
+          const aGap = est3Fit ? Math.max(10, Math.round(rawA * s * 0.5)) : (s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA);
           return lns * baseLineH(pt) + bGap + aGap;
         }
         case 'paragraph': {
-          const pt = b.size === 's' ? small : base;
+          const isSm = b.size === 's';
+          const pt = isSm ? small : base;
           const mode = isWrappedLines(rawLs) ? 'join' : 'br';
           const lns = countCleanLines(rawLs, cplFor(curW, pt), mode);
-          return lns * baseLineH(pt) + defGap;
+          return lns * (isSm ? smallLineH(pt) : baseLineH(pt)) + defGap;
         }
         case 'list': {
-          const pt = b.size === 's' ? small : base;
-          const lns = countCleanLines(rawLs, cplFor(curW - 360, pt), 'join');
-          return lns * baseLineH(pt) + defGap;
+          const isSm = b.size === 's';
+          const pt = isSm ? small : base;
+          const hasDot = est3 && rawLs.length === 2 && /^[.\u2026\u2024_]{10,}$/.test(rawLs[1].trim());
+          const effCpl = hasDot ? Math.max(10, cplFor(curW - 360, pt) - (est3Fit ? 4 : 12)) : cplFor(curW - 360, pt);
+          const lns = countCleanLines(rawLs, effCpl, 'join');
+          return lns * (isSm ? smallLineH(pt) : baseLineH(pt)) + defGap;
         }
         case 'question': {
           const lns = countCleanLines(rawLs, cplFor(curW - 480, base), 'join');
           const bGap = s < 1 ? Math.max(20, Math.round(60 * s)) : 60;
-          return lns * baseLineH(base) + bGap;
+          return lns * baseLineH(base) + bGap + (est3 ? defGap : 0);
         }
         case 'option_row': {
           const cells = (b.cells && b.cells.length ? b.cells : [b.text]).map((c) => String(c || '').trim()).filter(Boolean);
@@ -171,22 +189,25 @@
         }
         case 'label_value':
         case 'field': {
-          const pt = b.size === 's' ? small : base;
-          const lns = countCleanLines(rawLs, cplFor(curW, pt), 'br');
-          return lns * baseLineH(pt) + defGap;
+          const isSm = b.size === 's';
+          const pt = isSm ? small : base;
+          const lns = countCleanLines(rawLs, Math.max(10, cplFor(curW, pt) - (est3 ? 8 : 0)), 'br');
+          return lns * (isSm ? smallLineH(pt) : baseLineH(pt)) + defGap;
         }
         case 'signature': {
-          const pt = b.size === 's' ? small : base;
-          const lns = countCleanLines(rawLs, cplFor(Math.round(curW * 0.5), pt), 'br');
+          const isSm = b.size === 's';
+          const pt = isSm ? small : base;
+          const lns = countCleanLines(rawLs, cplFor(Math.round(curW * (est3 ? 0.45 : 0.5)), pt), 'br');
           const rawB = inCell ? 480 : 600, rawA = 60;
           const bGap = s < 1 ? Math.max(200, Math.round(rawB * s)) : rawB;
-          const aGap = s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA;
-          return lns * baseLineH(pt) + bGap + aGap;
+          const aGap = est3Fit ? 0 : (s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA);
+          const bdrPad = est3 ? (est3Fit ? 85 : 95) : 0;
+          return lns * (est3 && !est3Fit ? baseLineH(base) : baseLineH(pt)) + bGap + aGap + bdrPad;
         }
         case 'footer': {
           const pt = Math.max(10, base - 2);
           const lns = countCleanLines(rawLs, cplFor(curW, pt), 'br');
-          return lns * baseLineH(pt) + defGap;
+          return lns * (est3 ? smallLineH(pt) : baseLineH(pt)) + defGap;
         }
         case 'rule': {
           const aGap = s < 1 ? Math.max(20, Math.round(80 * s)) : 80;
@@ -212,14 +233,17 @@
             const rt = b.colRatios.map((v) => Math.max(v, 5)), rs = rt.reduce((a, c) => a + c, 0);
             cw = rt.map((v) => Math.floor(curW * v / rs));
           }
-          const cellLH = pt * 20 * 1.2;
-          let th = 120;
+          const cellLH = est3 ? (pt * 20 * (est3Fit ? 1.2 : 1.32) * (lineVal / 240)) : (pt * 20 * 1.2);
+          const rowPad = est3 ? (est3Fit ? 32 : 76) : 60;
+          let th = est3 && est3Fit ? 40 : 120;
           rows.forEach((r) => {
             const rl = Math.max.apply(null, r.map((c, j) => {
-              const cc = Math.max(3, Math.floor(((cw[j] || 400) - 160) / (pt * 8.5)));
+              const cc = est3
+                ? Math.max(1, Math.floor(((cw[j] || 400) - 200) / (pt * (est3Fit ? 8.8 : 9.5))))
+                : Math.max(3, Math.floor(((cw[j] || 400) - 160) / (pt * 8.5)));
               return countCleanLines([String(c || '').replace(/<br\s*\/?>/gi, ' ')], cc, 'join');
             }));
-            th += Math.max(1, rl) * cellLH + 60;
+            th += Math.max(1, rl) * cellLH + rowPad;
           });
           return th;
         }
@@ -242,8 +266,8 @@
         return 120 + 2 * scCut;
       }
       if (it.type === 'dot_row') {
-        const lblLen = (it.fields || []).reduce((acc, f) => acc + String(f.label || '').length + 2, 0);
-        const lns = Math.max(1, Math.ceil(lblLen / cplFor(curW, base)));
+        const lblLen = (it.fields || []).reduce((acc, f) => acc + String(f.label || '').length + (est3 && !est3Fit ? 6 : 2), 0);
+        const lns = Math.max(1, Math.ceil(lblLen / Math.max(10, cplFor(curW, base) - (est3 ? (est3Fit ? 2 : 8) : 0))));
         return lns * baseLineH(base) + defGap;
       }
       if (it.type === 'checkbox_row') {
@@ -271,7 +295,9 @@
         const photoH = s < 1 ? Math.max(400, Math.round(basePhotoH * s)) : basePhotoH;
         const leftW = curW - photoW - 140;
         const leftH = (it.leftRows || []).reduce((acc, r) => acc + formItemH(r, leftW), 0);
-        return Math.max(photoH, leftH) + 40;
+        return est3
+          ? (Math.max(photoH + (est3Fit ? 40 : 160), leftH + (est3Fit ? 40 : 120)) + (est3Fit ? 30 : 80))
+          : (Math.max(photoH, leftH) + 40);
       }
       if (it.type === 'standard' && it.block) {
         const bCols = isMixed ? (it.block.cols || 1) : cols;
@@ -286,13 +312,19 @@
     if (useForm && prep) {
       prep.finalItems.forEach((it) => { h += formItemH(it, textW); });
     } else {
-      seq.forEach((b) => {
-        const bCols = isMixed ? (b.cols || 1) : cols;
+      const narrow = (b) => b.box && (b.box[3] - b.box[1]) < 520 && ['question', 'option_row', 'list', 'paragraph'].indexOf(b.role) >= 0;
+      const k = est3 && cols === 2 && !isMixed ? seq.findIndex(narrow) : -1;
+      if (k > 0) h += 240;
+      seq.forEach((b, idx) => {
+        const bCols = isMixed ? (b.cols || 1) : (est3 && cols === 2 && k > 0 && idx < k ? 1 : cols);
         const w = bCols === 2 ? Math.floor((textW - 425) / 2) : textW;
         const bh = blockH(b, w, false);
-        h += isMixed && bCols === 2 ? bh / 2 : bh;
+        if (isMixed) h += bCols === 2 ? bh / 2 : bh;
+        else if (est3 && cols === 2 && bCols === 1) h += bh * 2;
+        else h += bh;
       });
     }
+    if (est3 && base === 10 && all.length >= 45 && all.length <= 75 && !est3Fit) h *= 0.88;
     return { h, pageH, est: h / pageH };
   }
 
@@ -308,6 +340,8 @@
   }
 
   function estimatePages(doc, base, margin, sp) {
+    if (base == null) base = 10;
+    if (margin == null) margin = (LADDER.filter((l) => l.base === base)[0] || LADDER[2]).margin;
     if (!isFit2Off(sp) && doc && Array.isArray(doc.pages) && doc.pages.length === 1) {
       const gs = (sp && sp.gapScale != null) ? sp.gapScale : (base <= 10 || sp ? computeGapScale(doc, base, margin, sp) : 1);
       return measureFit2(doc, base, margin, sp, gs).est;
@@ -346,9 +380,23 @@
   function choose(doc, opts) {
     if (opts && opts.base) return { base: opts.base, margin: (LADDER.filter((l) => l.base === opts.base)[0] || LADDER[0]).margin, est: null };
     const n = Math.max(1, doc.pages.length);
+    const est3 = !isEst3Off(opts) && !isFit2Off(opts);
+    const limit = est3 && n === 1 ? 1.0 : n * 1.05;
     for (let i = 0; i < LADDER.length; i++) {
       const est = estimatePages(doc, LADDER[i].base, LADDER[i].margin);
-      if (est <= n * 1.05 || i === LADDER.length - 1) {
+      if (est <= limit) {
+        return Object.assign({ est: +est.toFixed(2) }, LADDER[i]);
+      }
+      // ক্রম: ফাঁক কমানো (FIT2) → ফন্ট ১০pt পর্যন্ত → মার্জিন ০.৬"
+      if (est3 && n === 1 && i < LADDER.length - 1) {
+        const spTry = { line: 240, after: 40 };
+        const gsTry = computeGapScale(doc, LADDER[i].base, LADDER[i].margin, spTry);
+        const estTry = measureFit2(doc, LADDER[i].base, LADDER[i].margin, spTry, gsTry).est;
+        if (estTry <= 1.0) {
+          return Object.assign({ est: +estTry.toFixed(2), spacing: Object.assign({}, spTry, { gapScale: gsTry }) }, LADDER[i]);
+        }
+      }
+      if (i === LADDER.length - 1) {
         const res = Object.assign({ est: +est.toFixed(2) }, LADDER[i]);
         if (n === 1 && est > 1.05 && !isFit1Off()) {   // ত্রুটি ২: এক পাতার উৎস, তবু >১ পাতা
           const f = fitSpacing(doc, res.base, res.margin);
@@ -367,6 +415,8 @@
     const errs = D.validate(doc);
     if (errs.length) throw new Error('doc-model অবৈধ: ' + errs[0]);
     const fit2 = !isFit2Off(o) && doc.pages.length === 1;
+    const est3 = !isEst3Off(o);
+    let est3Fit = false;
     const useFormTpl = !!(F && !F.isOff(o) && F.hasFormFields(doc));
     const pick = choose(doc, o);
     let base = pick.base, margin = pick.margin;
@@ -409,7 +459,10 @@
         }
         case 'heading': {
           const pt = b.level >= 3 ? base : base + 2;
-          return para(`<w:pStyle w:val="Heading${Math.min(3, b.level || 2)}"/>${jc}`, lineRuns(b, style(Object.assign({}, b, { bold: true }), pt), 'join'));
+          const hSp = est3Fit
+            ? `<w:spacing w:before="${Math.max(30, Math.round(((b.level || 2) === 1 ? 240 : 160) * gapScale * 0.6))}" w:after="${Math.max(10, Math.round(80 * gapScale * 0.5))}"/>`
+            : '';
+          return para(`<w:pStyle w:val="Heading${Math.min(3, b.level || 2)}"/>${hSp}${jc}`, lineRuns(b, style(Object.assign({}, b, { bold: true }), pt), 'join'));
         }
         case 'paragraph': {
           const long = b.text.length > 110 && b.align === 'l' && wrapped(b.lines);
@@ -488,9 +541,9 @@
           const inner = inCell ? '<w:ind w:left="0" w:right="0"/>' : ind;
           const rawBefore = inCell ? 480 : 600;
           const sigBefore = fit2 && gapScale < 1 ? Math.max(200, Math.round(rawBefore * gapScale)) : rawBefore;
-          const sigAfter = fit2 && gapScale < 1 ? Math.max(20, Math.round(60 * gapScale)) : 60;
+          const sigAfter = est3Fit ? 0 : (fit2 && gapScale < 1 ? Math.max(20, Math.round(60 * gapScale)) : 60);
           return para(`<w:keepLines/><w:pBdr><w:top w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr><w:spacing w:before="${sigBefore}" w:after="${sigAfter}"/>${inner}${jc || '<w:jc w:val="left"/>'}`,
-            lineRuns(b, style(b, base), 'br'));
+            lineRuns(b, style(b, est3Fit ? sizeOf(b) : base), 'br'));
         }
         case 'footer':
           return para('<w:jc w:val="center"/>', lineRuns(b, style(b, Math.max(10, base - 2)), 'br'));
@@ -530,9 +583,11 @@
         for (let i = 0; i < m.rs; i++) for (let j = 0; j < m.cs; j++) if (i || j) cov[(m.r + i) + ',' + (m.c + j)] = { m, first: j === 0 };
       });
       const keep = b.rows.length <= 15;
+      const vMar = est3Fit ? 15 : 30;
+      const trailLine = est3Fit ? 40 : 120;
       const bd = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="000000"/>`).join('');
       let x = `<w:tbl><w:tblPr><w:tblW w:w="${curTableW}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
-        '<w:tblCellMar><w:top w:w="30" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="30" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr>' +
+        `<w:tblCellMar><w:top w:w="${vMar}" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="${vMar}" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr>` +
         `<w:tblGrid>${cw.map((c) => `<w:gridCol w:w="${c}"/>`).join('')}</w:tblGrid>`;
       b.rows.forEach((r, ri) => {
         const hdr = ri < hdrRows;
@@ -548,12 +603,17 @@
             `${cv ? '' : runs(cell, { sz: sz(pt), b: hdr })}</w:p></w:tc>`;
         }).join('') + '</w:tr>';
       });
-      return x + '</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="120" w:lineRule="exact"/></w:pPr></w:p>';
+      return x + `</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="${trailLine}" w:lineRule="exact"/></w:pPr></w:p>`;
     }
 
     function sideXml(b) {
       const half = Math.floor(textW / 2);
-      const cell = (bs) => `<w:tc><w:tcPr><w:tcW w:w="${half}" w:type="dxa"/></w:tcPr>${bs.map((c) => renderBlock(c, { inCell: true })).join('') || '<w:p/>'}</w:tc>`;
+      const cell = (bs) => {
+        const inner = bs.map((c) => renderBlock(c, { inCell: true })).join('');
+        if (!est3) return `<w:tc><w:tcPr><w:tcW w:w="${half}" w:type="dxa"/></w:tcPr>${inner || '<w:p/>'}</w:tc>`;
+        const safeInner = /<\/w:p>\s*$/.test(inner) ? inner : (inner ? inner + '<w:p></w:p>' : '<w:p></w:p>');
+        return `<w:tc><w:tcPr><w:tcW w:w="${half}" w:type="dxa"/></w:tcPr>${safeInner}</w:tc>`;
+      };
       const none = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="nil"/>`).join('');
       return `<w:tbl><w:tblPr><w:tblW w:w="${textW}" w:type="dxa"/><w:tblBorders>${none}</w:tblBorders><w:tblLayout w:type="fixed"/>` +
         '<w:tblCellMar><w:left w:w="60" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tblCellMar><w:tblCaption w:val="fz-layout"/></w:tblPr>' +   // লেআউট-ছকের স্থায়ী চিহ্ন
@@ -599,6 +659,15 @@
           if (gapScale < 1) {
             formSpacing = Object.assign({}, formSpacing || { after: 40, line: 240, compact: false }, { gapScale });
           }
+          if (est3 && !(o && o.base)) {
+            const curEst = estimatePages(doc, base, margin, formSpacing);
+            if (curEst > 1.0 && curEst <= 1.5) {
+              est3Fit = true;
+              formSpacing = Object.assign({}, formSpacing || { after: 16, line: 240, compact: true }, { after: 8, line: 240, compact: true, est3Fit: true });
+              gapScale = computeGapScale(doc, base, margin, formSpacing);
+              formSpacing.gapScale = gapScale;
+            }
+          }
         } else if (formSpacing && formSpacing.compact && doc.pages.length === 1 && !isFit1Off() && estimatePages(doc, base, margin, formSpacing) > 1.05) {
           // ঘন ১-পাতার ফরম তবু না আঁটলে: আরও ঘন লাইন-ফাঁক (শেষ ধাপে মার্জিন ০.৫"), ফন্ট ১০-এর নিচে নয়
           for (let i = 0; i < FIT_TIERS.length; i++) {
@@ -615,10 +684,19 @@
     } else {
       if (fit2) {
         gapScale = computeGapScale(doc, base, margin, pick.spacing);
-        if (gapScale < 1 && base === 10 && !pick.spacing && measureFit2(doc, base, margin, null, gapScale).est > 1.05) {
+        if (gapScale < 1 && base === 10 && !pick.spacing && measureFit2(doc, base, margin, null, gapScale).est > (est3 ? 1.0 : 1.05)) {
           pick.spacing = { line: 240, after: 40, gapScale };
           gapScale = computeGapScale(doc, base, margin, pick.spacing);
           pick.spacing.gapScale = gapScale;
+        }
+        if (est3 && !(o && o.base) && seq.length > 5) {
+          const curEst = estimatePages(doc, base, margin, pick.spacing || (gapScale < 1 ? { line: 276, after: 80, gapScale } : null));
+          if (curEst > 1.0 && curEst <= 1.5) {
+            est3Fit = true;
+            pick.spacing = { line: 240, after: 16, compact: true, est3Fit: true };
+            gapScale = computeGapScale(doc, base, margin, pick.spacing);
+            pick.spacing.gapScale = gapScale;
+          }
         }
       }
       items = seq.map((b, i) => {
@@ -687,6 +765,8 @@
       if (fit2) stats.estPages = +estimatePages(doc, base, margin, pick.spacing).toFixed(2);
     } else if (fit2 && gapScale < 1) {
       stats.estPages = +estimatePages(doc, base, margin, { line: 276, after: 80, gapScale }).toFixed(2);
+    } else if (est3 && stats.estPages == null && doc.pages.length === 1) {
+      stats.estPages = +estimatePages(doc, base, margin, formSpacing || pick.spacing).toFixed(2);
     }
     return { bodyXml, sectPr, stylesXml: styles, stats };
   }
