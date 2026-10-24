@@ -46,6 +46,8 @@
   function syncLegacyFlags(leg) {
     const on = leg !== undefined ? !!leg : isLegacy();
     W.__FZ_LEGACY = on;
+    // ইঞ্জিনগুলো নিজের FZ_OFF_* সুইচ শোনে — legacy-তে সেগুলোও চালু (শুধু চালু করা, বন্ধ নয়)
+    if (on) { W.FZ_OFF_MIXCOL = true; W.FZ_OFF_FORMTPL = true; W.__FZ_OFF_AUTOPREP = true; }
     if (Eng() && Eng().state) {
       Eng().state.legacy = on;
       Eng().state.skipNewEngines = on;
