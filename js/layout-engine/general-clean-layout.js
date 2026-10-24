@@ -24,6 +24,7 @@
   const PAGE = { w: 11906, h: 16838 };
   const LADDER = [{ base: 12, margin: 1440 }, { base: 11, margin: 1080 }, { base: 10, margin: 864 }];
   const MARKER_RE = /^[(\[]?[০-৯0-9a-zA-Zক-ঘ]{1,3}[.)\]।]\s/;
+  const LEADER_STRIP_RE = /[.\u2026\u2024_]{3,}|[-─—–]{4,}|⟦\s*[.\u2026\u2024_\-─—–]\s*[×xX*]\s*[০-৯\d]+\s*⟧/g;
 
   function isEnabled(opts) {
     if (opts && opts.generalClean === true) return true;
@@ -54,6 +55,18 @@
       (typeof process !== 'undefined' && process.env && process.env.FZ_ON_FIT1 === '1');
     return !on;
   }
+
+  // FZ_OFF_FIT2: এক-পাতার উৎসে বড় ফাঁকা স্থান আনুপাতিক সংকোচন ও সংশোধিত est হিসাব বন্ধ (চালু থাকলে আচরণ হুবহু আগের মতো)
+  function isFit2Off(opts) {
+    if (opts && opts.FZ_OFF_FIT2) return true;
+    if (typeof FZ_OFF_FIT2 !== 'undefined' && FZ_OFF_FIT2) return true;
+    if (typeof window !== 'undefined' && (window.FZ_OFF_FIT2 || window.FZ_ON_FIT1)) return true;
+    if (typeof globalThis !== 'undefined' && (globalThis.FZ_OFF_FIT2 || globalThis.FZ_ON_FIT1)) return true;
+    if (global && (global.FZ_OFF_FIT2 || global.FZ_ON_FIT1)) return true;
+    if (typeof process !== 'undefined' && process.env && (process.env.FZ_OFF_FIT2 === '1' || process.env.FZ_OFF_FIT2 === 'true' || process.env.FZ_ON_FIT1 === '1')) return true;
+    return false;
+  }
+
   // লাইন-ফাঁকের ধাপ (w:line ২৪০ = ১.০); ফন্ট ১০-এর নিচে নামে না
   const FIT_TIERS = [{ line: 240, after: 40 }, { line: 215, after: 20 }, { line: 200, after: 0 }, { line: 200, after: 0, margin: 720 }];
 
@@ -68,7 +81,237 @@
     return best;
   }
 
+  // OCR-এর দৃশ্যমান ভাঙা লাইন কি একটি অনুচ্ছেদের অংশ?
+  function isWrappedLines(lines) {
+    if (!lines || lines.length < 2) return true;
+    const mx = Math.max.apply(null, lines.map((l) => l.length));
+    return lines.slice(0, -1).every((l) => l.length >= 0.6 * mx) && mx > 30;
+  }
+
+  // ডট-লিডার রান ও বোল্ড চিহ্ন বাদ দিয়ে প্রকৃত লাইন-সংখ্যা হিসাব
+  function countCleanLines(rawLines, cpl, mode) {
+    const ls = (Array.isArray(rawLines) ? rawLines : String(rawLines || '').split('\n'))
+      .map((l) => String(l).replace(LEADER_STRIP_RE, '').replace(/\*\*/g, '').trim())
+      .filter(Boolean);
+    if (!ls.length) return 1;
+    if (mode === 'join') return Math.max(1, Math.ceil(ls.join(' ').length / cpl));
+    return ls.reduce((n, l) => n + Math.max(1, Math.ceil(l.length / cpl)), 0);
+  }
+
+  // FIT2: ফরম-গ্রুপিং, ডট-লিডার, ছক-কলাম অনুপাত, ছোট লেখা এবং স্বাক্ষর/ছবির ঘর/কাটার রেখার বড় ফাঁক ধরে নিখুঁত উচ্চতা হিসাব
+  function measureFit2(doc, base, margin, sp, gapScale) {
+    const F = FF(), D = DM();
+    const isMixed = doc.mixedColumns && !isMixColOff();
+    const cols = doc.columns === 2 ? 2 : 1;
+    const textW = PAGE.w - 2 * margin;
+    const pageH = (PAGE.h - 2 * margin) * (isMixed ? 1 : cols);
+    const small = Math.max(10, base - 1);
+    const useForm = !!(F && !F.isOff() && F.hasFormFields(doc));
+    const all = [], kept = [], footers = [];
+    doc.pages.forEach((pg) => pg.blocks.forEach((b) => all.push(b)));
+    all.forEach((b) => {
+      if (D && !D.isKept(b)) return;
+      (b.role === 'footer' ? footers : kept).push(b);
+    });
+    const seq = kept.concat(footers);
+    const prep = useForm ? F.prepareFormRender(doc, seq, { base }) : null;
+    const effSp = sp || (prep && prep.plan && prep.plan.spacing) || null;
+    const lineVal = Math.max(240, (effSp && effSp.line) || 240);
+    const compact = !!(effSp && effSp.compact);
+    const defGap = effSp && effSp.after != null ? effSp.after : 80;
+    const s = gapScale != null ? gapScale : (effSp && effSp.gapScale != null ? effSp.gapScale : 1);
+    const baseLineH = (pt) => pt * 20 * 1.28 * (lineVal / 240);
+    const cplFor = (w, pt) => Math.max(10, Math.floor(w / (pt * 10)));
+
+    function blockH(b, curW, inCell) {
+      if (!b || (D && !D.isKept(b))) return 0;
+      const rawLs = Array.isArray(b.lines) && b.lines.length ? b.lines : String(b.text || '').split('\n');
+      switch (b.role) {
+        case 'title': {
+          const pt = base + (b.size === 'xl' ? 8 : 6);
+          const lns = countCleanLines(rawLs, cplFor(curW, pt), 'br');
+          const pad = compact ? 20 : 60;
+          const scPad = s < 1 ? Math.max(15, Math.round(pad * s)) : pad;
+          return lns * baseLineH(pt) + 2 * scPad;
+        }
+        case 'heading': {
+          const pt = b.level >= 3 ? base : base + 2;
+          const lns = countCleanLines(rawLs, cplFor(curW, pt), 'join');
+          const rawB = (b.level || 2) === 1 ? 240 : 160, rawA = 80;
+          const bGap = s < 1 ? Math.max(40, Math.round(rawB * s)) : rawB;
+          const aGap = s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA;
+          return lns * baseLineH(pt) + bGap + aGap;
+        }
+        case 'paragraph': {
+          const pt = b.size === 's' ? small : base;
+          const mode = isWrappedLines(rawLs) ? 'join' : 'br';
+          const lns = countCleanLines(rawLs, cplFor(curW, pt), mode);
+          return lns * baseLineH(pt) + defGap;
+        }
+        case 'list': {
+          const pt = b.size === 's' ? small : base;
+          const lns = countCleanLines(rawLs, cplFor(curW - 360, pt), 'join');
+          return lns * baseLineH(pt) + defGap;
+        }
+        case 'question': {
+          const lns = countCleanLines(rawLs, cplFor(curW - 480, base), 'join');
+          const bGap = s < 1 ? Math.max(20, Math.round(60 * s)) : 60;
+          return lns * baseLineH(base) + bGap;
+        }
+        case 'option_row': {
+          const cells = (b.cells && b.cells.length ? b.cells : [b.text]).map((c) => String(c || '').trim()).filter(Boolean);
+          const n = cells.length;
+          if (!n) return 0;
+          const avail = curW - 480;
+          const mx = Math.max.apply(null, cells.map((c) => c.length));
+          let lns = n;
+          if (n >= 2 && mx * base * 10 <= avail / n) lns = 1;
+          else if (n === 4 && Math.max(cells[0].length, cells[1].length) * base * 10 <= avail / 2 && Math.max(cells[2].length, cells[3].length) * base * 10 <= avail / 2) lns = 2;
+          return lns * baseLineH(base) + 20;
+        }
+        case 'label_value':
+        case 'field': {
+          const pt = b.size === 's' ? small : base;
+          const lns = countCleanLines(rawLs, cplFor(curW, pt), 'br');
+          return lns * baseLineH(pt) + defGap;
+        }
+        case 'signature': {
+          const pt = b.size === 's' ? small : base;
+          const lns = countCleanLines(rawLs, cplFor(Math.round(curW * 0.5), pt), 'br');
+          const rawB = inCell ? 480 : 600, rawA = 60;
+          const bGap = s < 1 ? Math.max(200, Math.round(rawB * s)) : rawB;
+          const aGap = s < 1 ? Math.max(20, Math.round(rawA * s)) : rawA;
+          return lns * baseLineH(pt) + bGap + aGap;
+        }
+        case 'footer': {
+          const pt = Math.max(10, base - 2);
+          const lns = countCleanLines(rawLs, cplFor(curW, pt), 'br');
+          return lns * baseLineH(pt) + defGap;
+        }
+        case 'rule': {
+          const aGap = s < 1 ? Math.max(20, Math.round(80 * s)) : 80;
+          return 120 + aGap;
+        }
+        case 'figure': {
+          if (b.figIndex == null) return 0;
+          return baseLineH(base) + defGap;
+        }
+        case 'table': {
+          const rows = b.rows || [];
+          if (!rows.length) return 0;
+          const n = rows[0] ? rows[0].length : 1;
+          const dense = n >= 5 || rows.length > 20;
+          const pt = dense ? small : base;
+          const w = rows.map((r) => r.map((c) => String(c || '').length));
+          const mx = Array.from({ length: n }, (_, j) => Math.max(6, Math.min(40, Math.max.apply(null, w.map((r) => r[j] || 0)))));
+          const tot = mx.reduce((a, c) => a + c, 0);
+          let cw = mx.map((m) => Math.max(Math.round(curW * 0.07), Math.round(curW * m / tot)));
+          const sum = cw.reduce((a, c) => a + c, 0);
+          cw = cw.map((c) => Math.floor(c * curW / sum));
+          if (b.colRatios && b.colRatios.length === n) {
+            const rt = b.colRatios.map((v) => Math.max(v, 5)), rs = rt.reduce((a, c) => a + c, 0);
+            cw = rt.map((v) => Math.floor(curW * v / rs));
+          }
+          const cellLH = pt * 20 * 1.2;
+          let th = 120;
+          rows.forEach((r) => {
+            const rl = Math.max.apply(null, r.map((c, j) => {
+              const cc = Math.max(3, Math.floor(((cw[j] || 400) - 160) / (pt * 8.5)));
+              return countCleanLines([String(c || '').replace(/<br\s*\/?>/gi, ' ')], cc, 'join');
+            }));
+            th += Math.max(1, rl) * cellLH + 60;
+          });
+          return th;
+        }
+        case 'side_by_side': {
+          const half = Math.floor(curW / 2);
+          const lh = (b.left || []).reduce((acc, x) => acc + blockH(x, half, true), 0);
+          const rh = (b.right || []).reduce((acc, x) => acc + blockH(x, half, true), 0);
+          return Math.max(lh, rh) + 120;
+        }
+        default:
+          return baseLineH(base) + defGap;
+      }
+    }
+
+    function formItemH(it, curW) {
+      if (!it) return 0;
+      if (it.type === 'cut_line') {
+        const baseCut = compact ? 20 : 40;
+        const scCut = s < 1 ? Math.max(10, Math.round(baseCut * s)) : baseCut;
+        return 120 + 2 * scCut;
+      }
+      if (it.type === 'dot_row') {
+        const lblLen = (it.fields || []).reduce((acc, f) => acc + String(f.label || '').length + 2, 0);
+        const lns = Math.max(1, Math.ceil(lblLen / cplFor(curW, base)));
+        return lns * baseLineH(base) + defGap;
+      }
+      if (it.type === 'checkbox_row') {
+        const cb = it.cbData || {};
+        const len = String(cb.prefix || '').length + (cb.items || []).join('  ').length;
+        const lns = Math.max(1, Math.ceil(len / cplFor(curW, base)));
+        return lns * baseLineH(base) + defGap;
+      }
+      if (it.type === 'banner_title') {
+        const b = it.block || {};
+        const pt = base + (b.size === 'xl' ? 8 : 6);
+        const lns = countCleanLines(b.lines || [b.text], cplFor(curW, pt), 'br') + (it.subBlock ? 1 : 0);
+        const pad = compact ? 20 : 60;
+        const scPad = s < 1 ? Math.max(15, Math.round(pad * s)) : pad;
+        return lns * baseLineH(pt) + 2 * scPad;
+      }
+      if (it.type === 'photo_section') {
+        const pb = it.photoBlock;
+        const box = pb && Array.isArray(pb.box) ? pb.box : [120, 770, 250, 945];
+        const boxW = Math.max(80, box[3] - box[1]), boxH = Math.max(60, box[2] - box[0]);
+        const photoW = Math.max(1680, Math.min(2200, Math.round((curW * boxW) / 1000)));
+        const rawH = Math.round(photoW * (boxH / boxW));
+        const maxH = compact ? 1760 : 2300, minH = compact ? 1100 : 1440;
+        const basePhotoH = Math.max(minH, Math.min(maxH, rawH));
+        const photoH = s < 1 ? Math.max(400, Math.round(basePhotoH * s)) : basePhotoH;
+        const leftW = curW - photoW - 140;
+        const leftH = (it.leftRows || []).reduce((acc, r) => acc + formItemH(r, leftW), 0);
+        return Math.max(photoH, leftH) + 40;
+      }
+      if (it.type === 'standard' && it.block) {
+        const bCols = isMixed ? (it.block.cols || 1) : cols;
+        const w = bCols === 2 ? Math.floor((curW - 425) / 2) : curW;
+        const bh = blockH(it.block, w, false);
+        return isMixed && bCols === 2 ? bh / 2 : bh;
+      }
+      return 0;
+    }
+
+    let h = 0;
+    if (useForm && prep) {
+      prep.finalItems.forEach((it) => { h += formItemH(it, textW); });
+    } else {
+      seq.forEach((b) => {
+        const bCols = isMixed ? (b.cols || 1) : cols;
+        const w = bCols === 2 ? Math.floor((textW - 425) / 2) : textW;
+        const bh = blockH(b, w, false);
+        h += isMixed && bCols === 2 ? bh / 2 : bh;
+      });
+    }
+    return { h, pageH, est: h / pageH };
+  }
+
+  // এক-পাতার উৎসে বড় ফাঁকা স্থান (স্বাক্ষর ৬০০ twips, ছবির ঘর, কাটার রেখা) আনুপাতিকভাবে কমানোর অনুপাত (ন্যূনতম ২০০/৬০০ = ১/৩)
+  function computeGapScale(doc, base, margin, sp) {
+    const r1 = measureFit2(doc, base, margin, sp, 1);
+    const targetH = r1.pageH * 0.95;
+    if (r1.h <= targetH) return 1;
+    const rMin = measureFit2(doc, base, margin, sp, 1 / 3);
+    if (rMin.h >= targetH || r1.h <= rMin.h) return 1 / 3;
+    const frac = (targetH - rMin.h) / (r1.h - rMin.h);
+    return Math.max(1 / 3, Math.min(1, (1 / 3) + (2 / 3) * frac));
+  }
+
   function estimatePages(doc, base, margin, sp) {
+    if (!isFit2Off(sp) && doc && Array.isArray(doc.pages) && doc.pages.length === 1) {
+      const gs = (sp && sp.gapScale != null) ? sp.gapScale : (base <= 10 || sp ? computeGapScale(doc, base, margin, sp) : 1);
+      return measureFit2(doc, base, margin, sp, gs).est;
+    }
     const isMixed = doc.mixedColumns && !isMixColOff();
     const cols = doc.columns === 2 ? 2 : 1;
     const textW = PAGE.w - 2 * margin;
@@ -123,10 +366,12 @@
     const o = opts || {};
     const errs = D.validate(doc);
     if (errs.length) throw new Error('doc-model অবৈধ: ' + errs[0]);
+    const fit2 = !isFit2Off(o) && doc.pages.length === 1;
     const useFormTpl = !!(F && !F.isOff(o) && F.hasFormFields(doc));
     const pick = choose(doc, o);
     let base = pick.base, margin = pick.margin;
     let textW = PAGE.w - 2 * margin;
+    let gapScale = 1;
     const runs = o.runs || ((t, st) => C.runsXml(t, st));
     const stats = { base, margin, estPages: pick.est, blocks: 0, dropped: {}, droppedFigures: 0 };
     const sz = (pt) => Math.round(pt * 2);
@@ -158,7 +403,8 @@
         case 'title': {
           const pt = base + (b.size === 'xl' ? 8 : 6);
           const border = ctx && ctx.borderBelow ? '<w:pBdr><w:bottom w:val="single" w:sz="8" w:space="4" w:color="000000"/></w:pBdr>' : '';
-          return para(`<w:keepNext/>${border}<w:spacing w:before="60" w:after="60"/>${'<w:jc w:val="' + (b.align === 'l' && !inCell ? 'center' : JC[b.align]) + '"/>'}`,
+          const tPad = fit2 && gapScale < 1 ? Math.max(20, Math.round(60 * gapScale)) : 60;
+          return para(`<w:keepNext/>${border}<w:spacing w:before="${tPad}" w:after="${tPad}"/>${'<w:jc w:val="' + (b.align === 'l' && !inCell ? 'center' : JC[b.align]) + '"/>'}`,
             lineRuns(b, style(Object.assign({}, b, { bold: true }), pt), 'br'));
         }
         case 'heading': {
@@ -170,13 +416,21 @@
           return para(`${long ? '<w:jc w:val="both"/>' : jc}`, lineRuns(b, style(b, sizeOf(b))));
         }
         case 'list': {
+          if (fit2 && Array.isArray(b.lines) && b.lines.length === 2 && /^[.\u2026\u2024_]{10,}$/.test(b.lines[1].trim())) {
+            const t0 = b.lines[0].trim();
+            const txt0 = MARKER_RE.test(t0) || /^[•\-–*]\s/.test(t0) ? marker(t0) : '•\t' + t0;
+            const ptSz = sz(sizeOf(b));
+            return para(`<w:tabs><w:tab w:val="left" w:pos="360"/><w:tab w:leader="dot" w:val="right" w:pos="${curW}"/></w:tabs><w:ind w:left="360" w:hanging="360"/>${jc}`,
+              runs(txt0 + ' ', style(b, sizeOf(b))) + `<w:r><w:rPr><w:sz w:val="${ptSz}"/><w:szCs w:val="${ptSz}"/></w:rPr><w:tab/></w:r>`);
+          }
           const t = b.lines.join(' ');
           const txt = MARKER_RE.test(t) || /^[•\-–*]\s/.test(t) ? marker(t) : '•\t' + t;
           return para(`<w:tabs><w:tab w:val="left" w:pos="360"/></w:tabs><w:ind w:left="360" w:hanging="360"/>${jc}`, runs(txt, style(b, sizeOf(b))));
         }
         case 'question': {
           const t = b.lines.join(' ');
-          return para(`<w:keepNext/><w:tabs><w:tab w:val="left" w:pos="480"/></w:tabs><w:spacing w:before="60"/><w:ind w:left="480" w:hanging="480"/>`, runs(marker(t), style(b, base)));
+          const qBefore = fit2 && gapScale < 1 ? Math.max(20, Math.round(60 * gapScale)) : 60;
+          return para(`<w:keepNext/><w:tabs><w:tab w:val="left" w:pos="480"/></w:tabs><w:spacing w:before="${qBefore}"/><w:ind w:left="480" w:hanging="480"/>`, runs(marker(t), style(b, base)));
         }
         case 'option_row': {
           const cells = (b.cells && b.cells.length ? b.cells : [b.text]).map((c) => c.trim()).filter(Boolean);
@@ -232,13 +486,18 @@
         case 'signature': {
           const ind = b.align === 'r' ? `<w:ind w:left="${Math.round(curW * 0.55)}"/>` : b.align === 'c' ? `<w:ind w:left="${Math.round(curW * 0.25)}" w:right="${Math.round(curW * 0.25)}"/>` : `<w:ind w:right="${Math.round(curW * 0.55)}"/>`;
           const inner = inCell ? '<w:ind w:left="0" w:right="0"/>' : ind;
-          return para(`<w:keepLines/><w:pBdr><w:top w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr><w:spacing w:before="${inCell ? 480 : 600}" w:after="60"/>${inner}${jc || '<w:jc w:val="left"/>'}`,
+          const rawBefore = inCell ? 480 : 600;
+          const sigBefore = fit2 && gapScale < 1 ? Math.max(200, Math.round(rawBefore * gapScale)) : rawBefore;
+          const sigAfter = fit2 && gapScale < 1 ? Math.max(20, Math.round(60 * gapScale)) : 60;
+          return para(`<w:keepLines/><w:pBdr><w:top w:val="single" w:sz="6" w:space="2" w:color="000000"/></w:pBdr><w:spacing w:before="${sigBefore}" w:after="${sigAfter}"/>${inner}${jc || '<w:jc w:val="left"/>'}`,
             lineRuns(b, style(b, base), 'br'));
         }
         case 'footer':
           return para('<w:jc w:val="center"/>', lineRuns(b, style(b, Math.max(10, base - 2)), 'br'));
-        case 'rule':
-          return '<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="8" w:space="1" w:color="000000"/></w:pBdr><w:spacing w:before="0" w:after="80" w:line="120" w:lineRule="exact"/></w:pPr></w:p>';
+        case 'rule': {
+          const ruleAfter = fit2 && gapScale < 1 ? Math.max(20, Math.round(80 * gapScale)) : 80;
+          return `<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="8" w:space="1" w:color="000000"/></w:pBdr><w:spacing w:before="0" w:after="${ruleAfter}" w:line="120" w:lineRule="exact"/></w:pPr></w:p>`;
+        }
         case 'figure':
           if (b.figIndex == null) { stats.droppedFigures++; return ''; }
           return para('<w:jc w:val="center"/>', `<w:r><w:t>QZFIG${b.figIndex}QZ</w:t></w:r>`);
@@ -335,7 +594,12 @@
         stats.base = base;
         stats.margin = margin;
         formSpacing = prep.plan.spacing;
-        if (formSpacing && formSpacing.compact && doc.pages.length === 1 && !isFit1Off() && estimatePages(doc, base, margin, formSpacing) > 1.05) {
+        if (fit2) {
+          gapScale = computeGapScale(doc, base, margin, formSpacing);
+          if (gapScale < 1) {
+            formSpacing = Object.assign({}, formSpacing || { after: 40, line: 240, compact: false }, { gapScale });
+          }
+        } else if (formSpacing && formSpacing.compact && doc.pages.length === 1 && !isFit1Off() && estimatePages(doc, base, margin, formSpacing) > 1.05) {
           // ঘন ১-পাতার ফরম তবু না আঁটলে: আরও ঘন লাইন-ফাঁক (শেষ ধাপে মার্জিন ০.৫"), ফন্ট ১০-এর নিচে নয়
           for (let i = 0; i < FIT_TIERS.length; i++) {
             const t = FIT_TIERS[i];
@@ -349,6 +613,14 @@
       stats.blocks = seq.length;
       items = F.renderFormItems(prep, { base, small, formPt: base, margin, textW, runs, para, lineRuns, style, sz, renderBlock, spacing: formSpacing });
     } else {
+      if (fit2) {
+        gapScale = computeGapScale(doc, base, margin, pick.spacing);
+        if (gapScale < 1 && base === 10 && !pick.spacing && measureFit2(doc, base, margin, null, gapScale).est > 1.05) {
+          pick.spacing = { line: 240, after: 40, gapScale };
+          gapScale = computeGapScale(doc, base, margin, pick.spacing);
+          pick.spacing.gapScale = gapScale;
+        }
+      }
       items = seq.map((b, i) => {
         stats.blocks++;
         const nx = seq[i + 1];
@@ -409,8 +681,13 @@
     let styles = C.stylesXml().split('w:val="24"').join(`w:val="${base * 2}"`);
     if (useFormTpl && formSpacing) {
       styles = F.adjustStylesXml(styles, formSpacing);
-      if (!isFit1Off() && doc.pages.length === 1) stats.estPages = +estimatePages(doc, base, margin, formSpacing).toFixed(2);   // ফরমের আসল লাইন-ফাঁক ধরে হিসাব
-    } else if (pick.spacing && F) styles = F.adjustStylesXml(styles, pick.spacing);   // এক-পাতা আঁটানোর লাইন-ফাঁক
+      if ((!isFit1Off() || fit2) && doc.pages.length === 1) stats.estPages = +estimatePages(doc, base, margin, formSpacing).toFixed(2);   // ফরমের আসল লাইন-ফাঁক ধরে হিসাব
+    } else if (pick.spacing && F) {
+      styles = F.adjustStylesXml(styles, pick.spacing);   // এক-পাতা আঁটানোর লাইন-ফাঁক
+      if (fit2) stats.estPages = +estimatePages(doc, base, margin, pick.spacing).toFixed(2);
+    } else if (fit2 && gapScale < 1) {
+      stats.estPages = +estimatePages(doc, base, margin, { line: 276, after: 80, gapScale }).toFixed(2);
+    }
     return { bodyXml, sectPr, stylesXml: styles, stats };
   }
 

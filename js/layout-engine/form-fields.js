@@ -63,6 +63,17 @@
     return false;
   }
 
+  // FZ_OFF_FIT2: চালু থাকলে বা পুরোনো FIT1 জোরপূর্বক চালু থাকলে আচরণ হুবহু আগের মতো
+  function isFit2Off(opts) {
+    if (opts && opts.FZ_OFF_FIT2) return true;
+    if (typeof FZ_OFF_FIT2 !== 'undefined' && FZ_OFF_FIT2) return true;
+    if (typeof window !== 'undefined' && (window.FZ_OFF_FIT2 || window.FZ_ON_FIT1)) return true;
+    if (typeof globalThis !== 'undefined' && (globalThis.FZ_OFF_FIT2 || globalThis.FZ_ON_FIT1)) return true;
+    if (global && (global.FZ_OFF_FIT2 || global.FZ_ON_FIT1)) return true;
+    if (typeof process !== 'undefined' && process.env && (process.env.FZ_OFF_FIT2 === '1' || process.env.FZ_OFF_FIT2 === 'true' || process.env.FZ_ON_FIT1 === '1')) return true;
+    return false;
+  }
+
   // ───────── জ্যামিতি ও চিহ্ন শনাক্তকারী ─────────
   // ডট/রেখা লিডার রান: ৩+ বিন্দু/আন্ডারস্কোর অথবা ৪+ ড্যাশ বা সংক্ষিপ্ত ⟦.×N⟧ চিহ্ন
   const LEADER_SRC = '(?:[.\\u2026\\u2024_]{3,}|[-─—–]{4,}|⟦\\s*[.\\u2026\\u2024_\\-─—–]\\s*[×xX*]\\s*[০-৯\\d]+\\s*⟧)';
@@ -313,8 +324,10 @@
    * কাটা অংশ (tear-off / cut line) XML তৈরি: পূর্ণ-প্রস্থ ড্যাশড নিচ-সীমানার অনুচ্ছেদ
    */
   function renderCutLineXml(spacing) {
-    const before = spacing && spacing.compact ? 20 : 40;
-    const after = spacing && spacing.compact ? 20 : 40;
+    const gs = spacing && spacing.gapScale != null ? spacing.gapScale : 1;
+    const baseGap = spacing && spacing.compact ? 20 : 40;
+    const before = gs < 1 ? Math.max(10, Math.round(baseGap * gs)) : baseGap;
+    const after = gs < 1 ? Math.max(10, Math.round(baseGap * gs)) : baseGap;
     return `<w:p><w:pPr><w:pBdr><w:bottom w:val="dashed" w:sz="6" w:space="1" w:color="000000"/></w:pBdr><w:spacing w:before="${before}" w:after="${after}" w:line="120" w:lineRule="exact"/></w:pPr></w:p>`;
   }
 
@@ -334,13 +347,18 @@
     const rawH = Math.round(photoW * (boxH / boxW));
     const maxH = spacing && spacing.compact ? 1760 : 2300;
     const minH = spacing && spacing.compact ? 1100 : 1440;
-    const photoH = Math.max(minH, Math.min(maxH, rawH));
+    const basePhotoH = Math.max(minH, Math.min(maxH, rawH));
+    // FIT2: এক-পাতার উৎসে বড় ফাঁকা ছবির ঘরও আনুপাতিকভাবে সংকোচন
+    const gs = spacing && spacing.gapScale != null ? spacing.gapScale : 1;
+    const photoH = gs < 1 ? Math.max(400, Math.round(basePhotoH * gs)) : basePhotoH;
 
     const nilBorders = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map((s) => `<w:${s} w:val="nil"/>`).join('');
     const leftCellBorders = ['top', 'left', 'bottom', 'right'].map((s) => `<w:${s} w:val="nil"/>`).join('');
     const photoCellBorders = ['top', 'left', 'bottom', 'right'].map((s) => `<w:${s} w:val="single" w:sz="6" w:space="0" w:color="000000"/>`).join('');
 
-    const leftInner = leftXmlList.length ? leftXmlList.join('') : '<w:p/>';
+    // Word-এর ঘর অবশ্যই অনুচ্ছেদে শেষ হবে (ফাঁকা স্ট্রিং বা শেষে ছক থাকলে ফাইল "নষ্ট" দেখায় — T22)
+    const leftJoined = leftXmlList.join('');
+    const leftInner = /(<\/w:p>|<w:p\/>)$/.test(leftJoined) ? leftJoined : leftJoined + '<w:p/>';
     const photoLabel = photoBlock && photoBlock.role !== 'figure' && String(photoBlock.text || '').trim()
       ? runs(String(photoBlock.text).trim(), { sz: sz(Math.max(10, formPt - 1)), b: false })
       : '';
@@ -764,8 +782,8 @@
     if (streamCount <= 22) {
       return { base: 10, margin: 864, spacing: { after: 40, line: 240, compact: false } };
     }
-    // ঘন ১-পাতার ফরম (যেমন T21): ১০pt ফন্ট + লাইন-ফাঁক ও অনুচ্ছেদ-ফাঁক কমিয়ে এক পাতায় রাখা
-    return { base: 10, margin: 720, spacing: { after: 16, line: 215, compact: true } };
+    // ঘন ১-পাতার ফরম (যেমন T21, T07): ১০pt ফন্ট + অনুচ্ছেদ-ফাঁক কমিয়ে এক পাতায় রাখা; FIT2-তে w:line কখনো ২৪০-এর নিচে নয়
+    return { base: 10, margin: 720, spacing: { after: 16, line: isFit2Off(opts) ? 215 : 240, compact: true } };
   }
 
   /**
@@ -786,8 +804,10 @@
         const pt = ctx.base + (b.size === 'xl' ? 8 : 6);
         const titleXml = ctx.lineRuns(b, ctx.style(Object.assign({}, b, { bold: true }), pt), 'br');
         const subXml = sub ? `<w:r><w:br/></w:r>` + ctx.runs(sub.text.trim(), { sz: ctx.sz(ctx.base), b: true }) : '';
-        const spBefore = ctx.spacing && ctx.spacing.compact ? 20 : 60;
-        const spAfter = ctx.spacing && ctx.spacing.compact ? 20 : 60;
+        const gs = ctx.spacing && ctx.spacing.gapScale != null ? ctx.spacing.gapScale : 1;
+        const basePad = ctx.spacing && ctx.spacing.compact ? 20 : 60;
+        const spBefore = gs < 1 ? Math.max(15, Math.round(basePad * gs)) : basePad;
+        const spAfter = gs < 1 ? Math.max(15, Math.round(basePad * gs)) : basePad;
         xmls.push(ctx.para(`<w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="8" w:space="4" w:color="000000"/></w:pBdr><w:spacing w:before="${spBefore}" w:after="${spAfter}"/><w:jc w:val="center"/>`, titleXml + subXml));
       } else if (item.type === 'standard' && item.block) {
         let x = ctx.renderBlock(item.block, { borderBelow: item.borderBelow, cols: item.cols || 1 });
